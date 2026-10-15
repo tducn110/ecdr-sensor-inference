@@ -3,17 +3,21 @@
 > SoT docs: 00_START_HERE.md + GATES.md + refs.bib
 > LEGACY_REFERENCE: report.md (550 lines) -- DO NOT EDIT until audit done.
 > Working plan: roadmap suggestion.md (258 lines, verified read 2026-10-15).
-> Research Gates: 2/7 (G0, G1 passed). Current focus: G2 backbone (parallel with event-model REVISE).
+> Research Gates: 2/7 (G0 PASS, G1 COMPLETE_WITH_REVISIONS). Current focus: **G2-A done**
+> (K=6 GO, K=12 HOLD — G2_CLASS_DECISION.md); G2-B backbone training next, in parallel
+> with event-model REVISE + the reading plan (05_READING_PLAN.md).
 
 ## Reading order
 
 1. This file (00_START_HERE.md)
 2. GATES.md -- 7 acceptance gates G0-G6
-3. refs.bib -- 6 verified entries (LipCache, STBP/SAIV26, DeltaCNN, Franco UAI24, HAPT, auto_LiRPA)
+3. refs.bib -- 7 verified entries (LipCache, STBP/SAIV26, DeltaCNN, Franco UAI24, HAPT, Wei & Liu, auto_LiRPA)
 4. 01_RQ_GAP.md -- working RQ + gap hypothesis (DONE in G0)
-5. 02_LITERATURE.md -- 4-axis prior-work table (DONE in G0)
-6. 03_DATA_AUDIT.md -- HAPT deltas + coverage (IN PROGRESS: G1)
-7. 04_THEORY.md and later -- FROZEN until G0+G1 pass
+5. 02_LITERATURE.md -- 4-axis prior-work table (DONE in G0; §5 = pending additions)
+6. 03_DATA_AUDIT.md -- HAPT deltas + coverage (DONE in G1; 2026-10-15 correction note inside)
+7. G2_CLASS_DECISION.md -- K=6 GO / K=12 HOLD with evidence (G2-A DONE)
+8. 05_READING_PLAN.md -- 23-paper list, baselines B0-B7, metrics, 4-week plan
+9. 04_THEORY.md and later -- FROZEN until G0+G1 pass and event model revised
 
 ## Working RQ (hypothesis, not proven novelty)
 

@@ -1,6 +1,6 @@
 # 02 LITERATURE — Prior Work vs Working Gap (G0 evidence)
 
-> Sources: refs.bib (6 entries, verified 2026-10-15 from arXiv / Springer / CVPR OA / PMLR / UCI / auto_LiRPA docs).
+> Sources: refs.bib (7 entries, verified 2026-10-15 from arXiv / Springer / CVPR OA / PMLR / UCI / auto_LiRPA docs).
 > Rule: no turnX citations. Every SUPPORTED row needs URL + page/quote. Numbers without full-PDF quotes stay UNVERIFIED.
 
 ## 1. Claim verification ledger
@@ -45,3 +45,19 @@ certification + sequential reuse + runtime-cost analysis INCLUDING rebuild.
 Do NOT claim first structured verifier or first class-pair radius.
 G0 passes on documentation of the above ledger + table + labels; G1/G3/G5 decide
 whether the hypothesis survives.
+
+## 5. Pending additions from G1 re-review (2026-10-15) — UNVERIFIED, not yet SUPPORTED
+
+Flagged by external review as possible collisions/baselines. MUST be read and
+quoted before any row above cites them; keep C11 UNVERIFIED until then.
+
+| Source | Why it matters | Status |
+|---|---|---|
+| NoScope (VLDB 2017, Stanford DAWN) — https://dawn.cs.stanford.edu/publications/noscope/ | temporal difference detectors + conditional inference to skip heavy models → forbids any "first temporal-diff to skip inference" claim; distinction must be the mathematical class-pair certificate | TO_READ (P04) |
+| Overlapping vs non-overlapping sliding windows for HAR (MDPI Sensors 2019) — https://www.mdpi.com/1424-8220/19/22/5026 | overlap benefit shrinks under subject-independent eval → overlap must never be used as similarity/performance evidence; supports G2 eval protocol | TO_READ (P16) |
+| Fast-Lin/Fast-Lip (Weng et al., ICML 2018) — https://proceedings.mlr.press/v80/weng18a.html | certified baseline stronger than plain global Lipschitz → baseline B4 | TO_READ (P10) |
+| RecurJac (AAAI 2019) — https://cdn.aaai.org/ojs/4522/4522-13-7561-1-10-20190706.pdf | Jacobian/Lipschitz bound baseline → baseline B4 | TO_READ (P11) |
+
+Full 23-paper reading list, gate mapping, baselines B0-B7 and metric definitions:
+`05_READING_PLAN.md`.
+

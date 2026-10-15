@@ -1,0 +1,17 @@
+# configs/training.yaml — G2-B protocol, rules from G2_CLASS_DECISION.md §6
+seeds: [42, 43, 44]        # >=3 seeds, report mean +/- spread
+epochs: 30
+batch_size: 128
+optimizer:
+  name: adam
+  lr: 0.001
+  weight_decay: 0.0001
+scheduler: cosine           # per-epoch cosine decay to lr/100
+early_stopping:
+  patience: 10              # on val macro-F1 (selection metric)
+selection_metric: val_macro_f1
+normalization:
+  scope: train_only         # mean/std fit on train windows only; val/test reuse
+class_weights: null         # basic-6 imbalance ratio ~1.5, plain CE
+num_workers: 0              # deterministic CPU loader
+# test set is touched exactly once per seed AFTER val selection (§6.2)

@@ -3,9 +3,10 @@
 > SoT docs: 00_START_HERE.md + GATES.md + refs.bib
 > LEGACY_REFERENCE: report.md (550 lines) -- DO NOT EDIT until audit done.
 > Working plan: roadmap suggestion.md (258 lines, verified read 2026-10-15).
-> Research Gates: 2/7 (G0 PASS, G1 COMPLETE_WITH_REVISIONS). Current focus: **G2-A done**
-> (K=6 GO, K=12 HOLD — G2_CLASS_DECISION.md); G2-B backbone training next, in parallel
-> with event-model REVISE + the reading plan (05_READING_PLAN.md).
+> Research Gates: **3/7 (G0 PASS, G1 COMPLETE_WITH_REVISIONS, G2 PASS)**. Current focus:
+> event-model revision (03_DATA_AUDIT §5) + reading plan (05_READING_PLAN.md Week 1-2);
+> G3 verifier gated on 04_THEORY freeze. K=6 frozen checkpoint: checkpoints/backbone_best.pt
+> (seed44, test macro-F1 0.9354, params 282,918) — weights changes void certificates.
 
 ## Reading order
 

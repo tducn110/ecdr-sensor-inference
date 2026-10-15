@@ -1,0 +1,18 @@
+# configs/backbone.yaml — FROZEN with the checkpoint at G2-B (2026-10-15)
+# Decision context: G2_CLASS_DECISION.md (K=6 GO, K=12 HOLD), window policy
+# LOCKED in 03_DATA_AUDIT.md (6x128, stride 64, pure-only).
+input:
+  channels: 6            # acc x,y,z + gyro x,y,z (raw, per-channel normalized)
+  samples: 128           # 2.56 s @ 50 Hz
+num_classes: 6
+label_policy: pure_only  # label_policy==pure AND label 1..6; transitions excluded
+classes: [WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING]
+model:
+  name: small_cnn_1d
+  conv_channels: [32, 64, 64]
+  conv_kernels: [5, 3, 3]   # padding = kernel//2 (same length), pools after conv1+conv2
+  pool: maxpool2
+  fc_hidden: 128
+  activation: relu
+  batchnorm: true
+# any weight change invalidates certificates (G2_CLASS_DECISION.md §6.4)

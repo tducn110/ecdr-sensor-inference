@@ -1,4 +1,4 @@
-# GATES.md — Research Acceptance Gates (2/7 passed: G0, G1)
+# GATES.md — Research Acceptance Gates (3/7 passed: G0, G1, G2)
 
 > Copy this checklist. A gate passes only with evidence, not confidence.
 > report.md stays LEGACY_REFERENCE. Evidence lives in 01/02/refs.bib first.
@@ -16,10 +16,11 @@
   - EXPECT: 03_DATA_AUDIT.md answers 3 questions (delta distribution? coverage? label balance?). — done + verdict + post-review correction note
   - NOTE: pre-fix values preserved at commit cefd171; F1/F2/F3 restated 2026-10-15.
 
-- [ ] G2 — Backbone reproducible
-  - CHECK: config, seed, checkpoint, accuracy, macro-F1, param count via count_params.py.
-  - EXPECT: shape test (B,6,128)->(B,K) passes.
-  - STATUS 2026-10-15: **G2-A DONE** (scripts/06, 06b -> data/g2_class_support.json, data/corr_semantics.json): K=6 baseline GO, K=12 pure-only HOLD (transition pure support 5-65/class/split, 18 blockers). Decision + evaluation rules in G2_CLASS_DECISION.md. G2-B not started: torch not installed yet; re-export requirements-lock after install.
+- [x] G2 — Backbone reproducible (passed 2026-10-15: configs/backbone.yaml + training.yaml frozen; seeds 42/43/44; test acc 0.9349 / macro-F1 0.9354 best seed44 (val mF1 0.9504), 3-seed test macro-F1 0.9122 ± 0.0183; params 282,918; CPU p50/p95 = 0.236/0.331 ms batch1 = G5 baseline only)
+  - CHECK: config, seed, checkpoint, accuracy, macro-F1, param count via count_params.py. — all done (data/g2_training.json, data/g2_metrics.json, data/g2_model_summary.json)
+  - EXPECT: shape test (B,6,128)->(B,K) passes. — PASS (scripts/07)
+  - SCOPE: K=6 pure-only per G2_CLASS_DECISION.md; denominator test=2,874 pure K=6 windows; weakest classes SITTING (F1 0.858) / STANDING (0.878).
+  - NEXT: PredictionChangeRate on full stream now computable from frozen backbone (scripts/09 margins exist); G3 waits for event-model revision + 04_THEORY freeze.
 
 - [ ] G3 — Sound verifier
   - CHECK: bounds valid math + membership checker independent from event extractor.

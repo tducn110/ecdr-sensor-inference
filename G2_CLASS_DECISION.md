@@ -111,6 +111,21 @@ data/
 
 ## 8. Traceability
 
-- Gate wording for the paper: `G0 PASS; G1 COMPLETE_WITH_REVISIONS; G2-A DONE; G2-B pending`.
+- Gate wording for the paper: `G0 PASS; G1 COMPLETE_WITH_REVISIONS; G2 PASS (G2-A + G2-B); G3 pending`.
 - Baseline commit `cefd171` preserves pre-fix G1 artifacts; the `05` index fix
   and recomputed audits are committed separately.
+
+## 9. G2-B results (measured 2026-10-15)
+
+- Windows: train 5,693 / val 1,450 / test 2,874 (pure K=6; policy per §1).
+- 3 seeds (42/43/44): val macro-F1 0.9418 / 0.9454 / 0.9504;
+  test macro-F1 0.8906 / 0.9105 / 0.9354 → **mean 0.9122 ± 0.0183**.
+- Best (seed44, selected on val): test acc **0.9349**, macro-F1 **0.9354**;
+  per-class F1: LAYING 1.000, WALKING 0.982, DOWNSTAIRS 0.961, UPSTAIRS 0.934,
+  STANDING 0.878, SITTING 0.858 (sitting/standing confusion dominant).
+- Margin (test, best): p50 +9.84, p5 −0.73, frac<0 = 0.0651 = 1 − accuracy.
+- Params 282,918 · shape test PASS · CPU p50/p95 = 0.236/0.331 ms (batch1, 6 threads).
+- Artifacts: `configs/*.yaml`, `checkpoints/backbone_best.pt`, `data/g2_training.json`,
+  `data/g2_metrics.json`, `data/g2_model_summary.json`, `data/g2_cpu_latency.json`,
+  `plots/g2_confusion_matrix.png`, `plots/g2_margin_distribution.png`.
+

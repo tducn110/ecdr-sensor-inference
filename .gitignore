@@ -1,6 +1,10 @@
 # virtual environment (rebuild from requirements-lock.txt)
 .venv/
 
+# per-seed checkpoints are regenerable (scripts/08, seeded, ~60s);
+# backbone_best.pt IS tracked — certificates must pin this exact file (§6.4)
+checkpoints/backbone_seed*.pt
+
 # python cache
 __pycache__/
 *.pyc

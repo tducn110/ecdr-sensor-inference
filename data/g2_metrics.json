@@ -1,0 +1,644 @@
+{
+  "gate": "G2",
+  "scope": {
+    "statement": "6-class HAPT classifier, pure-only policy",
+    "stream_windows": 17453,
+    "labeled_windows": 13866,
+    "trainable_pure_k6": 10017,
+    "test_evaluated_pure_k6": 2874,
+    "transition_windows_excluded": 1111,
+    "denominator_note": "metrics below use test pure K=6 only; full-stream/labeled denominators reported for scope"
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "best_epoch": 4,
+      "val": {
+        "n": 1450,
+        "accuracy": 0.9386,
+        "macro_f1": 0.9454,
+        "per_class": {
+          "WALKING": {
+            "support": 221,
+            "precision": 1.0,
+            "recall": 0.9955,
+            "f1": 0.9977
+          },
+          "WALKING_UPSTAIRS": {
+            "support": 205,
+            "precision": 0.9951,
+            "recall": 1.0,
+            "f1": 0.9976
+          },
+          "WALKING_DOWNSTAIRS": {
+            "support": 189,
+            "precision": 0.9947,
+            "recall": 1.0,
+            "f1": 0.9974
+          },
+          "SITTING": {
+            "support": 261,
+            "precision": 0.8175,
+            "recall": 0.8582,
+            "f1": 0.8374
+          },
+          "STANDING": {
+            "support": 286,
+            "precision": 0.864,
+            "recall": 0.8217,
+            "f1": 0.8423
+          },
+          "LAYING": {
+            "support": 288,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            220,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            205,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            189,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            224,
+            37,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            50,
+            235,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            288
+          ]
+        ]
+      },
+      "test": {
+        "n": 2874,
+        "accuracy": 0.9085,
+        "macro_f1": 0.9105,
+        "per_class": {
+          "WALKING": {
+            "support": 474,
+            "precision": 0.9708,
+            "recall": 0.9114,
+            "f1": 0.9402
+          },
+          "WALKING_UPSTAIRS": {
+            "support": 449,
+            "precision": 0.8088,
+            "recall": 0.98,
+            "f1": 0.8862
+          },
+          "WALKING_DOWNSTAIRS": {
+            "support": 394,
+            "precision": 0.9645,
+            "recall": 0.9645,
+            "f1": 0.9645
+          },
+          "SITTING": {
+            "support": 484,
+            "precision": 0.8361,
+            "recall": 0.843,
+            "f1": 0.8395
+          },
+          "STANDING": {
+            "support": 541,
+            "precision": 0.896,
+            "recall": 0.8281,
+            "f1": 0.8607
+          },
+          "LAYING": {
+            "support": 532,
+            "precision": 1.0,
+            "recall": 0.9455,
+            "f1": 0.972
+          }
+        },
+        "confusion_matrix": [
+          [
+            432,
+            35,
+            7,
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            440,
+            7,
+            0,
+            0,
+            0
+          ],
+          [
+            10,
+            4,
+            380,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            24,
+            0,
+            408,
+            52,
+            0
+          ],
+          [
+            1,
+            12,
+            0,
+            80,
+            448,
+            0
+          ],
+          [
+            0,
+            29,
+            0,
+            0,
+            0,
+            503
+          ]
+        ]
+      }
+    },
+    {
+      "seed": 43,
+      "best_epoch": 3,
+      "val": {
+        "n": 1450,
+        "accuracy": 0.9352,
+        "macro_f1": 0.9418,
+        "per_class": {
+          "WALKING": {
+            "support": 221,
+            "precision": 0.9779,
+            "recall": 1.0,
+            "f1": 0.9888
+          },
+          "WALKING_UPSTAIRS": {
+            "support": 205,
+            "precision": 1.0,
+            "recall": 0.9951,
+            "f1": 0.9976
+          },
+          "WALKING_DOWNSTAIRS": {
+            "support": 189,
+            "precision": 1.0,
+            "recall": 0.9841,
+            "f1": 0.992
+          },
+          "SITTING": {
+            "support": 261,
+            "precision": 0.8116,
+            "recall": 0.8582,
+            "f1": 0.8343
+          },
+          "STANDING": {
+            "support": 286,
+            "precision": 0.863,
+            "recall": 0.8147,
+            "f1": 0.8381
+          },
+          "LAYING": {
+            "support": 288,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            221,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            204,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            3,
+            0,
+            186,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            224,
+            37,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            52,
+            233,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            288
+          ]
+        ]
+      },
+      "test": {
+        "n": 2874,
+        "accuracy": 0.8897,
+        "macro_f1": 0.8906,
+        "per_class": {
+          "WALKING": {
+            "support": 474,
+            "precision": 0.8322,
+            "recall": 0.9937,
+            "f1": 0.9058
+          },
+          "WALKING_UPSTAIRS": {
+            "support": 449,
+            "precision": 0.875,
+            "recall": 0.9198,
+            "f1": 0.8969
+          },
+          "WALKING_DOWNSTAIRS": {
+            "support": 394,
+            "precision": 0.997,
+            "recall": 0.8528,
+            "f1": 0.9193
+          },
+          "SITTING": {
+            "support": 484,
+            "precision": 0.8028,
+            "recall": 0.8161,
+            "f1": 0.8094
+          },
+          "STANDING": {
+            "support": 541,
+            "precision": 0.871,
+            "recall": 0.8115,
+            "f1": 0.8402
+          },
+          "LAYING": {
+            "support": 532,
+            "precision": 1.0,
+            "recall": 0.9455,
+            "f1": 0.972
+          }
+        },
+        "confusion_matrix": [
+          [
+            471,
+            2,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            36,
+            413,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            57,
+            1,
+            336,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            24,
+            0,
+            395,
+            65,
+            0
+          ],
+          [
+            2,
+            3,
+            0,
+            97,
+            439,
+            0
+          ],
+          [
+            0,
+            29,
+            0,
+            0,
+            0,
+            503
+          ]
+        ]
+      }
+    },
+    {
+      "seed": 44,
+      "best_epoch": 25,
+      "val": {
+        "n": 1450,
+        "accuracy": 0.9441,
+        "macro_f1": 0.9504,
+        "per_class": {
+          "WALKING": {
+            "support": 221,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "WALKING_UPSTAIRS": {
+            "support": 205,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "WALKING_DOWNSTAIRS": {
+            "support": 189,
+            "precision": 0.9947,
+            "recall": 1.0,
+            "f1": 0.9974
+          },
+          "SITTING": {
+            "support": 261,
+            "precision": 0.8415,
+            "recall": 0.8544,
+            "f1": 0.8479
+          },
+          "STANDING": {
+            "support": 286,
+            "precision": 0.8648,
+            "recall": 0.8497,
+            "f1": 0.8571
+          },
+          "LAYING": {
+            "support": 288,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            221,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            205,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            189,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            223,
+            38,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            42,
+            243,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            288
+          ]
+        ]
+      },
+      "test": {
+        "n": 2874,
+        "accuracy": 0.9349,
+        "macro_f1": 0.9354,
+        "per_class": {
+          "WALKING": {
+            "support": 474,
+            "precision": 0.9731,
+            "recall": 0.9916,
+            "f1": 0.9822
+          },
+          "WALKING_UPSTAIRS": {
+            "support": 449,
+            "precision": 0.9145,
+            "recall": 0.9532,
+            "f1": 0.9335
+          },
+          "WALKING_DOWNSTAIRS": {
+            "support": 394,
+            "precision": 0.9481,
+            "recall": 0.9746,
+            "f1": 0.9612
+          },
+          "SITTING": {
+            "support": 484,
+            "precision": 0.8622,
+            "recall": 0.8533,
+            "f1": 0.8577
+          },
+          "STANDING": {
+            "support": 541,
+            "precision": 0.9073,
+            "recall": 0.8503,
+            "f1": 0.8779
+          },
+          "LAYING": {
+            "support": 532,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            470,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            428,
+            17,
+            0,
+            0,
+            0
+          ],
+          [
+            9,
+            1,
+            384,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            24,
+            0,
+            413,
+            47,
+            0
+          ],
+          [
+            0,
+            15,
+            0,
+            66,
+            460,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            532
+          ]
+        ]
+      }
+    }
+  ],
+  "test_macro_f1_mean": 0.9122,
+  "test_macro_f1_std": 0.0183,
+  "test_acc_mean": 0.911,
+  "test_acc_std": 0.0185,
+  "best_seed": 44,
+  "best_val": {
+    "accuracy": 0.9441,
+    "macro_f1": 0.9504
+  },
+  "best_test": {
+    "accuracy": 0.9349,
+    "macro_f1": 0.9354,
+    "per_class": {
+      "WALKING": {
+        "support": 474,
+        "precision": 0.9731,
+        "recall": 0.9916,
+        "f1": 0.9822
+      },
+      "WALKING_UPSTAIRS": {
+        "support": 449,
+        "precision": 0.9145,
+        "recall": 0.9532,
+        "f1": 0.9335
+      },
+      "WALKING_DOWNSTAIRS": {
+        "support": 394,
+        "precision": 0.9481,
+        "recall": 0.9746,
+        "f1": 0.9612
+      },
+      "SITTING": {
+        "support": 484,
+        "precision": 0.8622,
+        "recall": 0.8533,
+        "f1": 0.8577
+      },
+      "STANDING": {
+        "support": 541,
+        "precision": 0.9073,
+        "recall": 0.8503,
+        "f1": 0.8779
+      },
+      "LAYING": {
+        "support": 532,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    }
+  },
+  "margin_stats_test_best": {
+    "p1": -9.0756,
+    "p5": -0.7269,
+    "p50": 9.8426,
+    "frac_negative": 0.0651
+  },
+  "versions": {
+    "torch": "2.14.1+cpu"
+  }
+}

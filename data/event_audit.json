@@ -1,0 +1,119 @@
+{
+  "pairs_total": 17392,
+  "pairs_by_split": {
+    "train": 9944,
+    "test": 5034,
+    "val": 2414
+  },
+  "q1_distances": {
+    "same_activity": {
+      "n": 9278,
+      "l2": {
+        "p50": 9.44918,
+        "p90": 19.2255,
+        "p95": 22.23489,
+        "p99": 26.13839
+      },
+      "linf": {
+        "p50": 1.85672,
+        "p90": 3.24828,
+        "p95": 3.50362,
+        "p99": 4.33745
+      }
+    },
+    "label_change": {
+      "n": 1651,
+      "l2": {
+        "p50": 11.0222,
+        "p90": 19.92166,
+        "p95": 22.07755,
+        "p99": 26.92175
+      },
+      "linf": {
+        "p50": 2.12551,
+        "p90": 3.40649,
+        "p95": 3.70734,
+        "p99": 4.55263
+      }
+    }
+  },
+  "temporal_correlation_per_channel": {
+    "lag1": {
+      "acc_x": 0.0396,
+      "acc_y": 0.0521,
+      "acc_z": 0.1403,
+      "gyro_x": -0.044,
+      "gyro_y": 0.05,
+      "gyro_z": -0.0219
+    },
+    "lag2": {
+      "acc_x": -0.0032,
+      "acc_y": -0.0235,
+      "acc_z": 0.048,
+      "gyro_x": -0.0295,
+      "gyro_y": 0.058,
+      "gyro_z": -0.0116
+    },
+    "lag4": {
+      "acc_x": -0.0089,
+      "acc_y": -0.0174,
+      "acc_z": -0.0145,
+      "gyro_x": 0.0071,
+      "gyro_y": 0.012,
+      "gyro_z": 0.0132
+    },
+    "lag8": {
+      "acc_x": -0.0283,
+      "acc_y": -0.0118,
+      "acc_z": 0.0052,
+      "gyro_x": 0.0047,
+      "gyro_y": -0.0085,
+      "gyro_z": 0.0212
+    }
+  },
+  "diagonal_box_coverage_fit_on_train": {
+    "stable": {
+      "train": 0.1754,
+      "val": 0.1744,
+      "test": 0.1909,
+      "test_same": 0.2499,
+      "test_change": 0.1667
+    },
+    "moderate": {
+      "train": 0.2434,
+      "val": 0.2394,
+      "test": 0.2573,
+      "test_same": 0.3258,
+      "test_change": 0.2325
+    },
+    "wide": {
+      "train": 0.2944,
+      "val": 0.2912,
+      "test": 0.3014,
+      "test_same": 0.3626,
+      "test_change": 0.286
+    }
+  },
+  "stable_box_but_label_changed_frac": 0.0768,
+  "correlated_set_pca": {
+    "components_k": 52,
+    "variance_explained": 0.9023,
+    "thresholds_fit": "train same-activity q90 scores + q90 residual",
+    "coverage": {
+      "train": 0.3749,
+      "val": 0.3695,
+      "test": 0.3812
+    },
+    "diagonal_p50_box_coverage": {
+      "train": 0.1754,
+      "val": 0.1744,
+      "test": 0.1909
+    },
+    "diagonal_p90_box_coverage": {
+      "train": 0.2944,
+      "val": 0.2912,
+      "test": 0.3014
+    }
+  },
+  "decision_note": "GO if diagonal box covers a meaningful fraction of same-activity pairs while label_change pairs lie mostly outside; NO-GO if coverage ~0 or stable box hits change"
+}

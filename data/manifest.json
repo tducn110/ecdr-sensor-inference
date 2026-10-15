@@ -1,0 +1,13 @@
+{
+  "source_url": "https://archive.ics.uci.edu/static/public/341/smartphone+based+recognition+of+human+activities+and+postural+transitions.zip",
+  "accessed_utc": "2026-10-15T12:20:55Z",
+  "zip_path": "data/hapt_uci341.zip",
+  "zip_size_bytes": 79596192,
+  "zip_sha256": "4ac4ae064227c07045a99551876b54d204837e995e298b6488559e209b3deb09",
+  "zip_member_count": 133,
+  "extract_dir": "data/hapt",
+  "download_seconds": 247.5,
+  "doi": "10.24432/C54G7M",
+  "license": "CC BY 4.0",
+  "note": "10929 instances on UCI page = pre-windowed 561-feature records, NOT raw sensor samples; raw row counts must be read from files"
+}

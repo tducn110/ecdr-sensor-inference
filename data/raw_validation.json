@@ -1,0 +1,625 @@
+{
+  "summary": {
+    "recordings": 61,
+    "label_rows_total": 1214,
+    "all_aligned": true,
+    "total_issues": 0,
+    "issues": [],
+    "row_count_min": 9898,
+    "row_count_max": 32089,
+    "coverage_min": 0.3921,
+    "note": "gaps between annotated intervals are unannotated -- never auto-labeled"
+  },
+  "records": [
+    {
+      "file": "exp01_user01.txt",
+      "exp": 1,
+      "rows": 20598,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13956,
+      "coverage_ratio": 0.6775,
+      "label_rows": 22
+    },
+    {
+      "file": "exp02_user01.txt",
+      "exp": 2,
+      "rows": 19286,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13949,
+      "coverage_ratio": 0.7233,
+      "label_rows": 23
+    },
+    {
+      "file": "exp03_user02.txt",
+      "exp": 3,
+      "rows": 18026,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12998,
+      "coverage_ratio": 0.7211,
+      "label_rows": 20
+    },
+    {
+      "file": "exp04_user02.txt",
+      "exp": 4,
+      "rows": 16565,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11666,
+      "coverage_ratio": 0.7043,
+      "label_rows": 20
+    },
+    {
+      "file": "exp05_user03.txt",
+      "exp": 5,
+      "rows": 20994,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13833,
+      "coverage_ratio": 0.6589,
+      "label_rows": 21
+    },
+    {
+      "file": "exp06_user03.txt",
+      "exp": 6,
+      "rows": 17493,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13214,
+      "coverage_ratio": 0.7554,
+      "label_rows": 20
+    },
+    {
+      "file": "exp07_user04.txt",
+      "exp": 7,
+      "rows": 17668,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13202,
+      "coverage_ratio": 0.7472,
+      "label_rows": 21
+    },
+    {
+      "file": "exp08_user04.txt",
+      "exp": 8,
+      "rows": 15888,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12190,
+      "coverage_ratio": 0.7672,
+      "label_rows": 20
+    },
+    {
+      "file": "exp09_user05.txt",
+      "exp": 9,
+      "rows": 16864,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12884,
+      "coverage_ratio": 0.764,
+      "label_rows": 20
+    },
+    {
+      "file": "exp10_user05.txt",
+      "exp": 10,
+      "rows": 15038,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11764,
+      "coverage_ratio": 0.7823,
+      "label_rows": 20
+    },
+    {
+      "file": "exp11_user06.txt",
+      "exp": 11,
+      "rows": 16522,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13098,
+      "coverage_ratio": 0.7928,
+      "label_rows": 20
+    },
+    {
+      "file": "exp12_user06.txt",
+      "exp": 12,
+      "rows": 32089,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12583,
+      "coverage_ratio": 0.3921,
+      "label_rows": 20
+    },
+    {
+      "file": "exp13_user07.txt",
+      "exp": 13,
+      "rows": 17195,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12494,
+      "coverage_ratio": 0.7266,
+      "label_rows": 20
+    },
+    {
+      "file": "exp14_user07.txt",
+      "exp": 14,
+      "rows": 16028,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11594,
+      "coverage_ratio": 0.7234,
+      "label_rows": 20
+    },
+    {
+      "file": "exp15_user08.txt",
+      "exp": 15,
+      "rows": 15550,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11150,
+      "coverage_ratio": 0.717,
+      "label_rows": 21
+    },
+    {
+      "file": "exp16_user08.txt",
+      "exp": 16,
+      "rows": 16356,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11726,
+      "coverage_ratio": 0.7169,
+      "label_rows": 21
+    },
+    {
+      "file": "exp17_user09.txt",
+      "exp": 17,
+      "rows": 16244,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11961,
+      "coverage_ratio": 0.7363,
+      "label_rows": 23
+    },
+    {
+      "file": "exp18_user09.txt",
+      "exp": 18,
+      "rows": 15621,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11873,
+      "coverage_ratio": 0.7601,
+      "label_rows": 20
+    },
+    {
+      "file": "exp19_user10.txt",
+      "exp": 19,
+      "rows": 15739,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 11660,
+      "coverage_ratio": 0.7408,
+      "label_rows": 20
+    },
+    {
+      "file": "exp20_user10.txt",
+      "exp": 20,
+      "rows": 11601,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 6591,
+      "coverage_ratio": 0.5681,
+      "label_rows": 12
+    },
+    {
+      "file": "exp21_user10.txt",
+      "exp": 21,
+      "rows": 9898,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 5168,
+      "coverage_ratio": 0.5221,
+      "label_rows": 8
+    },
+    {
+      "file": "exp22_user11.txt",
+      "exp": 22,
+      "rows": 16437,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12370,
+      "coverage_ratio": 0.7526,
+      "label_rows": 21
+    },
+    {
+      "file": "exp23_user11.txt",
+      "exp": 23,
+      "rows": 16530,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12920,
+      "coverage_ratio": 0.7816,
+      "label_rows": 20
+    },
+    {
+      "file": "exp24_user12.txt",
+      "exp": 24,
+      "rows": 16632,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12840,
+      "coverage_ratio": 0.772,
+      "label_rows": 20
+    },
+    {
+      "file": "exp25_user12.txt",
+      "exp": 25,
+      "rows": 16160,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12922,
+      "coverage_ratio": 0.7996,
+      "label_rows": 20
+    },
+    {
+      "file": "exp26_user13.txt",
+      "exp": 26,
+      "rows": 17801,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13562,
+      "coverage_ratio": 0.7619,
+      "label_rows": 20
+    },
+    {
+      "file": "exp27_user13.txt",
+      "exp": 27,
+      "rows": 17184,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12599,
+      "coverage_ratio": 0.7332,
+      "label_rows": 20
+    },
+    {
+      "file": "exp28_user14.txt",
+      "exp": 28,
+      "rows": 17463,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13136,
+      "coverage_ratio": 0.7522,
+      "label_rows": 20
+    },
+    {
+      "file": "exp29_user14.txt",
+      "exp": 29,
+      "rows": 16559,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12806,
+      "coverage_ratio": 0.7734,
+      "label_rows": 20
+    },
+    {
+      "file": "exp30_user15.txt",
+      "exp": 30,
+      "rows": 17179,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12922,
+      "coverage_ratio": 0.7522,
+      "label_rows": 20
+    },
+    {
+      "file": "exp31_user15.txt",
+      "exp": 31,
+      "rows": 17178,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13297,
+      "coverage_ratio": 0.7741,
+      "label_rows": 20
+    },
+    {
+      "file": "exp32_user16.txt",
+      "exp": 32,
+      "rows": 21072,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13633,
+      "coverage_ratio": 0.647,
+      "label_rows": 20
+    },
+    {
+      "file": "exp33_user16.txt",
+      "exp": 33,
+      "rows": 21139,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14381,
+      "coverage_ratio": 0.6803,
+      "label_rows": 20
+    },
+    {
+      "file": "exp34_user17.txt",
+      "exp": 34,
+      "rows": 21303,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15139,
+      "coverage_ratio": 0.7107,
+      "label_rows": 20
+    },
+    {
+      "file": "exp35_user17.txt",
+      "exp": 35,
+      "rows": 19535,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14392,
+      "coverage_ratio": 0.7367,
+      "label_rows": 20
+    },
+    {
+      "file": "exp36_user18.txt",
+      "exp": 36,
+      "rows": 22399,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15417,
+      "coverage_ratio": 0.6883,
+      "label_rows": 20
+    },
+    {
+      "file": "exp37_user18.txt",
+      "exp": 37,
+      "rows": 20058,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14208,
+      "coverage_ratio": 0.7083,
+      "label_rows": 20
+    },
+    {
+      "file": "exp38_user19.txt",
+      "exp": 38,
+      "rows": 19099,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14528,
+      "coverage_ratio": 0.7607,
+      "label_rows": 20
+    },
+    {
+      "file": "exp39_user19.txt",
+      "exp": 39,
+      "rows": 17837,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13588,
+      "coverage_ratio": 0.7618,
+      "label_rows": 20
+    },
+    {
+      "file": "exp40_user20.txt",
+      "exp": 40,
+      "rows": 19693,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14396,
+      "coverage_ratio": 0.731,
+      "label_rows": 20
+    },
+    {
+      "file": "exp41_user20.txt",
+      "exp": 41,
+      "rows": 17963,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14080,
+      "coverage_ratio": 0.7838,
+      "label_rows": 20
+    },
+    {
+      "file": "exp42_user21.txt",
+      "exp": 42,
+      "rows": 20806,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 16302,
+      "coverage_ratio": 0.7835,
+      "label_rows": 20
+    },
+    {
+      "file": "exp43_user21.txt",
+      "exp": 43,
+      "rows": 19484,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15302,
+      "coverage_ratio": 0.7854,
+      "label_rows": 20
+    },
+    {
+      "file": "exp44_user22.txt",
+      "exp": 44,
+      "rows": 17932,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12912,
+      "coverage_ratio": 0.7201,
+      "label_rows": 20
+    },
+    {
+      "file": "exp45_user22.txt",
+      "exp": 45,
+      "rows": 17552,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 12600,
+      "coverage_ratio": 0.7179,
+      "label_rows": 21
+    },
+    {
+      "file": "exp46_user23.txt",
+      "exp": 46,
+      "rows": 20065,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14328,
+      "coverage_ratio": 0.7141,
+      "label_rows": 20
+    },
+    {
+      "file": "exp47_user23.txt",
+      "exp": 47,
+      "rows": 17986,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14436,
+      "coverage_ratio": 0.8026,
+      "label_rows": 20
+    },
+    {
+      "file": "exp48_user24.txt",
+      "exp": 48,
+      "rows": 20722,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15214,
+      "coverage_ratio": 0.7342,
+      "label_rows": 21
+    },
+    {
+      "file": "exp49_user24.txt",
+      "exp": 49,
+      "rows": 19426,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14922,
+      "coverage_ratio": 0.7681,
+      "label_rows": 20
+    },
+    {
+      "file": "exp50_user25.txt",
+      "exp": 50,
+      "rows": 21230,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15872,
+      "coverage_ratio": 0.7476,
+      "label_rows": 20
+    },
+    {
+      "file": "exp51_user25.txt",
+      "exp": 51,
+      "rows": 20352,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15656,
+      "coverage_ratio": 0.7693,
+      "label_rows": 20
+    },
+    {
+      "file": "exp52_user26.txt",
+      "exp": 52,
+      "rows": 20678,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15254,
+      "coverage_ratio": 0.7377,
+      "label_rows": 20
+    },
+    {
+      "file": "exp53_user26.txt",
+      "exp": 53,
+      "rows": 20316,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14843,
+      "coverage_ratio": 0.7306,
+      "label_rows": 20
+    },
+    {
+      "file": "exp54_user27.txt",
+      "exp": 54,
+      "rows": 18253,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14323,
+      "coverage_ratio": 0.7847,
+      "label_rows": 20
+    },
+    {
+      "file": "exp55_user27.txt",
+      "exp": 55,
+      "rows": 18915,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14942,
+      "coverage_ratio": 0.79,
+      "label_rows": 21
+    },
+    {
+      "file": "exp56_user28.txt",
+      "exp": 56,
+      "rows": 20556,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15620,
+      "coverage_ratio": 0.7599,
+      "label_rows": 19
+    },
+    {
+      "file": "exp57_user28.txt",
+      "exp": 57,
+      "rows": 18836,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13125,
+      "coverage_ratio": 0.6968,
+      "label_rows": 18
+    },
+    {
+      "file": "exp58_user29.txt",
+      "exp": 58,
+      "rows": 18651,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13921,
+      "coverage_ratio": 0.7464,
+      "label_rows": 21
+    },
+    {
+      "file": "exp59_user29.txt",
+      "exp": 59,
+      "rows": 17908,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 13262,
+      "coverage_ratio": 0.7406,
+      "label_rows": 20
+    },
+    {
+      "file": "exp60_user30.txt",
+      "exp": 60,
+      "rows": 23538,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 15563,
+      "coverage_ratio": 0.6612,
+      "label_rows": 20
+    },
+    {
+      "file": "exp61_user30.txt",
+      "exp": 61,
+      "rows": 19082,
+      "acc_gyro_aligned": true,
+      "nonfinite": 0,
+      "annotated_samples": 14527,
+      "coverage_ratio": 0.7613,
+      "label_rows": 20
+    }
+  ]
+}

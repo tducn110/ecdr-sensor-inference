@@ -1,0 +1,506 @@
+{
+  "windows_total": 17453,
+  "pure_total": 10361,
+  "labeled_total": 13866,
+  "policy_counts": {
+    "pure": 10361,
+    "unlabeled": 3587,
+    "majority": 1917,
+    "ambiguous": 1588
+  },
+  "thresholds": {
+    "min_pure_per_split": 50,
+    "min_subjects_per_split": 3,
+    "window_samples": 128,
+    "stride": 64,
+    "sampling_hz": 50
+  },
+  "per_class": {
+    "1": {
+      "name": "WALKING",
+      "kind": "basic",
+      "pure": {
+        "train": 965,
+        "val": 221,
+        "test": 474
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 4,
+        "test": 9
+      },
+      "pure_total": 1660,
+      "flags": [],
+      "pure_capacity_grid": 1660
+    },
+    "2": {
+      "name": "WALKING_UPSTAIRS",
+      "kind": "basic",
+      "pure": {
+        "train": 814,
+        "val": 205,
+        "test": 449
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 4,
+        "test": 9
+      },
+      "pure_total": 1468,
+      "flags": [],
+      "pure_capacity_grid": 1468
+    },
+    "3": {
+      "name": "WALKING_DOWNSTAIRS",
+      "kind": "basic",
+      "pure": {
+        "train": 734,
+        "val": 189,
+        "test": 394
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 4,
+        "test": 9
+      },
+      "pure_total": 1317,
+      "flags": [],
+      "pure_capacity_grid": 1317
+    },
+    "4": {
+      "name": "SITTING",
+      "kind": "basic",
+      "pure": {
+        "train": 991,
+        "val": 261,
+        "test": 484
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 4,
+        "test": 9
+      },
+      "pure_total": 1736,
+      "flags": [],
+      "pure_capacity_grid": 1736
+    },
+    "5": {
+      "name": "STANDING",
+      "kind": "basic",
+      "pure": {
+        "train": 1099,
+        "val": 286,
+        "test": 541
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 4,
+        "test": 9
+      },
+      "pure_total": 1926,
+      "flags": [],
+      "pure_capacity_grid": 1926
+    },
+    "6": {
+      "name": "LAYING",
+      "kind": "basic",
+      "pure": {
+        "train": 1090,
+        "val": 288,
+        "test": 532
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 4,
+        "test": 9
+      },
+      "pure_total": 1910,
+      "flags": [],
+      "pure_capacity_grid": 1910
+    },
+    "7": {
+      "name": "STAND_TO_SIT",
+      "kind": "transition",
+      "pure": {
+        "train": 19,
+        "val": 5,
+        "test": 15
+      },
+      "pure_subjects": {
+        "train": 13,
+        "val": 3,
+        "test": 7
+      },
+      "pure_total": 39,
+      "flags": [
+        "low_pure_in_train(<50)",
+        "low_pure_in_val(<50)",
+        "low_pure_in_test(<50)"
+      ],
+      "pure_capacity_grid": 39
+    },
+    "8": {
+      "name": "SIT_TO_STAND",
+      "kind": "transition",
+      "pure": {
+        "train": 5,
+        "val": 1,
+        "test": 6
+      },
+      "pure_subjects": {
+        "train": 5,
+        "val": 1,
+        "test": 4
+      },
+      "pure_total": 12,
+      "flags": [
+        "low_pure_in_train(<50)",
+        "low_pure_in_val(<50)",
+        "few_subjects_in_val(<3)",
+        "low_pure_in_test(<50)"
+      ],
+      "pure_capacity_grid": 12
+    },
+    "9": {
+      "name": "SIT_TO_LIE",
+      "kind": "transition",
+      "pure": {
+        "train": 36,
+        "val": 16,
+        "test": 25
+      },
+      "pure_subjects": {
+        "train": 16,
+        "val": 4,
+        "test": 8
+      },
+      "pure_total": 77,
+      "flags": [
+        "low_pure_in_train(<50)",
+        "low_pure_in_val(<50)",
+        "low_pure_in_test(<50)"
+      ],
+      "pure_capacity_grid": 77
+    },
+    "10": {
+      "name": "LIE_TO_SIT",
+      "kind": "transition",
+      "pure": {
+        "train": 30,
+        "val": 6,
+        "test": 18
+      },
+      "pure_subjects": {
+        "train": 14,
+        "val": 3,
+        "test": 9
+      },
+      "pure_total": 54,
+      "flags": [
+        "low_pure_in_train(<50)",
+        "low_pure_in_val(<50)",
+        "low_pure_in_test(<50)"
+      ],
+      "pure_capacity_grid": 54
+    },
+    "11": {
+      "name": "STAND_TO_LIE",
+      "kind": "transition",
+      "pure": {
+        "train": 65,
+        "val": 7,
+        "test": 40
+      },
+      "pure_subjects": {
+        "train": 17,
+        "val": 3,
+        "test": 9
+      },
+      "pure_total": 112,
+      "flags": [
+        "low_pure_in_val(<50)",
+        "low_pure_in_test(<50)"
+      ],
+      "pure_capacity_grid": 112
+    },
+    "12": {
+      "name": "LIE_TO_STAND",
+      "kind": "transition",
+      "pure": {
+        "train": 30,
+        "val": 5,
+        "test": 15
+      },
+      "pure_subjects": {
+        "train": 15,
+        "val": 4,
+        "test": 7
+      },
+      "pure_total": 50,
+      "flags": [
+        "low_pure_in_train(<50)",
+        "low_pure_in_val(<50)",
+        "low_pure_in_test(<50)"
+      ],
+      "pure_capacity_grid": 50
+    }
+  },
+  "all_policy_counts": {
+    "1": {
+      "pure": 1660,
+      "majority": 194,
+      "ambiguous": 306,
+      "unlabeled": 0
+    },
+    "2": {
+      "pure": 1468,
+      "majority": 289,
+      "ambiguous": 426,
+      "unlabeled": 0
+    },
+    "3": {
+      "pure": 1317,
+      "majority": 300,
+      "ambiguous": 427,
+      "unlabeled": 0
+    },
+    "4": {
+      "pure": 1736,
+      "majority": 202,
+      "ambiguous": 42,
+      "unlabeled": 0
+    },
+    "5": {
+      "pure": 1926,
+      "majority": 189,
+      "ambiguous": 118,
+      "unlabeled": 0
+    },
+    "6": {
+      "pure": 1910,
+      "majority": 180,
+      "ambiguous": 65,
+      "unlabeled": 0
+    },
+    "7": {
+      "pure": 39,
+      "majority": 104,
+      "ambiguous": 18,
+      "unlabeled": 0
+    },
+    "8": {
+      "pure": 12,
+      "majority": 86,
+      "ambiguous": 35,
+      "unlabeled": 0
+    },
+    "9": {
+      "pure": 77,
+      "majority": 90,
+      "ambiguous": 28,
+      "unlabeled": 0
+    },
+    "10": {
+      "pure": 54,
+      "majority": 96,
+      "ambiguous": 25,
+      "unlabeled": 0
+    },
+    "11": {
+      "pure": 112,
+      "majority": 93,
+      "ambiguous": 19,
+      "unlabeled": 0
+    },
+    "12": {
+      "pure": 50,
+      "majority": 94,
+      "ambiguous": 79,
+      "unlabeled": 0
+    }
+  },
+  "label_durations": {
+    "1": {
+      "name": "WALKING",
+      "n_spans": 127,
+      "seconds": {
+        "min": 2.82,
+        "p25": 18.3,
+        "p50": 19.36,
+        "p75": 20.73,
+        "max": 28.22
+      },
+      "spans_ge_window": 127,
+      "spans_shorter_than_window": 0
+    },
+    "2": {
+      "name": "WALKING_UPSTAIRS",
+      "n_spans": 183,
+      "seconds": {
+        "min": 4.44,
+        "p25": 12.0,
+        "p50": 12.68,
+        "p75": 13.55,
+        "max": 17.9
+      },
+      "spans_ge_window": 183,
+      "spans_shorter_than_window": 0
+    },
+    "3": {
+      "name": "WALKING_DOWNSTAIRS",
+      "n_spans": 186,
+      "seconds": {
+        "min": 4.32,
+        "p25": 10.94,
+        "p50": 11.77,
+        "p75": 12.6,
+        "max": 17.6
+      },
+      "spans_ge_window": 186,
+      "spans_shorter_than_window": 0
+    },
+    "4": {
+      "name": "SITTING",
+      "n_spans": 120,
+      "seconds": {
+        "min": 12.46,
+        "p25": 17.52,
+        "p50": 20.83,
+        "p75": 23.295,
+        "max": 32.44
+      },
+      "spans_ge_window": 120,
+      "spans_shorter_than_window": 0
+    },
+    "5": {
+      "name": "STANDING",
+      "n_spans": 120,
+      "seconds": {
+        "min": 15.2,
+        "p25": 19.44,
+        "p50": 22.57,
+        "p75": 25.61,
+        "max": 40.64
+      },
+      "spans_ge_window": 120,
+      "spans_shorter_than_window": 0
+    },
+    "6": {
+      "name": "LAYING",
+      "n_spans": 120,
+      "seconds": {
+        "min": 15.56,
+        "p25": 19.115,
+        "p50": 22.11,
+        "p75": 25.455,
+        "max": 33.9
+      },
+      "spans_ge_window": 120,
+      "spans_shorter_than_window": 0
+    },
+    "7": {
+      "name": "STAND_TO_SIT",
+      "n_spans": 60,
+      "seconds": {
+        "min": 1.8,
+        "p25": 2.815,
+        "p50": 3.33,
+        "p75": 3.8,
+        "max": 6.14
+      },
+      "spans_ge_window": 53,
+      "spans_shorter_than_window": 7
+    },
+    "8": {
+      "name": "SIT_TO_STAND",
+      "n_spans": 62,
+      "seconds": {
+        "min": 1.48,
+        "p25": 2.18,
+        "p50": 2.59,
+        "p75": 2.98,
+        "max": 3.66
+      },
+      "spans_ge_window": 33,
+      "spans_shorter_than_window": 29
+    },
+    "9": {
+      "name": "SIT_TO_LIE",
+      "n_spans": 60,
+      "seconds": {
+        "min": 2.72,
+        "p25": 3.62,
+        "p50": 4.04,
+        "p75": 4.505,
+        "max": 6.52
+      },
+      "spans_ge_window": 60,
+      "spans_shorter_than_window": 0
+    },
+    "10": {
+      "name": "LIE_TO_SIT",
+      "n_spans": 60,
+      "seconds": {
+        "min": 2.28,
+        "p25": 3.285,
+        "p50": 3.58,
+        "p75": 4.11,
+        "max": 5.6
+      },
+      "spans_ge_window": 58,
+      "spans_shorter_than_window": 2
+    },
+    "11": {
+      "name": "STAND_TO_LIE",
+      "n_spans": 58,
+      "seconds": {
+        "min": 2.78,
+        "p25": 3.865,
+        "p50": 4.73,
+        "p75": 5.72,
+        "max": 9.88
+      },
+      "spans_ge_window": 58,
+      "spans_shorter_than_window": 0
+    },
+    "12": {
+      "name": "LIE_TO_STAND",
+      "n_spans": 58,
+      "seconds": {
+        "min": 2.36,
+        "p25": 3.19,
+        "p50": 3.62,
+        "p75": 3.985,
+        "max": 6.46
+      },
+      "spans_ge_window": 56,
+      "spans_shorter_than_window": 2
+    }
+  },
+  "k12_ready": false,
+  "k6_ready": true,
+  "k12_blockers": [
+    "class 7: low_pure_in_train(<50)",
+    "class 7: low_pure_in_val(<50)",
+    "class 7: low_pure_in_test(<50)",
+    "class 8: low_pure_in_train(<50)",
+    "class 8: low_pure_in_val(<50)",
+    "class 8: few_subjects_in_val(<3)",
+    "class 8: low_pure_in_test(<50)",
+    "class 9: low_pure_in_train(<50)",
+    "class 9: low_pure_in_val(<50)",
+    "class 9: low_pure_in_test(<50)",
+    "class 10: low_pure_in_train(<50)",
+    "class 10: low_pure_in_val(<50)",
+    "class 10: low_pure_in_test(<50)",
+    "class 11: low_pure_in_val(<50)",
+    "class 11: low_pure_in_test(<50)",
+    "class 12: low_pure_in_train(<50)",
+    "class 12: low_pure_in_val(<50)",
+    "class 12: low_pure_in_test(<50)"
+  ],
+  "k6_blockers": [],
+  "total_issues": 0,
+  "issues": [],
+  "note": "pure = all 128 samples inside one label span; capacity counts stride-64 grid starts fully inside each span (must equal realized)"
+}

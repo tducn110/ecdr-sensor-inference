@@ -1,0 +1,123 @@
+% Research Dossier — Structured Event-Conditioned Certified Neural Inference
+% G0 literature verification + G1 data-audit plan
+% Fonts: Computer Modern (LaTeX default). Engine: pdfLaTeX via Tectonic.
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\newtheorem{proposition}{Proposition}
+\title{Structured Event-Conditioned Certified Neural Inference\\{\large Research Dossier: G0 Literature Verification + G1 Data-Audit Plan}\thanks{Status: G0 passed 2026-10-15. \texttt{report.md} stays LEGACY\_REFERENCE. RQ is a working hypothesis, not a proven novelty claim.}}
+\author{Research Vault}
+\date{2026-10-15}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Reading guide}
+SoT docs: \texttt{00\_START\_HERE.md} + \texttt{GATES.md} + \texttt{refs.bib}.
+Gates: 1/7 (G0 passed). Current focus: G1 Data Audit.
+Inventory: \texttt{find \textasciitilde/.gemini/skills \textasciitilde/.agents/skills -type f -name SKILL.md} gives $\sim$60 files, all frontend (pixijs/gsap/figma/design), 0 ML/verifier skills.
+
+\section{Working research question}
+\begin{quote}
+Can structured, event-conditioned class-pair bounds certify that a neural backbone preserves its decision on temporally correlated inputs more often than global Lipschitz bounds, while remaining cheap enough to produce net inference savings?
+\end{quote}
+Success = better Pareto frontier: tighter certificate + higher certified reuse + same backbone decision + lower total cost. No hard 50\% latency target.
+
+Scope: streaming windows $x_t$ (HAPT: 6 channels $\times$ 128 samples, 50\,Hz); small verifier-friendly 1D-CNN (24,428 params iff bias everywhere, no BN, $K{=}12$; $K{=}6 \Rightarrow 24{,}038$; needs \texttt{scripts/count\_params.py} in G2). The certificate proves reuse has the \textbf{same prediction} as the backbone at a trusted anchor---it does \textbf{not} prove correctness vs.\ ground truth. Agreement and Accuracy are separate metrics.
+
+\section{Claim verification ledger (G0)}
+\begin{table}[h]\centering\small
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\# & Status & Evidence \\
+\midrule
+C1 LipCache per-sample reuse & SUPPORTED & arXiv:2608.13144: radius from local margin + spectral norm; reuse only inside ball, else MainNet fallback. \\
+C2 speedup 1.65$\times$ & SUPPORTED (scoped) & Same abstract: CIFAR / Tiny-ImageNet / SVHN. Image tasks only, not time series. \\
+C3 GuardNet-side only & SUPPORTED & Same abstract: GuardNet-side certified-consistency. \\
+C4 MainNet-side + streaming future work & SUPPORTED & Full PDF v1 Sec~7.1 (p.~18): i.i.d.\ only; temporal redundancy, drift, streaming reuse left as future work. Remark~5.2: certificate is GuardNet-side, not MainNet-side. \\
+C5 STBP structured bounds & SUPPORTED & Full PDF arXiv:2606.09746 v1 (33pp): exact closed-form first conv layer + propagation; ST-Bench. Local copy in \texttt{papers/}. \\
+C6 STBP 1.7$\times$ & SUPPORTED (scoped) & Same PDF: up to 1.7$\times$ certified robust accuracy vs.\ IBP, identical budgets, UCF-101/Udacity/MedMNIST. NOT speed. Caveat: STBP-LJ empirical; only STBP-IBP/Lipschitz strictly sound. \\
+C7 DeltaCNN 7$\times$ & SUPPORTED (scoped) & CVPR22 OA: sparse end-to-end, no retraining, beats cuDNN, marginal accuracy diff. No certificate. \\
+C8 Franco UAI24 smoothing & SUPPORTED & PMLR v244:1371--1388: arbitrary transformations + conformal, automotive time series. \\
+C9 HAPT streaming fit & SUPPORTED & UCI id=341: 30 subjects, 6+6 labels, acc+gyro 50\,Hz, window 2.56\,s/50\%/128, raw for online tests, DOI 10.24432/C54G7M, CC BY 4.0. \\
+C10 auto\_LiRPA C-spec & SUPPORTED (machinery) & API: \texttt{compute\_bounds(x, aux, C, method\ldots)} with C mapping logits to margins; IBP/CROWN/Forward/alpha-CROWN; Linf box. Correlated sets need prototype. \\
+C11 our novelty & UNVERIFIED & Working hypothesis. \\
+C12 CROWN net-saving & UNVERIFIED & Zero benchmarks; G5 required. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Prior work: four axes}
+\begin{table}[h]\centering\small
+\begin{tabular}{@{}lp{3cm}p{3cm}p{3cm}p{3cm}@{}}
+\toprule
+Method & Cert target & Perturbation & Temporal reuse & Runtime \\
+\midrule
+LipCache & GuardNet consistency in ball & Isotropic ball in GuardNet feature space; per-pair $r^*_i$ tighter & Per-sample cache + fallback; streaming future work | STBP & 3D-CNN robustness (STBP-IBP/Lipschitz sound; STBP-LJ empirical) & Subset of frames or patches in consecutive frames; closed-form first layer & ST-Bench video benchmark, no reuse cache & 1.7$\times$ cert accuracy vs.
+ IBP (not speed) \\
+ DeltaCNN & None (empirical) & Sparse frame differences & Frame-by-frame sparse propagation & 7$\times$ vs.
+ cuDNN (no cert) \\
+ Franco et al.
+ & Robustness + conformal & Arbitrary time-series transforms & Single classifier, no anchor reuse & Accuracy retained, no latency claim \\
+ Ours (hyp.) & Backbone decision equivalence (G3) & Event sets $\mathcal{S}_e$, diagonal then correlated (G1/G3) & Anchor lifecycle + fallback (unproven) & Saving iff $rT_f > T_e{+}T_m{+}qT_b$ (G5) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Gap hypothesis}
+Gap = event-conditioned structured bounds + direct backbone-decision certification + sequential reuse + runtime-cost analysis \textbf{including} rebuild.
+Do NOT claim first class-pair radius or first structured verifier.
+Novelty SUPPORTED: per-pair radius (LipCache), GuardNet scope + future work quotes, STBP 1.7$\times$ scoped, sparse reuse, smoothing cert, C-spec machinery.
+UNVERIFIED: our novelty (C11), CROWN net-saving (C12).
+
+\section{Core math (from roadmap, to freeze after G1)}
+Anchor $x^r$ with $a = \arg\max_k f_k(x^r)$, margin $g_{aj}(x) = f_a(x)-f_j(x)$, $m_{aj} = g_{aj}(x^r) > 0$.
+Event set $\mathcal{S}_e(x^r) = \{x^r + D_e u : \|u\|_\infty \le 1\}$ with $D_e = \mathrm{diag}(r^{(e)}_1,\ldots,r^{(e)}_d)$.
+Adverse shift $B^*_{aj}(e) = \sup_{x \in \mathcal{S}_e}[m_{aj} - g_{aj}(x)]$; certificate needs $m_{aj} > B^*_{aj}(e)$ $\forall j \ne a$.
+\begin{proposition}[Soundness]
+If $m_{aj} > B^*_{aj}(e)$ for all $j \ne a$, then $\arg\max_k f_k(x) = a$ for all $x \in \mathcal{S}_e$.
+\end{proposition}
+CROWN affine lower bound $g_{aj}(x) \ge \alpha_{aj}^\top x + \beta_{aj}$ on $\mathcal{S}_e$ gives
+\begin{equation}
+\underline{g}^{(e)}_{aj} = \alpha_{aj}^\top x^r + \beta_{aj} - \|D_e^\top\alpha_{aj}\|_1,
+\end{equation}
+since $\min_{\|u\|_\infty\le 1}\alpha^\top D_e u = -\|D_e^\top\alpha\|_1$.
+Report used $\|D_e\alpha\|_1$, valid only because $D_e$ is diagonal symmetric; general $D_e$ needs $D_e^\top\alpha$.
+Runtime certificate: $\underline{g}^{(e)}_{aj} > 0$ $\forall j \ne a$.
+Robust extension for coverage: $x = x^r + D_e u + v$, $|v_i| \le \epsilon_i$, paying $-\sum_i \epsilon_i|\alpha_i|$.
+Diagonal box stays the first baseline; correlated sets after 03\_DATA\_AUDIT confirms data support.
+\textbf{Overlap $\ne$ similarity:} 128-window stride 64 shares 64 samples at different CNN coordinates, so $\|x_{t+1}-x_t\|_\infty \approx 0$ does not follow; G1 must measure deltas vs.
+ margins.
+
+\section{Runtime cost (with rebuild)}
+$E[T] = T_e + T_m + (1-r)T_f + qT_b$; saving iff $rT_f > T_e + T_m + qT_b$.
+Old $E[T] = T_c + (1-r)T_f$ hides rebuild and is invalid.
+Report median + p95 + mean on one CPU; split lookup-only vs.
+ end-to-end incl.
+ rebuild.
+
+\section{G1 data audit plan (HAPT)}
+Raw: \texttt{acc\_expXX\_userYY.txt} + \texttt{gyro\_expXX\_userYY.txt} at 50\,Hz; \texttt{labels.txt} (exp, user, activity, start, end); 12 IDs; Train 81\,MB / Test 33\,MB 561-features + subject\_id 1--30; 133 files 75.9\,MB; CC BY 4.0.
+Rebuild chronological windows from RawData + labels (UCI: raw provided ``in order to make online tests''); never shuffle overlapping windows across train/test.
+Q1 deltas $\|x_{t+1}-x_t\|_{2,\infty}$ same-vs-boundary + quantiles; Q2 diagonal-box coverage per event type (stop if $\approx$0); Q3 label counts + durations + K=12-vs-6 decision.
+Scripts: \texttt{download\_hapt.py}, \texttt{build\_windows.py}, \texttt{audit\_deltas.py}, \texttt{audit\_coverage.py}, \texttt{audit\_labels.py}.
+G1 passes on numbers + plots; then freeze 04\_THEORY.
+
+\section{Gates (1/7: G0 passed)}
+G0 literature done. G1 dataset feasible (deltas, coverage, labels). G2 backbone reproducible (config, seed, checkpoint, macro-F1, count\_params.py, shape test).
+G3 sound verifier (math + independent membership checker; zero violations = test evidence, not proof; version pin + invalidation + trace).
+G4 structured beats baselines (ablation Global $\to$ structured $\to$ pair $\to$ reuse).
+G5 net saving incl.
+ rebuild. G6 real numbers + CIs + scripts + limitations.
+
+\bibliographystyle{plain}
+\bibliography{../refs}
+\end{document}

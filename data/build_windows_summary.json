@@ -1,0 +1,22 @@
+{
+  "windows": 17453,
+  "array_shape": [
+    17453,
+    6,
+    128
+  ],
+  "stride": 64,
+  "window": 128,
+  "policy_counts": {
+    "pure": 10361,
+    "unlabeled": 3587,
+    "majority": 1917,
+    "ambiguous": 1588
+  },
+  "ambiguous_rate": 0.091,
+  "unlabeled_rate": 0.2055,
+  "crosses_boundary_rate": 0.0729,
+  "subjects": 30,
+  "recordings": 61,
+  "note": "windows never span recordings; policy locked before G2"
+}

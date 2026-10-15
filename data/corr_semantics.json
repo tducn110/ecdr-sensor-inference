@@ -1,0 +1,47 @@
+{
+  "per_channel": {
+    "acc_x": {
+      "raw_sample_lag1": 0.9691,
+      "raw_offset_lag1": 0.8581,
+      "window_positional_lag1": 0.0119,
+      "window_feat_lag1": 0.9661
+    },
+    "acc_y": {
+      "raw_sample_lag1": 0.9764,
+      "raw_offset_lag1": 0.9113,
+      "window_positional_lag1": 0.0224,
+      "window_feat_lag1": 0.9717
+    },
+    "acc_z": {
+      "raw_sample_lag1": 0.974,
+      "raw_offset_lag1": 0.8818,
+      "window_positional_lag1": 0.0485,
+      "window_feat_lag1": 0.936
+    },
+    "gyro_x": {
+      "raw_sample_lag1": 0.9491,
+      "raw_offset_lag1": 0.5739,
+      "window_positional_lag1": -0.0307,
+      "window_feat_lag1": 0.6614
+    },
+    "gyro_y": {
+      "raw_sample_lag1": 0.8235,
+      "raw_offset_lag1": 0.5282,
+      "window_positional_lag1": -0.0137,
+      "window_feat_lag1": 0.5596
+    },
+    "gyro_z": {
+      "raw_sample_lag1": 0.9117,
+      "raw_offset_lag1": 0.5461,
+      "window_positional_lag1": -0.0095,
+      "window_feat_lag1": 0.6134
+    }
+  },
+  "method": {
+    "raw_sample_lag1": "pooled corr(x[t], x[t+1]) within recording, 50Hz",
+    "raw_offset_lag1": "pooled corr(x[t], x[t+64]) = 1.28s within recording",
+    "window_positional_lag1": "mean over k of corrcoef(flatten(win_k), flatten(win_k+1)); pairs t with t+64 (same as 05_audit_temporal_events lag1)",
+    "window_feat_lag1": "corr of per-window channel-mean series, lag 1 window",
+    "averaging": "arithmetic mean over recordings (nan-safe)"
+  }
+}

@@ -1,0 +1,78 @@
+@misc{xiang2026lipcache,
+  title        = {LipCache: A Local Inference Proxy with Certified Caching for Edge Image Classification Service},
+  author       = {Xiang, Zhengzhe and Chen, Yinlin and Ying, Fuli and Zhou, Binbin and Zhao, Hailiang and Dustdar, Schahram},
+  year         = {2026},
+  eprint       = {2608.13144},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.DC},
+  url          = {https://arxiv.org/abs/2608.13144},
+  note         = {Verified from full PDF arXiv:2608.13144v1 (21 pages, fetched 2026-10-15). Remark 5.2: certificate is GuardNet-side only, MainNet-side guarantee explicitly excluded -- quote: theoretical certificate of LipCache is on the GuardNet side, not on the MainNet side. Sec 7.1: all experiments on i.i.d. test sets; temporal redundancy, concept drift, consecutive-frame reuse in streaming left as future work. Speedup up to 1.65x on CIFAR/Tiny-ImageNet/SVHN; radii r_i conservative and r*_i per-pair (Remark 5.1)}
+}
+
+@misc{varghese2026stbp,
+  title        = {Hybrid Robustness Verification for Spatio-Temporal Neural Networks},
+  author       = {Varghese, Sherwin and Wicker, Matthew and Lomuscio, Alessio},
+  year         = {2026},
+  eprint       = {2606.09746},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.CV},
+  url          = {https://arxiv.org/abs/2606.09746},
+  note         = {Submitted 8 Jun 2026, accepted SAIV 2026 (LNCS 16831, pp.3-35, DOI chapter 10.1007/978-3-032-32357-6_1). Numbering caveat: arXiv footer says 9th International Symposium on AI Verification, Springer says Third International Symposium -- same event, different ordinal convention, does not affect publication status. Verified from full PDF v1 (33 pages, fetched 2026-10-15). Checksum local copy papers/STBP_Varghese2026_arXiv2606.09746.pdf: md5 07fa78504afb302ecb958822f1fd003b, size 3,529,184 bytes == content-length reported by arxiv.org/pdf/2606.09746v1 at fetch time (report.md-era 2.5MB claim was stale or different build). STBP = exact closed-form first conv layer + scalable propagation after; ST-Bench benchmark; up to 1.7x higher certified robust accuracy vs IBP under identical budgets (NOT speed). Limitations: STBP-LJ pipeline is empirical estimator (Remark 1, Sec 4.3.1), only STBP-IBP/Lipschitz strictly sound; large VLMs/transformers still open; perturbation magnitudes smaller than single-image linf regime}
+}
+
+@inproceedings{parger2022deltacnn,
+  title     = {DeltaCNN: End-to-End CNN Inference of Sparse Frame Differences in Videos},
+  author    = {Parger, Mathias and Tang, Chengcheng and Twigg, Christopher D. and Keskin, Cem and Wang, Robert and Steinberger, Markus},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {12497--12506},
+  month     = {June},
+  year      = {2022},
+  url       = {https://openaccess.thecvf.com/content/CVPR2022/html/Parger_DeltaCNN_End-to-End_CNN_Inference_of_Sparse_Frame_Differences_in_Videos_CVPR_2022_paper.html},
+  note      = {Verified from CVPR Open Access 2026-10-15. Sparse end-to-end, no retraining, outperforms cuDNN dense ref, speedup up to 7x with marginal accuracy diff. No certificate -- empirical reuse only}
+}
+
+@inproceedings{franco2024conformalized,
+  title     = {Guaranteeing Robustness Against Real-World Perturbations In Time Series Classification Using Conformalized Randomized Smoothing},
+  author    = {Franco, Nicola and Spiegelberg, Jakob and Lorenz, Jeanette Miriam and G{\"u}nnemann, Stephan},
+  booktitle = {Proceedings of the Fortieth Conference on Uncertainty in Artificial Intelligence},
+  editor    = {Kiyavash, Negar and Mooij, Joris M.},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {244},
+  pages     = {1371--1388},
+  month     = {15--19 Jul},
+  year      = {2024},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v244/franco24a.html},
+  note      = {Verified from PMLR 2026-10-15. Randomized smoothing generalized to arbitrary transformations + conformal prediction, automotive time-series use case. Prior art for time-series cert, not decision-reuse bounds}
+}
+
+@misc{reyesortiz2015hapt,
+  title        = {Smartphone-Based Recognition of Human Activities and Postural Transitions},
+  author       = {Reyes-Ortiz, Jorge and Anguita, Davide and Oneto, Luca and Parra, Xavier},
+  year         = {2015},
+  month        = {July 28},
+  publisher    = {UCI Machine Learning Repository},
+  doi          = {10.24432/C54G7M},
+  url          = {https://archive.ics.uci.edu/dataset/341/smartphone+based+recognition+of+human+activities+and+postural+transitions},
+  note         = {Verified from UCI page 2026-10-15. 30 subjects age 19-48, 6 basic + 6 transitions, acc+gyro 50Hz waist-mounted, window 2.56s 50pct overlap 128 readings, raw signals for online tests, 10929 instances, CC BY 4.0}
+}
+
+@misc{wei2021online,
+  title        = {Online Verification of Deep Neural Networks under Domain Shift or Network Updates},
+  author       = {Wei, Tianhao and Liu, Changliu},
+  year         = {2021},
+  month        = {June 23},
+  eprint       = {2106.12732},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.LG},
+  url          = {https://arxiv.org/abs/2106.12732},
+  note         = {Verified from arXiv search 2026-10-15: Branch Management + Perturbation Tolerance + Incremental Computation reuse for online verification under changing specs/networks; up to 100x acceleration OF VERIFICATION ITSELF, not of inference. Prior art for temporal reuse of verification results -- must cite to avoid claiming first temporal-reuse-of-certificates. Distinct from our goal (skip backbone inference via decision cert)}
+}
+
+@misc{autolirpa2020,
+  title = {auto_LiRPA: Library for Automatic Linear Relaxation based Perturbation Analysis},
+  author = {{auto-LiRPA authors}},
+  year  = {2020--2025},
+  url   = {https://auto-lirpa.readthedocs.io/en/latest/},
+  note  = {Verified API page 2026-10-15. compute_bounds(x, aux, C, method, ...) with C = specification matrix mapping model output to classification margins via extra linear layer. Methods: IBP, CROWN-IBP, CROWN, Forward, Forward+Backward, CROWN-Optimized/alpha-CROWN, forward-optimized. Perturbations: PerturbationLpNorm incl. Linf eps box (Quick Start). Sufficient machinery for g_aj margins; correlated event-set support still needs prototype}
+}

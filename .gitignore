@@ -1,0 +1,29 @@
+# virtual environment (rebuild from requirements-lock.txt)
+.venv/
+
+# python cache
+__pycache__/
+*.pyc
+
+# raw HAPT data: 242MB extracted + 79MB zip (re-fetch with scripts/01_fetch_hapt.py,
+# checksums live in data/manifest.json)
+data/hapt/
+data/hapt_uci341.zip
+*.zip
+
+# generated window arrays (rebuild with scripts/03 + 04; audit JSONs are versioned)
+data/windows.npz
+data/window_manifest.parquet
+data/windows_with_split.parquet
+
+# third-party PDFs (copyright, 13MB; references recorded in refs.bib instead)
+papers/
+
+# latex build artifacts
+latex/*.aux
+latex/*.log
+latex/*.out
+latex/*.toc
+latex/*.pdf
+
+.DS_Store

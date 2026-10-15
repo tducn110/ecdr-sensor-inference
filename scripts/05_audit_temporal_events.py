@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """05_audit_temporal_events.py — Q1 temporal distances, Q2 candidate event-region
 coverage, correlation structure (diagonal box vs correlated set). Budgets are FIT
-ON TRAIN SUBJECTS ONLY, then evaluated on val/test. No CROWN, no backbone."""
+ON TRAIN SUBJECTS ONLY, then evaluated on val/test. No CROWN, no backbone.
+
+FIX 2026-10-15 (found by G1 re-verification): win_idx is PER-RECORDING (restarts
+at 0), but x rows are in global build order. The pre-fix version indexed x with
+win_idx, so 98.2% of pairs read signals from exp01's windows while keeping labels
+of the current recording -- all Q1/correlation/coverage numbers were wrong.
+Signals are now indexed via df["row_id"] (global position in windows.npz)."""
+
 import json
 from pathlib import Path
 
@@ -32,6 +39,10 @@ def main() -> None:
     man = pd.read_parquet(DATA / "window_manifest.parquet")
     spl = pd.read_parquet(DATA / "windows_with_split.parquet")
     df = man.merge(spl[["exp", "win_idx", "split"]], on=["exp", "win_idx"], how="left")
+    # global row id == position in windows.npz (03 appends rows in this order)
+    assert len(x) == len(df), "windows.npz and window_manifest out of sync"
+    df["row_id"] = np.arange(len(df))
+
 
     # ---- consecutive pairs within the same recording (never across) ----
     pair_rows = []
@@ -44,15 +55,17 @@ def main() -> None:
                 continue
             ra, rb = idx.loc[a], idx.loc[b]
             pair_rows.append({
-                "exp": exp, "i": int(a), "j": int(b), "split": ra["split"],
+                "exp": exp, "ri": int(ra["row_id"]), "rj": int(rb["row_id"]),
+                "split": ra["split"],
                 "same_activity": bool(ra["label_majority"] == rb["label_majority"]
                                       and ra["label_policy"] == "pure"
                                       and rb["label_policy"] == "pure"),
                 "label_change": bool(ra["label_majority"] != rb["label_majority"]),
             })
     pairs = pd.DataFrame(pair_rows)
-    di = x[pairs["i"].to_numpy()]
-    dj = x[pairs["j"].to_numpy()]
+    di = x[pairs["ri"].to_numpy()]
+    dj = x[pairs["rj"].to_numpy()]
+
     delta = (dj - di).reshape(len(pairs), -1)
     l2 = np.linalg.norm(delta, axis=1)
     linf = np.abs(delta).max(axis=1)
@@ -73,7 +86,8 @@ def main() -> None:
         for ci, cname in enumerate(channel_names):
             co = []
             for exp, g in df.groupby("exp"):
-                order = g.sort_values("win_idx")["win_idx"].to_numpy()
+                order = g.sort_values("win_idx")["row_id"].to_numpy()
+
                 arr = x[order, :, :]
                 for k in range(len(arr) - lag):
                     a = arr[k, ci].ravel()

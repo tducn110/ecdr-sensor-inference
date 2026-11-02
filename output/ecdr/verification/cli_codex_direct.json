@@ -1,0 +1,81 @@
+{
+  "argument_guards": [
+    {
+      "train_arg": "{'epochs': 0}",
+      "status": "PASS",
+      "reason": "epochs must be strictly positive (> 0), got 0"
+    },
+    {
+      "train_arg": "{'epochs': -1}",
+      "status": "PASS",
+      "reason": "epochs must be strictly positive (> 0), got -1"
+    },
+    {
+      "train_arg": "{'lr': 0}",
+      "status": "PASS",
+      "reason": "lr must be finite and strictly positive (> 0), got 0"
+    },
+    {
+      "train_arg": "{'lr': nan}",
+      "status": "PASS",
+      "reason": "lr must be finite and strictly positive (> 0), got nan"
+    },
+    {
+      "train_arg": "{'lr': inf}",
+      "status": "PASS",
+      "reason": "lr must be finite and strictly positive (> 0), got inf"
+    },
+    {
+      "train_arg": "{'batch_size': 0}",
+      "status": "PASS",
+      "reason": "batch_size must be strictly positive (> 0), got 0"
+    },
+    {
+      "train_arg": "{'batch_size': -1}",
+      "status": "PASS",
+      "reason": "batch_size must be strictly positive (> 0), got -1"
+    },
+    {
+      "replay_max_windows": 0,
+      "status": "PASS",
+      "reason": "max_windows must be strictly positive (> 0), got 0"
+    },
+    {
+      "replay_max_windows": -1,
+      "status": "PASS",
+      "reason": "max_windows must be strictly positive (> 0), got -1"
+    },
+    {
+      "checkpoint_guard": "/tmp/ecdr-definitely-missing-20261031.pt",
+      "status": "PASS",
+      "reason": "Requested checkpoint does not exist: /tmp/ecdr-definitely-missing-20261031.pt. Specify a valid checkpoint path or use --initialized-demo."
+    },
+    {
+      "checkpoint_guard": "None",
+      "status": "PASS",
+      "reason": "No checkpoint provided. You must explicitly pass --initialized-demo to execute an untrained seeded reference demo."
+    }
+  ],
+  "documented_cli_parsing": [
+    {
+      "script": "scripts/ecdr_audit_support.py",
+      "status": "PASS",
+      "kwargs": "call(out_json=PosixPath('data/ecdr_12_class_support.json'))"
+    },
+    {
+      "script": "scripts/ecdr_train_k12.py",
+      "status": "PASS",
+      "kwargs": "call(epochs=2, lr=0.001, batch_size=64, seed=20261031, label_policy='majority', save_dir=PosixPath('output/ecdr/smoke/checkpoints_seed20261031'), out_metrics=PosixPath('output/ecdr/smoke/train_metrics.json'))"
+    },
+    {
+      "script": "scripts/ecdr_eval_k12.py",
+      "status": "PASS",
+      "kwargs": "call(PosixPath('output/ecdr/smoke/checkpoints_seed20261031/ecdr_k12_best.pt'), split='test', out_metrics=PosixPath('data/ecdr_k12_eval_metrics.json'))"
+    },
+    {
+      "script": "scripts/ecdr_stream_replay.py",
+      "status": "PASS",
+      "kwargs": "call(split='test', domain_type='diagonal_box', budget=0.001, checkpoint_path=PosixPath('output/ecdr/smoke/checkpoints_seed20261031/ecdr_k12_best.pt'), initialized_demo=False, max_windows=None, out_json=PosixPath('output/ecdr/replay_test_full5053_diagonal.json'))"
+    }
+  ]
+}

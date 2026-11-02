@@ -1,0 +1,144 @@
+{
+  "step0": {
+    "val_samples": 1450,
+    "val_acc": 0.9441379310344827,
+    "eq_err": 0.0
+  },
+  "step1_gate_a": {
+    "0.0001": {
+      "k": 0.0001,
+      "ibp_p_c": 0.95,
+      "crown_p_c": 1.0,
+      "crown_min_margin_med": 11.54835557937622,
+      "ibp_min_margin_med": 9.796848773956299,
+      "crown_t_build_ms_p50": 38.950602999648254,
+      "crown_t_build_ms_p95": 54.64298720125953,
+      "crown_t_build_ms_mean": 41.32313437998164
+    },
+    "0.0005": {
+      "k": 0.0005,
+      "ibp_p_c": 0.47,
+      "crown_p_c": 0.99,
+      "crown_min_margin_med": 11.42138147354126,
+      "ibp_min_margin_med": -1.443265438079834,
+      "crown_t_build_ms_p50": 51.118265500917914,
+      "crown_t_build_ms_p95": 67.63708140033485,
+      "crown_t_build_ms_mean": 52.37894021984175
+    },
+    "0.001": {
+      "k": 0.001,
+      "ibp_p_c": 0.22,
+      "crown_p_c": 0.95,
+      "crown_min_margin_med": 11.13861894607544,
+      "ibp_min_margin_med": -12.756704330444336,
+      "crown_t_build_ms_p50": 63.83269550042314,
+      "crown_t_build_ms_p95": 102.87992134908562,
+      "crown_t_build_ms_mean": 67.82696847993066
+    },
+    "0.002": {
+      "k": 0.002,
+      "ibp_p_c": 0.16,
+      "crown_p_c": 0.92,
+      "crown_min_margin_med": 10.69287919998169,
+      "ibp_min_margin_med": -36.72836685180664,
+      "crown_t_build_ms_p50": 82.08939800078952,
+      "crown_t_build_ms_p95": 131.81921925061033,
+      "crown_t_build_ms_mean": 87.11484785997527
+    },
+    "0.005": {
+      "k": 0.005,
+      "ibp_p_c": 0.0,
+      "crown_p_c": 0.66,
+      "crown_min_margin_med": 8.136291980743408,
+      "ibp_min_margin_med": -108.01947402954102,
+      "crown_t_build_ms_p50": 125.59185750069446,
+      "crown_t_build_ms_p95": 151.31259574973228,
+      "crown_t_build_ms_mean": 122.24264266009413
+    },
+    "0.01": {
+      "k": 0.01,
+      "ibp_p_c": 0.0,
+      "crown_p_c": 0.38,
+      "crown_min_margin_med": -5.652048110961914,
+      "ibp_min_margin_med": -224.45010375976562,
+      "crown_t_build_ms_p50": 117.371454500244,
+      "crown_t_build_ms_p95": 145.68394500056456,
+      "crown_t_build_ms_mean": 119.69324441999561
+    },
+    "0.05": {
+      "k": 0.05,
+      "ibp_p_c": 0.0,
+      "crown_p_c": 0.0,
+      "crown_min_margin_med": -274.81361389160156,
+      "ibp_min_margin_med": -1052.9485473632812,
+      "crown_t_build_ms_p50": 134.18475300022692,
+      "crown_t_build_ms_p95": 225.64793044939503,
+      "crown_t_build_ms_mean": 145.66989832006584
+    }
+  },
+  "step3_gate_b": {
+    "0.0001": {
+      "k": 0.0001,
+      "raw_box_hit_rate": 0.0,
+      "total_windows": 1450,
+      "anchor_builds": 1450,
+      "hits": 0,
+      "avg_hits_per_anchor": 0.0,
+      "max_hits_per_anchor": 0
+    },
+    "0.001": {
+      "k": 0.001,
+      "raw_box_hit_rate": 0.0,
+      "total_windows": 1450,
+      "anchor_builds": 1450,
+      "hits": 0,
+      "avg_hits_per_anchor": 0.0,
+      "max_hits_per_anchor": 0
+    },
+    "0.005": {
+      "k": 0.005,
+      "raw_box_hit_rate": 0.0,
+      "total_windows": 1450,
+      "anchor_builds": 1450,
+      "hits": 0,
+      "avg_hits_per_anchor": 0.0,
+      "max_hits_per_anchor": 0
+    },
+    "0.01": {
+      "k": 0.01,
+      "raw_box_hit_rate": 0.0,
+      "total_windows": 1450,
+      "anchor_builds": 1450,
+      "hits": 0,
+      "avg_hits_per_anchor": 0.0,
+      "max_hits_per_anchor": 0
+    },
+    "0.05": {
+      "k": 0.05,
+      "raw_box_hit_rate": 0.0,
+      "total_windows": 1450,
+      "anchor_builds": 1450,
+      "hits": 0,
+      "avg_hits_per_anchor": 0.0,
+      "max_hits_per_anchor": 0
+    },
+    "0.1": {
+      "k": 0.1,
+      "raw_box_hit_rate": 0.11172413793103449,
+      "total_windows": 1450,
+      "anchor_builds": 1288,
+      "hits": 162,
+      "avg_hits_per_anchor": 0.12577639751552794,
+      "max_hits_per_anchor": 16
+    },
+    "0.28": {
+      "k": 0.28,
+      "raw_box_hit_rate": 0.3393103448275862,
+      "total_windows": 1450,
+      "anchor_builds": 958,
+      "hits": 492,
+      "avg_hits_per_anchor": 0.5135699373695198,
+      "max_hits_per_anchor": 21
+    }
+  }
+}

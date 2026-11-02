@@ -1,0 +1,111 @@
+{
+  "status": "PASS",
+  "passed_fixtures": 11,
+  "failed_fixtures": 0,
+  "details": [
+    {
+      "fixture": "positive_wilson_zero_trials_null",
+      "status": "PASS",
+      "info": {
+        "low": null,
+        "high": null
+      }
+    },
+    {
+      "fixture": "positive_pop_std_ddof_0",
+      "status": "PASS",
+      "info": {
+        "expected": 2.0,
+        "actual": 2.0
+      }
+    },
+    {
+      "fixture": "positive_preprocessing_id_length_64_hex",
+      "status": "PASS",
+      "info": {
+        "prep_id": "a88a40110a59f6ec5f0f070e62d7ac9892b34169292f5bafeb9bfedf09511865"
+      }
+    },
+    {
+      "fixture": "negative_catch_duplicate_and_mismatched_row_ids",
+      "status": "PASS",
+      "info": {
+        "caught_duplicate": true,
+        "caught_mismatch": true
+      }
+    },
+    {
+      "fixture": "negative_catch_falsified_class_recall",
+      "status": "PASS",
+      "info": {
+        "computed_rec0": 0.5,
+        "falsified": 0.99
+      }
+    },
+    {
+      "fixture": "negative_catch_wrong_selection_winner_tie_break",
+      "status": "PASS",
+      "info": {
+        "winner_computed": 43,
+        "claimed_winner": 44
+      }
+    },
+    {
+      "fixture": "negative_catch_corrupted_file_hash",
+      "status": "PASS",
+      "info": {
+        "actual_hash": "6f891fd569e9ba41a61b8b66de45cb8089945c8bf60b3f755d44c97895d5727d",
+        "corrupted_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "fixture": "positive_serialization_numpy_types_roundtrip_preserved",
+      "status": "PASS",
+      "info": {
+        "roundtrip": {
+          "int_val": 42,
+          "float_val": 3.141590118408203,
+          "bool_val": true,
+          "array_val": [
+            1,
+            2,
+            3
+          ],
+          "nested_dict": {
+            "sub_int": 100,
+            "sub_list": [
+              10,
+              2.71828,
+              false
+            ]
+          }
+        }
+      }
+    },
+    {
+      "fixture": "negative_catch_nan_inf_explicit_rejection",
+      "status": "PASS",
+      "info": {
+        "nan_rejected": true,
+        "inf_rejected": true
+      }
+    },
+    {
+      "fixture": "positive_and_negative_actual_schema_validation",
+      "status": "PASS",
+      "info": {
+        "schema_ok": true,
+        "caught_missing_field": true,
+        "caught_falsified_wilson": true
+      }
+    },
+    {
+      "fixture": "positive_train_supervised_mask_filtering",
+      "status": "PASS",
+      "info": {
+        "included_count": 2,
+        "expected": 2
+      }
+    }
+  ]
+}

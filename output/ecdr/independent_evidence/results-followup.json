@@ -1,0 +1,259 @@
+{
+  "cases": 32,
+  "passed": 32,
+  "failed": 0,
+  "elapsed_seconds": 0.905805379999947,
+  "source_hashes": {
+    "bounds.py": "2fd723c8620ba9fd22cfc4386d722ffec4764e2ac868a58c3154a346669c1fc4",
+    "__init__.py": "a6070ce3a3af30b1f15ba49f06af7c717472c78acd5ab4a1ef7c07944fcc3fcc",
+    "incremental.py": "43bb0288e7214fe9529c9a4395ba0b1894f4e07e42fd89f955bb4934b634f70f",
+    "membership.py": "5af713c3b1ea746c1a44d4861c155e5d8c14b2ed9254f5c5b98b6702c899de69",
+    "schema.py": "f92510227ceb3a5adc764fd78d5e2f86c2b5938af9dfa0afd0152776c680a756",
+    "preprocessing.py": "891e6b695057be3b219a27c2fcc3746748d7c0d33f8fed793e08f42c6f898d2e",
+    "data.py": "753fd6e71a2892f645a2bcb0eacd08ab39eb4ceaa8588b2ba1337561177a410e",
+    "intervals.py": "7af3f6f6ba8c239f79917b472cc3f1d5fb6986d4b94969cdbf7291a30aea1fe9",
+    "instrumentation.py": "f990a655ee2eaa3c8dd484a66fbdbb9944d3f1ebc2bfd4f30e0cf35b145e90a4",
+    "replay.py": "eb2f66365850232aec0ace762c463b5f928b8586327eff9a2b835c7472a97347",
+    "certificate.py": "de44f5a34b4aae058cfda85521a08f648c0b20ae6fc74be5f1576fda5bfd8f37",
+    "model.py": "4d0570617fc7d2934c0d38fa68fb5629b25497708da76b0a358811e9a934ff2b"
+  },
+  "results": [
+    {
+      "name": "exact_fraction_conv_box_11",
+      "status": "PASS",
+      "detail": {
+        "exact_endpoint_inequalities": 72
+      }
+    },
+    {
+      "name": "point_operational_enclosure_11",
+      "status": "PASS",
+      "detail": {
+        "logits_checked": 12
+      }
+    },
+    {
+      "name": "diagonal_sampled_margins_11",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "wave_sampled_margins_11",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "exact_fraction_conv_box_22",
+      "status": "PASS",
+      "detail": {
+        "exact_endpoint_inequalities": 72
+      }
+    },
+    {
+      "name": "point_operational_enclosure_22",
+      "status": "PASS",
+      "detail": {
+        "logits_checked": 12
+      }
+    },
+    {
+      "name": "diagonal_sampled_margins_22",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "wave_sampled_margins_22",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "exact_fraction_conv_box_33",
+      "status": "PASS",
+      "detail": {
+        "exact_endpoint_inequalities": 72
+      }
+    },
+    {
+      "name": "point_operational_enclosure_33",
+      "status": "PASS",
+      "detail": {
+        "logits_checked": 12
+      }
+    },
+    {
+      "name": "diagonal_sampled_margins_33",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "wave_sampled_margins_33",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "bitwise_multishift_1",
+      "status": "PASS",
+      "detail": {
+        "steps": 4,
+        "array_elements_compared": 78128
+      }
+    },
+    {
+      "name": "bitwise_multishift_64",
+      "status": "PASS",
+      "detail": {
+        "steps": 4,
+        "array_elements_compared": 78128
+      }
+    },
+    {
+      "name": "bitwise_multishift_120",
+      "status": "PASS",
+      "detail": {
+        "steps": 4,
+        "array_elements_compared": 78128
+      }
+    },
+    {
+      "name": "tiny_overlap_fallback",
+      "status": "PASS",
+      "detail": {
+        "perturbation": 5e-13
+      }
+    },
+    {
+      "name": "reference_reject_nan",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "incremental_reject_nan",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reference_reject_inf",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "incremental_reject_inf",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reference_reject_finite_overflow",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reference_reject_negative_pre_relu_overflow",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "incremental_reject_finite_overflow",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "interval_reject_inverted",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "interval_reject_nonfinite",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "negative_threshold_diagonal",
+      "status": "PASS",
+      "detail": {
+        "rejected": true,
+        "method": "diagonal_box_ibp_invalid_threshold"
+      }
+    },
+    {
+      "name": "negative_threshold_wave",
+      "status": "PASS",
+      "detail": {
+        "rejected": true,
+        "method": "wave_domain_invalid_threshold"
+      }
+    },
+    {
+      "name": "tie_not_certified",
+      "status": "PASS",
+      "detail": {
+        "rejected": true,
+        "method": "diagonal_box_ibp"
+      }
+    },
+    {
+      "name": "frozen_interval_base_alias",
+      "status": "PASS",
+      "detail": {
+        "detached_or_immutable": true
+      }
+    },
+    {
+      "name": "frozen_model_parameter_alias",
+      "status": "PASS",
+      "detail": {
+        "detached_and_readonly": true
+      }
+    },
+    {
+      "name": "model_change_invalidates_cache",
+      "status": "PASS",
+      "detail": {
+        "old_id": "5a8fe46040a2a7e0",
+        "new_id": "0e001eacd8e9bf2f"
+      }
+    },
+    {
+      "name": "returned_result_cache_alias",
+      "status": "PASS",
+      "detail": {
+        "cache_isolated_from_returned_results": true
+      }
+    }
+  ]
+}

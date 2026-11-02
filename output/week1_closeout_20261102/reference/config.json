@@ -1,0 +1,93 @@
+{
+  "run_id": "week1_ref_1793620216_9d6c1d85",
+  "command_argv": [
+    "scripts/week1_reference_pipeline.py",
+    "all",
+    "--output-dir",
+    "output/week1_closeout_20261102/reference",
+    "--epochs",
+    "30",
+    "--seeds",
+    "42,43,44",
+    "--device",
+    "cpu"
+  ],
+  "architecture": "SmallCNN1D-K12",
+  "model_cfg": {
+    "name": "small_cnn_1d",
+    "conv_channels": [
+      32,
+      64,
+      64
+    ],
+    "conv_kernels": [
+      5,
+      3,
+      3
+    ],
+    "pool": "maxpool2",
+    "fc_hidden": 128,
+    "activation": "relu",
+    "batchnorm": true
+  },
+  "expected_params": 283692,
+  "class_order": [
+    "WALKING",
+    "WALKING_UPSTAIRS",
+    "WALKING_DOWNSTAIRS",
+    "SITTING",
+    "STANDING",
+    "LAYING",
+    "STAND_TO_SIT",
+    "SIT_TO_STAND",
+    "SIT_TO_LIE",
+    "LIE_TO_SIT",
+    "STAND_TO_LIE",
+    "LIE_TO_STAND"
+  ],
+  "input_shape": [
+    6,
+    128
+  ],
+  "num_channels": 6,
+  "label_policy": "pure_plus_majority_dominant_0.6",
+  "training_hyperparameters": {
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "epochs": 30,
+    "batch_size": 128,
+    "optimizer": "adam",
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "scheduler": "cosine",
+    "min_lr": 1e-05,
+    "patience": 10,
+    "selection_metric": "val_macro_f1",
+    "class_weights": null
+  },
+  "normalization_spec": {
+    "scope": "train_only",
+    "axes": [
+      0,
+      2
+    ],
+    "dtype": "float32",
+    "std_clip_min": 1e-06
+  },
+  "environment": {
+    "python_version": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+    "torch_version": "2.14.1+cpu",
+    "numpy_version": "2.4.6",
+    "pandas_version": "3.0.6",
+    "cpu_model": "Intel(R) Xeon(R) W-11855M CPU @ 3.20GHz",
+    "platform_machine": "x86_64",
+    "platform_system": "Linux",
+    "platform_release": "7.0.0-42-generic",
+    "torch_num_threads": 1,
+    "device_configured": "cpu"
+  },
+  "created_at_utc": "2026-11-02T11:50:16Z"
+}

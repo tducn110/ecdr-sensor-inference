@@ -1,0 +1,117 @@
+% Additional analysis, optimization, complexity, and exponential roots.
+\concept{F40}{A derivative is a limit of local change ratios}{F01--F07: logic and the real-number foundations; F23: distance; F26: limits and continuity.}
+\paragraph{Definition and foundation.}
+A derivative quantifies the first-order change of a function near one point. For $f:I\to\R$, with $I\subseteq\R$ an open interval and $a\in I$, define
+\[
+ f'(a)=\lim_{h\to0}\frac{f(a+h)-f(a)}h
+\]
+when that finite two-sided limit exists. The increment $h$ is nonzero in the quotient. The derivative is not the value obtained by substituting $h=0$, which would leave an undefined division.
+\paragraph{Symbols and dimensions.}
+The variable $a$ is the reference input, $h$ is an input increment, and $f'(a)\in\R$ is the candidate slope. Its units are output units divided by input units. The limit means: for every output-slope tolerance $\epsilon>0$, some input radius $\delta>0$ makes the quotient differ from $f'(a)$ by less than $\epsilon$ whenever $0<\abs h<\delta$ and $a+h\in I$.
+\paragraph{Derivation and example.}
+For $f(x)=x^2$, subtraction and factorization give $(f(a+h)-f(a))/h=2a+h$. Choosing $\delta=\epsilon$ proves the limit $2a$ in dimensionless coordinates. Equivalently,
+\[
+ f(a+h)=f(a)+f'(a)h+r(h),\qquad
+ \frac{\abs{r(h)}}{\abs h}\longrightarrow0.
+\]
+The remainder $r(h)$ is the error of the first-order approximation; for the quadratic it equals $h^2$.
+\paragraph{Why ECDR uses this concept.}
+Derivatives describe local sensitivity and underlie training gradients. They help explain why network outputs change, but a slope at the anchor alone does not bound every change in a domain.
+\paragraph{Conditions and connections.}
+Differentiability implies continuity, while continuity alone does not imply differentiability. ReLU is continuous at zero but its left and right slopes differ, so no ordinary derivative exists there. An implementation's chosen gradient at that point is a declared convention. F41 extends local linear approximation to vector inputs; C01 requires bounds valid throughout a set rather than at a single point.
+
+\concept{F41}{Gradient, Jacobian, and full differentiability}{F40; vectors, linear maps, and Euclidean norms.}
+\paragraph{Definition and foundation.}
+A partial derivative changes one coordinate while holding the others fixed. Full differentiability requires a single linear map to approximate changes in every direction simultaneously. These requirements are different: existence of all coordinatewise derivatives at a point does not by itself establish a valid multivariate linear approximation.
+\paragraph{Symbols and dimensions.}
+Let $f:O\to\R^m$, where $O\subseteq\R^d$ is open, $a\in O$, and $d,m\ge1$ are integer dimensions. An increment is $h\in\R^d$. The Jacobian $J_f(a)\in\R^{m\times d}$ has entry $[J_f(a)]_{ji}=\partial f_j/\partial x_i(a)$ when $f$ is differentiable. For scalar output $m=1$, the gradient $\nabla f(a)\in\R^d$ is the column transpose of this row Jacobian.
+\paragraph{Derivation and counterexample.}
+Full differentiability means
+\[
+ f(a+h)=f(a)+J_f(a)h+r_f(h),\qquad
+ \frac{\norm{r_f(h)}_2}{\norm h_2}\longrightarrow0.
+\]
+For $f(x,y)=x^2+3xy$, the gradient is $(2x+3y,3x)^\top$. In contrast, define $q(x,y)=xy/(x^2+y^2)$ off the origin and $q(0,0)=0$. Both partial derivatives at zero are zero, since $q$ vanishes on either axis. Along $(t,t)$ with $t\ne0$, however, $q(t,t)=1/2$. It is not continuous there and hence not differentiable.
+\paragraph{Why ECDR uses this concept.}
+CNN backpropagation manipulates Jacobians or their products. A gradient is a local linear coefficient; a certified whole-domain sensitivity bound needs additional control of these derivatives or another sound enclosure.
+\paragraph{Conditions and connections.}
+Continuous partial derivatives in a neighborhood are a sufficient differentiability condition, though not a necessary one. The $(j,i)$ Jacobian entry has units of output coordinate $j$ divided by input coordinate $i$. Finite differences estimate derivatives under numerical conditions; they do not establish a universal Jacobian bound. F42 explains how valid local linear maps compose.
+
+\concept{F42}{The chain rule is composition of local linear maps}{F40--F41; matrix multiplication and small-remainder notation.}
+\paragraph{Definition and foundation.}
+The chain rule explains why derivatives multiply through successive operations. Its premise is full differentiability at the relevant points. It is not a rule that any collection of independently existing partial derivatives can be multiplied without checking those premises.
+\paragraph{Symbols and dimensions.}
+Let $f:O\subseteq\R^d\to\R^m$ be differentiable at $a$, and let $g:V\subseteq\R^m\to\R^k$ be differentiable at $b=f(a)$. The sets $O,V$ are open, and $f$ maps a neighborhood of $a$ into $V$. Write $A=J_f(a)\in\R^{m\times d}$, $B=J_g(b)\in\R^{k\times m}$, and input increment $h\in\R^d$.
+\paragraph{Derivation and example.}
+Differentiability gives $f(a+h)=b+Ah+r_f(h)$, where $r_f(h)=o(\norm h_2)$. Set $v=Ah+r_f(h)$. A fixed finite matrix has bounded operator norm, so $\norm v_2=O(\norm h_2)$. Substitution into the expansion of $g$ gives
+\[
+ g(f(a+h))=g(b)+BAh+B r_f(h)+r_g(v),
+ \qquad J_{g\circ f}(a)=BA.
+\]
+Both remainder terms are $o(\norm h_2)$, establishing the derivative. The little-$o$ notation means the remainder norm divided by the indicated increment norm tends to zero. For $f(x)=2x-1$ and $g(z)=z^2$, the derivative is $g'(f(x))f'(x)=4(2x-1)$.
+\paragraph{Why ECDR uses this concept.}
+For a differentiable scalar loss $L:\R^m\to\R$, reverse-mode differentiation uses $\nabla(L\circ f)(a)=J_f(a)^\top\nabla L(f(a))$. The transpose makes dimensions agree and propagates an output sensitivity back to input coordinates.
+\paragraph{Conditions and connections.}
+Nondifferentiable ReLU boundaries require an explicit training convention or a suitable generalized analysis. An observed product of local derivatives is still local. C01 instead bounds each operator over the relevant set to obtain a whole-domain sensitivity bound. F44 defines the big-$O$ notation used in the remainder argument.
+
+\concept{F43}{Feasibility, optimality, and a constrained witness}{Sets, inequalities, affine functions, and infima; C07 and C22.}
+\paragraph{Definition and foundation.}
+A constrained problem specifies an admissible set before asking whether an objective is minimized there. Feasibility asks whether any admissible point exists. Optimality asks which admissible point has the smallest objective. Finding one feasible point answers the first question and generally leaves the second unresolved.
+\paragraph{Symbols and dimensions.}
+Let $u\in\R^q$ be the decision variable, $G\in\R^{r\times q}$, $h\in\R^r$, $E\in\R^{s\times q}$, and $e\in\R^s$ fixed constraints. The feasible set is $D=\{u:Gu\le h,Eu=e\}$, where inequalities are coordinatewise. A linear program minimizes $a^\top u+\beta$ on $D$, with $a\in\R^q$ and scalar $\beta$; all terms of each constraint must have compatible units.
+\paragraph{Derivation and example.}
+For $D=[0,1]$ and objective $f(u)=u$, witness $u=0.8$ proves nonemptiness but not optimality; the minimum is zero. More generally, any feasible witness gives an upper bound on a minimization value:
+\[
+ \inf_{u\in D}f(u)\le f(u_{\rm witness}).
+\]
+Certification needs a lower bound on every feasible objective value, the opposite inequality direction. A lower affine enclosure or a justified dual certificate can supply that evidence; one sampled objective cannot.
+\paragraph{Why ECDR uses this concept.}
+Generator-domain membership can be written as feasibility of latent coefficients and residuals. A validated witness suffices to accept membership. Proving positive margin everywhere is a different optimization obligation over all admitted inputs.
+\paragraph{Conditions and connections.}
+An infeasible set has no admissible queries; an unbounded objective need not have a finite minimum. A nonempty compact feasible set with continuous objective attains its minimum. Numerical solver status alone requires an appropriate validation contract. Failure of a heuristic to find a witness does not prove infeasibility, and feasibility of a solver iterate does not establish its optimality.
+
+\concept{F44}{Big O, lower bounds, and the chosen cost model}{Sequences, inequalities, and algorithmic input representation; C09 and C26.}
+\paragraph{Definition and foundation.}
+Asymptotic notation compares growth functions under a specified model of cost and input size. For eventually nonnegative functions $A(n)$ and $B(n)$, write $A(n)=O(B(n))$ if constants $c>0$ and $n_0$ exist such that $A(n)\le cB(n)$ for every integer $n\ge n_0$. Write $A(n)=\Omega(B(n))$ for a corresponding lower inequality and $\Theta(B(n))$ when both hold.
+\paragraph{Symbols and dimensions.}
+The integer $n\ge1$ measures input size; $A(n)$ may count scalar operations, coordinate reads, or bytes moved, but the choice must be fixed. The comparison function $B(n)$ describes growth. Constants $c,n_0$ are independent of $n$ but may depend on the specified algorithm or fixed architecture. These counts are not automatically elapsed milliseconds.
+\paragraph{Derivation and example.}
+For $A(n)=3n+7$ and $n\ge1$, $3n\le A(n)\le10n$, proving $A(n)=\Theta(n)$. A box scan that can reject after the first failed coordinate still has worst-case $\Theta(n)$ when every coordinate must be read for an interior query. Its average count depends on the query distribution and coordinate order; no such distribution is encoded by big-$O$.
+\paragraph{Why ECDR uses this concept.}
+Wave membership may scan $Cs$ coordinates while a full-window box scans $CW$, where $C$ is channels, $s$ appended samples, and $W$ window samples. Dense projection onto $q$ directions typically costs $O(nq)$ scalar arithmetic. These statements identify scaling opportunities, not a measured latency advantage.
+\paragraph{Conditions and connections.}
+A lower bound for one implementation differs from a lower bound for every admissible algorithm under a model. Hardware parallelism, vector instructions, allocation, memory traffic, and small finite sizes affect runtime constants. Input summaries or trusted state can change the information available and invalidate an old access lower bound's premises. For increments approaching zero, the analogous notation bounds a remainder by a constant times the increment norm near zero, as in F42. C26 counts the actual trace costs before claiming amortized saving.
+
+\concept{F45}{The exponential function and positive score weights}{Real series and limits; F40 and ordinary multiplication laws.}
+\paragraph{Definition and foundation.}
+The exponential can be defined by the convergent real series
+\[
+ \exp(x)=\sum_{n=0}^{\infty}\frac{x^n}{n!},\qquad x\in\R.
+\]
+The index $n$ is a nonnegative integer; $0!=1$ and $n!=1\cdot2\cdots n$ for $n\ge1$. Absolute convergence follows from the ratio $\abs x/(n+1)\to0$. The convergence facts used here are results of real analysis, rather than extra axioms about neural networks.
+\paragraph{Symbols and dimensions.}
+The scalar argument $x$ must be dimensionless in a physically meaningful exponential. The value $\exp(x)$ is dimensionless. For softmax, logits $z_j\in\R$ and temperature $\tau>0$ must make $z_j/\tau$ dimensionless; class index $j$ ranges over $1,\ldots,K$, with integer $K\ge2$.
+\paragraph{Derivation and example.}
+Absolute convergence permits multiplying and regrouping series, yielding $\exp(a+b)=\exp(a)\exp(b)$ for real $a,b$. Since $\exp(0)=1$, $\exp(x)\exp(-x)=1$, so neither factor is zero. Also $\exp(x)=\exp(x/2)^2>0$. For $t>0$, its series gives $\exp(t)>1$, hence $\exp(x+t)>\exp(x)$: strict monotonicity follows. Termwise differentiation, justified on bounded intervals, gives $\exp'(x)=\exp(x)$. The defining series therefore supports both its algebraic identities and its local sensitivity rule.
+\paragraph{Why ECDR uses this concept.}
+Softmax defines $p_j=\exp(z_j/\tau)/\sum_{i=1}^{K}\exp(z_i/\tau)$. Positivity makes the denominator positive; a common denominator and strict monotonicity preserve the real score ordering. Thus class-only margin proofs can operate on logits directly.
+\paragraph{Conditions and connections.}
+This argument assumes finite real logits and positive finite temperature. Mathematical positivity does not prevent floating-point overflow or underflow. Subtracting the same maximum logit before exponentiating preserves exact ratios and improves numerical evaluation, but does not prove bitwise equivalence across implementations. F46 defines the inverse logarithm and connects it to the training objective.
+
+\concept{F46}{Natural logarithms, inverse maps, and cross-entropy}{F42 and F45; inverse functions and positive probabilities.}
+\paragraph{Definition and foundation.}
+The natural logarithm $\log:(0,\infty)\to\R$ is the inverse of the real exponential: $\log(\exp(x))=x$ and $\exp(\log y)=y$ for $x\in\R$, $y>0$. The exponential's continuity, strict monotonicity, and range $(0,\infty)$ justify this inverse. Its range follows from unbounded growth for positive inputs and $\exp(-x)=1/\exp(x)\to0$ as $x\to\infty$.
+\paragraph{Symbols and dimensions.}
+The variable $y$ is a positive dimensionless argument. For classification, let $z\in\R^K$ be logits, $K\ge2$ class count, $c\in\{1,\ldots,K\}$ the supplied target, and $p_j$ each class's softmax probability at temperature one, including $p_c$ for the target. Define scalar loss $L(z,c)=-\log p_c$. The loss and probability are dimensionless.
+\paragraph{Derivation and example.}
+The inverse-function derivative and F45 give $(\log y)'=1/y$. Thus for a differentiable positive scalar function $u(x)$ on an open real interval, the chain rule gives $(\log u(x))'=u'(x)/u(x)$. With $p_c=\exp(z_c)/\sum_i\exp(z_i)$,
+\[
+ L(z,c)=\log\!\left(\sum_{i=1}^{K}\exp(z_i)\right)-z_c,
+ \qquad
+ \frac{\partial L}{\partial z_j}=p_j-\mathbf1\{j=c\}.
+\]
+Here $i$ sums over classes, $j$ is one logit coordinate, and the indicator is one exactly when $j=c$. For target probabilities $0.8$ and $0.2$, the losses are approximately $0.223144$ and $1.609438$, respectively.
+\paragraph{Why ECDR uses this concept.}
+Cross-entropy explains how training rewards the target relative to all competing logits. Backpropagation uses its local gradient, while certification later establishes a different universal property over an input domain.
+\paragraph{Conditions and connections.}
+The real logarithm is undefined at zero or negative arguments. Finite real logits give strictly positive softmax probabilities, but numerical underflow can still produce zero in a naive program. A stable log-sum-exp evaluation addresses implementation accuracy; it is not a universal robustness certificate. Reuse of a class alone does not reconstruct current probabilities or this loss.

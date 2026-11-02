@@ -1,0 +1,75 @@
+note: Running TeX ...
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf`; build may not be reproducible in other environments
+warning: week1/brief_body.tex:8: Underfull \hbox (badness 1320) in paragraph at lines 2--8
+warning: week1/brief_body.tex:118: Underfull \hbox (badness 2644) in paragraph at lines 114--118
+warning: week1/brief_body.tex:147: Underfull \hbox (badness 1014) in paragraph at lines 143--147
+warning: week1/brief_body.tex:147: Underfull \hbox (badness 1931) in paragraph at lines 143--147
+error: week1/brief_body.tex:148: Missing $ inserted
+note: Writing `/home/pro/Downloads/research/output/week1_closeout_20261102/02_Week_1_Project_Brief.log` (25.3046875 KiB)
+error: something bad happened inside XeTeX; its output follows:
+
+===============================================================================
+(02_Week_1_Project_Brief.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-02-24> (article.cls
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
+(size11.clo)) (fontspec.sty (xparse.sty (expl3.sty (l3backend-xetex.def)))
+(fontspec-xetex.sty (fontenc.sty) (fontspec.cfg))) (amsmath.sty
+For additional information on amsmath, use the `?' option.
+(amstext.sty (amsgen.sty)) (amsbsy.sty) (amsopn.sty)) (amssymb.sty
+(amsfonts.sty)) (mathtools.sty (keyval.sty) (calc.sty) (mhsetup.sty))
+(geometry.sty (ifvtex.sty (iftex.sty))) (booktabs.sty) (tabularx.sty (array.sty
+)) (xcolor.sty (color.cfg) (xetex.def)) (hyperref.sty (ltxcmds.sty)
+(pdftexcmds.sty (infwarerr.sty)) (kvsetkeys.sty) (kvdefinekeys.sty)
+(pdfescape.sty) (hycolor.sty) (letltxmacro.sty) (auxhook.sty) (kvoptions.sty)
+(pd1enc.def) (intcalc.sty) (etexcmds.sty) (puenc.def) (url.sty) (bitset.sty
+(bigintcalc.sty)) (atbegshi-ltx.sty)) (hxetex.def (stringenc.sty)
+(rerunfilecheck.sty (atveryend-ltx.sty) (uniquecounter.sty))) (xurl.sty)
+(enumitem.sty) (fancyhdr.sty)
+No file 02_Week_1_Project_Brief.aux.
+(ts1cmr.fd) (graphicx.sty (graphics.sty (trig.sty) (graphics.cfg)))
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+(nameref.sty (refcount.sty) (gettitlestring.sty))
+
+Package hyperref Warning: Rerun to get /PageLabels entry.
+
+(umsa.fd) (umsb.fd) [1] (week1/brief_body.tex
+Underfull \hbox (badness 1320) in paragraph at lines 2--8
+\TU/NotoSerif(0)/m/n/10.95 SmallCNN1D specification. The historical six-class c
+heckpoint and the earlier valid-
+[2]
+Underfull \hbox (badness 2644) in paragraph at lines 114--118
+\TU/NotoSerif(0)/m/n/10.95 The class IDs are fixed as follows: 1 WALKING, 2 WAL
+KING_UPSTAIRS, 3 WALK-
+[3]
+
+LaTeX Warning: Citation `torch_bn' on page 4 undefined on input line 140.
+
+
+Underfull \hbox (badness 1014) in paragraph at lines 143--147
+\TU/NotoSerif(0)/m/n/10.95 against ground truth; (O2) measure reference-decisio
+n agreement with a strict zero-
+
+Underfull \hbox (badness 1931) in paragraph at lines 143--147
+\TU/NotoSerif(0)/m/n/10.95 disagreement target; and (O3) measure net end-to-end
+ cost against a full-reference
+! Missing $ inserted.
+<inserted text> 
+                $
+l.148 The split audit artifact `data/split_
+                                           audit.json` lists train subjects
+Output written on 02_Week_1_Project_Brief.xdv (3 pages, 71176 bytes).
+Transcript written on 02_Week_1_Project_Brief.log.
+===============================================================================
+error: the XeTeX engine had an unrecoverable error
+caused by: halted on potentially-recoverable error as specified

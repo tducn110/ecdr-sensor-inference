@@ -1,0 +1,94 @@
+{
+  "phase": "verify",
+  "run_id": "week1_ref_1793620216_9d6c1d85",
+  "status": "PASS",
+  "checks_executed": [
+    {
+      "check": "frozen_file_scripts/backbone.py",
+      "passed": true,
+      "detail": "Hash: 0f26f8fe731de32a67eecef5eedbfbe88f13698d104454c41ef3bd5d7b4d5037"
+    },
+    {
+      "check": "frozen_file_configs/backbone.yaml",
+      "passed": true,
+      "detail": "Hash: 9f8582608dda9ad3cacaa34b837ceb508cdcf3a52780c78943906e94152756ce"
+    },
+    {
+      "check": "model_param_count",
+      "passed": true,
+      "detail": "Params: 283692"
+    },
+    {
+      "check": "model_output_classes",
+      "passed": true,
+      "detail": "Output dim: 12"
+    },
+    {
+      "check": "norm_mean_recomputed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "norm_std_recomputed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "preprocessing_id_match",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "selected_best_hash_proof",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "selection_precedes_eval",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "all_5053_predictions_reproduced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "all_5053_logits_reproduced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "supervised_test_denominator",
+      "passed": true,
+      "detail": "Count: 3572"
+    },
+    {
+      "check": "confusion_matrix_arithmetic",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "aggregate_acc_mean",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "aggregate_acc_pop_std",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "aggregate_f1_mean",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "aggregate_f1_pop_std",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "total_checks_count": 17,
+  "timestamp_utc": "2026-11-02T11:52:11Z"
+}

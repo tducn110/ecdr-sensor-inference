@@ -1,0 +1,17 @@
+{
+  "model": "small_cnn_1d",
+  "num_classes": 6,
+  "input_shape": [
+    4,
+    6,
+    128
+  ],
+  "output_shape": [
+    4,
+    6
+  ],
+  "shape_test": "PASS (B,6,128)->(B,6)",
+  "params_total": 282918,
+  "params_trainable": 282918,
+  "torch_version": "2.14.1+cpu"
+}

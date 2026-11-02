@@ -1,0 +1,941 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
+% XeLaTeX with fontspec natively handles Vietnamese UTF-8 without babel
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,longtable,tabularx,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
+\geometry{left=2.25cm,right=2.25cm,top=2.3cm,bottom=2.3cm,headheight=15pt}
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\definecolor{pale}{HTML}{E8F2F2}
+\hypersetup{colorlinks=true,linkcolor=ink,citecolor=teal,urlcolor=teal,
+ pdftitle={Week 3: Cơ sở toán học của ECDR},
+ pdfauthor={ECDR Research}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlist{nosep,leftmargin=1.5em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\vecop}{\operatorname{vec}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\ind}{\mathbf 1}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Sset}{\mathcal S}
+\newcommand{\Uset}{\mathcal U}
+\newtheorem{definition}{Định nghĩa}[section]
+\newtheorem{theorem}[definition]{Định lý}
+\newtheorem{proposition}[definition]{Mệnh đề}
+\newtheorem{lemma}[definition]{Bổ đề}
+\newtheorem{corollary}[definition]{Hệ quả}
+\theoremstyle{remark}
+\newtheorem{example}[definition]{Ví dụ}
+\newtheorem{remark}[definition]{Nhận xét}
+\renewcommand{\proofname}{Chứng minh}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{ECDR | Cơ sở nghiên cứu và lý thuyết}}
+\fancyhead[R]{\small Week 3}
+\fancyfoot[L]{\small 28/10/2026}
+\fancyfoot[R]{\thepage}
+\begin{document}
+\title{\textcolor{ink}{ECDR}\\[5pt]\Large Week 3: Cơ sở toán học của ECDR}
+\author{Báo cáo nghiên cứu lý thuyết}
+\date{28 tháng 10 năm 2026}
+\maketitle
+\noindent Bản tuần độc lập, trích từ báo cáo tổng hợp. Scope: lý thuyết mới
+theo brief của người nghiên cứu; không dùng implementation cũ làm nguồn
+định nghĩa phương pháp. Các tính toán minh họa không phải benchmark.
+\tableofcontents
+\clearpage
+\part{Week 3 --- Cơ sở toán học và hệ thống giả thuyết}
+\section{Certification contract và problem formulation}
+Trong phần này $x=\vecop(X)\in\R^d$, $d=CW=768$; ký hiệu $F$ đã bao gồm
+preprocessing. $K\ge2$ tổng quát, áp dụng cho $K=12$ khi reference được định
+nghĩa trên toàn bộ nhãn. Mỗi certificate có target $c$, domain $\Sset$ và
+identity của reference. Không cần giả định anchor nằm trong miền next-wave.
+
+\begin{table}[!htbp]\centering
+\caption{Unified contract C1--C10.}
+\begin{tabularx}{\linewidth}{@{}p{1cm}Y@{}}\toprule
+ID & Điều kiện và trách nhiệm\\\midrule
+C1 & Reference frozen: weights, graph, BN state, class order và decision rule.\\
+C2 & Preprocessing, layout, units và coordinates cố định, được đưa vào $F$.\\
+C3 & Mỗi lower bound hợp lệ trên toàn miền, hoặc một enclosure đã chứng minh chứa miền.\\
+C4 & Mọi target--competitor lower margin strictly positive sau xử lý sai số hợp lệ.\\
+C5 & Runtime membership đủ bảo thủ; không false accept ngoài miền.\\
+C6 & Inconclusive/miss/stale/non-finite thì chạy reference hoặc xử lý lỗi input.\\
+C7 & Tính đầy đủ build, verify, lookup, state, fallback và initialization.\\
+C8 & So sánh cùng data, model, preprocessing, numerical/backend/hardware và scope.\\
+C9 & Lifecycle giữ anchor/domain identity hoặc dùng theorem chuyển certificate hợp lệ.\\
+C10 & Nếu claim executable soundness, phải bao sai số float/quantization có biện minh.\\\bottomrule
+\end{tabularx}
+\end{table}
+C1--C6,C9,C10 phục vụ correctness. C7--C8 phục vụ claim hiệu quả. Một phương
+pháp có thể đúng hoàn toàn theo contract và vẫn chậm hơn full inference.
+Mọi proof dưới đây dùng số thực chính xác, trừ khi phát biểu thêm cận sai số.
+
+\section{Decision regions: điều kiện cần, đủ và tồn tại}
+Đặt pairwise margin và robust margin
+\begin{equation}
+ g_{cj}(x)=F_c(x)-F_j(x),\qquad
+ m_c(x)=\min_{j\ne c}g_{cj}(x).
+ \label{eq:margin}
+\end{equation}
+Miền quyết định thắng duy nhất là
+$D_c=\bigcap_{j\ne c}\{x:g_{cj}(x)>0\}$.
+
+\begin{theorem}[Điều kiện margin và whole-domain certificate]
+\label{th:margin}
+Tại một điểm, $c$ là winner duy nhất khi và chỉ khi $g_{cj}(x)>0$ với mọi
+$j\ne c$. Cho $\Sset$ bất kỳ và các số $\ell_{cj}$ sao cho
+\begin{equation}
+ \ell_{cj}\le\inf_{x\in\Sset}g_{cj}(x).
+ \label{eq:lower}
+\end{equation}
+Nếu $\min_{j\ne c}\ell_{cj}>0$ thì $\Sset\subseteq D_c$.
+\end{theorem}
+\begin{proof}
+$c$ thắng duy nhất đúng bằng việc $F_c(x)>F_j(x)$ với từng competitor.
+Với mọi $x\in\Sset$, (\ref{eq:lower}) cho
+$g_{cj}(x)\ge\ell_{cj}>0$. Áp dụng phần đầu cho từng điểm.
+\end{proof}
+Không chứng nhận được không có nghĩa quyết định đổi. Khi lower bound
+$\ell\le0$, có thể do bound lỏng hoặc miền thật sự cắt boundary; cần phân
+biệt bằng bound chặt hơn hay counterexample thực.
+
+\begin{proposition}[Khi nào infimum dương là điều kiện cần?]
+Nếu $\Sset$ không rỗng và compact, các $g_{cj}$ liên tục và $c$ thắng duy nhất trên
+$\Sset$, thì $\min_{j\ne c}\inf_{x\in\Sset}g_{cj}(x)>0$.
+\end{proposition}
+\begin{proof}
+Mỗi margin liên tục đạt minimum trên compact set. Vì margin dương tại mọi
+điểm, minimum đạt được cũng dương. Có hữu hạn competitor nên minimum của
+các số dương vẫn dương.
+\end{proof}
+Nếu bỏ compactness, kết luận có thể sai: trên $\Sset=(0,1]$ với
+$F_1(x)=x$, $F_2(x)=0$, lớp 1 thắng mọi điểm nhưng infimum margin bằng 0.
+Do đó không được gọi uniform positive lower bound là điều kiện cần trên
+mọi tập tùy ý. Certificate bằng một thuật toán cụ thể thường chỉ là điều
+kiện đủ, kể cả khi miền compact.
+
+\begin{theorem}[Tồn tại một lân cận bất biến]\label{th:exist}
+Nếu $F$ liên tục tại $x_r$ và $c$ thắng duy nhất tại đó, tồn tại
+$\epsilon>0$ sao cho $h(x)=c$ khi $\norm{x-x_r}<\epsilon$.
+\end{theorem}
+\begin{proof}
+Đặt $\gamma=\min_{j\ne c}g_{cj}(x_r)>0$. Với từng $j$, continuity cho một
+$\delta_j>0$ sao cho $|g_{cj}(x)-g_{cj}(x_r)|<\gamma/2$ trong lân cận đó.
+Chọn $\epsilon=\min_j\delta_j$. Khi ấy mọi margin lớn hơn $\gamma/2$.
+\end{proof}
+Định lý chứng minh \emph{có tồn tại} một miền quanh anchor cho các mô hình
+liên tục như CNN affine/ReLU/maxpool. Nó không cho bán kính tính được,
+membership rẻ hoặc xác suất future window rơi vào miền. Nếu anchor tie,
+không có bảo đảm một ball dương giữ lớp: $F=(x,-x)$ tại $x=0$ là ví dụ.
+
+\section{Những khẳng định vô điều kiện không thể có}
+\begin{theorem}[Không có bán kính universal cho mọi classifier]
+Cho bất kỳ $\epsilon>0$, tồn tại một classifier affine hai lớp liên tục,
+một anchor thắng duy nhất và một query cách anchor nhỏ hơn $\epsilon$ có
+quyết định khác.
+\end{theorem}
+\begin{proof}
+Lấy $x_r=0$, $F_1(x)=\epsilon/2-x$, $F_2(x)=0$. Anchor có margin
+$\epsilon/2>0$; tại $x=3\epsilon/4$, margin bằng $-\epsilon/4$ và khoảng
+cách nhỏ hơn $\epsilon$. Đây đã là affine classifier, nên không cần một
+mạng phi tuyến để tạo phản ví dụ.
+\end{proof}
+Vì vậy similarity threshold cố định độc lập với weights/margin không thể
+bảo đảm universal decision reuse cho mọi reference.
+
+\begin{example}[Convolution equivariance không kéo theo classification invariance]
+Conv $1\times1$ với trọng số 1 là identity, do đó equivariant dưới dịch trên
+phần overlap. Với $W=2,s=1$, $X=(1,-1)$, $U=(1)$ cho $X'=(-1,1)$.
+Head $F_1(X)=X_0$, $F_2(X)=-X_0$ đổi winner. Activation identity và overlap
+không cứu được một head phụ thuộc vị trí.
+\end{example}
+Ngay cả GAP cũng không đủ nếu giá trị thêm/bỏ làm margin đổi dấu. Định lý
+GAP phía sau mô tả \emph{đúng mức thay đổi}, rồi còn cần bound margin.
+
+\begin{example}[Membership hoặc cùng nhãn không phải chứng nhận]
+Với $F_1(x)=1-x$, $F_2(x)=0$, anchor 0 và box $[-2,2]$, query $1.5$ nằm
+trong box nhưng winner đổi. Một annotation gán cùng activity cho hai điểm
+không ràng buộc weights của classifier nên cũng không loại được ví dụ này.
+\end{example}
+
+\begin{example}[Cùng activation pattern vẫn có thể đổi quyết định]
+Trong $x\in[0,1]$, network dùng $r=\relu(x+1)=x+1$ có cùng ReLU mask.
+Head $F_1=1.5-r=0.5-x$, $F_2=0$ đổi winner giữa 0 và 1. Miền affine
+từng phần \cite{montufar} không đồng nghĩa một decision region.
+\end{example}
+Các phản ví dụ là kết quả phủ định có giá trị: chúng xác định điều kiện
+không thể bỏ, thay vì cố tạo một ``chứng minh vô điều kiện'' cho claim sai.
+
+\section{Lipschitz--margin certification}
+\begin{theorem}[Certified ball theo từng margin]\label{th:lip}
+Giả sử trên miền chứa ball $B_p(x_r,\epsilon)$, mỗi margin thỏa
+\begin{equation}
+ |g_{cj}(x)-g_{cj}(x_r)|\le L_{cj}\norm{x-x_r}_p,
+ \qquad L_{cj}\ge0.
+\end{equation}
+Nếu $g_{cj}(x_r)-L_{cj}\epsilon>0$ với mọi $j\ne c$, toàn bộ closed ball
+giữ winner $c$.
+\end{theorem}
+\begin{proof}
+Trừ độ lệch tuyệt đối khỏi margin anchor cho
+$g_{cj}(x)\ge g_{cj}(x_r)-L_{cj}\epsilon>0$. Dùng Định lý
+\ref{th:margin}.
+\end{proof}
+Với $L_{cj}>0$, chọn $\epsilon<\min_j g_{cj}(x_r)/L_{cj}$. Nếu $L_{cj}=0$
+và margin anchor dương, competitor đó không giới hạn bán kính trong miền
+mà bound $L=0$ thực sự hợp lệ. Dấu $<$ tránh trường hợp margin bằng 0 ở
+biên closed ball. Đây là lập luận kế thừa từ Lipschitz--margin \cite{lmt}.
+
+Nếu chỉ có logit Lipschitz bounds $L_c,L_j$, có thể chọn bound hợp lệ
+$L_{cj}:=L_c+L_j$; Lipschitz constant tối ưu của margin không vượt quá tổng
+này. Với vector-output Lipschitz $\norm{F(x)-F(x')}_2
+\le L_F\norm{x-x'}_2$, có thể chọn $L_{cj}:=\sqrt2 L_F$ theo
+Cauchy--Schwarz vì $\norm{e_c-e_j}_2=\sqrt2$.
+Một bound global từ tích operator norm qua các layer là hợp lệ khi mọi
+layer bound hợp lệ theo đúng norm; nó có thể lỏng do tích các worst case
+không cùng xảy ra.
+
+\begin{example}[Tính bán kính]
+Với ba lớp, margin anchor đến hai competitor là 0.8 và 0.3, Lipschitz bounds
+là 2 và 1. Certified radius phải nhỏ hơn
+$\min(0.8/2,0.3/1)=0.3$. Tại $\epsilon=0.2$, lower margins là 0.4 và 0.1.
+Tại $\epsilon=0.3$, lower margin thứ hai bằng 0 nên contract strict chưa nhận.
+\end{example}
+Không có bất đẳng thức tự động rằng local Lipschitz luôn đủ rẻ hoặc đủ
+chặt cho HAPT. Ước lượng gradient tại một điểm không phải một Lipschitz
+upper bound hợp lệ trên toàn miền.
+
+\section{IBP: suy ra cận bằng interval arithmetic}
+\subsection{Affine, convolution và activation}
+Cho $v\in[\underline v,\overline v]$ và affine layer $w=Av+b$. Đặt
+$A^+=\max(A,0)$, $A^-=\min(A,0)$ theo phần tử. Khi đó
+\begin{align}
+ \underline w&=A^+\underline v+A^-\overline v+b,\\
+ \overline w&=A^+\overline v+A^-\underline v+b.
+ \label{eq:ibp-affine}
+\end{align}
+\begin{lemma}[Affine enclosure]
+Với mọi $v$ trong interval, $\underline w\le Av+b\le\overline w$.
+\end{lemma}
+\begin{proof}
+Ở mỗi hệ số $A_{ki}\ge0$, cực tiểu đạt ở $\underline v_i$ và cực đại ở
+$\overline v_i$; nếu $A_{ki}<0$ thì ngược lại. Cộng các bất đẳng thức theo
+$i$ và thêm bias cho mỗi row.
+\end{proof}
+Convolution là affine map có ma trận thưa gắn kernel, nên dùng cùng công
+thức mà không cần dựng dense matrix. ReLU đơn điệu cho
+\begin{equation}
+ [\underline r,\overline r]=
+ [\max(0,\underline v),\max(0,\overline v)].
+\end{equation}
+MaxPool trên một nhóm $I$ có enclosure
+$[\max_{i\in I}\underline v_i,\max_{i\in I}\overline v_i]$.
+BN ở eval với running mean/variance cố định là affine theo từng kênh,
+scale âm thì đổi vai trò lower/upper như (\ref{eq:ibp-affine}).
+
+\begin{theorem}[Soundness của IBP trong số thực]
+Nếu interval đầu vào chứa toàn miền $\Sset$ và mỗi layer được bao đúng như
+trên, output interval chứa $F(x)$ với mọi $x\in\Sset$.
+\end{theorem}
+\begin{proof}
+Quy nạp theo layer. Giả thiết quy nạp bảo đảm activation thực thuộc interval
+đầu layer; enclosure của layer bảo đảm output thuộc interval tiếp theo.
+Base case là input containment. Sau layer cuối thu được kết luận.
+\end{proof}
+Điều kiện đơn giản là
+\begin{equation}
+ \underline F_c>\max_{j\ne c}\overline F_j.
+\end{equation}
+Có thể bound trực tiếp $g_{cj}$ bằng ghép class-difference vào lớp cuối,
+thay vì trừ các logit interval độc lập.
+
+\subsection{Dependency loss và nhu cầu cả lower/upper}
+\begin{example}[Bound độc lập quá lỏng]
+Lấy $t\in[-1,1]$, $F_c(t)=t+1$, $F_j(t)=t$. Margin thật luôn bằng 1.
+IBP độc lập cho $F_c\in[0,2]$, $F_j\in[-1,1]$, nên lower margin bằng
+$0-1=-1$. Bound trực tiếp affine difference cho đúng 1.
+\end{example}
+Ở bước quyết định cuối, chỉ cần \emph{lower bound của margin}. Tuy nhiên
+để tạo nó khi các hệ số có dấu khác nhau, phải dùng cả lower và upper
+activation bounds. Chỉ lấy lower activation là sai với hệ số âm.
+IBP sound không đồng nghĩa IBP complete: nó có thể bỏ lỡ một miền bất biến.
+Phân tích và training IBP trong literature \cite{ibp} không tự chuyển thành
+hit rate hoặc latency của ECDR.
+
+\section{CROWN/LiRPA và hình học miền chứng nhận}
+\subsection{Relaxation của ReLU và cận margin}
+Với preactivation $v\in[l,u]$, $l<0<u$, ta có
+\begin{equation}
+ \alpha v\le\relu(v)\le\frac{u}{u-l}(v-l),\qquad0\le\alpha\le1.
+ \label{eq:relu-relax}
+\end{equation}
+Cận dưới đúng vì nếu $v<0$ thì $\alpha v\le0$, nếu $v\ge0$ thì
+$\alpha v\le v$. Cận trên là dây cung của hàm lồi ReLU; có thể kiểm trực
+tiếp trên $[l,0]$ và $[0,u]$. Nếu $l\ge0$ thì ReLU là identity; nếu
+$u\le0$ thì bằng 0.
+
+Khi back-substitute một linear objective, hệ số dương dùng lower
+relaxation để tạo lower bound, hệ số âm dùng upper relaxation. Nếu mỗi
+bước thay đều hợp lệ trên miền xét, kết quả có dạng
+\begin{equation}
+ g_{cj}(x)\ge a_{cj}^\top x+\beta_{cj},\qquad x\in\Sset.
+ \label{eq:affine-lower}
+\end{equation}
+Đây là nguyên lý dùng trong CROWN/LiRPA \cite{crown,lirpa}. Báo cáo không
+tuyên bố tái chứng minh đầy đủ mọi variant CROWN, mọi activation hoặc các
+heuristic tối ưu relaxation. CROWN-IBP và $\beta$-CROWN là các hướng kết hợp
+hoặc làm chặt cận \cite{crownibp,betacrown}; tăng độ chặt có thể tăng cost.
+
+\subsection{Support function: vì sao chọn miền là một bài toán riêng}
+Với tập $D$, đặt support function $\sigma_D(v)=\sup_{\delta\in D}v^\top\delta$.
+Nếu $\Sset=c_0+D$ thì (\ref{eq:affine-lower}) dẫn đến
+\begin{equation}
+ \ell=a^\top c_0+\beta-\sigma_D(-a).
+ \label{eq:support}
+\end{equation}
+Với tập đối xứng tâm $D$, $\sigma_D(-a)=\sigma_D(a)$.
+Phương pháp bound và hình học miền là hai trục độc lập: có thể dùng CROWN
+trên box hoặc IBP trên một enclosure của miền có cấu trúc.
+
+\begin{theorem}[Affine infimum trên các miền thường dùng]\label{th:support}
+Cho $1\le p\le\infty$, $\epsilon\ge0$ và các residual budgets
+$\eta_i\ge0$. Các infimum dưới đây là chính xác trong số thực:
+\begin{align}
+\inf_{\norm{\delta}_p\le\epsilon}a^\top(c_0+\delta)+\beta
+ &=a^\top c_0+\beta-\epsilon\norm{a}_{p^*},
+ \quad 1/p+1/p^*=1,\label{eq:dual}\\
+\inf_{\norm{u}_\infty\le1}a^\top(c_0+Bu)+\beta
+ &=a^\top c_0+\beta-\norm{B^\top a}_1.\label{eq:general-box}
+\end{align}
+Nếu thêm residual $|v_i|\le\eta_i$, infimum giảm thêm
+$\sum_i\eta_i|a_i|$.
+\end{theorem}
+\begin{proof}
+Công thức đầu theo Hölder: $a^\top\delta\ge-\norm{a}_{p^*}\norm{\delta}_p$;
+định nghĩa dual norm cho thấy tồn tại hướng đạt cận trên ball hữu hạn chiều.
+Công thức thứ hai tối ưu từng $u_i\in[-1,1]$: chọn
+$u_i=-\operatorname{sign}((B^\top a)_i)$. Residual độc lập tối ưu bằng
+$v_i=-\eta_i\operatorname{sign}(a_i)$. Các biến độc lập nên cộng các cực tiểu.
+\end{proof}
+Với diagonal $B=\diag(b)$, penalty là $\sum_i b_i|a_i|$.
+Với $B=\epsilon I$, đây là $L_\infty$ ball. Axis-aligned box cho phép
+budget khác nhau theo tọa độ đã chính là anisotropic/diagonal box; không
+nên mô tả hai tên này như hai họ hình học hoàn toàn khác nhau.
+
+\begin{theorem}[Miền PCA với residual trực giao]\label{th:pca}
+Cho $0\le q\le d$, $b_i\ge0$, $\eta\ge0$,
+$V\in\R^{d\times q}$, $V^\top V=I$, $P_\perp=I-VV^\top$ và
+\begin{equation}
+ \Sset=\{c_0+V\diag(b)u+v:
+ \norm{u}_\infty\le1,\ V^\top v=0,\ \norm{v}_2\le\eta\}.
+\end{equation}
+Khi đó
+\begin{equation}
+ \inf_{x\in\Sset}(a^\top x+\beta)=a^\top c_0+\beta
+ -\norm{\diag(b)V^\top a}_1-\eta\norm{P_\perp a}_2.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Tối ưu $u$ như (\ref{eq:general-box}). Do $v$ trực giao $V$,
+$a^\top v=(P_\perp a)^\top v$. Cauchy--Schwarz cho infimum
+$-\eta\norm{P_\perp a}_2$, đạt tại hướng đối của $P_\perp a$ nếu vector
+khác 0; nếu bằng 0 mọi residual đều cho contribution 0.
+\end{proof}
+Với delta đã centered bởi $\bar\delta$, center là $c_0=x_r+\bar\delta$,
+không mặc định $x_r$. Membership tương đương
+\begin{equation}
+ |V^\top(x-c_0)|\le b,\qquad
+ \norm{P_\perp(x-c_0)}_2\le\eta
+\end{equation}
+trong số thực với cơ sở trực chuẩn. Residual $L_2$ khác coordinate residual
+box; công thức support khác nhau. Sau normalization không đồng nhất,
+$D_\sigma^{-1}V$ thường không trực chuẩn, nên không dùng nguyên công thức
+projection cũ trên basis đã transform.
+
+\subsection{Ví dụ tính đầy đủ: cấu trúc giúp khi nào?}
+Xét margin $g(x_1,x_2)=1+x_1-x_2$ và center $(0,0)$.
+\begin{align}
+\Sset_{\rm square}&=\{x:|x_1|,|x_2|\le0.8\},
+ &\inf g&=1-0.8-0.8=-0.6,\\
+\Sset_{\rm line}&=\{(t,t):|t|\le0.8\},
+ &\inf g&=1,\\
+\Sset_{\rm tube}&=\{(t,t)+v:|t|\le0.8,|v_i|\le0.1\},
+ &\inf g&=1-0.1-0.1=0.8.
+\end{align}
+Line contribution triệt tiêu do $a=(1,-1)$ trực giao hướng $(1,1)$.
+Đây là một chứng minh về geometry--margin alignment; nó không chứng minh
+HAPT có hướng đúng như vậy. Hơn nữa, line/tube nhỏ hơn square theo nhiều
+chiều: không thể gọi đó là cải thiện ở cùng volume hoặc coverage nếu chưa
+chọn tiêu chí matching. Nếu margin đổi thành $1+x_1+x_2$, hướng $(1,1)$
+không còn triệt tiêu, nên ``correlated'' tự nó không bảo đảm tốt hơn.
+
+\subsection{Normalization, containment và domain identity}
+Nếu normalized affine lower bound là $a_z^\top z+\beta_z$, thì trong raw
+coordinates
+\begin{equation}
+ a_x=D_\sigma^{-\top}a_z,\qquad
+ \beta_x=\beta_z-a_z^\top D_\sigma^{-1}\mu.
+\end{equation}
+Đẳng thức này chỉ biến đổi biểu thức; phải biết relaxation hợp lệ trên
+$\mathcal P(\Sset)$ trước khi tối ưu nó. Nếu $\Sset\subseteq\widehat\Sset$
+đã được chứng minh, certificate trên $\widehat\Sset$ đủ cho $\Sset$.
+Chiều ngược lại sai: một proof trên tập nhỏ không tự mở rộng sang tập lớn.
+
+\subsection{Event-conditioned selection và bài toán chọn miền}
+\begin{proposition}[Selector không cần là một oracle hoạt động]
+Cho họ certificate $\{(\Sset_e,c_e)\}_{e\in\mathcal E}$ mà mỗi miền đều có
+lower margins hợp lệ và dương cho target riêng. Một selector bất kỳ, kể
+cả phụ thuộc query, có thể chọn $e=e(x)$. Nếu chỉ accept khi identity khớp
+và $x\in\Sset_{e(x)}$ qua checker sound, output $c_{e(x)}$ vẫn bằng $h(x)$.
+\end{proposition}
+\begin{proof}
+Sau khi selector chọn một $e$, các giả thiết certificate áp dụng cho chính
+miền đó. Membership gắn query với miền, rồi Định lý \ref{th:margin} cho
+kết quả. Không có bước nào cần tên event trùng ground truth.
+\end{proof}
+Với nhiều miền cùng target, union của chúng giữ target khi từng miền giữ
+target; nhưng phải kiểm query thuộc ít nhất một miền bằng một witness
+sound. Selector thay đổi region/budget sau khi build mà không cập nhật proof
+không nằm trong mệnh đề này.
+
+Có thể viết câu hỏi nghiên cứu chọn policy $\pi$ dưới dạng
+\begin{equation}
+ \min_\pi\ \E[T_\pi]\quad\text{với ràng buộc}\quad
+ \forall x\text{ được accept bởi }\pi,\ \widehat h_\pi(x)=h(x).
+\end{equation}
+Kỳ vọng đòi một workload distribution hoặc trace rõ ràng. Phần ràng buộc
+là universal trên accepted set; phần mục tiêu là thống kê/hệ thống. Với
+hai miền $\Sset_1\subseteq\Sset_2$, nếu miền lớn thật sự invariant thì
+miền nhỏ cũng invariant. Nhưng thuật toán bound cụ thể không tự được bảo
+đảm monotonically chứng nhận nhiều hơn, và volume lớn hơn không tự suy ra
+probability mass lớn hơn nếu các miền không lồng nhau. Mở rộng miền có thể
+tăng membership đồng thời làm mất positive margin. Đây là trade-off cần
+đo của event-conditioned ECDR.
+
+\section{Từ wave data đến exact feature và margin identities}
+\subsection{Giả thiết kiến trúc chuyên biệt A1--A6}
+Các kết quả trong mục này dùng: A1, window shift--append cùng sampling grid;
+A2, Conv1D valid, stride 1, dilation 1; A3, ReLU hoặc pointwise map giống
+nhau ở mọi vị trí; A4, không pooling/position encoding/stateful preprocessing
+ẩn; preprocessing trong mục này là identity hoặc một pointwise affine
+per-channel giống nhau tại mọi vị trí thời gian (hoặc $X$ đã là tensor sau
+normalization đó). A5, GAP rồi affine logits; A6, $1\le s\le n$ với $n$ là số feature
+positions cuối. Đây là các giả thiết đủ cho công thức gọn, không phải các
+điều kiện cần cho mọi thuật toán streaming có thể thiết kế.
+
+\begin{theorem}[Receptive field và shift equivalence]\label{th:feature}
+Với $L$ layer kernels $k_1,\ldots,k_L$, đặt
+\begin{equation}
+ R=1+\sum_{\ell=1}^L(k_\ell-1),\quad n=W-R+1.
+\end{equation}
+Feature $H_i(X)$ chỉ phụ thuộc $X[:,i:i+R]$. Với window mới $X'$,
+\begin{equation}
+ H_i(X')=H_{i+s}(X),\qquad 0\le i<n-s.
+ \label{eq:frozen}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Một valid convolution tại $i$ lấy chính $k_1$ sample bắt đầu ở $i$.
+Layer sau mở rộng vùng phụ thuộc thêm $k_\ell-1$ ở stride 1. Quy nạp cho
+$R$. Với $i<n-s$, mọi input mà $H_i(X')$ dùng nằm trong overlap và, theo
+đẳng thức overlap $X'[:,0:W-s]=X[:,s:W]$ của Week 2, bằng input của $H_{i+s}(X)$. Kernel/bias cố định
+và pointwise map giống nhau nên giá trị output bằng nhau. Có thể viết cùng
+lập luận bằng quy nạp qua từng layer.
+\end{proof}
+``Frozen'' ở đây nghĩa là giá trị bằng activation cũ \emph{sau căn chỉnh
+chỉ số}; không có nghĩa activation cùng chỉ số giữ nguyên hay ReLU pattern
+không đổi trên một perturbation region.
+
+\begin{theorem}[GAP delta và pairwise-margin delta]\label{th:gap}
+Cho $\mu(X)=n^{-1}\sum_{i=0}^{n-1}H_i(X)$, $F=A\mu+b$. Đặt
+\begin{equation}
+ D_{\rm drop}=\sum_{i=0}^{s-1}H_i(X),\quad
+ D_{\rm new}=\sum_{i=n-s}^{n-1}H_i(X'),\quad q_j=A_c-A_j.
+\end{equation}
+Khi các giả thiết trên đúng,
+\begin{align}
+ \mu(X')-\mu(X)&=\frac{D_{\rm new}-D_{\rm drop}}n,\\
+ g_{cj}(X')&=g_{cj}(X)+\frac1nq_j^\top(D_{\rm new}-D_{\rm drop}).
+ \label{eq:gapmargin}
+\end{align}
+\end{theorem}
+\begin{proof}
+Tổng $H(X')$ gồm phần $\sum_{i=s}^{n-1}H_i(X)$ nhờ
+(\ref{eq:frozen}) và phần $D_{\rm new}$. Trừ tổng cũ triệt tiêu phần chung,
+còn $D_{\rm new}-D_{\rm drop}$. Chia cho $n$. Margin bằng
+$(A_c-A_j)^\top\mu+b_c-b_j$, nên bias triệt tiêu khi lấy delta.
+\end{proof}
+Phần đuôi $s$ feature có thể phụ thuộc cả overlap và new wave, tổng vùng
+input cần cho đuôi là $s+R-1$ sample trong giả thiết stride 1. Do đó
+``chỉ có $s$ sample mới'' khác với ``chỉ tính convolution trên đúng $s$
+sample đầu vào''.
+
+\begin{corollary}[Certificate từ interval của feature sum]\label{cor:interval}
+Nếu $\underline D\le D_{\rm new}(U)\le\overline D$ với mọi
+$U\in\Uset$, đặt $q_j^+=\max(q_j,0)$, $q_j^-=\min(q_j,0)$. Khi đó
+\begin{equation}
+ \ell_{cj}=g_{cj}(X)+\frac{(q_j^+)^\top\underline D
+ +(q_j^-)^\top\overline D-q_j^\top D_{\rm drop}}n
+ \label{eq:tail-cert}
+\end{equation}
+là lower margin hợp lệ cho wave-domain. Nếu mọi $\ell_{cj}>0$, target giữ
+trên toàn miền đó.
+\end{corollary}
+\begin{proof}
+Tối thiểu hóa $q_j^\top D_{\rm new}$ theo từng tọa độ trong enclosure;
+hệ số dương dùng lower, âm dùng upper. Thay vào (\ref{eq:gapmargin}) và
+dùng Định lý \ref{th:margin}.
+\end{proof}
+
+\begin{example}[Thay số cho tail certificate]
+Lấy $n=10$, một competitor có margin cũ 0.4, $q=(2,-1)$,
+$D_{\rm drop}=(1,2)$, $\underline D=(0,1)$, $\overline D=(2,3)$.
+Khi đó $q^\top D_{\rm drop}=0$ và minimum enclosure contribution là
+$2\times0-1\times3=-3$. Lower margin là $0.4-3/10=0.1>0$.
+Nếu chỉ dùng $\underline D$ cho cả hệ số âm sẽ cho $0.3$, không phải lower
+bound hợp lệ trên toàn interval. Với nhiều competitor phải kiểm tất cả.
+\end{example}
+
+\subsection{Tính toán cho cấu hình HAPT lý thuyết và các giới hạn}
+Với $k=(5,3,3)$, $R=1+4+2+2=9$, $n=128-9+1=120$.
+Dịch $s=64$ cho $n-s=56$ shared positions và 64 new positions ở layer
+cuối. Tỷ lệ shared là $56/120=46.\overline6\%$. Sau $q$ lần dịch, số
+feature positions còn chia sẻ trực tiếp với anchor là
+\begin{equation}
+ n_{\rm shared}(q)=\max(120-64q,0).
+\end{equation}
+Với $q=2$, không còn shared final feature, đồng thời raw window cũng đã
+thay toàn bộ 128 sample. Vì vậy exact overlap identity một bước không đủ
+để hứa hẹn chuỗi reuse dài trong cấu hình này.
+
+Zero-padding có thể đưa số 0 vào nơi window cũ từng có sample thật; equality
+chỉ có thể lập lại trên interior có RF tương ứng hoặc bằng một thiết kế
+biên khác được chứng minh. Với stride/pooling, shift phải căn theo effective
+stride và phải kiểm biên. BN eval cố định là affine pointwise theo kênh,
+có thể đưa vào proof thích hợp; BN training không có tính chất đó. GAP
+delta không áp cho arbitrary Flatten--MLP. Những giới hạn này thống nhất
+với việc prior work streaming phải xử lý padding/pooling \cite{streaminnc}.
+
+\section{Membership: đúng, rẻ theo bậc, và rẻ thực tế}
+Với full diagonal box $|z-z_r|\le b$, có $d$ coordinate checks; chi phí
+worst-case $O(d)$. Với wave box $\underline U\le U\le\overline U$ và
+overlap/state identity đã bảo đảm, membership chỉ cần $Cs$ coordinate
+checks, worst-case $O(Cs)$. HAPT $s=64$ cho 384 tọa độ, thường là hai
+ordered comparisons mỗi tọa độ, ngoài finite/identity checks.
+
+\begin{proposition}[Lower bound của exact box membership]
+Trong mô hình truy cập từng tọa độ, với một box không suy biến trong
+$\R^m$, một thuật toán luôn quyết định chính xác membership cần đọc mọi
+tọa độ trong worst case, tức $\Omega(m)$ coordinate accesses.
+\end{proposition}
+\begin{proof}
+Giả sử thuật toán nhận một điểm interior mà chưa đọc tọa độ $i$. Giữ mọi
+tọa độ đã đọc, thay tọa độ $i$ bằng giá trị ngoài box. Hai input không phân
+biệt được theo những dữ liệu thuật toán đã xem nhưng membership khác nhau,
+mâu thuẫn với tính chính xác.
+\end{proof}
+Kết hợp hai chiều cho $\Theta(m)$ trong mô hình này. SIMD hoặc parallel
+hardware có thể thay đổi wall-clock; theorem không cấm vectorization.
+Một conservative filter có thể false reject, nhưng nếu luôn reject thì
+trivially an toàn mà không hữu ích. Bound tiệm cận không chứng minh một
+checker nhanh hơn CNN nhỏ trong runtime cụ thể.
+
+Với PCA, tính scores/residual theo basis dense có thể tốn $O(dq)$; không
+phải cùng giá của box. Với miền $c_0+Bu+v$ dạng Minkowski sum tổng quát,
+membership là tìm tồn tại $u,v$ thỏa constraints. Một decomposition witness
+hợp lệ đủ để accept; projection bất kỳ thất bại không chứng minh query ở
+ngoài miền, trừ khi đã chứng minh tính tương đương cho miền đó.
+
+\section{Reuse một bước và nhiều bước}
+\subsection{One-step composition}
+\begin{theorem}[Sound reuse gate]\label{th:gate}
+Giả sử reference identity khớp, lower margins hợp lệ và dương trên $\Sset$,
+membership chỉ accept khi query thật sự thuộc $\Sset$. Policy trả $c$ khi
+accept, còn lại chạy reference, trả đúng reference decision trên mọi
+input hợp lệ trong phạm vi giả thiết.
+\end{theorem}
+\begin{proof}
+Nhánh accept dùng Định lý \ref{th:margin}; nhánh fallback trả kết quả của
+chính reference. Hai nhánh bao hết trường hợp.
+\end{proof}
+Policy trên không cho phép tự đổi center sau một hit. Ví dụ
+$F_1(x)=1-x,F_2=0$ chứng nhận center 0, radius 0.6. Query 0.6 thuộc miền
+và vẫn lớp 1. Nếu chuyển center sang 0.6 nhưng giữ radius/claim cũ, query
+1.2 sẽ bị accept sai. Khoảng cách nhỏ liên tiếp không có tính bắc cầu
+theo một bán kính cố định.
+
+\subsection{Fixed-anchor multi-step certificate}
+\begin{theorem}[Nhiều query dùng cùng certificate]\label{th:fixed}
+Giả sử toàn bộ các điều kiện của Định lý \ref{th:gate} đúng, đặc biệt có
+certificate với lower margins hợp lệ và dương trên $\Sset_r$. Giữ cố định
+anchor, target $c$, identity và domain $\Sset_r$. Với bất kỳ
+chuỗi hữu hạn hay vô hạn các query hợp lệ, nếu mỗi lần reuse đều kiểm
+query hiện tại thuộc $\Sset_r$ bằng checker sound, mọi reused decision đúng
+reference. Không yêu cầu query được reuse trước phải làm anchor mới.
+\end{theorem}
+\begin{proof}
+Tại mỗi thời điểm accept, áp dụng trực tiếp certificate trên $\Sset_r$;
+không phụ thuộc các query trước. Tương đương quy nạp theo chiều dài prefix
+của trace. Khi miss, policy chạy reference và chỉ xây certificate mới theo
+các điều kiện giống ban đầu.
+\end{proof}
+Định lý đóng bài toán \emph{soundness} của fixed-anchor policy. Nó không
+cho hit rate dương hoặc bảo đảm anchor vẫn hữu ích mãi. Nếu certificate
+được xây riêng cho transition với overlap cố định của window cũ, checker
+phải kiểm cả state/domain identity đó; không được chỉ kiểm new wave rồi
+tự áp cho overlap khác sau một hit.
+
+\subsection{Finite-horizon wave certificate: một cách giải không cần exact feature state}
+Cho horizon $H$ và các miền new wave $\Uset_1,\ldots,\Uset_H$ được khai
+báo từ lúc build. Đặt reachable sets
+\begin{equation}
+ \mathcal R_0=\{X_r\},\qquad
+ \mathcal R_q=\{\mathcal T_s(X,U):X\in\mathcal R_{q-1},
+ U\in\Uset_q\},\quad1\le q\le H.
+ \label{eq:reachable}
+\end{equation}
+\begin{theorem}[Horizon certificate]\label{th:horizon}
+Nếu với mọi $q\le H$ và $j\ne c$ có bound
+$\ell_{q,cj}\le\inf_{X\in\mathcal R_q}g_{cj}(X)$ và
+$\ell_{q,cj}>0$, thì mọi chuỗi new waves thỏa
+$U_q\in\Uset_q$ tạo ra $h(X_{r+q})=c$ cho mọi $q\le H$.
+\end{theorem}
+\begin{proof}
+Quy nạp reachable membership. $X_r\in\mathcal R_0$. Nếu window tại bước
+$q-1$ thuộc $\mathcal R_{q-1}$ và $U_q\in\Uset_q$, định nghĩa
+(\ref{eq:reachable}) cho window kế tiếp thuộc $\mathcal R_q$. Các lower
+margins dương rồi suy winner $c$ ở từng $q$.
+\end{proof}
+Runtime của product-wave box có thể chỉ kiểm $U_q$ và counter $q$, với
+toàn bộ các bước trước đã accept, recording/reference identity khớp và
+không có state mutation sai. Nếu một bước fail, phải invalidate horizon
+hoặc dùng certificate khác đã chứng minh; không bỏ qua bước rồi tiếp tục.
+Nếu miền các new waves có dependency, checker phải xác nhận dependency đó,
+không tự rút về các box độc lập.
+
+Đây là một giải pháp lý thuyết cho lifecycle: certificate được tạo cho
+\emph{toàn bộ reachable sequence}. Nó có thể rất lỏng hoặc rất đắt khi
+$H$ tăng; chưa có theorem rằng nó thực dụng. Sau $qs\ge W$, không còn raw
+sample nào từ anchor trong window hiện tại. Reuse xa anchor vẫn có thể
+đúng nếu reachable domain được chứng nhận, nhưng không còn được giải thích
+bằng ``còn mẫu overlap với anchor''.
+
+\section{Từ số thực đến chương trình số hữu hạn}
+Các phép toán float32/quantization không tự được bao bởi một chứng minh
+số thực. Giả sử $\ell_{cj}$ là lower bound thực sự sound cho ideal margin,
+và có chứng minh
+\begin{equation}
+ |\widetilde g_{cj}(x)-g_{cj}(x)|\le\eta_{cj}
+ \quad\text{trên miền được kiểm}.
+\end{equation}
+Khi đó điều kiện $\ell_{cj}>\eta_{cj}$ đủ giữ executable margin dương.
+Nếu $\widehat\ell$ là bound tính bằng float và đã chứng minh
+$\widehat\ell-\delta\le\inf g$ thì dùng
+$\widehat\ell>\delta+\eta$.
+
+Membership cũng cần containment: có thể accept nếu verified intervals cho
+giá trị normalized hoàn toàn nằm trong domain. Một tolerance tùy chọn
+không chứng minh được containment. Sai số của normalization, operator,
+bound computation và decision output phải được gắn đúng vai trò; không
+cộng một $\epsilon$ tùy ý rồi gọi là formal soundness.
+
+Ngay cả khi numerical semantics đã sound, model identity sai vẫn phá proof.
+Certificate cần khóa checkpoint/graph, normalization, class order, dtype
+và semantics cần thiết, anchor/domain, cũng như horizon/state khi có.
+Zero observed mismatches là kiểm thử hữu ích, không thay proof cho mọi
+query có thể được accept.
+
+\section{Amortized cost và giới hạn của claim hiệu quả}
+\subsection{Accounting chính xác trước mô hình trung bình}
+Cho $N_w$ query, tập hits $\mathcal H$, miss set $\mathcal M$, $B$ lần build.
+Với chi phí chung được xử lý nhất quán giữa hai phương án, viết
+\begin{align}
+ T_{\rm full}&=\sum_{t=1}^{N_w} f_t,\\
+ T_{\rm ECDR}&=\sum_{t=1}^{N_w}v_t+
+ \sum_{t\in\mathcal M}f_t^{\rm miss}+\sum_{b=1}^B b_b+T_{\rm state}.
+ \label{eq:cost-exact}
+\end{align}
+$v_t$ gồm selector/lookup/membership/certificate validation; build gồm
+cả build thất bại và initialization. $T_{\rm state}$ là phần quản lý chưa
+được tính nơi khác, để không đếm hai lần. Shadow-reference dùng kiểm chứng
+thực nghiệm phải được tách khỏi operational path khi báo cả hai.
+
+\begin{theorem}[Break-even trong mô hình chi phí hằng]\label{th:cost}
+Nếu full và miss forward cùng cost $t_f>0$, verify overhead mỗi query
+$t_v\ge0$, mỗi build $t_b\ge0$ và state overhead trung bình $t_m$, đặt
+$r=|\mathcal H|/N_w$, $b=B/N_w$. Khi đó
+\begin{equation}
+ \bar t_{\rm ECDR}=t_v+t_m+(1-r)t_f+bt_b,
+\end{equation}
+và ECDR nhanh hơn khi và chỉ khi
+\begin{equation}
+ r t_f>t_v+t_m+bt_b.
+ \label{eq:breakeven}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Thay các cost hằng vào (\ref{eq:cost-exact}), chia $N_w$, rồi chuyển
+$\bar t_{\rm ECDR}<t_f$ sang (\ref{eq:breakeven}).
+\end{proof}
+Không đặt $b=1-r$ nếu policy không build mỗi miss. Với cost phụ thuộc query,
+cần đo tổng trace hoặc dùng conditional expectations thay vì tự tách
+$\E[\ind_{\rm miss} f_t]$ thành $(1-r)\E[f_t]$.
+
+Nếu build mỗi miss, $b=1-r$ khi counting policy khớp, ngưỡng là
+\begin{equation}
+ r>\frac{t_v+t_m+t_b}{t_f+t_b}.
+\end{equation}
+Điều kiện này chỉ có thể đạt với $r\le1$ khi $t_v+t_m<t_f$, ngoài các
+trường hợp degenerate. Khi $r=0$ và overhead/build dương, ECDR chắc chắn
+chậm hơn trong mô hình đó, dù mọi certificate đều sound.
+
+\subsection{Tính nhạy cảm đầy đủ, không dùng làm benchmark}
+\begin{table}[!htbp]\centering
+\caption{Minh họa giả định: $t_f=4$ ms, $t_v=0.06$ ms,
+$t_m=0.02$ ms; build mỗi miss. Mọi con số là phép thay số.}
+\begin{tabular}{@{}rrrrr@{}}\toprule
+$r$ & $t_b=1.5$ ms & Speed ratio & $t_b=8$ ms & Speed ratio\\\midrule
+0.50 &2.830&1.4134&6.080&0.6579\\
+0.80 &1.180&3.3898&2.480&1.6129\\
+0.95 &0.355&11.2676&0.680&5.8824\\\bottomrule
+\end{tabular}
+\end{table}
+Speed ratio ở đây là $4/\bar t_{\rm ECDR}$, có thể nhỏ hơn 1.
+Ngưỡng $r$ tương ứng là $(0.08+1.5)/(4+1.5)=28.7273\%$ và
+$(0.08+8)/(4+8)=67.3333\%$. Các giá trị không mô tả HAPT runtime.
+
+Để đối chiếu với số đã ghi trong kế hoạch cũ, nếu \emph{giả sử} reference
+có mean forward $t_f=251.1\,\mu$s và \emph{giả sử} $r=0.5$, thì
+\begin{equation}
+ t_v+t_m+bt_b<0.5\times251.1=125.55\,\mu\mathrm{s}.
+\end{equation}
+Số $251.1$ đến từ \code{data/g2_cpu_latency.json}: forward CPU của model
+6 lớp cũ trên tensor normalized trong RAM, không phải timing của reference
+12 lớp hay của valid--GAP family. Báo cáo không chạy lại benchmark và
+không chuyển mốc này thành kết quả của hướng mới.
+
+\subsection{Build amortization theo số hit/certificate}
+Một certificate tốn $t_b$, dùng cho $L$ query sau build và có $h$ hit, tổng
+chi phí tránh được là $ht_f$ trong mô hình hằng. Lợi ích cần
+\begin{equation}
+ ht_f>t_b+L(t_v+t_m).
+\end{equation}
+Nếu mọi query sau build đều hit, cần
+$L>t_b/(t_f-t_v-t_m)$ với mẫu số dương. Trong ví dụ $t_f=4$,
+$t_v+t_m=0.08$ ms, $t_b=1.5$ ms cho $L>0.3827$; $t_b=8$ ms cho
+$L>2.0408$, tức cần ít nhất 3 hits liên tiếp trong policy lý tưởng này.
+Điều kiện integer và counting horizon phải khớp lúc đo.
+
+\section{Hệ thống giả thuyết nghiên cứu và cách phân biệt đúng/sai}
+\subsection{Các nhóm giả thiết}
+Các giả thiết \emph{structural} là data/window/operator contract, có thể
+kiểm bằng nguồn và đẳng thức. Các giả thiết \emph{analytic} là continuity,
+Lipschitz hoặc valid relaxation; phải chứng minh/bound. Các giả thuyết
+\emph{empirical} như useful coverage, margin alignment và cost không được
+thay bằng giả định rồi dùng làm kết luận nghiên cứu.
+
+\begin{longtable}{@{}p{0.8cm}p{4.0cm}p{4.3cm}p{3.9cm}@{}}
+\caption{Hypothesis ledger: phát biểu, trạng thái và cách kiểm tra.}
+\label{tab:hypotheses}\\\toprule
+ID & Phát biểu & Trạng thái lý thuyết & Phép kiểm/điều kiện còn cần\\\midrule
+\endfirsthead
+\toprule ID & Phát biểu & Trạng thái lý thuyết & Phép kiểm/điều kiện còn cần\\\midrule
+\endhead
+H01 & Window kế tiếp giữ nguyên overlap sau dịch chỉ số & Đã chứng minh với
+grid/recording contract & Kiểm sampling alignment/missing samples\\
+H02 & Overlap 50\% khiến ordinary distance nhỏ & Sai vô điều kiện; có
+counterexample & Chỉ có thể khảo sát một phân bố cụ thể\\
+H03 & Cùng activity cho cùng prediction & Sai vô điều kiện & Đo agreement
+có strata, không dùng làm certificate\\
+H04 & Unique winner và continuity cho miền bất biến cục bộ & Đã chứng minh
+tồn tại; không cho radius hữu ích & Margin/bound và coverage\\
+H05 & Positive valid lower margins đủ cho reuse & Đã chứng minh trong số
+thực và đúng domain identity & Numerical containment khi triển khai\\
+H06 & Lipschitz bound hợp lệ cho certified ball & Đã chứng minh có điều kiện
+& Cách lấy $L$ sound và đủ chặt\\
+H07 & IBP luôn tìm được miền invariant & Sai; sound nhưng incomplete
+& Đo bound gap trên domain cố định\\
+H08 & Direct margin có thể tránh logit dependency loss & Có ví dụ exact
+& So sánh cùng domain và bound budget\\
+H09 & CROWN luôn rẻ hơn mọi phương pháp khác & Không được chứng minh
+& Đo build cost/tightness theo cấu hình\\
+H10 & Temporal/PCA direction phù hợp margin normals & Giả thuyết mở
+& Đo alignment, ablation và held-out data\\
+H11 & Structured region cho coverage tốt hơn matched box & Giả thuyết mở
+& Chốt criterion matching trước đánh giá\\
+H12 & Wave-domain giảm số biến từ $CW$ xuống $Cs$ & Đúng khi overlap cố định
+& Không đồng nhất giảm dimension với giảm runtime\\
+H13 & Valid--ReLU CNN reuse exact shared activations & Đã chứng minh với A1--A6
+& Không tự áp cho padding/pool khác\\
+H14 & GAP delta chỉ phụ thuộc new-minus-dropped sum & Đã chứng minh cho head
+được khai báo & Bound phần mới và đủ mọi competitor\\
+H15 & Có thể recenter sau mỗi hit không cần proof mới & Sai; có drift
+counterexample & Giữ anchor hoặc chứng minh transfer rule\\
+H16 & Fixed-anchor membership mỗi lần cho multi-step soundness & Đã chứng minh
+có điều kiện & Useful lifetime/hit count còn mở\\
+H17 & Product-wave horizon certificate cho nhiều bước & Đã chứng minh có điều
+kiện trên reachable sets & Bound tightness và cost theo $H$\\
+H18 & Box membership có cost $\Theta(m)$ worst-case & Đúng trong coordinate
+query model & Wall-clock phụ thuộc backend/memory\\
+H19 & Soundness kéo theo useful coverage & Sai; miền có thể không chứa query
+mới & Báo hit denominator và no-hit case\\
+H20 & Useful coverage kéo theo speedup & Sai khi build/overhead lớn
+& Accounting đầy đủ theo (\ref{eq:breakeven})\\
+H21 & ECDR hơn CNN hoặc LipCache trên HAPT & Chưa chứng minh
+& Reference-equivalent benchmark và matched semantics\\
+H22 & Float32 tự kế thừa proof số thực & Sai nếu không bao sai số
+& Bound error, membership và output semantics\\
+H23 & Event name đúng là đủ để reuse & Sai; selector chỉ đề xuất region
+& Gate độc lập certificate và membership\\
+H24 & Có operating regime vừa sound, coverage hữu ích, cost thấp & Giả thuyết
+trung tâm còn mở & Chứng minh contract, rồi đo cùng workload\\\bottomrule
+\end{longtable}
+
+\subsection{Thiết kế kiểm chứng giả thuyết sau báo cáo lý thuyết}
+Để kiểm H10--H11, cố định reference, data representation và bound method,
+rồi thay geometry. Để kiểm H08--H09, cố định model và domain, rồi thay cách
+bound. Để kiểm H16--H17, cố định certificate semantics, so policy horizon
+và anchor, báo age/hit count. Để kiểm H20--H24, đo full path theo cùng trace
+và hardware, tính cả failed builds và no-hit periods.
+
+Các đại lượng nên tách là
+\begin{align}
+ p_{\rm build}&=\frac{\#\text{domain xây chứng nhận thành công}}
+ {\#\text{domain đã thử}},\\
+ p_{\rm member}&=\frac{\#\text{query thuộc candidate theo policy}}
+ {\#\text{query được xét}},\\
+ r_{\rm cert}&=\frac{\#\text{query được reuse với certificate hợp lệ}}
+ {\#\text{stream query}},\\
+ A_{\rm reuse}&=\frac{\#\text{reused query trùng reference}}
+ {\#\text{reused query}}.
+\end{align}
+Nếu không có reused query, $A_{\rm reuse}$ là N/A. Không lấy
+$p_{\rm build}p_{\rm member}$ làm $r_{\rm cert}$ nếu chưa có independence
+hoặc joint trace phù hợp. Quantile coverage trên adjacent pair không bằng
+anchor-based coverage, và membership coverage không bằng certified reuse.
+
+\section{Tổng hợp mức độ chứng minh và câu trả lời nghiên cứu}
+\begin{table}[!htbp]\centering\small
+\caption{Phân loại các kết quả được báo cáo.}
+\begin{tabularx}{\linewidth}{@{}p{3.6cm}YY@{}}\toprule
+Nhóm & Đã xác lập & Không được suy thêm\\\midrule
+Data algebra & Window count, shift--append, overlap, normalization transform
+& Tín hiệu mượt, same prediction, population coverage\\
+General certification & Margin theorem, local existence, Lipschitz rule,
+IBP soundness, support identities & HAPT usefulness hoặc numerical soundness tự động\\
+Specialized CNN & RF, aligned feature equality, GAP/margin delta, interval rule
+& Exact rule cho mọi CNN architecture\\
+Lifecycle & Fixed-anchor và finite-horizon sufficient rules & Reuse vô hạn
+với recenter không proof\\
+Complexity & Coordinate-model membership bounds, cost break-even
+& Latency, energy hoặc edge speedup đã đo\\
+Contribution & Một formulation và tập giả thuyết có thể kiểm tra
+& Novelty/superiority đã được xác nhận\\\bottomrule
+\end{tabularx}
+\end{table}
+\textbf{Trả lời RQ1:} quan hệ chắc chắn là overlap theo alignment và
+shift--append; sự mượt, covariance hoặc cùng decision là những vấn đề khác.
+\textbf{RQ2:} mọi valid lower pairwise margin dương trên domain là một
+điều kiện đủ, có các cách tạo cận và các numerical obligations đã nêu.
+\textbf{RQ3:} có ví dụ toán học chứng minh cấu trúc có thể giúp, nhưng
+chưa có kết luận tổng quát hoặc kết quả HAPT cho directions mới.
+\textbf{RQ4:} có hai policy multi-step sound có điều kiện; việc chuyển
+certificate tự do sau hit không hợp lệ.
+\textbf{RQ5:} điều kiện hòa vốn đã được suy ra; speedup thực tế vẫn mở.
+
+Kết quả của ba tuần là một nền tảng lý thuyết có thể dùng làm chuẩn cho
+nghiên cứu tiếp theo: brief xác định thuộc tính, data chỉ ra miền biến thiên,
+và mathematics quyết định khi nào miền đó giữ class. Câu hỏi trung tâm còn
+lại là tìm được miền vừa chứng nhận được, vừa chứa đủ query, vừa có chi
+phí sử dụng thấp trong một thiết lập được xác định rõ.
+
+\section*{Nguồn và cách tái kiểm}
+Nội dung theo bản chuẩn hóa Week 1--3 do người nghiên cứu cung cấp và các
+nguồn gốc trong bibliography. Các số data mô tả snapshot local theo policy
+đã ghi; mô hình lý thuyết không phải checkpoint triển khai cũ. Báo cáo tổng
+hợp trong cùng thư mục có đầy đủ bảng ký hiệu, provenance và các tuần còn
+lại. Phép tính số học được lưu trong \code{recompute.py} và
+\code{calculations.json}. Không có training hoặc benchmark ECDR mới.
+
+\begingroup\small
+\begin{thebibliography}{99}
+\bibitem{hapt} J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra.
+\emph{Smartphone-Based Recognition of Human Activities and Postural
+Transitions}. UCI Machine Learning Repository, 2015.
+DOI: \href{https://doi.org/10.24432/C54G7M}{10.24432/C54G7M}.
+Metadata và README local được đối chiếu ngày 28/10/2026.
+
+\bibitem{lmt} Y. Tsuzuku, I. Sato, M. Sugiyama.
+\emph{Lipschitz-Margin Training: Scalable Certification of Perturbation
+Invariance for Deep Neural Networks}. NeurIPS, 2018.
+\url{https://arxiv.org/abs/1802.04034}.
+
+\bibitem{ibp} S. Gowal et al.
+\emph{On the Effectiveness of Interval Bound Propagation for Training
+Verifiably Robust Models}. arXiv:1810.12715, 2018.
+\url{https://arxiv.org/abs/1810.12715}.
+
+\bibitem{crown} H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel.
+\emph{Efficient Neural Network Robustness Certification with General
+Activation Functions}. NeurIPS, 2018.
+\url{https://arxiv.org/abs/1811.00866}.
+
+\bibitem{lirpa} K. Xu et al.
+\emph{Automatic Perturbation Analysis for Scalable Certified Robustness
+and Beyond}. NeurIPS, 2020.
+\url{https://arxiv.org/abs/2002.12920}.
+
+\bibitem{crownibp} H. Zhang et al.
+\emph{Towards Stable and Efficient Training of Verifiably Robust Neural
+Networks}. NeurIPS, 2019.
+\url{https://arxiv.org/abs/1906.06316}.
+
+\bibitem{betacrown} S. Wang et al.
+\emph{Beta-CROWN: Efficient Bound Propagation with Per-neuron Split
+Constraints for Neural Network Robustness Verification}. NeurIPS, 2021.
+\url{https://papers.neurips.cc/paper_files/paper/2021/hash/fac7fead96dafceaf80c1daffeae82a4-Abstract.html}.
+
+\bibitem{montufar} G. Mont\'ufar, R. Pascanu, K. Cho, Y. Bengio.
+\emph{On the Number of Linear Regions of Deep Neural Networks}.
+NeurIPS, 2014.
+\url{https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a92d96e74617c3d2a-Abstract.html}.
+
+\bibitem{streaminnc} C. Kechris, J. Dan, J. Miranda, D. Atienza.
+\emph{Don't Think It Twice: Exploit Shift Invariance for Efficient Online
+Streaming Inference of CNNs}. arXiv:2408.03223, 2024.
+\url{https://arxiv.org/abs/2408.03223}.
+
+\bibitem{tiny} Z. Huang, E. Baccelli.
+\emph{TinyD\'ej\`aVu: Smaller Memory Footprint \& Faster Inference on Sensor
+Data Streams with Always-On Microcontrollers}. arXiv:2512.09786, 2025.
+\url{https://arxiv.org/abs/2512.09786}. Tên theo metadata arXiv được tra
+28/10/2026; không nhập số benchmark của paper vào kết quả HAPT.
+
+\bibitem{lipcache} Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar.
+\emph{LipCache: A Local Inference Proxy with Certified Caching for Edge
+Image Classification Service}. arXiv:2608.13144, 2026.
+\url{https://arxiv.org/abs/2608.13144}. Đối chiếu PDF v1 lưu local,
+đặc biệt phạm vi GuardNet/MainNet tại phần certification và system semantics.
+\end{thebibliography}
+
+\endgroup
+
+\end{document}

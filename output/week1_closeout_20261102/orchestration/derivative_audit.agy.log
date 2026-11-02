@@ -1,0 +1,1073 @@
+I1102 18:30:19.321863       1 resolver.go:85] Model ID gemini-3.8-flash-medium not in local config, defaulting to CCPA
+I1102 18:30:19.321925       1 resolver.go:111] Model resolved via default
+I1102 18:30:19.322136      37 server.go:1897] Starting language server process with pid 107733
+I1102 18:30:19.322476      37 server.go:1953] Language server version: 1.4.12
+I1102 18:30:19.322487      37 server.go:729] Language server will attempt to listen on host localhost
+I1102 18:30:19.322785      37 server.go:744] Language server listening on random port at 46515 for HTTPS (gRPC)
+I1102 18:30:19.322841      37 server.go:752] Language server listening on random port at 36491 for HTTP
+W1102 18:30:19.325681      44 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.325743      44 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.326123      44 errorreport.go:224] Failed to poll ListExperiments: error getting token source: You are not logged into Antigravity.
+I1102 18:30:19.326171      44 model_configs.go:355] Auth mode is unspecified, skipping fetchAvailableModels and returning empty response
+I1102 18:30:19.328744      82 store_client.go:714] summary store: starting background reconciliation (trigger=startup)
+W1102 18:30:19.332186      37 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.332269      37 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.332456      37 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.332489      37 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.333659      37 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.333689      37 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.333761      37 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.333773      37 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.333901      37 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.333927      37 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.334016      37 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.334032      37 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:19.334497      37 auth_store.go:199] Using file-based secret storage at /home/pro/.config/antigravity/plugin-secrets.json
+I1102 18:30:19.334536      37 auth_store.go:199] Using file-based secret storage at /home/pro/.config/antigravity/plugin-secrets.json
+W1102 18:30:19.334686     108 cache.go:146] Cache(peopleInfo): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.334756     108 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.335174      37 defaults.go:732] failed to get cs path: cs path /usr/bin/cs invalid
+I1102 18:30:19.335278      37 manager.go:120] Creating trajectory store manager with proto store and SQLite store
+W1102 18:30:19.339250      37 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.339415      37 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.339572      37 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.339593      37 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:19.340323      82 store_client.go:764] summary store: reconciliation complete, synced 369 records
+W1102 18:30:19.340781      82 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.340855      82 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.341075      82 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.341100      82 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.341823      16 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.341895      16 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.342032      16 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.342056      16 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.342328     179 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.342380     179 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.342502     179 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.342522     179 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:19.342553     215 manager.go:98] Migration [MIGRATION_ID_SANITY_CHECK_PROJECT_URIS] is enabled
+I1102 18:30:19.342956     215 manager.go:107] Migration [MIGRATION_ID_SANITY_CHECK_PROJECT_URIS] already has status MIGRATION_STATUS_COMPLETED, skipping
+I1102 18:30:19.342986     215 manager.go:98] Migration [MIGRATION_ID_PLUGIN_ENABLEMENT] is enabled
+I1102 18:30:19.343149     215 manager.go:107] Migration [MIGRATION_ID_PLUGIN_ENABLEMENT] already has status MIGRATION_STATUS_COMPLETED, skipping
+I1102 18:30:19.343165     215 manager.go:98] Migration [MIGRATION_ID_BUILTIN_SIDECARS_TO_PLUGINS] is enabled
+I1102 18:30:19.343300     215 manager.go:107] Migration [MIGRATION_ID_BUILTIN_SIDECARS_TO_PLUGINS] already has status MIGRATION_STATUS_COMPLETED, skipping
+I1102 18:30:19.343315     215 manager.go:95] Migration [MIGRATION_ID_LIN_BUILTIN_TO_MARKETPLACE] is disabled, skipping entirely
+I1102 18:30:19.343322     215 manager.go:95] Migration [MIGRATION_ID_ADOPT_BWG_INSTALLS] is disabled, skipping entirely
+I1102 18:30:19.343345     215 manager.go:95] Migration [MIGRATION_ID_GDRIVE_BUILTIN_PLUGIN] is disabled, skipping entirely
+I1102 18:30:19.343354     215 manager.go:95] Migration [MIGRATION_ID_SPLIT_SCIENCE_PLUGIN] is disabled, skipping entirely
+I1102 18:30:19.496845      37 server.go:3653] Auth succeeded, refreshing features and managers
+W1102 18:30:19.497373     243 cache.go:146] Cache(peopleInfo): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.497523     243 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.497778     243 rpcs_plugin_auth.go:106] Not reloading plugin MCP servers: cannot get the signed-in user: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.499553      37 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.499760      37 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.500213      37 errorreport.go:224] Failed to poll ListExperiments: error getting token source: You are not logged into Antigravity.
+I1102 18:30:19.500452      37 server.go:3665] State refresh took 3ms
+I1102 18:30:19.500483      37 server.go:3675] [RemoteControl] Subscription callback triggered.
+I1102 18:30:19.501460      37 server.go:3678] [RemoteControl] RemoteControlEnabled value: false
+I1102 18:30:19.501526      37 server.go:4479] [RemoteControl] Session toggle is off, staying disconnected
+I1102 18:30:19.501547      37 server.go:4182] [RemoteControl] Resolved proxyServerURL: ""
+I1102 18:30:19.502013      37 profiler.go:231] Continuous pprof profiling is disabled.
+I1102 18:30:19.502948      37 server.go:3140] initialized server successfully in 180.709314ms
+I1102 18:30:19.506653     252 manager.go:98] Migration [MIGRATION_ID_SANITY_CHECK_PROJECT_URIS] is enabled
+I1102 18:30:19.507918     252 manager.go:107] Migration [MIGRATION_ID_SANITY_CHECK_PROJECT_URIS] already has status MIGRATION_STATUS_COMPLETED, skipping
+I1102 18:30:19.508024     252 manager.go:98] Migration [MIGRATION_ID_PLUGIN_ENABLEMENT] is enabled
+I1102 18:30:19.508341     252 manager.go:107] Migration [MIGRATION_ID_PLUGIN_ENABLEMENT] already has status MIGRATION_STATUS_COMPLETED, skipping
+I1102 18:30:19.508373     252 manager.go:98] Migration [MIGRATION_ID_BUILTIN_SIDECARS_TO_PLUGINS] is enabled
+I1102 18:30:19.508513     252 manager.go:107] Migration [MIGRATION_ID_BUILTIN_SIDECARS_TO_PLUGINS] already has status MIGRATION_STATUS_COMPLETED, skipping
+I1102 18:30:19.508535     252 manager.go:95] Migration [MIGRATION_ID_LIN_BUILTIN_TO_MARKETPLACE] is disabled, skipping entirely
+I1102 18:30:19.508546     252 manager.go:95] Migration [MIGRATION_ID_ADOPT_BWG_INSTALLS] is disabled, skipping entirely
+I1102 18:30:19.508602     252 manager.go:95] Migration [MIGRATION_ID_GDRIVE_BUILTIN_PLUGIN] is disabled, skipping entirely
+I1102 18:30:19.508619     252 manager.go:95] Migration [MIGRATION_ID_SPLIT_SCIENCE_PLUGIN] is disabled, skipping entirely
+I1102 18:30:19.509661       1 auto_updater.go:281] Last check was less than 15 minutes ago, skipping update (fast path)
+I1102 18:30:19.509746       1 common.go:173] Launching CLI mode
+E1102 18:30:19.509777       1 launchsteps.go:95] Failed to resolve GeminiDir ".gemini": .gemini must be an absolute path: path is not absolute, falling back to default
+I1102 18:30:19.509825       1 common.go:194] CLI app data directory: /home/pro/.gemini/antigravity-cli
+I1102 18:30:19.509857       1 server.go:315] Creating CLI server backend: product=antigravity workspaceDirs=[/home/pro/Downloads/research] appDataDir=/home/pro/.gemini/antigravity-cli languageServer=true codeAssist=true
+I1102 18:30:19.510052       1 auth_provider.go:954] [AuthProvider] SetEnableBusinessLogin called with enable: true
+W1102 18:30:19.510180     255 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.510249     255 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.510630     255 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.510661     255 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.513672      68 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.513794      68 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.513925      68 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.513943      68 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:19.515780       1 project.go:78] project: created project "research" (id=cfa691b0-e7dc-4831-8dd6-93bf0e765ab4) at /home/pro/.gemini/config/projects/cfa691b0-e7dc-4831-8dd6-93bf0e765ab4.json
+I1102 18:30:19.515842       1 server.go:2219] Backend project ID updated dynamically to: cfa691b0-e7dc-4831-8dd6-93bf0e765ab4
+E1102 18:30:19.524919     249 errorreport.go:224] [Summaries] failed to generate summary for b5217be7-e970-4ba7-b09c-a5c68db02eaf while reconciling: conversation b5217be7-e970-4ba7-b09c-a5c68db02eaf not found
+W1102 18:30:19.528276     249 reconcile_summaries.go:78] [Summaries] failed to generate summary for b5217be7-e970-4ba7-b09c-a5c68db02eaf while reconciling: conversation b5217be7-e970-4ba7-b09c-a5c68db02eaf not found
+E1102 18:30:19.537014     249 errorreport.go:224] [Summaries] failed to generate summary for 60ba2efa-cd82-414f-83a2-2faf456aa60e while reconciling: conversation 60ba2efa-cd82-414f-83a2-2faf456aa60e not found
+W1102 18:30:19.541131     249 reconcile_summaries.go:78] [Summaries] failed to generate summary for 60ba2efa-cd82-414f-83a2-2faf456aa60e while reconciling: conversation 60ba2efa-cd82-414f-83a2-2faf456aa60e not found
+I1102 18:30:19.541481     249 reconcile_summaries.go:94] [Summaries] reconcile checked 371 conversations, restored 0, cached 369, skipped 2, dropped 0, cancelled false in 38ms (resident: 0 -> 0)
+W1102 18:30:19.541931     249 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.542017     249 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.542203     249 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.542231     249 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.581921     249 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.582529     249 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.582931     249 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.583131     249 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.654156     269 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.654322     269 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.654506     269 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.654528     269 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.956452     295 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.956536     295 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.956648     295 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.956667     295 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.956853     297 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.956873     297 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:19.956919     297 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:19.956930     297 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.042032     301 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.042199     301 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.042527     301 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.042567     301 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:20.143399       1 analytics.go:249] CLI startup completed (took 823.70295ms, phases [main_entered=0ms ls_start=2ms ls_ready=189ms launch_cli=190ms backend_created=193ms project_resolved=823ms])
+I1102 18:30:20.143652       1 printmode.go:206] Print mode: starting (promptLength=1982, model="gemini-3.8-flash-medium", conversationID="")
+I1102 18:30:20.143682       1 manager.go:499] Initializing CLI store manager for workspace /home/pro/Downloads/research
+W1102 18:30:20.143877      68 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.143975      68 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.144122      68 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.144151      68 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.144377      68 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.144397      68 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.144449      68 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.144458      68 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:20.144596       1 cli_setting_manager.go:157] applyUserSettings: stored shared config permissions: allow=2 deny=0 ask=0 from /home/pro/.gemini/config/config.json
+I1102 18:30:20.144924       1 cli_setting_manager.go:96] CLI settings initialized: permissions=<nil>, toolPermission=always-proceed
+W1102 18:30:20.145193      68 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.145251      68 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.145379      68 cache.go:146] Cache(userInfo): Singleflight refresh failed: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.145407      68 errorreport.go:224] failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+W1102 18:30:20.146694     383 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:20.161440       1 hooks_manager.go:53] loaded 2 named hooks from 2 hooks.json file(s)
+I1102 18:30:20.161509       1 manager.go:687] CLI store manager initialized successfully
+I1102 18:30:20.161533     329 server.go:3642] GetG1Credits: starting fetch
+W1102 18:30:20.161556       1 printmode.go:850] Print mode: --mode auto is unavailable (rollout flag off), continuing in the default mode
+I1102 18:30:20.161649       1 printmode.go:407] Print mode: not authenticated, trying silent auth
+W1102 18:30:20.161799     329 cache.go:146] Cache(loadCodeAssistResponse): Singleflight refresh failed: error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.161859     329 errorreport.go:224] error getting token source: You are not logged into Antigravity.
+E1102 18:30:20.161997     329 credits_manager.go:63] failed to refresh G1 credits: failed to get load code assist response: error getting token source: You are not logged into Antigravity.
+I1102 18:30:20.165679     472 keyring.go:64] keyringAuth: loaded token, expiry=2026-11-02 18:48:23.144758918 +0700 +07 expired=false
+I1102 18:30:20.165739       1 auth.go:157] ChainedAuth: authenticated via keyring (effective: keyring)
+I1102 18:30:20.165749       1 server_oauth.go:224] applyAuthResult: email=n.tduc011006dn@gmail.com, authMethod=consumer, quotaProject=
+I1102 18:30:20.165755       1 server_oauth.go:229] OAuth: authenticated successfully as n.tduc011006dn@gmail.com
+I1102 18:30:20.165760       1 server_oauth.go:238] b.codeAssistClient.AuthProvider (0x2278a821bb30) is same as b.cliAuth (0x2278a821bb30)
+W1102 18:30:20.165819     286 cache.go:177] Failed to refresh cache in background: admin controls not applicable
+W1102 18:30:20.165836     430 cache.go:177] Failed to refresh cache in background: admin controls not applicable
+W1102 18:30:20.604379     121 mcp_auth.go:771] OAuth setup failed for github: OAuth client ID required: server supports neither client ID metadata documents nor dynamic client registration
+I1102 18:30:20.999660     281 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist Trace: 0x1b026557d7ce200
+I1102 18:30:21.450924     282 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels Trace: 0xd986a422de16974
+I1102 18:30:21.487717       1 model_resolver.go:107] Resolving model gemini-3.8-flash-medium
+I1102 18:30:21.490371       1 model_config_manager.go:363] Propagating selected model override to backend: label="Gemini 3.8 Flash (Medium)"
+I1102 18:30:21.490735       1 printmode.go:409] Print mode: silent auth succeeded
+I1102 18:30:21.490869     332 quota_manager.go:45] doRefreshQuota: starting reload (force=true)
+I1102 18:30:21.490976     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:30:21.491051     333 experiment_manager.go:66] Starting experiment refresh after login
+I1102 18:30:21.621757     333 remote_agent.go:178] Remote agent fastpush pin gate changed: false -> true
+I1102 18:30:21.622081     333 server.go:4479] [RemoteControl] Session toggle is off, staying disconnected
+I1102 18:30:21.622097     333 server.go:4182] [RemoteControl] Resolved proxyServerURL: ""
+I1102 18:30:21.622107     333 experiment_manager.go:70] Experiments refreshed after login
+I1102 18:30:21.622210     598 manager.go:1497] Reloading system slash commands
+E1102 18:30:21.628893     820 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:21.630372     874 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+W1102 18:30:21.633552    1031 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:21.923481     583 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist Trace: 0x40c71ef5c90ae5f0
+I1102 18:30:22.810120     583 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist Trace: 0x3c93727d516ed83
+I1102 18:30:22.920351     583 model_config_manager.go:363] Propagating selected model override to backend: label="Gemini 3.8 Flash (Medium)"
+I1102 18:30:22.920402     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:30:22.920425     332 quota_manager.go:45] doRefreshQuota: starting reload (force=true)
+I1102 18:30:22.920427     333 experiment_manager.go:66] Starting experiment refresh after login
+I1102 18:30:22.920618     346 model_config_manager.go:363] Propagating selected model override to backend: label="Gemini 3.8 Flash (Medium)"
+I1102 18:30:22.920635     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:30:22.941351       1 model_resolver.go:107] Resolving model gemini-3.8-flash-medium
+I1102 18:30:22.941443       1 conversation_manager.go:685] Starting new conversation (agent=false)
+I1102 18:30:22.941488       1 server.go:1198] Creating new cascade trajectory (agentScript=false)
+I1102 18:30:22.941549       1 server.go:1224] Conversation using project ID: cfa691b0-e7dc-4831-8dd6-93bf0e765ab4
+I1102 18:30:22.949415       1 server.go:1241] Created conversation ec75631f-ae18-4a02-9c1f-672058ada217 (backend=BACKEND_TYPE_UNSPECIFIED)
+I1102 18:30:22.949574       1 server.go:3316] GetConversationDetail: found conversation ec75631f-ae18-4a02-9c1f-672058ada217 (active=true)
+I1102 18:30:22.949707       1 server.go:3316] GetConversationDetail: found conversation ec75631f-ae18-4a02-9c1f-672058ada217 (active=true)
+I1102 18:30:22.949720       1 conversation_manager.go:739] project: switching to conversation belonging to project ID: cfa691b0-e7dc-4831-8dd6-93bf0e765ab4
+I1102 18:30:22.949773       1 server.go:2219] Backend project ID updated dynamically to: cfa691b0-e7dc-4831-8dd6-93bf0e765ab4
+I1102 18:30:22.949785       1 cli_setting_manager.go:224] ApplyProjectPermissionGrants: no grants for project "research", cleared project permissions
+I1102 18:30:22.949862    1135 manager.go:1540] Reloading system slash commands and skills
+I1102 18:30:22.949877    1135 manager.go:1497] Reloading system slash commands
+W1102 18:30:22.951041    1178 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:22.959461       1 hooks_manager.go:53] loaded 2 named hooks from 2 hooks.json file(s)
+I1102 18:30:22.959915       1 conversation_manager.go:785] project: synced active project to "research" (id=cfa691b0-e7dc-4831-8dd6-93bf0e765ab4) from conversation switch
+I1102 18:30:22.959940       1 conversation_manager.go:1093] Streaming conversation ec75631f-ae18-4a02-9c1f-672058ada217
+I1102 18:30:22.960173    1474 manager.go:1540] Reloading system slash commands and skills
+I1102 18:30:22.960211    1474 manager.go:1497] Reloading system slash commands
+I1102 18:30:22.960382       1 server.go:3316] GetConversationDetail: found conversation ec75631f-ae18-4a02-9c1f-672058ada217 (active=true)
+I1102 18:30:22.960667       1 server.go:1259] Starting conversation update stream for ec75631f-ae18-4a02-9c1f-672058ada217
+I1102 18:30:22.960737       1 session.go:201] Print mode: conversation=ec75631f-ae18-4a02-9c1f-672058ada217, sending message
+I1102 18:30:22.960765       1 manager.go:1497] Reloading system slash commands
+E1102 18:30:22.960912    1500 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:22.962614    1554 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+W1102 18:30:22.966380    1456 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+E1102 18:30:22.970738    2235 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+E1102 18:30:22.972035    2181 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:22.979505    2410 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+E1102 18:30:22.982596    2356 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+I1102 18:30:22.983133    1135 manager.go:1505] Slash commands unchanged, skipping update
+W1102 18:30:22.992639    2754 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+W1102 18:30:22.993349    2866 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+E1102 18:30:22.996475    2848 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:22.997322    3046 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+W1102 18:30:23.002459    3202 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:23.003807       1 manager.go:1505] Slash commands unchanged, skipping update
+I1102 18:30:23.004529       1 conversation_manager.go:903] Forwarding user message to conversation ec75631f-ae18-4a02-9c1f-672058ada217 (items=1, media=0)
+I1102 18:30:23.004567       1 server.go:1833] Sending user message to conversation ec75631f-ae18-4a02-9c1f-672058ada217 (items=1, media=0)
+I1102 18:30:23.004611    1474 manager.go:1505] Slash commands unchanged, skipping update
+I1102 18:30:23.010254       1 latency_breakdown.go:170] SEND_USER_CASCADE_MESSAGE_LATENCY latency breakdown: map[active_user_state_latency_ms:0 blocking:false cascade_id:ec75631f-ae18-4a02-9c1f-672058ada217 cascade_send_latency_ms:3 hydrate_slash_commands_latency_ms:0 load_trajectory_latency_ms:0 media_count:0 media_summaries_latency_ms:0 message_origin:AGENT_MESSAGE_ORIGIN_UNSPECIFIED resolve_agent_config_latency_ms:0 save_media_latency_ms:0 saved_media_count:0 status:OK total_latency_ms:4 trajectory_id:bae32ac2-749f-4a59-90ee-1dab7720ac30]
+E1102 18:30:23.022282    3458 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+E1102 18:30:23.022665    3404 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+W1102 18:30:23.029545    3721 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:23.060982     333 server.go:4479] [RemoteControl] Session toggle is off, staying disconnected
+I1102 18:30:23.061043     333 server.go:4182] [RemoteControl] Resolved proxyServerURL: ""
+I1102 18:30:23.061054     333 experiment_manager.go:70] Experiments refreshed after login
+I1102 18:30:23.061114     333 experiment_manager.go:66] Starting experiment refresh after login
+I1102 18:30:23.061107    3783 manager.go:1497] Reloading system slash commands
+E1102 18:30:23.063259    4325 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:23.064838    4379 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+W1102 18:30:23.067515    4514 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+E1102 18:30:23.069618    4577 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:23.072117    4855 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+W1102 18:30:23.092517    4999 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:23.107012    3783 manager.go:1505] Slash commands unchanged, skipping update
+I1102 18:30:23.393397     345 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist Trace: 0xed506b6b41a7ef4a
+I1102 18:30:23.484955     333 server.go:4479] [RemoteControl] Session toggle is off, staying disconnected
+I1102 18:30:23.484989     333 server.go:4182] [RemoteControl] Resolved proxyServerURL: ""
+I1102 18:30:23.484995     333 experiment_manager.go:70] Experiments refreshed after login
+I1102 18:30:23.485116    5138 manager.go:1497] Reloading system slash commands
+E1102 18:30:23.487728    5407 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+E1102 18:30:23.488246    5353 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+W1102 18:30:23.490987    5574 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+E1102 18:30:23.494009    5890 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/figma-make-cleanup/SKILL.md: invalid frontmatter format
+E1102 18:30:23.497049    5944 skills.go:271] Failed to parse skill file /home/pro/.gemini/antigravity-cli/skills/tailwind-to-css/SKILL.md: invalid frontmatter format
+W1102 18:30:23.500094    5598 plugins.go:358] Truncating suggested_prompts from 5 to 3 in file:///home/pro/.gemini/config/plugins/firebase/plugin.json
+I1102 18:30:23.513281    5138 manager.go:1505] Slash commands unchanged, skipping update
+I1102 18:30:23.657527    2859 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x7d4df5f4b625b9c3 ResponseID: T3Toapm0E7rLrfcPvcKO8As
+I1102 18:30:23.787209     332 quota_manager.go:45] doRefreshQuota: starting reload (force=true)
+W1102 18:30:38.286150    5726 mcp_auth.go:771] OAuth setup failed for github: OAuth client ID required: server supports neither client ID metadata documents nor dynamic client registration
+I1102 18:30:55.554809    2912 monitor_config_manager_external.go:53] externalMonitorConfigManager: initialized with embedded config (3 monitors)
+I1102 18:30:55.554860    2912 monitoring.go:401] [Sonar] Resolved active tags: [jetski_mode_turbo policy_guardian sonar_skip_tags] (detected surface: "")
+I1102 18:30:55.554888    2912 monitoring.go:401] [Sonar] Resolved active tags: [jetski_mode_turbo policy_guardian sonar_skip_tags] (detected surface: "")
+I1102 18:30:55.560400     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:03.262732    6205 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x4d35030864bf7808 ResponseID: cHToavTaOOCovr0PpYv1qAg
+I1102 18:31:03.263370     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:08.459395    6361 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x541339b894fa7dd9 ResponseID: eXToaoLRG_2hvr0P4dzi8Ak
+I1102 18:31:08.460448     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:13.421995    6404 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x24d6297e44a3ed77 ResponseID: fnToatWDCuuD2roPjvKx-Aw
+I1102 18:31:13.480202     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:20.071484    6464 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xe4a60ae69a695ee0 ResponseID: gnToaqGDDOLs2roPlvrC-Qw
+I1102 18:31:20.072712     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:24.470944    6524 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xb2cc288e5db640ad ResponseID: iXToap6dG7iyvr0P7dm-uAk
+I1102 18:31:28.071544    6592 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xf8d0ab07038ce2ec ResponseID: jXToau7uIYXbvr0PhPTWoQo
+I1102 18:31:28.072075     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:31.302922    6654 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xe761071386fb331 ResponseID: kXToavzeBPqnvr0P_uCYkQg
+I1102 18:31:34.677978    6682 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x461d815d88847361 ResponseID: lHToarr5Ho-ivr0P_NqS2Qk
+I1102 18:31:34.679076     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:38.271275    6802 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x9f27c4b73651975e ResponseID: l3ToaqTOGqKf0-kPvN6x6Ac
+I1102 18:31:41.990563    6859 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x3ae14109edca3757 ResponseID: m3Toau_HBKjMrfcPwebfiAk
+I1102 18:31:41.991712     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:45.345202    6904 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x904c2177f54ad58 ResponseID: nnToao2XN6K02roP2NOIyQg
+I1102 18:31:50.152481    6965 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x89313a811c1ced7d ResponseID: onToasymCMuy2roPtIqomQg
+I1102 18:31:50.153048     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:31:54.418621    7022 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xecab785c209cd9d8 ResponseID: p3ToaurFH_ml2roPq7Tn0Ag
+I1102 18:31:57.787193    7093 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xfe8474a42d4c887f ResponseID: q3ToasWBLcyB2roP0uvVyQY
+I1102 18:31:57.788237     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:07.549288    7126 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x89c688a9af3eca5a ResponseID: rnToao-HMZbu2roPm-jHuAU
+I1102 18:32:07.550223     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:17.236742    7212 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xb67734264aa25dda ResponseID: vHToap3QMKK02roP2NOIyQg
+I1102 18:32:17.237618     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:22.697608    7294 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x12cda4b0a96219e1 ResponseID: wnToauGlEbvs2roP_bTj2QU
+I1102 18:32:22.698556     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:31.321917    7349 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x143d592c2baf2344 ResponseID: yHToaviRFrvs2roP_bTj2QU
+I1102 18:32:31.322588     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:36.574860    7429 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x4d1c1b651e678f95 ResponseID: 0HToarvsJam20-kPg6S7wQo
+I1102 18:32:36.576097     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:47.006342    7497 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xbcc5b11c0d0979f4 ResponseID: 1XToapnWNZ-Z0-kPwPOtiQg
+I1102 18:32:47.006988     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:52.520971    7563 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x83ce07f44e084778 ResponseID: 4HToav31CaKf0-kP7d-x6Ac
+I1102 18:32:52.521674     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:32:57.475510    7649 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x2120a5e8eabc4be6 ResponseID: 5XToar6-G62X9tMPwsLJ6Qs
+I1102 18:32:57.667252     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:03.365243    7706 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xb2a1e5f13789a096 ResponseID: 6nToauCdNKXGvr0Pm9GW4Ag
+I1102 18:33:03.367038     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:07.733397    7778 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xee9843493e1e76e5 ResponseID: 8HToau2QJ4Kzvr0Ps5ntyQk
+I1102 18:33:15.772979    7842 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0xefa770891d3ddf1a ResponseID: 9HToaoeQKMeivr0PhM_SuQU
+I1102 18:33:15.773850     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:19.282275    7900 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x1ed65742ac19f2ff ResponseID: _HToaqSDKvGFvr0P0IrmyAk
+I1102 18:33:24.129767    7741 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x3c85dcf909c3ec8 ResponseID: AHXoar3DGbPLrfcPjrH20AQ
+I1102 18:33:24.130312     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:28.461400    8017 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x9d79d045cd259ec6 ResponseID: BXXoasWrK_7MrfcPm_bg4Ag
+I1102 18:33:33.676179    7840 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x7bd4b52c62947f6b ResponseID: CXXoaq6xGoOx0-kPnuKf2Qc
+I1102 18:33:33.677165     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:39.724655    8185 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x4b4b2ffe7a124fb1 ResponseID: D3Xoaq7bFKG20-kP2N3s8AY
+I1102 18:33:39.725380     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:42.971575    8239 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x1b5f30f8a54e66d7 ResponseID: FHXoarKVH9__2roPkJ3Z2AU
+I1102 18:33:47.368018    8319 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x43a9ba0ec0729d77 ResponseID: F3XoavHxMqOd0-kPzteI4Qc
+I1102 18:33:47.368517     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:33:55.203599    8374 http_helpers.go:359] URL: https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse Trace: 0x42370e542f279669 ResponseID: HHXoasrEHPLs2roP7ZuumAg
+I1102 18:33:55.204351     329 server.go:3642] GetG1Credits: starting fetch
+I1102 18:34:00.585210     133 server.go:3460] Got signal interrupt, shutting down
+I1102 18:34:00.585471    8381 server.go:3502] Language server shutting down
+I1102 18:34:00.585501    8381 server.go:3507] Waiting for migrations to complete to prevent partial migration state...
+W1102 18:34:00.605076     294 mcp_manager.go:2177] MCP server connection closed unexpectedly for TalkToFigma: signal: interrupt
+I1102 18:34:00.609595       1 manager.go:864] CLI store manager shutting down
+I1102 18:34:00.610735       1 conversation_manager.go:1048] Stopping conversation stream
+I1102 18:34:00.611206    1476 server.go:1316] Stream goroutine exited for ec75631f-ae18-4a02-9c1f-672058ada217, sending completion signal
+W1102 18:34:00.617415     268 mcp_manager.go:2177] MCP server connection closed unexpectedly for codegraph: MCP server connection closed unexpectedly without explicit error
+W1102 18:34:00.661491     546 mcp_manager.go:2177] MCP server connection closed unexpectedly for context7: signal: interrupt
+E1102 18:34:00.666775    8425 telemetry.go:81] error recording trajectory segment analytics: Post "https://daily-cloudcode-pa.googleapis.com/v1internal:recordTrajectoryAnalytics": context canceled
+W1102 18:34:00.668060     543 mcp_manager.go:2177] MCP server connection closed unexpectedly for chrome-devtools: signal: interrupt
+E1102 18:34:00.794493    5177 mcp_manager.go:1706] Failed to close MCP instance "blender": exit status 130
+E1102 18:34:00.794936     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.794981     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.794985     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.794989     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.794994     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.794997     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795000     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795004     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795008     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795011     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795014     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795017     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795020     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795023     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795027     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795030     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795033     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795036     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795040     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795042     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795046     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795054     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795057     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795064     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795067     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795071     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795074     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795077     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795080     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795083     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795086     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795089     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795094     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795096     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795100     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795107     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795111     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795114     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795117     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795121     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795124     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795127     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795163     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795176     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795180     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795184     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795188     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795191     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795195     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795199     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795203     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795206     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795211     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795216     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795220     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795223     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795228     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795230     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795233     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795245     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795247     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795251     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795254     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795257     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795262     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795265     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795269     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795274     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795283     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795286     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795289     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795292     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795295     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795298     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795301     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795304     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795307     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795310     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795313     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795315     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795318     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795321     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795324     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795327     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795331     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795334     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795337     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795341     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795344     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795347     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795350     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795353     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795360     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795363     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795366     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795369     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795372     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795375     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795378     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795381     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795383     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795386     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795389     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795392     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795395     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795398     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795401     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795404     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795408     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795411     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795414     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795418     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795421     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795425     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795428     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795432     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795437     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795440     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795444     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795447     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795450     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795453     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795456     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795459     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795462     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795465     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795468     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795471     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795474     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795476     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795479     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795483     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795486     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795490     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795493     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795496     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795499     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795502     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795505     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795508     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795512     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795516     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795519     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795526     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795529     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795532     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795536     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795539     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795543     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795545     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795548     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795552     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795555     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795558     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795561     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795564     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795567     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795571     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795573     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795577     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795579     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795582     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795585     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795589     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795592     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795595     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795598     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795601     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795604     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795607     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795610     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795613     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795616     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795621     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795624     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795626     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795629     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795632     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795635     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795638     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795641     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795644     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795647     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795650     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795653     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795656     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795659     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795662     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795665     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795668     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795671     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795673     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795676     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795679     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795684     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795687     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795690     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795692     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795695     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795698     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795700     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795703     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795707     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795711     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795714     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795717     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795720     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795723     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795726     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795729     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795732     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795735     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795737     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795740     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795744     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795747     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795750     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795754     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795757     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795759     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795762     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795765     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795768     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795771     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795774     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795776     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795779     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795782     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795785     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795787     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795790     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795792     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795795     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795798     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795801     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795805     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795807     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795810     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795813     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795816     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795819     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795822     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795825     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795827     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795832     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795835     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795838     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795841     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795844     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795847     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795850     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795853     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795856     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795859     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795861     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795864     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795867     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795870     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795873     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795877     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795880     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795883     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795887     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795889     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795891     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795893     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795895     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795898     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795900     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795903     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795904     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795906     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795908     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795910     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795912     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795914     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795916     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795918     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795919     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795922     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795923     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795925     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795927     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795936     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795938     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795940     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795942     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795944     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795946     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795948     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795950     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795952     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795954     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795956     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795958     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795963     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795965     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795968     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795970     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795972     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795974     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795975     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795978     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795980     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795982     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795984     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795986     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795988     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795990     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795992     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795994     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795996     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.795998     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796000     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796002     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796004     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796006     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796008     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796010     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796012     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796014     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796015     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796017     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796019     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796022     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796024     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796026     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796028     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796029     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796032     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796034     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796036     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796038     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796039     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796042     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796044     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796046     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796047     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796049     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796051     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796053     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796055     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796057     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796059     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796061     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796064     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796066     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796068     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796070     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796072     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796074     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796076     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796078     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796079     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796081     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796083     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796085     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796087     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796089     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796093     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796096     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796099     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796102     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796104     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796107     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796110     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796112     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796116     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796119     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796122     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796125     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796127     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796130     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796133     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796136     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796156     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796166     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796168     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796171     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796174     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796176     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796179     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796182     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796185     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796188     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796191     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796195     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796199     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796202     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796206     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796210     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796213     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796216     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796219     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796222     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796225     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796231     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796234     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796245     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796248     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796252     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796256     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796258     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796263     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796267     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796270     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796274     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796277     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796280     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796284     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796287     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796291     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796294     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796297     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796300     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796303     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796306     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796310     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796313     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796317     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796320     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796324     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796327     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796329     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796331     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796334     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796337     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796341     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796344     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796346     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796349     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796352     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796355     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796359     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796362     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796364     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796365     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796367     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796369     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796372     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796375     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796377     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796379     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796382     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796384     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796385     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796390     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796392     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796395     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796397     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796398     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796404     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796406     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796408     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796409     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796411     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796413     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796415     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796417     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796419     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796421     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796423     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796425     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796427     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796429     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796431     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796433     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796435     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796437     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796439     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796441     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796443     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796447     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796449     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796451     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796453     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796455     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796457     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796459     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796462     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796464     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796466     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796471     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796473     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796475     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796477     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796479     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796481     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796483     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796486     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796488     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796490     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796492     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796494     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796496     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796498     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796500     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796503     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796505     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796507     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796509     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796511     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796513     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796515     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796518     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796520     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796522     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796524     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796526     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796530     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796532     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796536     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796538     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796544     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796548     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796551     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796554     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796557     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796560     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796563     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796567     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796571     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796575     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796581     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796585     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796589     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796593     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796597     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796601     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796604     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796608     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796634     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796638     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796643     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796647     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796652     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796655     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796658     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796663     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796667     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796670     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796673     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796679     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796683     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796687     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796690     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796694     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796700     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796704     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796706     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796710     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796713     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796716     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796719     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796722     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796725     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796729     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796732     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796735     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796738     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796741     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796744     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796748     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796751     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796753     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796756     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796764     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796767     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796771     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796774     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796776     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796779     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796781     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796782     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796784     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796786     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796788     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796790     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796794     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796796     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796798     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796800     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796802     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796804     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796806     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796808     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796810     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796811     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796813     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796815     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796817     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796819     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796821     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796823     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796825     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796827     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796829     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796830     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796839     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796841     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796843     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796844     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796846     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796848     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796850     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796852     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796854     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796856     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796858     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796860     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796862     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796865     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796871     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796875     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796877     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796879     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796881     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796883     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796885     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796886     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796888     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796890     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796892     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796894     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796896     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796898     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796900     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796903     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796905     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796907     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796911     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796913     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796915     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796917     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796919     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796921     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796923     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796925     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796927     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796929     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796931     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796933     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796935     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796937     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796939     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796941     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796943     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796945     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796947     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796951     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796953     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796955     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796957     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796959     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796961     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796963     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796965     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796967     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796969     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796971     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796973     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796983     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796985     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796987     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796988     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796990     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796992     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796994     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796996     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.796998     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797000     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797002     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797004     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797006     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797008     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797010     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797013     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797015     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797017     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797019     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797021     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797023     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797025     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797027     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797029     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797031     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797033     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797035     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797037     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797039     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797041     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797043     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797045     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797047     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797064     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797065     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797067     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797069     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797071     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797076     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797078     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797079     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797081     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797083     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797085     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797087     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797089     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797091     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797093     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797095     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797097     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797099     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797101     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797103     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797105     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797107     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797109     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797111     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797112     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797114     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797116     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797118     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797120     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797122     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797124     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797126     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797131     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797147     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797163     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797167     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797171     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797177     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797184     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797188     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797193     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797197     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797200     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797205     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797209     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797213     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797216     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797220     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797224     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797228     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797232     178 file_watcher.go:194] skipping empty or temp file: 
+E1102 18:34:00.797236     178 file_watcher.go:194] skipping empty or temp file: 

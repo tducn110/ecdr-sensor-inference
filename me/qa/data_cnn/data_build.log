@@ -1,0 +1,17 @@
+note: Running TeX ...
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf`; build may not be reproducible in other environments
+note: Rerunning TeX because "ECDR_Data_Analysis.aux" changed ...
+note: Rerunning TeX because "ECDR_Data_Analysis.aux" changed ...
+note: Running xdvipdfmx ...
+note: Writing `me/ECDR_Data_Analysis.pdf` (253.31 KiB)
+note: Writing `me/ECDR_Data_Analysis.log` (26.65 KiB)
+note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)

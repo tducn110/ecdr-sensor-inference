@@ -1,0 +1,200 @@
+% Additional foundational concepts: induction, convexity, and spectral algebra.
+
+\concept{F35}{Mathematical induction proves a statement at every step}{F01, F02, F08}
+\paragraph{Foundation and definition.}
+Induction is a proof principle for statements indexed by the
+nonnegative integers. It requires a base case and an implication from
+each established case to the next. It can be taken as an axiom of the
+natural numbers; equivalently, it follows from their well-ordering
+principle, which says every nonempty set of nonnegative integers has a
+least member. It is not an empirical extrapolation from several examples.
+\paragraph{Symbols and meaning.}
+Let $P(q)$ be a proposition indexed by the integer $q\ge0$. The base
+case is $P(0)$. The induction step is
+$\forall q\ge0:\ P(q)\Rightarrow P(q+1)$. Together they imply
+$P(q)$ for every nonnegative integer $q$. For a finite horizon
+$Q\ge1$, the step need only hold for integers $0\le q<Q$ to conclude
+all cases $0\le q\le Q$.
+\paragraph{Derivation or example.}
+Suppose a counterexample exists despite the base and step. Its least
+index $q_*$ cannot be zero because the base holds. Thus $q_*-1$ is a
+nonnegative earlier index, where the claim holds by minimality. The step
+then proves $P(q_*)$, a contradiction. For a state example, define
+$\mathcal R_0=\{x_0\}$ and
+$\mathcal R_{q+1}=\{T(x,u):x\in\mathcal R_q,u\in\mathcal U_{q+1}\}$.
+Here states lie in a set $\mathcal X$, inputs lie in a set
+$\mathcal U$, $x_0\in\mathcal X$ is the initial state,
+$T:\mathcal X\times\mathcal U\to\mathcal X$ is a transition function,
+and $\mathcal U_{q+1}\subseteq\mathcal U$ permits next inputs. Membership of each
+actual input in its permitted set proves actual-state membership by
+induction.
+\paragraph{Why ECDR needs it.}
+A finite-horizon reuse certificate must retain the effects of every
+previous accepted wave. Induction connects trusted initial state and
+valid transitions to membership in the certified reachable sets.
+\paragraph{Conditions and connections.}
+The step must cover every permitted previous state and next input.
+Checking only one observed path proves no universal step. After a failed
+input gate, continuing requires a new valid base or another proved rule.
+
+\concept{F36}{Convex sets and convex combinations}{F03, F11, F16}
+\paragraph{Foundation and definition.}
+A set is convex when the full segment joining any two of its members
+also belongs to it. This is a geometric definition, without probabilities
+or class labels. A convex combination uses nonnegative coefficients
+summing to one; unrestricted real coefficients instead define linear
+combinations, and unrestricted coefficients summing to one define affine
+combinations.
+\paragraph{Symbols and meaning.}
+Let $\mathcal S\subseteq\R^d$, where integer $d\ge1$ counts
+coordinates. For $x,y\in\mathcal S$ and scalar $t\in[0,1]$,
+convexity requires $tx+(1-t)y\in\mathcal S$. More generally, a convex
+combination of $r\ge1$ points $x_1,\ldots,x_r$ uses coefficients
+$\alpha_i\ge0$ satisfying $\sum_{i=1}^{r}\alpha_i=1$, and is
+$\sum_i\alpha_i x_i$. The index $i$ selects a point.
+\paragraph{Derivation or example.}
+For a box $[\ell,u]\subseteq\R^d$ and members $x,y$, multiply each
+coordinate inequality by $t$ or $1-t$ and add:
+\[
+ \ell_j\le tx_j+(1-t)y_j\le u_j,
+ \qquad j=1,\ldots,d.
+\]
+Thus boxes are convex. Norm balls are convex because the triangle
+inequality gives
+$\norm{tx+(1-t)y}\le t\norm{x}+(1-t)\norm{y}$ for a ball centered
+at zero. In contrast, $\{-1,1\}\subset\R$ excludes the midpoint
+zero and is not convex. The convex hull of supplied points is the set
+of all their finite convex combinations.
+\paragraph{Why ECDR needs it.}
+A scalar function $f:\mathcal S\to\R$ is convex when
+$f(tx+(1-t)y)\le tf(x)+(1-t)f(y)$. ReLU satisfies this inequality,
+so its endpoint chord upper-bounds its graph. Convex relaxations use
+such enclosures. A convex input domain alone says nothing about a CNN's
+decision throughout that domain.
+\paragraph{Conditions and connections.}
+Affine images and intersections preserve convexity; arbitrary unions
+need not. A union of certified regions can be safe even when nonconvex,
+provided each accepted query has a valid regional witness. Replacing a
+union by its convex hull requires a new certificate on added points.
+
+\concept{F37}{Eigenvectors and eigenvalues identify preserved directions}{F12, F13, F15}
+\paragraph{Foundation and definition.}
+An eigenvector of a square matrix is a nonzero vector whose direction
+is preserved by the matrix, although its magnitude or sign may change.
+The associated scaling factor is its eigenvalue. The zero vector is
+excluded because it satisfies the equation for every scalar and would
+identify no direction.
+\paragraph{Symbols and meaning.}
+Let $A\in\R^{d\times d}$ be a square real matrix, with integer
+$d\ge1$. A real eigenpair consists of scalar $\lambda\in\R$ and
+nonzero column $v\in\R^d$ satisfying
+\[
+ Av=\lambda v.
+\]
+The nonzero scalar multiples of $v$ describe the same direction. A real
+matrix need not have real eigenvalues or a complete eigenvector basis.
+Complex eigenpairs require extending the scalar field and are outside
+this page's real-coordinate treatment.
+\paragraph{Derivation or example.}
+For $A=\begin{pmatrix}2&1\\1&2\end{pmatrix}$,
+$v_1=(1,1)^\top$ satisfies $Av_1=3v_1$, while
+$v_2=(1,-1)^\top$ satisfies $Av_2=v_2$. Thus the sum direction is
+amplified by three and the difference direction by one.
+Equivalently, $(A-\lambda I_d)v=0$, where $I_d$ is the identity
+matrix. Thus $A-\lambda I_d$ sends a nonzero vector to zero and
+cannot have an inverse: an inverse would send zero back to both zero
+and $v$. The eigenvalue identifies precisely this degeneracy.
+\paragraph{Why ECDR needs it.}
+PCA uses eigenvectors of a covariance matrix to describe directions of
+variation. The eigenvalues quantify variance along unit eigenvectors.
+Large variance along a direction does not establish that a classifier's
+margin is insensitive in that direction.
+\paragraph{Conditions and connections.}
+Generic square matrices can be defective or have complex eigenvalues.
+Real symmetric matrices have the stronger orthonormal-basis guarantee
+in F38. Repeated eigenvalues can make individual eigenvectors
+nonunique, even while their eigenspace is well defined.
+
+\concept{F38}{Symmetry, positive semidefiniteness, and the spectral theorem}{F18, F19, F27, F37}
+\paragraph{Foundation and definition.}
+A real square matrix is symmetric when transposition leaves it
+unchanged. A symmetric matrix is positive semidefinite, abbreviated PSD,
+when every quadratic form it produces is nonnegative. PSD does not mean
+that every matrix entry is nonnegative.
+\paragraph{Symbols and meaning.}
+Let $A\in\R^{d\times d}$ satisfy $A^\top=A$, with integer
+$d\ge1$. The PSD condition is $x^\top Ax\ge0$ for every
+$x\in\R^d$. The finite-dimensional real spectral theorem states
+\[
+ A=V\Lambda V^\top,\qquad V^\top V=I_d,
+ \qquad\Lambda=\diag(\lambda_1,\ldots,\lambda_d).
+\]
+Columns of $V\in\R^{d\times d}$ form an orthonormal eigenbasis;
+$\lambda_i\in\R$ are eigenvalues, and $I_d$ is the identity.
+This is an established theorem, rather than an additional axiom.
+\paragraph{Derivation or example.}
+A proof sketch maximizes $x^\top Ax$ on the compact unit sphere.
+Its first-order condition produces a unit eigenvector. Symmetry makes
+that vector's orthogonal complement invariant under $A$; induction on
+dimension constructs the remaining eigenvectors. This sketches the
+argument rather than supplying every optimization detail.
+For observations $z_1,\ldots,z_N\in\R^d$ centered to have zero
+mean, with integer $N\ge2$, the covariance matrix
+$C=(N-1)^{-1}\sum_{i=1}^{N}z_i z_i^\top$ is symmetric and
+\[
+ x^\top Cx=\frac1{N-1}\sum_{i=1}^{N}(z_i^\top x)^2\ge0.
+\]
+For a unit eigenvector $v$, its eigenvalue is $v^\top Cv\ge0$.
+\paragraph{Why ECDR needs it.}
+The theorem justifies orthonormal PCA directions and nonnegative
+explained-variance contributions. It also distinguishes a covariance
+eigenvalue from a signed classifier weight.
+\paragraph{Conditions and connections.}
+For symmetric $A$, PSD is equivalent to all eigenvalues being
+nonnegative. Zero eigenvalues are allowed and identify directions with
+zero quadratic form. Finite-precision eigensolvers need numerical
+checks; a tiny negative computed covariance eigenvalue may reflect
+rounding rather than a negative mathematical variance.
+
+\concept{F39}{Singular values connect PCA and operator amplification}{F15, F21, F38}
+\paragraph{Foundation and definition.}
+The singular value decomposition, or SVD, expresses any finite real
+matrix through orthogonal input and output coordinates and nonnegative
+axis scalings. Unlike eigenvalue decomposition, it applies to rectangular
+matrices. Its existence is an established finite-dimensional theorem;
+it follows by applying the spectral theorem to $A^\top A$ and
+completing orthonormal bases for null spaces.
+\paragraph{Symbols and meaning.}
+For $A\in\R^{m\times n}$, with integers $m,n\ge1$, write
+\[
+ A=U\Sigma V^\top,\qquad U^\top U=I_m,\quad V^\top V=I_n.
+\]
+Here $U\in\R^{m\times m}$ and $V\in\R^{n\times n}$ are
+orthogonal, $I_m,I_n$ are identity matrices, and
+$\Sigma\in\R^{m\times n}$ is rectangular diagonal. Its singular
+values satisfy $\sigma_1\ge\cdots\ge\sigma_p\ge0$, where
+$p=\min(m,n)$. Column $v_i$ of $V$ is a right singular direction.
+\paragraph{Derivation or example.}
+For any input $x\in\R^n$, put $y=V^\top x$. Orthogonality gives
+\[
+ \norm{Ax}_2^2=\sum_{i=1}^{p}\sigma_i^2y_i^2
+ \le\sigma_1^2\norm{x}_2^2.
+\]
+Taking $x=v_1$ attains the bound, so the induced Euclidean operator
+norm is exactly $\norm{A}_{2\to2}=\sigma_1$.
+For centered observations arranged as rows of
+$X\in\R^{N\times d}$, with integer $N\ge2$, covariance is
+$C=X^\top X/(N-1)$. Substituting $X=U_X\Sigma_XV_X^\top$ shows
+that columns of $V_X$ are PCA directions; the nonzero covariance
+eigenvalues are the squared singular values divided by $N-1$.
+\paragraph{Why ECDR needs it.}
+One decomposition connects empirical variation geometry and worst-case
+linear amplification, while keeping their meanings distinct: variance
+describes fitted observations, whereas an operator norm covers every
+input direction.
+\paragraph{Conditions and connections.}
+Repeated singular values permit nonunique directions. A truncated SVD
+describes an approximation, not a universal residual bound. Numerical
+estimates of the largest singular value need a certified error allowance
+before they serve as upper amplification bounds in a proof.
+

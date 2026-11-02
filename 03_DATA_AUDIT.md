@@ -1,7 +1,11 @@
-# 03 DATA AUDIT — HAPT Feasibility before Freezing Theory (G1)
+# 03 DATA AUDIT — HAPT Feasibility and Candidate-Region Evidence (G1)
 
-> Depends on: G0 done (refs.bib + 01 + 02). Blocks: 04_THEORY freeze.
-> Goal: answer 3 questions with measured numbers, not assumptions.
+> Documentation reconciled 22/10/2026; measurements below remain the saved
+> 15/10/2026 post-fix results, not a new run. Current G1 verdict:
+> **COMPLETE_WITH_REVISIONS** (historically REVISE). G2 PASS; G3 pending.
+> This audit measures raw-window deltas and candidate membership, not certified
+> reuse. Domain definitions: [04_THEORY.md](04_THEORY.md); minimal next contract:
+> [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md).
 
 ## 1. Raw source layout (verified from UCI id=341 page)
 
@@ -9,37 +13,45 @@
 - RawData/gyro_expXX_userYY.txt: triaxial angular velocity rows at 50Hz.
 - RawData/labels.txt cols: exp ID, user ID, activity ID, start sample, end sample (at 50Hz).
 - activity_labels.txt: 12 IDs = 6 basic (standing/sitting/lying/walking/up/down) + 6 transitions (stand-to-sit/sit-to-stand/sit-to-lie/lie-to-sit/stand-to-lie/lie-to-stand).
-- Train/X_train.txt (81MB) + Test/X_test.txt (33MB): 561-feature windows + y + subject_id (1-30). Features normalized [-1,1]; acc in g, gyro in rad/s.
+- Train/X_train.txt (81MB) + Test/X_test.txt (33MB): 561-feature windows + y + subject_id (1-30), features normalized [-1,1]. The raw signals used here have acceleration in g and gyro in rad/s; the handcrafted-feature files are not the streaming inputs.
 - Total download 75.9MB, 133 files. License CC BY 4.0, DOI 10.24432/C54G7M.
 - KEY for streaming: UCI states raw signals provided instead of pre-windowed version in order to make online tests. Use RawData + labels.txt to rebuild chronological windows; do NOT use Train/Test shuffle for streaming eval.
 
-## 2. Three audit questions (G1 exit criteria)
+## 2. Audit questions and evidence scope
+
+These questions retain the original G1 motivation. The actual script implements
+quantile-level candidate boxes and centered PCA; it does not implement a semantic
+event detector, verifier, certified fallback policy or anchor lifecycle. A window
+is the observed `6×128` array; an event descriptor would select a candidate; a
+region is a set of possible windows. These are separate objects.
 
 ### Q1 — Temporal delta distribution (overlap != similarity)
 - Build windows 6x128 stride 64 per experiment in chronological order.
 - Measure ||x_{t+1}-x_t||_2 and ||.||_inf across consecutive windows, split by same-activity vs boundary/transition.
-- Compare deltas against backbone margins m_aj (needs G2 backbone first; preliminary: report delta quantiles p50/p90/p99).
+- Report delta quantiles p50/p90/p99. G2 now exists, but no full-stream PredictionChangeRate or region-certified margins were produced by this audit.
 - PASS bar: non-trivial mass of consecutive deltas small enough that SOME event set could cover them; boundary windows flagged separately.
 
-### Q2 — Event-set coverage
-- Candidate diagonal boxes S_e from roadmap Sec 3.1: stable / periodic / transition / spike budgets r_i^(e).
-- For each consecutive pair, test membership x_{t+1} in S_e(x_t) per event type.
-- Report coverage rate per event type + fallback rate. If coverage ~= 0 for all reasonable budgets, diagonal hypothesis fails early.
-- Correlated sets (non-diagonal D_e) only if Q1 shows correlation structure in data.
+### Q2 — Candidate-region coverage
+- Fit raw diagonal budgets on train same-activity deltas at q50/q75/q90; evaluate membership of consecutive windows on each split.
+- The script's names stable/moderate/wide denote budget levels, not classified semantic event types. Periodic/transition/spike-specific regions remain proposals.
+- Measure membership coverage and same-vs-change subsets. Non-membership is not yet runtime fallback, and membership alone is not certified reuse.
+- Explore centered PCA score-box plus orthogonal residual-L2 membership as a separate candidate; do not equate it with a coordinate-residual-box formulation.
 
 ### Q3 — Label balance + K decision
 - Count windows per each of 12 IDs from labels.txt start/end spans; report transition durations (expected short, imbalanced).
 - Decide K=12 vs K=6 (+boundary rule: majority vote? drop? separate transition class?) BEFORE training backbone.
 - Split by subject (e.g. 70/30 by volunteers as UCI, or LOSO), keep chronological order inside each recording. Never randomize overlapping windows across train/test.
-- Thresholds (event budgets, confidence) tuned on validation subjects only.
+- Fit empirical distributions/budgets on train; choose levels/policies on validation subjects and freeze before held-out test evaluation. The existing audit reports all candidate levels; it has not established a final selected reuse policy.
 
-## 3. Scripts to write (no verifier yet)
+## 3. Existing audit scripts (no verifier)
 
-- scripts/download_hapt.py -- fetch UCI 341 zip (75.9MB) + checksum.
-- scripts/build_windows.py -- RawData + labels.txt -> chronological windows (N,6,128) + meta (exp/user/activity/span).
-- scripts/audit_deltas.py -- Q1 histograms + quantiles, same-vs-boundary split.
-- scripts/audit_coverage.py -- Q2 membership per event type.
-- scripts/audit_labels.py -- Q3 counts + durations + K proposal.
+- `scripts/01_fetch_hapt.py`: download/checksum provenance.
+- `scripts/02_validate_raw.py`: raw alignment/integrity.
+- `scripts/03_build_windows.py`: chronological windows and label policy.
+- `scripts/04_audit_splits.py`: disjoint subjects/recordings and ordering.
+- `scripts/05_audit_temporal_events.py`: raw deltas, correlations and candidate membership.
+- `scripts/06_audit_class_support.py`: class/transition support for the K decision.
+- `scripts/06b_corr_semantics.py`: distinguish correlation scales.
 
 ## 4. G1 results (measured 2026-10-15, scripts 01-06b in scripts/)
 
@@ -49,7 +61,8 @@
 > while labels came from the current recording. Q1/correlation/coverage numbers
 > below were recomputed with the fixed script (`05` + `row_id`; pre-fix values
 > preserved in git history at commit `cefd171`). Findings F1–F3 changed
-> materially; the G1 verdict stays REVISE.
+> materially; the historical verdict REVISE is recorded today as
+> COMPLETE_WITH_REVISIONS, not an unconditional pass of the event model.
 
 
 
@@ -67,6 +80,11 @@
 - subject_disjoint TRUE, recording_disjoint TRUE, chronological_kept TRUE, 0 issues (`data/split_audit.json`).
 
 ### Q1 temporal distances (05, 17,392 pairs — recomputed after index fix)
+
+These norms use raw channels with different physical units, not normalized
+model coordinates. They are descriptive distances for this audit; do not apply
+them directly as normalized verifier radii.
+
 | Pair type | n | L2 p50/p90 | Linf p50/p90 |
 |---|---|---|---|
 | same_activity | 9,278 | 1.84 / 17.35 | 0.39 / 2.80 |
@@ -105,41 +123,78 @@ name the scale; "the data has weak temporal correlation" is not supported.
 - stable-box-but-label-changed = **0.00%** of stable hits (was 7.68% pre-fix).
 - **Wide p90 box separates strongly**: captures 52.5% of same-activity pairs on
   test while admitting only 2.3% of label-change pairs.
-- **Correlated set (PCA, k=108 comps, 90.1% var, train-fit q90 scores + q90
-  residual): coverage 0.366/0.389/0.354 vs diagonal p90 0.330/0.353/0.319**
-  — +3.5pp on test (was +8pp pre-fix). Residual v has an explicit budget
-  (thr_resid), but both budgets are empirical quantiles, not certified radii.
+- **PCA projection candidate (k=108, explained variance 0.9008): coverage
+  0.3663/0.3886/0.3542 vs diagonal q90 0.3296/0.3525/0.3194**
+  — +3.48 percentage points on test (pre-fix +8pp is superseded). The script
+  centers `delta` by train mean `mu`, uses `scores=(delta-mu)@U`, and accepts
+  `|scores|<=b` plus `||delta-mu-U scores||_2<=epsilon`. The residual uses an
+  L2 norm, not per-coordinate thresholds. The PCA basis is fit on a train
+  subset, `mu` on all train pairs, and score/residual q90 on train same-activity
+  pairs. These are empirical candidate parameters, not decision certificates.
 
 **Finding F3 (corrected): raw-delta event boxes work better than the pre-fix audit
-showed; PCA's coverage advantage is smaller and NOT budget-matched.** Before G3:
-compare PCA vs diagonal at matched coverage / region size / budget, and add
-PredictionChangeRate (needs the frozen G2 backbone) — label-change is ground
-truth, not certificate violation.
+showed; PCA's coverage advantage is smaller and NOT budget-matched.** The
+structured comparison belongs to G4 after a minimal G3 verifier, with matched
+coverage/budget or another justified comparison. Full-stream PredictionChangeRate
+is now computable from the frozen G2 backbone but is not in these audit outputs.
+Label-change is ground-truth metadata, not a certificate violation.
 Plots: `plots/delta_distributions.png`, `plots/event_coverage.png` (regenerated).
 Full: `data/event_audit.json`; correlation semantics: `data/corr_semantics.json`.
 
 
-## 5. Verdict: **REVISE** (dataset feasible; event model under revision)
+## 5. Current verdict: **COMPLETE_WITH_REVISIONS**
+
+Historical label: REVISE. Dataset feasibility has evidence; candidate-region
+usefulness for certified inference remains a hypothesis. No measurements were
+rerun for the 22/10/2026 documentation reconciliation.
 
 - GO criteria met: integrity/alignment/splits/labels all clean; corrected p90-box
   same-activity coverage 52.5% vs 2.3% change-pairs on test is enough signal to
   test event-conditioned reuse. Not NO-GO. (Pre-fix "25-36%" figure superseded.)
-- REVISE items before G3 (do NOT freeze 04_THEORY with current budgets):
+- Remaining revision/evaluation obligations:
   1. Budget fitting must avoid the degenerate q50 level (near-zero mode); use
-     q75/q90 or per-activity budgets, and report same-vs-change separation, not
-     raw coverage alone.
+     q75/q90 as candidates, and report same-vs-change separation, not raw coverage
+     alone. Per-activity budgets require a separately defined online selector;
+     ground-truth test activities cannot drive online gating.
   2. Correlation claims must be scale-qualified (06b: signal 0.82-0.98 / window
-     feature 0.56-0.97 / flattened positional ~0.05). Correlated PCA set must
-     beat diagonal box at matched coverage or matched budget; residual budget
-     exists but is empirical — G3 needs formal radii.
+     feature 0.56-0.97 / flattened positional ~0.05). PCA and diagonal need a fair
+     matched comparison before a structured-benefit claim (G4); this is not a
+     prerequisite for the first diagonal G3 prototype. Quantiles can define
+     formally verified candidates; G3 needs valid bounds and conservative
+     membership on the exact declared region, not a claim that empirical
+     quantiles already prove decision preservation.
   3. Unlabeled 20.55% + ambiguous 9.10% stay excluded from training targets per
      LOCKED policy; report labeled (13,866) vs full-stream (17,453) denominators
-     in every evaluation, plus PredictionChangeRate once the G2 backbone exists.
+     in every relevant evaluation. Pure K=6 corpus is 10,017 windows; full
+     held-out test stream is 5,053 and pure K=6 test is 2,874. Agreement can be
+     checked on all test windows without ground truth; accuracy/F1 needs its
+     explicit K=6 label scope. Do not pool train/val/test as an evaluation set.
 - K decision for training recorded in `G2_CLASS_DECISION.md` (K=6 baseline GO;
   K=12 pure-only HOLD — transition pure support 5-65/class/split).
-- G2-B (backbone) may start; G3 verifier waits for revised event model +
-  04_THEORY freeze. Backbone and verifier must share one checkpoint.
+- G2-B is complete per `G2_CLASS_DECISION.md` and saved artifacts. G3 remains
+  pending; `07_G3_DOMAIN_CONTRACT.md` specifies a proposed normalized diagonal
+  prototype with fixed model/preprocessing, bounds, membership, reuse gate and
+  instrumentation. The documentation contract is not verifier implementation.
 - Absolute conditions verified in code: 03 never spans recordings; unlabeled
   never auto-labeled (02/03 checks passed).
+
+## 6. Domain and inference limits for the next prototype
+
+Use raw `x`, fixed train-fit normalization `N`, normalized `z=N(x)` and
+reference `F=f_theta o N`. Either transform raw diagonal budgets by `sigma` or
+verify a graph including normalization; mixing raw budgets with normalized
+inputs without transformation has no declared-domain guarantee. Real-arithmetic
+coordinate identities still need a conservative floating-point implementation.
+
+The PCA audit is the projection-defined centered score-box/residual-L2 domain;
+it is not the prior theory's unrestricted coordinate residual box. Their
+membership rules/support functions differ; see theory §2–3. Normalization also
+changes a raw orthogonal PCA geometry and cannot preserve its projection rule
+by merely replacing `U` with a rescaled basis.
+
+All reported coverage is for `x_{t+1}` relative to the preceding window
+`x_t`. It is not coverage relative to a trusted anchor retained across several
+reuse steps. Certificate construction and such anchor lifecycles are absent
+from this audit, as are numerical soundness evidence and runtime savings.
 
 

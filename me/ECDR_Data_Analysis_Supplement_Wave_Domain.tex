@@ -1,0 +1,339 @@
+% ============================================================
+%  SUPPLEMENT 05 — WAVE-DOMAIN PARAMETERIZATION
+%  Full Derivation of z_t = T_S z^r + Vu + rho and Worked Examples
+%  Companion to: ECDR_Data_Analysis.tex
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} Wave-Domain Parameterization}\\[0.5em]
+  {\large\color{muted} Full Derivation of $z_t = T_S z^r + Vu + \rho$, Phase Sensitivity, and PCA Residuals}\\[1.2em]
+  {\normalsize Supplement~05 to \textit{ECDR Data Analysis} \textbar{} October~2026}\\[0.3em]
+  {\small\color{muted} This document is supplementary only. The main document is not modified.}
+\end{center}
+
+\vspace{1em}\hrule\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{Why a Structured Domain Is Needed}
+
+A naive perturbation domain for ECDR might be:
+\[
+  \mathcal{B} = \bigl\{ z \in \R^{768} : \norm{z - z^r}{2} \le \epsilon \bigr\}.
+\]
+This is an isotropic $L_2$ ball centered at the anchor $z^r$. The problem is that
+the \emph{actual} streaming query $z_t$ is not a random perturbation around $z^r$
+in all 768 directions equally. Instead, $z_t$ is the next window of the same
+physical sensor stream: it shares 384 coordinates (50\% overlap), and its
+``new'' 64 samples follow the same physical motion trajectory.
+
+Specifically, the relationship between consecutive normalized windows has structure:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Temporal shift:} The 64-sample overlap means that samples
+        $z^r[i+64]$ (for $i = 0, \ldots, 63$) reappear in $z_t$ at position $z_t[i]$.
+        This is a time shift of 64 samples in the raw dimension.
+  \item \textbf{Low-rank residual:} The ``new'' 64 samples at the tail of $z_t$
+        are not arbitrary — they continue a smooth human motion trajectory that
+        lies on a low-dimensional manifold.
+  \item \textbf{Bounded noise:} Sensor noise and minor gait irregularities add
+        a small residual in all directions.
+\end{enumerate}
+The wave-domain model captures all three components explicitly.
+
+% ============================================================
+\section{The Temporal Shift Operator $T_S$}
+
+\subsection{Definition in Raw Space}
+
+For a raw recording $r_e[n, c]$ (time index $n$, channel $c$), window $k$ starts at
+sample $kS$ and contains samples $[kS, kS + 128)$. Window $k+1$ starts at $(k+1)S = kS + S$.
+
+The \textbf{positional delta} compares window $k+1$ to window $k$ at matching indices:
+\begin{equation}
+  \Delta[i, c] \;=\; r_e[kS + S + i, c] - r_e[kS + i, c]
+  \quad i \in \{0, \ldots, 127\},
+\end{equation}
+where $S = 64$ is the stride.
+
+\subsection{The Shift Structure for Overlapping Windows}
+
+With 50\% overlap ($S = W/2 = 64$), the overlap zone contains samples at raw indices
+$[kS + S, kS + 128) = [(k+1)S, (k+1)S + 64)$. These samples appear in both windows:
+\begin{align}
+  X_{e,k}[c, 64:128] &= r_e[(k+1)S : (k+1)S + 64, c], \\
+  X_{e,k+1}[c, 0:64] &= r_e[(k+1)S : (k+1)S + 64, c].
+\end{align}
+They are \emph{exactly} equal: $X_{e,k}[c, 64 + j] = X_{e,k+1}[c, j]$ for $j = 0, \ldots, 63$.
+
+The shift operator $T_S: \R^{768} \to \R^{768}$ in normalized coordinate vector form
+maps the anchor $z^r$ (vectorization of $Z_{e,k}$) to its ``time-shifted'' version:
+\[
+  (T_S z^r)[\text{channel } c, \text{index } i] \;=\;
+  \begin{cases}
+    z^r[c, i + 64] & \text{if } i + 64 < 128, \\
+    0 & \text{if } i + 64 \ge 128 \quad \text{(boundary / tail region)}.
+  \end{cases}
+\]
+The tail region (the last 64 entries of each channel after shifting) corresponds to
+the ``new samples'' at the head of $z_t$ that were not in $z^r$.
+
+\begin{remark}[Boundary Handling]
+  In exact 50\% overlap, the first 64 positions of each channel in $z_t$ equal the
+  last 64 positions of each channel in $z^r$ (after standardization). The last 64
+  positions of $z_t$ contain completely new samples. The shift operator sets these
+  tail positions to zero, leaving them to be filled by the $Vu + \rho$ term.
+  Boundary-crossing windows (where $z_t$ starts in a different session from $z^r$)
+  are excluded from this model by construction.
+\end{remark}
+
+% ============================================================
+\section{The Low-Rank Component $Vu$}
+
+\subsection{PCA and the Concept of a Low-Rank Basis}
+
+Principal Component Analysis (PCA) applied to a dataset of $N$ normalized window
+vectors $\{z_1, \ldots, z_N\} \subset \R^{768}$ finds an orthonormal matrix
+$V \in \R^{768 \times p}$ (whose columns are the first $p$ principal components)
+such that:
+\begin{equation}
+  \hat{z} = V V^\top z \quad \text{is the best rank-$p$ linear approximation to } z.
+\end{equation}
+The residual of the approximation is $\rho = z - V V^\top z$, which lies in the
+orthogonal complement of the column space of $V$.
+
+The explained variance ratio:
+\[
+  \eta_p = \frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^{768} \lambda_i},
+\]
+where $\lambda_i$ are the eigenvalues of the covariance matrix in decreasing order,
+measures what fraction of total signal variance is captured by the first $p$
+principal components.
+
+\subsection{Why $\eta_p$ Does Not Bound Individual Residuals}
+
+A common error: interpreting ``99\% explained variance'' as ``all residuals are small.''
+This is false for two reasons.
+
+\textbf{Reason 1 (Average vs.\ worst case):} The explained variance $\eta_p$ is an
+\emph{average} squared reconstruction error over the training dataset:
+\[
+  \eta_p = 1 - \frac{\frac{1}{N} \sum_{i=1}^N \norm{\rho_i}{2}^2}{\frac{1}{N}\sum_{i=1}^N \norm{z_i}{2}^2}.
+\]
+The worst-case residual norm $\max_i \norm{\rho_i}{2}$ can be much larger than the
+average. Certification requires a bound on the worst case, not the average.
+
+\textbf{Reason 2 (Distribution shift):} The training data may not cover all possible
+streaming queries, especially for minority activities (postural transitions with
+$< 100$ training windows). A PCA fitted on training data may not explain the variance
+of rare test-time patterns.
+
+\subsection{Parameterizing the Wave-Domain}
+
+Given the PCA basis $V$, the low-rank parameter is $u \in \mathcal{U} \subset \R^p$,
+and the structured query model is:
+\[
+  z_t = T_S z^r + Vu + \rho, \qquad u \in \mathcal{U}, \quad \rho \in \mathcal{R}.
+\]
+The domain design question is: what compact sets $\mathcal{U}$ and $\mathcal{R}$ should be used?
+
+\begin{itemize}[leftmargin=1.5em]
+  \item $\mathcal{U}$: typically an $L_\infty$ or $L_2$ box in the $p$-dimensional
+        PCA space, sized to cover the empirical spread of $V^\top z_t$ across training.
+  \item $\mathcal{R}$: must cover the worst-case reconstruction residual
+        $\rho = z_t - T_S z^r - V u$. This requires a rigorous $L_\infty$ or $L_2$
+        bound, not just the average explained variance.
+\end{itemize}
+
+% ============================================================
+\section{Sinusoidal Motion: Full Worked Example}
+
+\subsection{Model Setup}
+
+Consider a single-channel, normalized signal modeled as:
+\[
+  s[n] = A \sin(\omega n + \phi),
+\]
+where $A > 0$ is amplitude, $\omega$ is angular frequency (radians per sample),
+and $\phi$ is the initial phase. This is an idealized model of periodic gait motion.
+
+\subsection{Window Vectors}
+
+Anchor window $k$ (starting at sample $kS$):
+\[
+  z^r[i] = A \sin(\omega(kS + i) + \phi), \quad i = 0, \ldots, 127.
+\]
+Query window $k+1$ (starting at sample $(k+1)S = kS + S$):
+\[
+  z_t[i] = A \sin(\omega(kS + S + i) + \phi), \quad i = 0, \ldots, 127.
+\]
+
+\subsection{Positional Delta}
+
+\begin{align}
+  \Delta[i] &= z_t[i] - z^r[i] \\
+  &= A \sin(\omega(kS + S + i) + \phi) - A \sin(\omega(kS + i) + \phi) \\
+  &= A \bigl[\sin(\omega n' + \omega S) - \sin(\omega n')\bigr]
+  \quad \text{where } n' = kS + i.
+\end{align}
+Using the sum-to-product identity $\sin(X + Y) - \sin(X) = 2\cos(X + Y/2)\sin(Y/2)$:
+\begin{equation}\label{eq:sinusoidal_delta}
+  \Delta[i] = 2A \sin\!\left(\frac{\omega S}{2}\right)
+              \cos\!\left(\omega(kS + i) + \phi + \frac{\omega S}{2}\right).
+\end{equation}
+
+\subsection{Key Observations}
+
+\textbf{Observation 1 — Amplitude factor:}
+The positional delta has amplitude $2A\sin(\omega S / 2)$.
+For the identity stride ($S = 64$) and a frequency $\omega$ such that
+$\omega S / 2 = \pi/2$ (i.e., $\omega = \pi/S = \pi/64 \approx 0.049$ rad/sample,
+corresponding to $50 / (2 \times 64) \approx 0.39$ Hz — near-DC for human gait),
+the amplitude reaches $2A$ — twice the signal amplitude.
+
+\begin{remark}
+  A perfectly periodic signal with amplitude $A$ can produce a window-to-window
+  positional delta of amplitude up to $2A$. Observing a large $\|\Delta z\|_2$
+  between consecutive windows of a periodic locomotion activity does not indicate
+  a change in activity; it is a natural consequence of the periodic waveform and
+  the query stride.
+\end{remark}
+
+\textbf{Observation 2 — Cosine structure:}
+The delta in~\eqref{eq:sinusoidal_delta} is itself a sinusoid (a cosine) at the same
+frequency $\omega$ but with a phase shift of $\phi + \omega S/2$. It has the same
+periodic structure as the original signal. This means the delta is not random noise
+— it has structure that a PCA-based low-rank model can capture.
+
+\textbf{Observation 3 — Explicit phase sensitivity:}
+The scalar $2A\sin(\omega S / 2)$ is zero when $\omega S = 2\pi k$ for integer $k$
+(when the stride is exactly one full period, the windows are identical in shape).
+It is maximum ($= 2A$) when $\omega S = \pi + 2\pi k$ (stride is half a period).
+This is why two windows of perfectly periodic walking can be maximally different:
+the stride of 1.28 s may be approximately half the gait period.
+
+\subsection{Implication for Domain Design}
+
+A naive $L_2$ ball centered at $z^r$ would require radius $\ge 2A\sqrt{128}$ to
+contain $z_t$ (the norm of a constant-amplitude cosine over 128 samples).
+For typical normalized accelerometer amplitudes $A \approx 1$--$2$, this radius
+is $2 \times 2 \times \sqrt{128} \approx 45.3$ — consistent with the empirical p50
+for walking ($\approx 36.4$) and larger than any reasonable $L_2$ certification radius.
+
+A wave-domain approach avoids this: instead of requiring the ball to contain the
+full periodic shift, it explicitly models $T_S z^r$ (which accounts for the
+deterministic shift), and only the residual $Vu + \rho$ needs a small bound.
+
+% ============================================================
+\section{PCA Dimension Selection: Explained Variance vs. Certification}
+
+\subsection{Standard PCA Selection by Variance}
+
+The standard data science heuristic: choose $p$ such that $\eta_p \ge 0.99$
+(99\% explained variance). For 768-dimensional window vectors of HAPT:
+\begin{itemize}[leftmargin=1.5em]
+  \item Static activities (SITTING, STANDING, LAYING) have very low intrinsic
+        dimensionality: likely $p = 5$--$20$ captures 99\% of variance.
+  \item Locomotion activities have higher intrinsic dimensionality (diverse gait
+        patterns): may require $p = 50$--$100$ for 99\% variance.
+\end{itemize}
+
+\subsection{Certification Requires More Than Variance}
+
+For ECDR, variance threshold is insufficient. The certifier needs a bound on
+$\mathcal{R}$, the residual set. Two complementary requirements:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Average residual bound:} The RMS residual norm
+        $\sqrt{\frac{1}{N}\sum_i \norm{\rho_i}{2}^2}$ must be small enough that
+        $\mathcal{R}$ is certifiable (small $L_2$ or $L_\infty$ ball around zero).
+  \item \textbf{Worst-case residual bound:} The max-over-training residual
+        $\max_i \norm{\rho_i}{\infty}$ determines the actual $\mathcal{R}$ size.
+        This can be orders of magnitude larger than the RMS.
+\end{enumerate}
+
+Increasing $p$ tightens both bounds but makes $\mathcal{U}$ higher-dimensional,
+potentially making the verifier's computation harder. The optimal $p$ balances:
+residual tightness (for $\mathcal{R}$) vs.\ parameter complexity (for $\mathcal{U}$).
+This is an open design question (Evidence D07).
+
+% ============================================================
+\section{Multi-Step Drift Under the Wave-Domain Model}
+
+The main document establishes via the triangle inequality that:
+\[
+  \norm{z_{r+h} - z^r}{} \le \sum_{k=0}^{h-1} \norm{z_{r+k+1} - z_{r+k}}{}.
+\]
+Under the wave-domain model, each single-step delta is:
+\[
+  z_{r+k+1} - z_{r+k} = T_S z_{r+k} + V u_{r+k} + \rho_{r+k} - z_{r+k}.
+\]
+This is not simply the shift $(T_S - I)z_{r+k}$ because $V u_{r+k}$ and $\rho_{r+k}$
+are query-dependent. Over $h$ steps, the worst-case multi-step drift accumulates:
+\[
+  \norm{z_{r+h} - z^r}{} \le h \cdot \Bigl[\norm{(T_S - I)z^r}{} + \norm{V}{\cdot}\text{diam}(\mathcal{U}) + \text{diam}(\mathcal{R})\Bigr] + \text{higher-order terms},
+\]
+where $\text{diam}(\cdot)$ is the diameter of the parameter set.
+
+For static postures, $(T_S - I)z^r$ is small (the signal barely changes in 1.28 s)
+and $\mathcal{U}$ is tight, so multi-step drift is manageable. For locomotion,
+the large periodic swings dominate, and anchor lifetime is short.
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\bibitem{weeks}
+  ECDR Research Workspace. \textit{ECDR Weeks~1--3 Theory Brief}.
+  \code{ECDR\_Weeks\_1\_2\_3\_Theory.tex}, October~2026.
+\bibitem{jolliffe2002}
+  I.T. Jolliffe. \textit{Principal Component Analysis}, 2nd ed. Springer, 2002.
+\end{thebibliography}
+
+\end{document}

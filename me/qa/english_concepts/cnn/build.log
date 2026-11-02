@@ -1,0 +1,18 @@
+note: Running TeX ...
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf`; build may not be reproducible in other environments
+note: Rerunning TeX because "ECDR_CNN_Model_Analysis.out" changed ...
+note: Rerunning TeX because "ECDR_CNN_Model_Analysis.aux" changed ...
+note: Writing `me/qa/english_concepts/cnn/ECDR_CNN_Model_Analysis.toc` (6.08 KiB)
+note: Writing `me/qa/english_concepts/cnn/ECDR_CNN_Model_Analysis.aux` (22.98 KiB)
+note: Writing `me/qa/english_concepts/cnn/ECDR_CNN_Model_Analysis.log` (29.69 KiB)
+note: Writing `me/qa/english_concepts/cnn/ECDR_CNN_Model_Analysis.xdv` (1.24 MiB)
+note: Writing `me/qa/english_concepts/cnn/ECDR_CNN_Model_Analysis.out` (20.37 KiB)

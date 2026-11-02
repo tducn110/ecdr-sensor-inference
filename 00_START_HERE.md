@@ -1,52 +1,14 @@
-# 00 START HERE — Structured Event-Conditioned Certified Neural Inference
+# Start here — ECDR
 
-> SoT docs: 00_START_HERE.md + GATES.md + refs.bib
-> LEGACY_REFERENCE: report.md (550 lines) -- DO NOT EDIT until audit done.
-> Working plan: roadmap suggestion.md (258 lines, verified read 2026-10-15).
-> Research Gates: **3/7 (G0 PASS, G1 COMPLETE_WITH_REVISIONS, G2 PASS)**. Current focus:
-> event-model revision (03_DATA_AUDIT §5) + reading plan (05_READING_PLAN.md Week 1-2);
-> G3 verifier gated on 04_THEORY freeze. K=6 frozen checkpoint: checkpoints/backbone_best.pt
-> (seed44, test macro-F1 0.9354, params 282,918) — weights changes void certificates.
+The canonical current Week 1 source is the self-contained [00_OVERVIEW/02_Week_1_Project_Brief.tex](00_OVERVIEW/02_Week_1_Project_Brief.tex). Generated shared extracts and registers are in [00_OVERVIEW/week1/](00_OVERVIEW/week1/).
 
-## Reading order
+Week 1 defines the research problem, strict reference-decision guarantee, requirements, evidence contract, hypotheses, and the K=12 reference-pipeline training/evaluation and feasibility baseline. Week 2 owns deep-model and data analysis plus component rationale. Week 3 owns mathematical and verifier obligations. The combined report is a derivative and must not become a second Week 1 source.
 
-1. This file (00_START_HERE.md)
-2. GATES.md -- 7 acceptance gates G0-G6
-3. refs.bib -- 7 verified entries (LipCache, STBP/SAIV26, DeltaCNN, Franco UAI24, HAPT, Wei & Liu, auto_LiRPA)
-4. 01_RQ_GAP.md -- working RQ + gap hypothesis (DONE in G0)
-5. 02_LITERATURE.md -- 4-axis prior-work table (DONE in G0; §5 = pending additions)
-6. 03_DATA_AUDIT.md -- HAPT deltas + coverage (DONE in G1; 2026-10-15 correction note inside)
-7. G2_CLASS_DECISION.md -- K=6 GO / K=12 HOLD with evidence (G2-A DONE)
-8. 05_READING_PLAN.md -- 23-paper list, baselines B0-B7, metrics, 4-week plan
-9. 04_THEORY.md and later -- FROZEN until G0+G1 pass and event model revised
+Current boundaries:
 
-## Working RQ (hypothesis, not proven novelty)
+- SmallCNN1D K=6 and its checkpoint are legacy baseline context.
+- SmallCNN1D K=12 has an executed exploratory reference run: `week1_ref_1793620216_9d6c1d85`, selected seed 43 at epoch 8, with 17 internal verification checks passed. Formal certificate and net-saving results remain pending.
+- ECDRConv1DNet K=12 is a separate historical model family.
+- Strict decision preservation requires zero disagreements with the frozen reference; classification accuracy and the legacy 5% empirical threshold are different quantities.
 
-Can structured, event-conditioned class-pair bounds certify that a neural backbone
-preserves its decision on temporally correlated inputs more often than global
-Lipschitz bounds, while remaining cheap enough to produce net inference savings?
-
-Success = better Pareto frontier (tighter cert + more reuse + same backbone
-decision + lower total cost). NO hard 50% latency target.
-
-## Non-goals right now
-
-- NO implementation (no backbone/verifier code) until G0 passes.
-- NO edits to report.md.
-- NO novelty freeze: RQ stays a hypothesis with evidence, not a proven-new claim.
-- NO Figma/Canva slides -- P3, irrelevant to core.
-
-## Inventory command (skills on this machine)
-
-```
-find ~/.gemini/skills ~/.agents/skills -type f -name SKILL.md 2>/dev/null | sort
-```
-
-Result 2026-10-15: ~60 files, all frontend (pixijs/gsap/figma/design), 0 ML/verifier skills.
-
-## G0 exit reminder
-
-G0 passes when: every key claim has a checkable source; STBP/LipCache/auto_LiRPA
-metadata+results verified separately; prior-work table on 4 axes exists; each
-novelty claim labeled SUPPORTED / PARTIALLY_SUPPORTED / UNVERIFIED; 01+02 done.
-Then move to 03_DATA_AUDIT.
+Use [01_RQ_GAP.md](01_RQ_GAP.md), [02_LITERATURE.md](02_LITERATURE.md), [05_READING_PLAN.md](05_READING_PLAN.md), and [06_REVIEW_PROTOCOL.md](06_REVIEW_PROTOCOL.md) for the current English research route. Dated reports and Vietnamese documents remain historical snapshots.

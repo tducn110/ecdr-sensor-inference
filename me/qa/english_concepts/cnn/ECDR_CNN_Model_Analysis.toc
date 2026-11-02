@@ -1,0 +1,67 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{Reading contract and dependency map}{1}{section*.1}%
+\contentsline {section}{P01: Real-number laws support the algebra and inequalities}{5}{section*.3}%
+\contentsline {section}{P02: Vectors package coordinates with linear-combination laws}{6}{section*.4}%
+\contentsline {section}{P03: The inner product defines a local weighted sum}{7}{section*.5}%
+\contentsline {section}{P04: A matrix represents a linear map}{8}{section*.6}%
+\contentsline {section}{P05: An affine map is linear structure plus translation}{9}{section*.7}%
+\contentsline {section}{P06: A derivative is a limit of local change ratios}{10}{section*.8}%
+\contentsline {section}{P07: A gradient collects partial derivatives}{11}{section*.9}%
+\contentsline {section}{P08: The chain rule explains backpropagation}{12}{section*.10}%
+\contentsline {section}{C01: A neural model is a parameterized function}{13}{section*.11}%
+\contentsline {section}{C02: Tensors, axes and index meanings}{14}{section*.12}%
+\contentsline {section}{C03: Physical channels and learned feature channels}{15}{section*.13}%
+\contentsline {section}{C04: Normalization is a change of coordinates}{16}{section*.14}%
+\contentsline {section}{C05: A kernel is a finite local linear rule}{17}{section*.15}%
+\contentsline {section}{C06: Cross-correlation versus mathematical convolution}{18}{section*.16}%
+\contentsline {section}{C07: Weight sharing is a parameter constraint}{19}{section*.17}%
+\contentsline {section}{C08: Bias creates an affine offset}{20}{section*.18}%
+\contentsline {section}{C09: Stride chooses output sampling positions}{21}{section*.19}%
+\contentsline {section}{C10: Padding specifies boundary values}{22}{section*.20}%
+\contentsline {section}{C11: Dilation separates the taps of a kernel}{23}{section*.21}%
+\contentsline {section}{C12: Groups restrict channel connectivity}{24}{section*.22}%
+\contentsline {section}{C13: The output-length formula follows from valid starts}{25}{section*.23}%
+\contentsline {section}{C14: ReLU is a pointwise nonlinear gate}{26}{section*.24}%
+\contentsline {section}{C15: An activation region makes the network affine}{27}{section*.25}%
+\contentsline {section}{C16: Receptive field is a temporal dependency span}{28}{section*.26}%
+\contentsline {section}{C17: Linear span describes representable directions}{29}{section*.27}%
+\contentsline {section}{C18: Jump and receptive field obey a recurrence}{30}{section*.28}%
+\contentsline {section}{C19: Global average pooling aggregates feature positions}{31}{section*.29}%
+\contentsline {section}{C20: An affine head converts features to class scores}{32}{section*.30}%
+\contentsline {section}{C21: Logits, argmax and a deterministic tie rule}{33}{section*.31}%
+\contentsline {section}{C22: Softmax changes score scale, not real ordering}{34}{section*.32}%
+\contentsline {section}{C23: A pairwise margin is the decision inequality}{35}{section*.33}%
+\contentsline {section}{C24: The specified architecture fixes every shape}{36}{section*.34}%
+\contentsline {section}{C25: Parameters count independent learned scalars}{37}{section*.35}%
+\contentsline {section}{C26: MAC counts repeated dot-product work}{38}{section*.36}%
+\contentsline {section}{C27: FLOP and non-MAC work need a stated convention}{39}{section*.37}%
+\contentsline {section}{C28: Memory is a schedule-dependent resource}{40}{section*.38}%
+\contentsline {section}{C29: Cross-entropy specifies a training objective}{41}{section*.39}%
+\contentsline {section}{C30: Backpropagation is the chain rule through the graph}{42}{section*.40}%
+\contentsline {section}{C31: Training mode and inference mode define contracts}{43}{section*.41}%
+\contentsline {section}{C32: Batch normalization can become a fixed affine map}{44}{section*.42}%
+\contentsline {section}{C33: Max pooling is a local order statistic}{45}{section*.43}%
+\contentsline {section}{C34: The complete reference includes preprocessing}{46}{section*.44}%
+\contentsline {section}{C35: A shift--append operator defines a new window}{47}{section*.45}%
+\contentsline {section}{C36: Aligned feature equality follows by local substitution}{48}{section*.46}%
+\contentsline {section}{C37: Shared positions and halo require layerwise accounting}{49}{section*.47}%
+\contentsline {section}{C38: The GAP delta is an exact cancellation identity}{50}{section*.48}%
+\contentsline {section}{C39: The affine head turns GAP delta into margin delta}{51}{section*.49}%
+\contentsline {section}{C40: A domain is a set of admissible complete inputs}{52}{section*.50}%
+\contentsline {section}{C41: A certificate proves every competitor loses everywhere}{53}{section*.51}%
+\contentsline {section}{C42: Interval propagation follows coefficient signs}{54}{section*.52}%
+\contentsline {section}{C43: ReLU relaxations handle an unstable activation}{55}{section*.53}%
+\contentsline {section}{C44: A tail enclosure yields a whole-domain margin bound}{56}{section*.54}%
+\contentsline {section}{C45: A complete toy CNN: local features are computed explicitly}{57}{section*.55}%
+\contentsline {section}{C46: The toy head checks logits and both margin changes}{58}{section*.56}%
+\contentsline {section}{C47: A continuous toy wave box is certified universally}{59}{section*.57}%
+\contentsline {section}{C48: Keeping dependence tightens the same valid proof}{60}{section*.58}%
+\contentsline {section}{C49: Computational reuse preserves current numerical outputs}{61}{section*.59}%
+\contentsline {section}{C50: Decision reuse preserves a class through a proof}{62}{section*.60}%
+\contentsline {section}{C51: A stale anchor can invalidate an otherwise valid box}{63}{section*.61}%
+\contentsline {section}{C52: Reachable sets express a finite-horizon guarantee}{64}{section*.62}%
+\contentsline {section}{C53: Numerical soundness needs more than real identities}{65}{section*.63}%
+\contentsline {section}{C54: Total cost determines whether reuse saves work}{66}{section*.64}%
+\contentsline {section}{C55: Accuracy, agreement and coverage have different denominators}{67}{section*.65}%
+\contentsline {section}{C56: The historical model is a different reference}{68}{section*.66}%
+\contentsline {section}{Source ledger and reproducibility boundary}{69}{section*.67}%

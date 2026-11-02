@@ -1,0 +1,81 @@
+note: Running TeX ...
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf`; build may not be reproducible in other environments
+warning: ECDR_Mathematics_Explained.tex:1266: Underfull \hbox (badness 6658) in paragraph at lines 1266--1266
+warning: ECDR_Mathematics_Explained.tex:1271: Underfull \hbox (badness 10000) in paragraph at lines 1271--1271
+warning: ECDR_Mathematics_Explained.tex:1272: Underfull \hbox (badness 10000) in paragraph at lines 1272--1272
+warning: ECDR_Mathematics_Explained.tex:1273: Underfull \hbox (badness 1163) in paragraph at lines 1273--1273
+warning: ECDR_Mathematics_Explained.tex:1275: Underfull \hbox (badness 10000) in paragraph at lines 1275--1275
+warning: ECDR_Mathematics_Explained.tex:1276: Underfull \hbox (badness 10000) in paragraph at lines 1276--1276
+warning: ECDR_Mathematics_Explained.tex:1279: Underfull \hbox (badness 2903) in paragraph at lines 1279--1279
+warning: ECDR_Mathematics_Explained.tex:1280: Underfull \hbox (badness 3895) in paragraph at lines 1280--1280
+warning: ECDR_Mathematics_Explained.tex:1281: Underfull \hbox (badness 10000) in paragraph at lines 1281--1281
+warning: ECDR_Mathematics_Explained.tex:1283: Underfull \hbox (badness 1308) in paragraph at lines 1283--1283
+warning: ECDR_Mathematics_Explained.tex:1290: Underfull \hbox (badness 10000) in paragraph at lines 1290--1290
+warning: ECDR_Mathematics_Explained.tex:1292: Underfull \hbox (badness 10000) in paragraph at lines 1292--1292
+warning: ECDR_Mathematics_Explained.tex:1307: Underfull \hbox (badness 1867) in paragraph at lines 1305--1307
+warning: ECDR_Mathematics_Explained.tex:1307: Underfull \hbox (badness 2435) in paragraph at lines 1305--1307
+warning: ECDR_Mathematics_Explained.tex:1315: Underfull \hbox (badness 1292) in paragraph at lines 1313--1315
+warning: ECDR_Mathematics_Explained.tex:1317: Underfull \hbox (badness 10000) in paragraph at lines 1317--1317
+warning: ECDR_Mathematics_Explained.tex:1319: Underfull \hbox (badness 10000) in paragraph at lines 1319--1319
+warning: ECDR_Mathematics_Explained.tex:1321: Underfull \hbox (badness 6775) in paragraph at lines 1319--1321
+warning: ECDR_Mathematics_Explained.tex:1331: Underfull \hbox (badness 10000) in paragraph at lines 1329--1331
+warning: ECDR_Mathematics_Explained.tex:1345: Underfull \hbox (badness 2452) in paragraph at lines 1343--1345
+warning: ECDR_Mathematics_Explained.tex:1345: Underfull \hbox (badness 1057) in paragraph at lines 1345--1345
+note: Rerunning TeX because "ECDR_Mathematics_Explained.aux" changed ...
+warning: ECDR_Mathematics_Explained.tex:1266: Underfull \hbox (badness 6658) in paragraph at lines 1266--1266
+warning: ECDR_Mathematics_Explained.tex:1271: Underfull \hbox (badness 10000) in paragraph at lines 1271--1271
+warning: ECDR_Mathematics_Explained.tex:1272: Underfull \hbox (badness 10000) in paragraph at lines 1272--1272
+warning: ECDR_Mathematics_Explained.tex:1273: Underfull \hbox (badness 1163) in paragraph at lines 1273--1273
+warning: ECDR_Mathematics_Explained.tex:1275: Underfull \hbox (badness 10000) in paragraph at lines 1275--1275
+warning: ECDR_Mathematics_Explained.tex:1276: Underfull \hbox (badness 10000) in paragraph at lines 1276--1276
+warning: ECDR_Mathematics_Explained.tex:1279: Underfull \hbox (badness 2903) in paragraph at lines 1279--1279
+warning: ECDR_Mathematics_Explained.tex:1280: Underfull \hbox (badness 3895) in paragraph at lines 1280--1280
+warning: ECDR_Mathematics_Explained.tex:1281: Underfull \hbox (badness 10000) in paragraph at lines 1281--1281
+warning: ECDR_Mathematics_Explained.tex:1283: Underfull \hbox (badness 1308) in paragraph at lines 1283--1283
+warning: ECDR_Mathematics_Explained.tex:1290: Underfull \hbox (badness 10000) in paragraph at lines 1290--1290
+warning: ECDR_Mathematics_Explained.tex:1292: Underfull \hbox (badness 10000) in paragraph at lines 1292--1292
+warning: ECDR_Mathematics_Explained.tex:1307: Underfull \hbox (badness 1867) in paragraph at lines 1305--1307
+warning: ECDR_Mathematics_Explained.tex:1307: Underfull \hbox (badness 2435) in paragraph at lines 1305--1307
+warning: ECDR_Mathematics_Explained.tex:1315: Underfull \hbox (badness 1292) in paragraph at lines 1313--1315
+warning: ECDR_Mathematics_Explained.tex:1317: Underfull \hbox (badness 10000) in paragraph at lines 1317--1317
+warning: ECDR_Mathematics_Explained.tex:1319: Underfull \hbox (badness 10000) in paragraph at lines 1319--1319
+warning: ECDR_Mathematics_Explained.tex:1321: Underfull \hbox (badness 6775) in paragraph at lines 1319--1321
+warning: ECDR_Mathematics_Explained.tex:1331: Underfull \hbox (badness 10000) in paragraph at lines 1329--1331
+warning: ECDR_Mathematics_Explained.tex:1345: Underfull \hbox (badness 2452) in paragraph at lines 1343--1345
+warning: ECDR_Mathematics_Explained.tex:1345: Underfull \hbox (badness 1057) in paragraph at lines 1345--1345
+note: Rerunning TeX because "ECDR_Mathematics_Explained.aux" changed ...
+warning: ECDR_Mathematics_Explained.tex:1266: Underfull \hbox (badness 6658) in paragraph at lines 1266--1266
+warning: ECDR_Mathematics_Explained.tex:1271: Underfull \hbox (badness 10000) in paragraph at lines 1271--1271
+warning: ECDR_Mathematics_Explained.tex:1272: Underfull \hbox (badness 10000) in paragraph at lines 1272--1272
+warning: ECDR_Mathematics_Explained.tex:1273: Underfull \hbox (badness 1163) in paragraph at lines 1273--1273
+warning: ECDR_Mathematics_Explained.tex:1275: Underfull \hbox (badness 10000) in paragraph at lines 1275--1275
+warning: ECDR_Mathematics_Explained.tex:1276: Underfull \hbox (badness 10000) in paragraph at lines 1276--1276
+warning: ECDR_Mathematics_Explained.tex:1279: Underfull \hbox (badness 2903) in paragraph at lines 1279--1279
+warning: ECDR_Mathematics_Explained.tex:1280: Underfull \hbox (badness 3895) in paragraph at lines 1280--1280
+warning: ECDR_Mathematics_Explained.tex:1281: Underfull \hbox (badness 10000) in paragraph at lines 1281--1281
+warning: ECDR_Mathematics_Explained.tex:1283: Underfull \hbox (badness 1308) in paragraph at lines 1283--1283
+warning: ECDR_Mathematics_Explained.tex:1290: Underfull \hbox (badness 10000) in paragraph at lines 1290--1290
+warning: ECDR_Mathematics_Explained.tex:1292: Underfull \hbox (badness 10000) in paragraph at lines 1292--1292
+warning: ECDR_Mathematics_Explained.tex:1307: Underfull \hbox (badness 1867) in paragraph at lines 1305--1307
+warning: ECDR_Mathematics_Explained.tex:1307: Underfull \hbox (badness 2435) in paragraph at lines 1305--1307
+warning: ECDR_Mathematics_Explained.tex:1315: Underfull \hbox (badness 1292) in paragraph at lines 1313--1315
+warning: ECDR_Mathematics_Explained.tex:1317: Underfull \hbox (badness 10000) in paragraph at lines 1317--1317
+warning: ECDR_Mathematics_Explained.tex:1319: Underfull \hbox (badness 10000) in paragraph at lines 1319--1319
+warning: ECDR_Mathematics_Explained.tex:1321: Underfull \hbox (badness 6775) in paragraph at lines 1319--1321
+warning: ECDR_Mathematics_Explained.tex:1331: Underfull \hbox (badness 10000) in paragraph at lines 1329--1331
+warning: ECDR_Mathematics_Explained.tex:1345: Underfull \hbox (badness 2452) in paragraph at lines 1343--1345
+warning: ECDR_Mathematics_Explained.tex:1345: Underfull \hbox (badness 1057) in paragraph at lines 1345--1345
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Running xdvipdfmx ...
+note: Writing `me/ECDR_Mathematics_Explained.log` (35.87 KiB)
+note: Writing `me/ECDR_Mathematics_Explained.pdf` (219.00 KiB)
+note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)

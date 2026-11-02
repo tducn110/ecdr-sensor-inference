@@ -1,0 +1,31 @@
+note: Running TeX ...
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf`; build may not be reproducible in other environments
+warning: ECDR_Mathematics_Concepts_EN.tex:1811: Underfull \hbox (badness 2042) in paragraph at lines 1805--1811
+warning: ECDR_Mathematics_Concepts_EN.tex:2968: Underfull \hbox (badness 1796) in paragraph at lines 2967--2968
+warning: ECDR_Mathematics_Concepts_EN.tex:2997: Underfull \hbox (badness 3838) in paragraph at lines 2995--2997
+warning: ECDR_Mathematics_Concepts_EN.tex:3139: Underfull \hbox (badness 1472) in paragraph at lines 3138--3139
+note: Rerunning TeX because "ECDR_Mathematics_Concepts_EN.aux" changed ...
+warning: ECDR_Mathematics_Concepts_EN.tex:1811: Underfull \hbox (badness 2042) in paragraph at lines 1805--1811
+warning: ECDR_Mathematics_Concepts_EN.tex:2968: Underfull \hbox (badness 1796) in paragraph at lines 2967--2968
+warning: ECDR_Mathematics_Concepts_EN.tex:2997: Underfull \hbox (badness 3838) in paragraph at lines 2995--2997
+warning: ECDR_Mathematics_Concepts_EN.tex:3139: Underfull \hbox (badness 1472) in paragraph at lines 3138--3139
+note: Rerunning TeX because "ECDR_Mathematics_Concepts_EN.aux" changed ...
+warning: ECDR_Mathematics_Concepts_EN.tex:1811: Underfull \hbox (badness 2042) in paragraph at lines 1805--1811
+warning: ECDR_Mathematics_Concepts_EN.tex:2968: Underfull \hbox (badness 1796) in paragraph at lines 2967--2968
+warning: ECDR_Mathematics_Concepts_EN.tex:2997: Underfull \hbox (badness 3838) in paragraph at lines 2995--2997
+warning: ECDR_Mathematics_Concepts_EN.tex:3139: Underfull \hbox (badness 1472) in paragraph at lines 3138--3139
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Writing `me/qa/english_concepts/math/ECDR_Mathematics_Concepts_EN.toc` (46.82 KiB)
+note: Writing `me/qa/english_concepts/math/ECDR_Mathematics_Concepts_EN.out` (30.94 KiB)
+note: Writing `me/qa/english_concepts/math/ECDR_Mathematics_Concepts_EN.xdv` (2.11 MiB)
+note: Writing `me/qa/english_concepts/math/ECDR_Mathematics_Concepts_EN.aux` (90.96 KiB)
+note: Writing `me/qa/english_concepts/math/ECDR_Mathematics_Concepts_EN.log` (33.92 KiB)

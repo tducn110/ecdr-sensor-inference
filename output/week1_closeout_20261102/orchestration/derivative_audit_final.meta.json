@@ -1,0 +1,26 @@
+{
+  "worker": "derivative_audit_final",
+  "model": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "start_unix": 1793619319.782574,
+  "timeout_seconds": 360,
+  "prompt_path": "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/derivative_audit_final.prompt.txt",
+  "argv_without_prompt": [
+    "agy",
+    "--conversation",
+    "ec75631f-ae18-4a02-9c1f-672058ada217",
+    "--model",
+    "gemini-3.8-flash-medium",
+    "--effort",
+    "medium",
+    "--output-format",
+    "stream-json",
+    "--print-timeout",
+    "300s",
+    "--log-file",
+    "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/derivative_audit_final.agy.log"
+  ],
+  "pid": 115636,
+  "returncode": 0,
+  "end_unix": 1793619410.1659274
+}

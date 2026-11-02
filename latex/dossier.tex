@@ -1,123 +1,546 @@
-% Research Dossier — Structured Event-Conditioned Certified Neural Inference
-% G0 literature verification + G1 data-audit plan
-% Fonts: Computer Modern (LaTeX default). Engine: pdfLaTeX via Tectonic.
 \documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
 \usepackage{amsmath,amssymb,amsthm}
-\usepackage{booktabs}
-\usepackage{hyperref}
-\usepackage{geometry}
-\geometry{margin=2.5cm}
-\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
-\newtheorem{proposition}{Proposition}
-\title{Structured Event-Conditioned Certified Neural Inference\\{\large Research Dossier: G0 Literature Verification + G1 Data-Audit Plan}\thanks{Status: G0 passed 2026-10-15. \texttt{report.md} stays LEGACY\_REFERENCE. RQ is a working hypothesis, not a proven novelty claim.}}
-\author{Research Vault}
-\date{2026-10-15}
+\usepackage{geometry,booktabs,tabularx,longtable,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xcolor,hyperref,xurl,fancyhdr}
+\geometry{margin=2.3cm,headheight=15pt}
+\definecolor{ink}{HTML}{17354A}
+\definecolor{accent}{HTML}{177A80}
+\hypersetup{colorlinks=true,linkcolor=ink,citecolor=accent,urlcolor=accent,
+ pdftitle={ECDR: Báo cáo nghiên cứu và hiện trạng},pdfauthor={}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.18}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Sset}{\mathcal{S}}
+\newcommand{\Zset}{\mathcal{Z}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newtheorem{proposition}{Mệnh đề}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{ECDR | Báo cáo nghiên cứu}}
+\fancyhead[R]{\small 22/10/2026}
+\fancyfoot[C]{\thepage}
+\title{\textcolor{ink}{Tái sử dụng quyết định có chứng nhận\\
+theo sự kiện trong suy luận mạng neural\\trên chuỗi cảm biến}\\[8pt]
+\large Event-Conditioned Certified Decision Reuse (ECDR)\\
+\normalsize Báo cáo hiện trạng và đề cương phương pháp}
+\author{}
+\date{Ngày cập nhật: 22 tháng 10 năm 2026}
+
 \begin{document}
 \maketitle
+\begin{abstract}
+ECDR nghiên cứu khả năng tránh chạy lại một neural classifier đã cố định trên
+mỗi cửa sổ cảm biến bằng cách tái sử dụng quyết định tại một trusted anchor.
+Việc chấp nhận reuse đòi hỏi đầu vào mới thuộc đúng miền được chứng nhận và
+mọi class-pair logit margin có lower bound hợp lệ, dương trên toàn miền.
+Báo cáo xác định bài toán, câu hỏi nghiên cứu, domain contract, điều kiện đủ
+của certificate, kiến trúc runtime dự kiến và phương pháp đánh giá.
+Nguồn thực nghiệm hiện có là các artifact HAPT đã lưu: 17.453 cửa sổ,
+backbone sáu lớp có 282.918 tham số, test macro-F1 của checkpoint chọn bằng
+validation là 0,9354 trên 2.874 pure windows. Mean forward CPU được báo cáo
+là 0,2511 ms; đây chưa phải latency end-to-end. Các số liệu này chưa được
+tái lập bằng chạy model trong lượt biên soạn. Artifact ghi nhận các run ngày
+15/10/2026; ngày cập nhật báo cáo không phải ngày thực nghiệm mới. Verifier, certified reuse gate
+và net saving chưa có kết quả. Đóng góp ECDR vì vậy còn là giả thuyết cần
+kiểm nghiệm, với G3--G6 đang chờ thực hiện.
+\end{abstract}
+\textbf{Từ khóa:} certified decision reuse; time-series classification; neural
+network verification; CROWN; perturbation region; trusted anchor; runtime cost.
+
 \tableofcontents
 \newpage
 
-\section{Reading guide}
-SoT docs: \texttt{00\_START\_HERE.md} + \texttt{GATES.md} + \texttt{refs.bib}.
-Gates: 1/7 (G0 passed). Current focus: G1 Data Audit.
-Inventory: \texttt{find \textasciitilde/.gemini/skills \textasciitilde/.agents/skills -type f -name SKILL.md} gives $\sim$60 files, all frontend (pixijs/gsap/figma/design), 0 ML/verifier skills.
+\section{Bài toán và động lực nghiên cứu}
+Một hệ thống phân loại chuỗi cảm biến thường dựng cửa sổ rồi chạy đầy đủ
+backbone cho từng cửa sổ. Các đầu vào liên tiếp có thể chứa redundancy, nhưng
+chồng lấn hoặc gần nhau theo một khoảng cách không đủ để bảo đảm classifier
+giữ quyết định. Khi chỉ dùng heuristic similarity để reuse, hệ thống có thể
+trả một nhãn khác với nhãn mà backbone sẽ tính cho query hiện tại.
 
-\section{Working research question}
-\begin{quote}
-Can structured, event-conditioned class-pair bounds certify that a neural backbone preserves its decision on temporally correlated inputs more often than global Lipschitz bounds, while remaining cheap enough to produce net inference savings?
-\end{quote}
-Success = better Pareto frontier: tighter certificate + higher certified reuse + same backbone decision + lower total cost. No hard 50\% latency target.
+ECDR đặt mục tiêu kiểm tra điều kiện đủ trước khi reuse. Đối tượng được bảo
+toàn là \emph{quyết định của reference pipeline}; nhãn hoạt động thực tế vẫn
+có thể bị backbone phân loại sai. Chứng nhận cùng quyết định không tạo ra
+guarantee correctness với ground truth, không tái tạo toàn bộ logits và
+không mở rộng context window hoặc bộ nhớ của LLM.
 
-Scope: streaming windows $x_t$ (HAPT: 6 channels $\times$ 128 samples, 50\,Hz); small verifier-friendly 1D-CNN (24,428 params iff bias everywhere, no BN, $K{=}12$; $K{=}6 \Rightarrow 24{,}038$; needs \texttt{scripts/count\_params.py} in G2). The certificate proves reuse has the \textbf{same prediction} as the backbone at a trusted anchor---it does \textbf{not} prove correctness vs.\ ground truth. Agreement and Accuracy are separate metrics.
+Giá trị ứng dụng cần được đo thay vì giả định. Backbone hiện tại có chi phí
+forward nhỏ trên CPU đã benchmark. Chưa có deployment, kết quả trên điện
+thoại, đo energy hay bằng chứng rằng một stream đang vi phạm deadline.
 
-\section{Claim verification ledger (G0)}
-\begin{table}[h]\centering\small
-\begin{tabular}{@{}llp{8cm}@{}}
-\toprule
-\# & Status & Evidence \\
-\midrule
-C1 LipCache per-sample reuse & SUPPORTED & arXiv:2608.13144: radius from local margin + spectral norm; reuse only inside ball, else MainNet fallback. \\
-C2 speedup 1.65$\times$ & SUPPORTED (scoped) & Same abstract: CIFAR / Tiny-ImageNet / SVHN. Image tasks only, not time series. \\
-C3 GuardNet-side only & SUPPORTED & Same abstract: GuardNet-side certified-consistency. \\
-C4 MainNet-side + streaming future work & SUPPORTED & Full PDF v1 Sec~7.1 (p.~18): i.i.d.\ only; temporal redundancy, drift, streaming reuse left as future work. Remark~5.2: certificate is GuardNet-side, not MainNet-side. \\
-C5 STBP structured bounds & SUPPORTED & Full PDF arXiv:2606.09746 v1 (33pp): exact closed-form first conv layer + propagation; ST-Bench. Local copy in \texttt{papers/}. \\
-C6 STBP 1.7$\times$ & SUPPORTED (scoped) & Same PDF: up to 1.7$\times$ certified robust accuracy vs.\ IBP, identical budgets, UCF-101/Udacity/MedMNIST. NOT speed. Caveat: STBP-LJ empirical; only STBP-IBP/Lipschitz strictly sound. \\
-C7 DeltaCNN 7$\times$ & SUPPORTED (scoped) & CVPR22 OA: sparse end-to-end, no retraining, beats cuDNN, marginal accuracy diff. No certificate. \\
-C8 Franco UAI24 smoothing & SUPPORTED & PMLR v244:1371--1388: arbitrary transformations + conformal, automotive time series. \\
-C9 HAPT streaming fit & SUPPORTED & UCI id=341: 30 subjects, 6+6 labels, acc+gyro 50\,Hz, window 2.56\,s/50\%/128, raw for online tests, DOI 10.24432/C54G7M, CC BY 4.0. \\
-C10 auto\_LiRPA C-spec & SUPPORTED (machinery) & API: \texttt{compute\_bounds(x, aux, C, method\ldots)} with C mapping logits to margins; IBP/CROWN/Forward/alpha-CROWN; Linf box. Correlated sets need prototype. \\
-C11 our novelty & UNVERIFIED & Working hypothesis. \\
-C12 CROWN net-saving & UNVERIFIED & Zero benchmarks; G5 required. \\
-\bottomrule
-\end{tabular}
-\end{table}
+\section{Câu hỏi nghiên cứu và giả thuyết}
+\textbf{RQ1 -- câu hỏi chính.}
+Miền biến thiên được chọn theo event và class-pair bounds có thể chứng nhận
+giữ nguyên quyết định backbone thường xuyên hơn global Lipschitz bounds,
+trong khi tổng chi phí đủ thấp để có net inference saving hay không?
 
-\section{Prior work: four axes}
-\begin{table}[h]\centering\small
-\begin{tabular}{@{}lp{3cm}p{3cm}p{3cm}p{3cm}@{}}
-\toprule
-Method & Cert target & Perturbation & Temporal reuse & Runtime \\
-\midrule
-LipCache & GuardNet consistency in ball & Isotropic ball in GuardNet feature space; per-pair $r^*_i$ tighter & Per-sample cache + fallback; streaming future work | STBP & 3D-CNN robustness (STBP-IBP/Lipschitz sound; STBP-LJ empirical) & Subset of frames or patches in consecutive frames; closed-form first layer & ST-Bench video benchmark, no reuse cache & 1.7$\times$ cert accuracy vs.
- IBP (not speed) \\
- DeltaCNN & None (empirical) & Sparse frame differences & Frame-by-frame sparse propagation & 7$\times$ vs.
- cuDNN (no cert) \\
- Franco et al.
- & Robustness + conformal & Arbitrary time-series transforms & Single classifier, no anchor reuse & Accuracy retained, no latency claim \\
- Ours (hyp.) & Backbone decision equivalence (G3) & Event sets $\mathcal{S}_e$, diagonal then correlated (G1/G3) & Anchor lifecycle + fallback (unproven) & Saving iff $rT_f > T_e{+}T_m{+}qT_b$ (G5) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{itemize}
+\item \textbf{RQ2 -- soundness:} cần domain, membership, numerical assumptions
+và identity nào để mọi query được chấp nhận đều giữ quyết định?
+\item \textbf{RQ3 -- effectiveness:} event-conditioned structure có cải thiện
+certified coverage/reuse khi so sánh ở budget hoặc coverage phù hợp?
+\item \textbf{RQ4 -- systems cost:} mức reuse và certificate amortization nào
+bù được event processing, membership, fallback và rebuild?
+\end{itemize}
 
-\section{Gap hypothesis}
-Gap = event-conditioned structured bounds + direct backbone-decision certification + sequential reuse + runtime-cost analysis \textbf{including} rebuild.
-Do NOT claim first class-pair radius or first structured verifier.
-Novelty SUPPORTED: per-pair radius (LipCache), GuardNet scope + future work quotes, STBP 1.7$\times$ scoped, sparse reuse, smoothing cert, C-spec machinery.
-UNVERIFIED: our novelty (C11), CROWN net-saving (C12).
+\textbf{H1 (điều kiện toán học):} membership đúng và lower margins hợp lệ,
+dương trên toàn miền là điều kiện đủ cho decision preservation.
+\textbf{H2 (thực nghiệm, mở):} cấu trúc miền cải thiện certified reuse ở ít
+nhất một operating regime có so sánh công bằng.
+\textbf{H3 (thực nghiệm, mở):} có operating regime mà tổng chi phí thấp hơn
+full inference. H2/H3 chưa có kết quả; không đặt target cứng giảm 50\% latency.
 
-\section{Core math (from roadmap, to freeze after G1)}
-Anchor $x^r$ with $a = \arg\max_k f_k(x^r)$, margin $g_{aj}(x) = f_a(x)-f_j(x)$, $m_{aj} = g_{aj}(x^r) > 0$.
-Event set $\mathcal{S}_e(x^r) = \{x^r + D_e u : \|u\|_\infty \le 1\}$ with $D_e = \mathrm{diag}(r^{(e)}_1,\ldots,r^{(e)}_d)$.
-Adverse shift $B^*_{aj}(e) = \sup_{x \in \mathcal{S}_e}[m_{aj} - g_{aj}(x)]$; certificate needs $m_{aj} > B^*_{aj}(e)$ $\forall j \ne a$.
-\begin{proposition}[Soundness]
-If $m_{aj} > B^*_{aj}(e)$ for all $j \ne a$, then $\arg\max_k f_k(x) = a$ for all $x \in \mathcal{S}_e$.
-\end{proposition}
-CROWN affine lower bound $g_{aj}(x) \ge \alpha_{aj}^\top x + \beta_{aj}$ on $\mathcal{S}_e$ gives
+\section{Phạm vi, dữ liệu và các đối tượng}
+\subsection{Window, event và region}
+Một time-series window là một điểm đầu vào
+\(x_t\in\R^{6\times128}\), tương đương vector trong \(\R^{768}\).
+Mỗi window chứa 128 thời điểm của sáu kênh accelerometer/gyroscope.
+Ở 50 Hz, độ dài quy ước là 2,56 giây; stride 64 tương ứng 1,28 giây.
+Các thông số này phù hợp cách dựng cửa sổ của project và mô tả HAPT
+\cite{hapt}. Project sử dụng raw recordings để dựng lại chronology; số
+17.453 cửa sổ của project không phải số 10.929 feature records trên trang UCI.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=0.065cm,y=0.65cm,font=\small]
+\draw[-{Latex}] (0,0)--(194,0) node[right]{mẫu};
+\fill[accent!18] (0,0.4) rectangle (128,1.0);
+\draw[accent,thick] (0,0.4) rectangle (128,1.0);
+\fill[ink!14] (64,1.5) rectangle (192,2.1);
+\draw[ink,thick] (64,1.5) rectangle (192,2.1);
+\node at (64,0.7){\(x_t:\ 128\) thời điểm/kênh};
+\node at (128,1.8){\(x_{t+1}:\ 128\) thời điểm/kênh};
+\draw[dashed] (64,0)--(64,2.3);
+\draw[dashed] (128,0)--(128,2.3);
+\foreach \x/\t in {0/0,64/64,128/128,192/192}
+ {\draw (\x,0.07)--(\x,-0.07) node[below]{\t};}
+\end{tikzpicture}
+\caption{Minh họa hình học của sliding windows; không phải đồ thị tín hiệu
+đo được. Hai cửa sổ chia sẻ 64 thời điểm, nhưng các mẫu đó dịch vị trí trong
+tensor CNN. Overlap không tự suy ra decision agreement.}
+\end{figure}
+
+Event descriptor \(e\) mô tả biến thiên và giúp selector chọn template/budget.
+Selector online hiện chưa được triển khai. Nhãn ground-truth dùng trong
+audit không có nghĩa runtime biết đúng hoạt động.
+Candidate region \(\Sset_e(x^r)\) là một \emph{tập} đầu vào gắn với anchor,
+không phải một đoạn thời gian. Chỉ khi có certificate hợp lệ trên toàn miền
+mới gọi đó là certified region.
+
+\subsection{Phạm vi classification và model}
+Backbone cố định hiện tại có \(K=6\) basic activities. K=12 pure-only đang HOLD
+vì transition support không đạt tiêu chí project.
+Ba khối Conv1d có channels \(6\to32\to64\to64\), kernels \(5/3/3\);
+mỗi conv có BatchNorm và ReLU, MaxPool sau hai conv đầu. Head là
+Flatten 2048--Linear 128--ReLU--Linear 6. Tổng tham số là 282.918.
+Đây là kiến trúc thực trong source, thay cho proposal no-BN khoảng 24k cũ.
+Khả năng tạo bounds cho graph thực tế còn cần kiểm trong G3.
+
+\section{Công trình liên quan và khoảng trống}
+LipCache nghiên cứu certified caching cho image service; bản PDF đã đọc
+giới hạn certificate ở phía GuardNet, không bảo đảm MainNet trên toàn reuse
+ball \cite{lipcache}. Wei và Liu tái sử dụng computation cho online
+verification dưới domain/network updates \cite{wei}; đây là mục tiêu
+verification, không tự tương đương việc tránh forward inference.
+NoScope và DeltaCNN khai thác temporal structure cho conditional hoặc sparse
+inference \cite{noscope,deltacnn}. Các nhánh đó đặt ra prior art cho temporal
+reuse, nhưng có guarantee và phạm vi khác.
+
+CROWN và automatic LiRPA cung cấp nền tảng tính bounds
+\cite{crown,lirpa}. API auto\_LiRPA hỗ trợ specification matrix \(C\) ánh xạ
+logits thành classification margins \cite{api}; tính năng API chưa chứng
+minh integration hiện tại đúng hoặc đủ nhanh. STBP và time-series smoothing
+là prior art cho structured perturbations/certification
+\cite{stbp,franco}.
+
+\textbf{Candidate contribution của ECDR} là tổ hợp cụ thể: direct-backbone
+decision preservation, miền được chọn theo event, sound membership,
+trusted-anchor lifecycle và end-to-end cost accounting. Chưa chứng minh
+tổ hợp này mới. Không nhận first temporal reuse, first structured verifier,
+first class-pair margin hay net-saving như kết quả đã đạt.
+
+Coverage của literature review còn giới hạn: có reading list P01--P23,
+claim ledger và pilot note P04; chưa sàng lọc toàn corpus theo systematic
+search. Metadata check hoặc đọc một đoạn không tương đương full-paper review.
+
+\section{Domain contract và formulation}
+\subsection{Raw và normalized coordinates}
+Gọi \(x\in\R^d\), \(d=768\), là raw window đã flatten.
+Preprocessing train-fit cố định là
 \begin{equation}
-\underline{g}^{(e)}_{aj} = \alpha_{aj}^\top x^r + \beta_{aj} - \|D_e^\top\alpha_{aj}\|_1,
+ z=N(x)=A(x-m),\qquad
+ A=\operatorname{diag}(\sigma_1^{-1},\ldots,\sigma_d^{-1}),\qquad
+ F(x)=f_\theta(N(x)).
 \end{equation}
-since $\min_{\|u\|_\infty\le 1}\alpha^\top D_e u = -\|D_e^\top\alpha\|_1$.
-Report used $\|D_e\alpha\|_1$, valid only because $D_e$ is diagonal symmetric; general $D_e$ needs $D_e^\top\alpha$.
-Runtime certificate: $\underline{g}^{(e)}_{aj} > 0$ $\forall j \ne a$.
-Robust extension for coverage: $x = x^r + D_e u + v$, $|v_i| \le \epsilon_i$, paying $-\sum_i \epsilon_i|\alpha_i|$.
-Diagonal box stays the first baseline; correlated sets after 03\_DATA\_AUDIT confirms data support.
-\textbf{Overlap $\ne$ similarity:} 128-window stride 64 shares 64 samples at different CNN coordinates, so $\|x_{t+1}-x_t\|_\infty \approx 0$ does not follow; G1 must measure deltas vs.
- margins.
+Mean/std theo channel được lặp theo time coordinate; std trong source có
+floor \(10^{-6}\). \(F\) là raw-input reference pipeline, còn \(f_\theta\)
+nhận normalized input. Model weights, BatchNorm inference state và
+normalization phải được pin cùng certificate.
 
-\section{Runtime cost (with rebuild)}
-$E[T] = T_e + T_m + (1-r)T_f + qT_b$; saving iff $rT_f > T_e + T_m + qT_b$.
-Old $E[T] = T_c + (1-r)T_f$ hides rebuild and is invalid.
-Report median + p95 + mean on one CPU; split lookup-only vs.
- end-to-end incl.
- rebuild.
+Ở G3 đầu tiên, định nghĩa normalized diagonal candidate
+\begin{equation}\label{eq:diag}
+ \Zset_e(z^r)=
+ \{z^r+B_eu:\norm{u}_\infty\le1\},\quad
+ B_e=\operatorname{diag}(b_1,\ldots,b_d),\quad b_i\ge0,
+\end{equation}
+với \(z^r=N(x^r)\). Raw preimage tương ứng là
+\(\Sset_e(x^r)=N^{-1}(\Zset_e(z^r))\).
+Do đó không áp raw budget trực tiếp lên normalized model.
+Đây là contract cho prototype dự kiến; budget concrete và integration chưa
+được triển khai hoặc freeze thành kết quả thực nghiệm.
 
-\section{G1 data audit plan (HAPT)}
-Raw: \texttt{acc\_expXX\_userYY.txt} + \texttt{gyro\_expXX\_userYY.txt} at 50\,Hz; \texttt{labels.txt} (exp, user, activity, start, end); 12 IDs; Train 81\,MB / Test 33\,MB 561-features + subject\_id 1--30; 133 files 75.9\,MB; CC BY 4.0.
-Rebuild chronological windows from RawData + labels (UCI: raw provided ``in order to make online tests''); never shuffle overlapping windows across train/test.
-Q1 deltas $\|x_{t+1}-x_t\|_{2,\infty}$ same-vs-boundary + quantiles; Q2 diagonal-box coverage per event type (stop if $\approx$0); Q3 label counts + durations + K=12-vs-6 decision.
-Scripts: \texttt{download\_hapt.py}, \texttt{build\_windows.py}, \texttt{audit\_deltas.py}, \texttt{audit\_coverage.py}, \texttt{audit\_labels.py}.
-G1 passes on numbers + plots; then freeze 04\_THEORY.
+\subsection{Certificate trên toàn miền}
+Tại trusted anchor đã chạy full model, đặt
+\(a=\arg\max_k f_{\theta,k}(z^r)\) và
+\(g_{aj}(z)=f_{\theta,a}(z)-f_{\theta,j}(z)\).
+\begin{proposition}[Điều kiện đủ của decision preservation]\label{prop}
+Giả sử với mỗi \(j\ne a\), \(\ell_{aj}\) là lower bound hợp lệ:
+\[
+ \forall z\in\Zset_e(z^r):\quad g_{aj}(z)\ge\ell_{aj}.
+\]
+Nếu \(\min_{j\ne a}\ell_{aj}>0\), mọi điểm trong miền có unique winner \(a\).
+Với query \(z_t\in\Zset_e(z^r)\), có thể trả lại lớp \(a\).
+\end{proposition}
+\begin{proof}
+Với mọi đối thủ \(j\), \(f_{\theta,a}(z)-f_{\theta,j}(z)\ge\ell_{aj}>0\).
+Vì vậy logit \(a\) lớn hơn từng logit khác trên toàn miền.
+\end{proof}
+Điều kiện strict-positive là điều kiện đủ; không khẳng định tương đương với
+mọi argmax policy có tie. Mệnh đề là cơ sở logic, không phải một novelty theorem.
 
-\section{Gates (1/7: G0 passed)}
-G0 literature done. G1 dataset feasible (deltas, coverage, labels). G2 backbone reproducible (config, seed, checkpoint, macro-F1, count\_params.py, shape test).
-G3 sound verifier (math + independent membership checker; zero violations = test evidence, not proof; version pin + invalidation + trace).
-G4 structured beats baselines (ablation Global $\to$ structured $\to$ pair $\to$ reuse).
-G5 net saving incl.
- rebuild. G6 real numbers + CIs + scripts + limitations.
+\subsection{Affine bound cho diagonal region}
+Nếu một affine relaxation hợp lệ trên \emph{toàn miền} cho
+\(g_{aj}(z)\ge\alpha_{aj}^{\top}z+\beta_{aj}\), thì
+\begin{equation}\label{eq:affine}
+ \ell_{aj}
+ =\alpha_{aj}^{\top}z^r+\beta_{aj}
+  -\norm{B_e^\top\alpha_{aj}}_1.
+\end{equation}
+Công thức dùng support function của \(\ell_\infty\) box.
+Với global box radius \(\rho\), đặt \(B_e=\rho I\); penalty là
+\(\rho\norm{\alpha_{aj}}_1\). Đặt \(B_e=I\) chỉ cho unit box.
+Không lấy affine coefficients từ một miền nhỏ rồi dùng cho miền lớn hơn
+mà chưa chứng minh relaxation vẫn hợp lệ.
 
-\bibliographystyle{plain}
-\bibliography{../refs}
+\subsection{PCA audit và biến thể correlated}
+Audit hiện tại dùng raw \(\delta=x_{t+1}-x_t\), train-fit center \(\mu\),
+orthonormal PCA columns \(U\) và projection constraints:
+\begin{align}
+ c&=U^\top(\delta-\mu),&
+ v&=(I-UU^\top)(\delta-\mu),\\
+ |c_i|&\le b_i,& \norm{v}_2&\le\varepsilon.
+\end{align}
+Định nghĩa miền bằng chính các projection constraints cho membership xác
+định như script. Nó tương đương
+\(x=x^r+\mu+Uc+v\), \(U^\top v=0\), với các giới hạn trên.
+Nếu affine lower bound trên đúng miền là
+\(\alpha^\top x+\beta\), support-function bound là
+\begin{equation}
+ \ell=\alpha^\top(x^r+\mu)+\beta
+ -\norm{\operatorname{diag}(b)U^\top\alpha}_1
+ -\varepsilon\norm{(I-UU^\top)\alpha}_2.
+\end{equation}
+Công thức này là phân tích real arithmetic, chưa phải verifier đã chạy.
+
+Bản draft trước dùng residual coordinate-box \(|v_i|\le\epsilon_i\) và
+không có centering. Đó là một biến thể khác, có penalty
+\(\sum_i\epsilon_i|\alpha_i|\) khi residual box tự do; không dùng coverage
+PCA hiện tại làm evidence cho biến thể đó. Empirical quantile có thể chọn
+candidate region; soundness phải đến từ valid bounds và membership,
+không phải bản thân quantile hoặc coverage tốt.
+
+\section{Runtime đề xuất và certified reuse gate}
+Certificate record cần chứa ít nhất anchor input/class, checkpoint hash,
+normalization identity, domain type/parameters, lower margins, verifier
+version và numerical assumptions. Không coi semantic event label là proof.
+Một selector chọn sai tên event vẫn không gây chấp nhận sai nếu certificate
+và membership thực sự đúng; nó có thể làm giảm hiệu quả.
+
+\begin{enumerate}
+\item Tạo query đúng preprocessing và tìm certificate tương ứng.
+\item Kiểm identity và tính hợp lệ của certificate.
+\item Kiểm membership trong đúng miền và mọi stored lower margin dương.
+\item Chỉ khi đủ điều kiện mới reuse lớp anchor.
+\item Nếu check không đạt: full inference, trả prediction và có thể đặt
+trusted anchor mới rồi tạo certificate theo policy.
+\end{enumerate}
+Không mint trusted anchor chỉ từ một window được reuse. Reset state ở
+recording boundary; thay weights, preprocessing hoặc domain identity phải
+invalidate certificate liên quan. Construction có thể tốn chi phí rồi được
+amortize; thiết kế không mặc định chạy CROWN mỗi window.
+
+Real-arithmetic proof không tự bảo đảm floating-point implementation sound.
+G3 phải nêu numerical contract, tie/NaN/infinity handling và cơ sở lower
+bounds hợp lệ. Zero observed mismatch chỉ là implementation-test evidence,
+không thay soundness argument. Một tolerance tùy ý không phải numerical proof;
+nếu nghĩa vụ này chưa giải quyết, guarantee phải ghi điều kiện và G3 vẫn pending.
+
+\section{Dữ liệu và phương pháp đánh giá đã có}
+Source dựng 128-sample windows trong từng recording, không nối qua recording.
+Split subject-disjoint được lưu như Bảng~\ref{tab:split}; validation dùng
+một nhóm ID cố định, chưa có cross-validation.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+Phạm vi & Train & Val & Test & Tổng\\
+\midrule
+Mọi stream windows & 9.978 & 2.422 & 5.053 & 17.453\\
+Pure K=6 cho G2 & 5.693 & 1.450 & 2.874 & 10.017\\
+Subjects & 17 & 4 & 9 & 30\\
+\bottomrule
+\end{tabular}
+\caption{Denominators từ split/training artifacts.}\label{tab:split}
+\end{table}
+
+Toàn corpus có 3.587 unlabeled và 1.588 ambiguous windows. Accuracy/F1 hiện
+chỉ dùng test pure K=6; không đại diện cho đủ 12 lớp hoặc full stream.
+Full test stream 5.053 windows có thể dùng để so decision agreement với
+reference, kể cả khi không có ground truth. Train/val/test không được gộp
+rồi gọi là test evaluation.
+
+Training dùng Adam, batch 128, tối đa 30 epochs, seeds 42/43/44 và validation
+macro-F1 để chọn epoch/seed. Script09 tính lại val/test từ checkpoint.
+Không khẳng định test chỉ được truy cập một lần toàn workflow.
+Test metrics và exploratory coverage đã được xem trong G1/G2. Các experiment
+tiếp theo phải công khai việc đó; không gọi tập test là một confirmatory
+holdout hoàn toàn chưa từng được quan sát.
+
+\section{Kết quả baseline được lưu trong project}
+\subsection{Backbone classification}
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{rrrrr}
+\toprule
+Seed & Epoch chọn & Val macro-F1 & Test macro-F1 & Test accuracy\\
+\midrule
+42 & 4 & 0,9454 & 0,9105 & 0,9085\\
+43 & 3 & 0,9418 & 0,8906 & 0,8897\\
+44 & 25 & 0,9504 & 0,9354 & 0,9349\\
+\bottomrule
+\end{tabular}
+\caption{Artifacts của các run; test denominator là 2.874 pure K=6 windows.}
+\end{table}
+Checkpoint seed44 được chọn theo validation. Ba seeds trên cùng split cho
+test macro-F1 \(0{,}9122\pm0{,}0183\), accuracy \(0{,}9110\pm0{,}0185\).
+Đây là mean và population standard deviation (\code{ddof=0}), không phải
+confidence interval. Hai lớp yếu nhất của checkpoint chọn là SITTING
+(F1 0,8577) và STANDING (0,8779).
+
+Margin artifact dùng \(f_y-\max_{j\ne y}f_j\) theo ground truth tại từng điểm.
+Nó không phải certified radius hoặc lower bound trên một neighborhood.
+
+\subsection{Exploratory region coverage}
+Audit có 17.392 adjacent pairs; test gồm 5.034 pairs.
+\begin{table}[ht]
+\centering\small
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+Candidate & Mọi test pair & Same-activity & Label-change\\
+\midrule
+Diagonal q75 & 25,53\% & 45,81\% & 0,21\%\\
+Diagonal q90 & 31,94\% & 52,54\% & 2,26\%\\
+PCA, 108 components & 35,42\% & -- & --\\
+\bottomrule
+\end{tabularx}
+\caption{Membership coverage, chưa phải certified reuse. Dấu --: summary PCA
+không lưu riêng metric đó.}
+\end{table}
+PCA hơn diagonal q90 3,48 điểm phần trăm; comparison chưa matched budget/
+coverage. Same-activity là hai pure windows cùng majority label; nhóm
+label-change dùng majority labels khác nhau. Adjacent-pair coverage không
+cho reuse rate với anchor giữ qua nhiều bước.
+Các số audit là bản sau index fix; không dùng pre-fix values.
+
+\subsection{Forward-only CPU baseline}
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+Metric & Batch 1 (ms/window) & Batch 32 (ms/batch)\\
+\midrule
+Mean & 0,2511 & 0,9663\\
+p50 & 0,2357 & 0,9323\\
+p95 & 0,3313 & 1,1700\\
+\bottomrule
+\end{tabular}
+\caption{Saved latency artifact, CPU, sáu Torch threads.}
+\end{table}
+PyTorch 2.14.1+cpu, \code{model.eval()}, \code{no_grad()}, tensor đã normalize,
+resident RAM. Batch 1: 200 warmups và 1.000 timing runs. Timing chỉ
+\code{model(x)}, không bao data loading, windowing, normalization, event,
+membership, certificate/cache/rebuild. CPU model và OS của run chưa được
+lưu. Chưa đo lại trong lượt biên soạn; không chuyển các số này sang thiết bị
+edge hoặc latency end-to-end.
+
+\section{Cost accounting và điều kiện break-even}
+Một mô hình trung bình đơn giản, khi forward cost tương đối đồng nhất, là
+\begin{align}
+ \mathbb{E}[T]&\approx T_e+T_m+(1-r)T_f+qT_b,\\
+ \text{saving}&:\quad rT_f>T_e+T_m+qT_b.
+\end{align}
+\(T_e\): mean event cost; \(T_m\): mean lookup/membership/validity cost;
+\(r\): reuse fraction trên denominator khai báo; \(T_f\): mean forward;
+\(q\): rebuild count/window; \(T_b\): mean cost trên các rebuild.
+Initial build phải nằm trong count hoặc được tính thêm \(T_{\rm init}/N\)
+trên horizon \(N\). Preprocessing chung vẫn được timing cho cả hai pipeline.
+
+Với mean baseline \(T_f=0{,}2511\) ms và \emph{giả sử} \(r=0{,}5\), ngân sách
+overhead còn \(0{,}12555\) ms, tức 125,55\(\,\mu\)s/window. Đây là sensitivity
+calculation, không phải reuse rate đo được. Không thay mean bằng p50 trong
+công thức kỳ vọng; p95 phải lấy từ runtime trace.
+
+Một stream có khoảng cách window 1.280 ms; forward mean bằng khoảng 0,0196\%
+khoảng này. Baseline hiện không thể hiện áp lực deadline realtime single-stream
+trên CPU đó. Giá trị về compute/đa stream hoặc thiết bị chậm hơn cần được
+đo riêng. Net saving cuối cùng dựa trên end-to-end traces, không chỉ mô hình
+trung bình này.
+
+\section{Kế hoạch G3--G6 và tiêu chí hoàn thành}
+\begin{longtable}{p{0.08\linewidth}p{0.31\linewidth}p{0.52\linewidth}}
+\toprule
+Gate & Đầu ra & Điều kiện kiểm chứng\\
+\midrule
+\endhead
+G3.1 & Domain contract & Raw/normalized mapping, preprocessing, diagonal
+region, model/anchor/domain identity nhất quán.\\
+G3.2 & Minimal verifier & Lower bounds hợp lệ trên toàn diagonal region của
+frozen CNN; numerical assumptions rõ.\\
+G3.3 & Certified reuse gate & Membership và identity checks; fail fallback;
+anchor lifecycle; trace và implementation tests.\\
+G3.4 & Component instrumentation & Đo construction, membership, fallback,
+inference và initial/rebuild costs. Chưa tự kết luận net saving.\\
+G4 & Structured ablation & Giữ model/bound method khi đổi region; giữ region
+khi đổi bound method; so sánh công bằng.\\
+G5 & End-to-end evaluation & Mean/p50/p95, reuse, mismatches, rebuild,
+memory và full-pipeline baseline cùng môi trường.\\
+G6 & Báo cáo và reproducibility & Claims, evidence, units, denominators,
+limitations và scripts có thể tái kiểm.\\
+\bottomrule
+\end{longtable}
+Baseline tối thiểu theo reading plan: full inference, confidence gate,
+global Lipschitz, diagonal CROWN và structured CROWN, tùy feasibility.
+Tune policy trên validation; test-stream evaluation dùng policy đã cố định.
+Không dùng ground-truth event ở runtime mà bỏ qua cost/availability. Nếu không
+có query nào được reuse, empirical agreement và mismatch rate trên reused
+subset là N/A, không báo measured agreement 100\%.
+
+\section{Giới hạn và threats to validity}
+\textbf{Internal validity.} Chưa tái lập saved runs trong lượt viết; chưa
+có verifier, gate hoặc numerical soundness evidence. Bản PCA trước đây có
+domain mismatch; contract mới sửa mô tả, không có nghĩa code verifier đã tồn tại.
+
+\textbf{Construct validity.} Coverage khác certified reuse; ground-truth
+accuracy khác reference agreement; verification speed khác inference speed.
+Không suy certificate từ high confidence hoặc observed zero mismatch.
+
+\textbf{External validity.} Một dataset, một fixed subject split, một K=6 CNN
+và một saved CPU setting chưa hỗ trợ generalization sang 12 classes,
+dataset khác, device khác hoặc production. Biến thiên seed không phải
+subject confidence interval.
+
+\textbf{Systems validity.} Forward baseline dùng tensor resident lặp lại;
+event projection, cache, rebuild, preprocessing và memory có thể triệt tiêu
+saving. Chi phí certificate ban đầu và horizon amortization phải được khai báo.
+
+\textbf{Literature validity.} Chưa hoàn tất P01--P23 và chưa chứng minh novelty.
+LipCache dùng local PDF với provenance đã ghi; không có fresh successful HTML
+fetch trong lượt 22/10. STBP local hash không chứng minh đồng nhất byte với
+remote PDF hiện tại.
+
+\section{Kết luận và khả năng tái kiểm}
+ECDR có bài toán và điều kiện đủ rõ để thử nghiệm khả thi, cùng data/model
+baseline đã lưu. Phần nghiên cứu trọng yếu vẫn mở: verifier sound trên đúng
+domain, giá trị event structure và net inference saving.
+Trạng thái theo gate record: G0 PASS, G1 COMPLETE\_WITH\_REVISIONS, G2 PASS;
+G3--G6 pending. Các trạng thái này không phải phần trăm research claims đã
+được xác nhận. Chưa có claim production hoặc method acceleration đã chứng minh.
+
+Nguồn số liệu: \code{data/g2_metrics.json}, \code{data/g2_training.json},
+\code{data/g2_model_summary.json}, \code{data/g2_cpu_latency.json},
+\code{data/event_audit.json}, \code{data/split_audit.json}.
+Source chính: \code{scripts/backbone.py}, scripts03--10 và configs YAML.
+Tài liệu đồng bộ: \code{PROJECT_BRIEF.md}, \code{04_THEORY.md},
+\code{07_G3_DOMAIN_CONTRACT.md}, \code{DOCS_SYNC_2026-10-22.md}.
+
+Checkpoint \code{backbone_best.pt} có SHA-256:
+\begin{quote}\small\ttfamily
+17e7cfa3877134feaa1392d989ffb824a68de266338da69bc8e43c0ae59bcd1d
+\end{quote}
+Hash nhận diện file; chưa load weights để tái tạo metrics trong lượt này.
+Báo cáo là tài liệu làm việc có phân tách evidence/proposal, chưa có author
+roster, venue, deadline hoặc approval record để tự bổ sung.
+
+\begin{thebibliography}{10}
+\bibitem{hapt}
+J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra.
+\emph{Smartphone-Based Recognition of Human Activities and Postural Transitions}.
+UCI Machine Learning Repository, 2015. DOI:\href{https://doi.org/10.24432/C54G7M}{10.24432/C54G7M}.
+
+\bibitem{crown}
+H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel.
+\emph{Efficient Neural Network Robustness Certification with General Activation Functions}.
+NeurIPS 31, 2018.
+\url{https://proceedings.neurips.cc/paper/2018/hash/d04863f100d59b3eb688a11f95b0ae60-Abstract.html}.
+
+\bibitem{lirpa}
+K. Xu, Z. Shi, H. Zhang, Y. Wang, K.-W. Chang, M. Huang,
+B. Kailkhura, X. Lin, C.-J. Hsieh.
+\emph{Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond}.
+NeurIPS 33, 2020.
+\url{https://papers.nips.cc/paper/2020/hash/0cbc5671ae26f67871cb914d81ef8fc1-Abstract.html}.
+
+\bibitem{api}
+auto-LiRPA contributors. \emph{API Usage}.
+Tài liệu kỹ thuật, truy cập 22/10/2026.
+\url{https://auto-lirpa.readthedocs.io/en/latest/api.html}.
+
+\bibitem{wei}
+T. Wei, C. Liu.
+\emph{Online Verification of Deep Neural Networks under Domain Shift or Network Updates}.
+arXiv:2106.12732,v1(2021),v2(2023).
+\url{https://arxiv.org/abs/2106.12732}.
+
+\bibitem{noscope}
+D. Kang, J. Emmons, F. Abuzaid, P. Bailis, M. Zaharia.
+\emph{NoScope: Optimizing Neural Network Queries over Video at Scale}.
+PVLDB 10(11):1586--1597,2017.
+DOI:\href{https://doi.org/10.14778/3137628.3137664}{10.14778/3137628.3137664}.
+
+\bibitem{deltacnn}
+M. Parger, C. Tang, C. D. Twigg, C. Keskin, R. Wang, M. Steinberger.
+\emph{DeltaCNN: End-to-End CNN Inference of Sparse Frame Differences in Videos}.
+CVPR, 2022,12497--12506.
+\url{https://openaccess.thecvf.com/content/CVPR2022/html/Parger_DeltaCNN_End-to-End_CNN_Inference_of_Sparse_Frame_Differences_in_Videos_CVPR_2022_paper.html}.
+
+\bibitem{lipcache}
+Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar.
+\emph{LipCache: A Local Inference Proxy with Certified Caching for Edge Image Classification Service}.
+arXiv:2608.13144v1,2026.
+\url{https://arxiv.org/abs/2608.13144}.
+
+\bibitem{stbp}
+S. Varghese, M. Wicker, A. Lomuscio.
+\emph{Hybrid Robustness Verification for Spatio-Temporal Neural Networks}.
+arXiv:2606.09746v1,2026.
+\url{https://arxiv.org/abs/2606.09746}.
+
+\bibitem{franco}
+N. Franco, J. Spiegelberg, J. M. Lorenz, S. G\"unnemann.
+\emph{Guaranteeing Robustness Against Real-World Perturbations In Time Series
+Classification Using Conformalized Randomized Smoothing}.
+UAI,PMLR 244:1371--1388,2024.
+\url{https://proceedings.mlr.press/v244/franco24a.html}.
+\end{thebibliography}
 \end{document}

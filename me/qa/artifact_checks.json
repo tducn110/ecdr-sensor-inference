@@ -1,0 +1,97 @@
+{
+  "scope": "LaTeX/PDF artifact QA, numeric consistency and data overlap audit; no ECDR benchmark or formal executable verification.",
+  "documents": [
+    {
+      "stem": "ECDR_Weeks_1_2_3_Theory",
+      "pdf_pages": 31,
+      "pdf_bytes": 230873,
+      "pdf_sha256": "2d92ca9cf0c3160c96682034ccb1aa24d005682546edc526d0b55e0308126c7b",
+      "source_sha256": "a382fe7f5cb8388869ffc9dd7b73c0c1e94a1d26427f93be141876edd4bb8c29",
+      "citations_resolved": 11,
+      "references_resolved": 14,
+      "forbidden_compile_diagnostics": [],
+      "empty_pages": [],
+      "contact_sheets": [
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_1.jpg",
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_2.jpg",
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_3.jpg",
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_4.jpg"
+      ],
+      "visual_review": "Required human/agent inspection of contact sheets and detailed pages; not inferred from these checks."
+    },
+    {
+      "stem": "Week_1_Project_Brief",
+      "pdf_pages": 6,
+      "pdf_bytes": 80100,
+      "pdf_sha256": "77e7838f6d8718b9d1685f7297f85eace08239391e527b3b08f48ec15805766c",
+      "source_sha256": "88e48ed00408e9c1cb4a061fc436b1b5b29248bed924e53d56206d65b9225a67",
+      "citations_resolved": 7,
+      "references_resolved": 0,
+      "forbidden_compile_diagnostics": [],
+      "empty_pages": [],
+      "contact_sheets": [
+        "qa/Week_1_Project_Brief_contact_1.jpg"
+      ],
+      "visual_review": "Required human/agent inspection of contact sheets and detailed pages; not inferred from these checks."
+    },
+    {
+      "stem": "Week_2_Data_Foundations",
+      "pdf_pages": 10,
+      "pdf_bytes": 120876,
+      "pdf_sha256": "48440420d897bed040fc39d3ae101211faabbd382039b6b42c0b201b7b9ba66b",
+      "source_sha256": "772af05411f114547ff4481c8794ca0ca2715ff999a75168cfd62428246cb0ca",
+      "citations_resolved": 1,
+      "references_resolved": 2,
+      "forbidden_compile_diagnostics": [],
+      "empty_pages": [],
+      "contact_sheets": [
+        "qa/Week_2_Data_Foundations_contact_1.jpg",
+        "qa/Week_2_Data_Foundations_contact_2.jpg"
+      ],
+      "visual_review": "Required human/agent inspection of contact sheets and detailed pages; not inferred from these checks."
+    },
+    {
+      "stem": "Week_3_Mathematical_Foundations",
+      "pdf_pages": 17,
+      "pdf_bytes": 163211,
+      "pdf_sha256": "8c1a968fc53441675e044bd6e9b15cbbfe2ff2768cfc3beeded9715e2ffba403",
+      "source_sha256": "45188559f8e10e3388e696a4e25c85186d7c22d01ccf1ef3ea566490c6e0b60a",
+      "citations_resolved": 8,
+      "references_resolved": 11,
+      "forbidden_compile_diagnostics": [],
+      "empty_pages": [],
+      "contact_sheets": [
+        "qa/Week_3_Mathematical_Foundations_contact_1.jpg",
+        "qa/Week_3_Mathematical_Foundations_contact_2.jpg"
+      ],
+      "visual_review": "Required human/agent inspection of contact sheets and detailed pages; not inferred from these checks."
+    }
+  ],
+  "calculation_checks": "PASS",
+  "hypotheses_in_master": [
+    "H01",
+    "H02",
+    "H03",
+    "H04",
+    "H05",
+    "H06",
+    "H07",
+    "H08",
+    "H09",
+    "H10",
+    "H11",
+    "H12",
+    "H13",
+    "H14",
+    "H15",
+    "H16",
+    "H17",
+    "H18",
+    "H19",
+    "H20",
+    "H21",
+    "H22",
+    "H23",
+    "H24"
+  ]
+}

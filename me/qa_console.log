@@ -1,0 +1,22 @@
+{
+  "documents": [
+    {
+      "name": "ECDR_Weeks_1_2_3_Theory",
+      "pages": 31
+    },
+    {
+      "name": "Week_1_Project_Brief",
+      "pages": 6
+    },
+    {
+      "name": "Week_2_Data_Foundations",
+      "pages": 10
+    },
+    {
+      "name": "Week_3_Mathematical_Foundations",
+      "pages": 17
+    }
+  ],
+  "hypotheses": 24,
+  "status": "PASS; visual review still separate"
+}

@@ -31,3 +31,7 @@ latex/*.toc
 latex/*.pdf
 
 .DS_Store
+.vercel
+web/.vercel
+node_modules/
+**/node_modules/

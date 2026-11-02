@@ -1,0 +1,13 @@
+\contentsline {section}{\numberline {1}Executive brief}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Problem and decision contract}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Data and label contract}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Frozen reference architecture}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Research questions and hypotheses}{3}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Domain, event, and certificate semantics}{4}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Reference classes and architecture audit}{4}{subsection.1.6}%
+\contentsline {section}{\numberline {2}Feasibility baseline results}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Objectives, split subjects, and pipeline}{7}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Certificate lifecycle and architecture-specific firewall}{8}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Grounding and research gap}{8}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Evidence status and roadmap}{8}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Source and reproducibility contract}{9}{section.3}%

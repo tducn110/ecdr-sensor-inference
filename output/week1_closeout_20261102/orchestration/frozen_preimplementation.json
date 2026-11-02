@@ -1,0 +1,14 @@
+{
+  "scripts/backbone.py": {
+    "sha256": "0f26f8fe731de32a67eecef5eedbfbe88f13698d104454c41ef3bd5d7b4d5037",
+    "size": 5492
+  },
+  "configs/backbone.yaml": {
+    "sha256": "9f8582608dda9ad3cacaa34b837ceb508cdcf3a52780c78943906e94152756ce",
+    "size": 815
+  },
+  "configs/training.yaml": {
+    "sha256": "8d12da493ce4948913dc5c456d15c23e6093416d6c3b7b9235ec031ed96739ec",
+    "size": 695
+  }
+}

@@ -1,0 +1,273 @@
+% ============================================================
+%  SUPPLEMENT 06 — FLOATING-POINT PRECISION
+%  float32 vs float64: When It Matters and When to Cast
+%  Companion to: ECDR_Data_Analysis.tex
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\eps}{\varepsilon}
+
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} Floating-Point Precision in the ECDR Pipeline}\\[0.5em]
+  {\large\color{muted} float32 vs.\ float64: Semantics, Rounding, and Certification Obligations}\\[1.2em]
+  {\normalsize Supplement~06 to \textit{ECDR Data Analysis} \textbar{} October~2026}\\[0.3em]
+  {\small\color{muted} This document is supplementary only. The main document is not modified.}
+\end{center}
+
+\vspace{1em}\hrule\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{IEEE 754 Floating-Point Formats}
+
+Both float32 and float64 follow the IEEE~754 standard for binary floating-point
+arithmetic. They differ in the number of bits allocated to each part of the number:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Format & Total bits & Sign & Exponent & Mantissa (significand) \\
+\midrule
+float32 (single) & 32 & 1 & 8 & 23 (+1 implicit) \\
+float64 (double) & 64 & 1 & 11 & 52 (+1 implicit) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A floating-point number is represented as $(-1)^s \times 1.m \times 2^{e - \text{bias}}$,
+where $s$ is the sign bit, $m$ is the binary fraction stored in the mantissa, and
+$e$ is the stored exponent.
+
+% ============================================================
+\section{Machine Epsilon and Rounding Error}
+
+\begin{definition}[Machine Epsilon $\eps_{\text{mach}}$]
+  The machine epsilon $\eps_{\text{mach}}$ is the distance from 1.0 to the next
+  representable floating-point number:
+  \[
+    \eps_{\text{mach}} = 2^{-\text{mantissa bits}}.
+  \]
+\end{definition}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrl@{}}
+\toprule
+Format & $\eps_{\text{mach}}$ & Approximate value \\
+\midrule
+float32 & $2^{-23}$ & $1.19 \times 10^{-7}$ \\
+float64 & $2^{-52}$ & $2.22 \times 10^{-16}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For any real number $x$ representable in the format, the rounded value $\text{fl}(x)$
+satisfies:
+\[
+  |\text{fl}(x) - x| \le \frac{\eps_{\text{mach}}}{2} |x|.
+\]
+Each floating-point operation $(+, -, \times, \div)$ introduces at most
+$\eps_{\text{mach}}/2$ relative error. Over $n$ operations, errors can accumulate
+up to $\approx n \eps_{\text{mach}}/2$ relative error under favorable conditions,
+or up to $\sqrt{n} \eps_{\text{mach}}/2$ for random sign errors (Higham, 2002).
+
+% ============================================================
+\section{Cast Semantics: float32 Truncation}
+
+\subsection{What Casting Means}
+
+When a float64 value $x$ is \emph{cast} to float32, it is rounded to the nearest
+float32 representable value:
+\[
+  \text{fl}_{32}(x) = \text{round}_{32}(x).
+\]
+The rounding error is at most $\eps_{32}/2 \approx 6 \times 10^{-8}$ in relative terms.
+For an accelerometer reading of $+0.82\,g$, this means an absolute rounding error of
+at most $0.82 \times 6 \times 10^{-8} \approx 5 \times 10^{-8}\,g$ — negligible for
+physical sensor data.
+
+\subsection{The Audit's float32 Cast Check}
+
+The data analysis (Section~4) verifies that the window tensor reconstructed from
+raw text files matches the window tensor loaded from the \code{.pt} (PyTorch)
+binary file, \emph{after applying float32 casting to the text-file values}:
+\begin{enumerate}[leftmargin=1.5em]
+  \item Read raw text file (float64 precision in memory).
+  \item Cast to float32: \code{np.float32(val)}.
+  \item Compare to PyTorch tensor (stored as float32).
+  \item Count discrepancies.
+\end{enumerate}
+Result: zero discrepancies across all 13,403,904 coordinates (Evidence D01).
+
+This confirms that the tensor files were generated by exactly this pipeline:
+read text $\to$ cast to float32 $\to$ save. No intermediate rounding, no
+additional computation, no different dtype.
+
+\begin{remark}[Why This Matters Semantically]
+  If the tensor had been computed differently (e.g., read as float32 directly,
+  or rounded differently), the cast check would fail. The specific cast sequence
+  encodes the provenance of every tensor value. Knowing the exact dtype at every
+  pipeline stage is a prerequisite for reproducibility.
+\end{remark}
+
+% ============================================================
+\section{When Precision Matters for ECDR}
+
+\subsection{Case 1: Distance Computation}
+
+The distance metrics in the data audit ($d_2$, $d_\infty$ between adjacent windows)
+involve:
+\begin{enumerate}[leftmargin=1.5em]
+  \item Subtracting two window vectors (768 float32 subtractions).
+  \item Computing a sum of squares (768 multiplications and additions).
+  \item Taking a square root.
+\end{enumerate}
+
+For float32, summing 768 terms introduces at most $768 \times \eps_{32} \approx
+768 \times 1.2 \times 10^{-7} \approx 9 \times 10^{-5}$ relative error in the
+sum of squares. The distance values range from $\sim 1$ to $\sim 65$ in normalized
+units, so the absolute error in the distance is at most $65 \times 9 \times 10^{-5}
+\approx 0.006$ — well below any meaningful threshold. float32 is sufficient for
+distance computation in this context.
+
+\subsection{Case 2: Normalization Parameter Computation}
+
+Computing the channel mean $\mu_c$ and standard deviation $\sigma_c$ from
+$128 \times N_{\text{tr}} = 128 \times 5693 = 728,704$ samples in float32:
+\begin{itemize}[leftmargin=1.5em]
+  \item Catastrophic cancellation risk: if computing variance as
+        $\frac{1}{N}\sum x_i^2 - \left(\frac{1}{N}\sum x_i\right)^2$
+        (the ``computational'' formula), subtracting two large, nearly equal
+        numbers can lose significant digits.
+  \item Safe alternative: use Welford's online algorithm or two-pass computation.
+        The audit script uses float64 for aggregation to avoid this issue.
+  \item The fitted parameters reported (e.g., $\sigma_{\text{acc\_x}} = 0.413195$)
+        are float64 values, stored with full double precision.
+  \item During inference, these are cast to float32 and used as fixed constants.
+        The rounding error at this cast step is $< 3 \times 10^{-8}$ per parameter.
+\end{itemize}
+
+\subsection{Case 3: Neural Network Inference in float32}
+
+Modern convolutional networks operate natively in float32 (and increasingly in
+lower-precision formats: bfloat16, int8). For the Conv1D ECDR classifier:
+\begin{itemize}[leftmargin=1.5em]
+  \item Each layer involves matrix-vector multiplications: $W x + b$.
+        Error accumulates as $O(\sqrt{mn}\,\eps_{32})$ for an $m \times n$ weight matrix.
+  \item For the GAP output (average over 128 spatial positions), the aggregation
+        error is $O(\sqrt{128}\,\eps_{32}) \approx 10^{-6}$ relative.
+  \item Logit values typically range from $-10$ to $+10$. A margin of $\underline{m}_{cj}$
+        is meaningful only when $|\underline{m}_{cj}| \gg 10^{-6}$.
+\end{itemize}
+
+\begin{remark}[Certification Soundness Obligation]
+  IBP/CROWN verifiers must account for numerical errors in the network weights.
+  If the weight $W_{ij}$ is stored as float32, its mathematical value has absolute
+  error $\le \eps_{32}|W_{ij}|/2$. A sound verifier must include this error in its
+  bound propagation. Naively applying IBP to float64 weight values when the actual
+  inference uses float32 weights could yield unsound certificates.
+\end{remark}
+
+\subsection{Case 4: Quantization (int8, fixed-point)}
+
+Edge deployment may quantize the network to int8 (8-bit integer) or fixed-point
+arithmetic to reduce latency and energy. This changes the network function from
+$f_\theta^{\text{fp32}}$ to $f_\theta^{\text{int8}}$, which may differ by up to
+$\sim 0.5\%$ of the full output range per activation. Certificates computed for
+$f_\theta^{\text{fp32}}$ do \textbf{not} apply to $f_\theta^{\text{int8}}$.
+A separate verifier run on the quantized network is required.
+
+% ============================================================
+\section{Float32 Precision: What Is Safe and What Is Not}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lYY@{}}
+\toprule
+Operation & Safe in float32? & Notes \\
+\midrule
+Window tensor storage & Yes & $\eps_{32} \approx 10^{-7}$; sensor LSB $\gg 10^{-5}$. \\
+Normalization at inference & Yes & Fixed constants; rounding $< 10^{-7}$. \\
+Euclidean distance between windows & Yes & Error $< 10^{-3}$ for values $\sim 50$. \\
+Channel mean/std computation & Risky & Use float64 aggregation or Welford. \\
+Soft-max temperature / log-sum-exp & Risky & Catastrophic cancellation; subtract max. \\
+Network weight storage & Typically yes & Match dtype to inference runtime. \\
+Certification bounds (verifier) & Must track & Round errors must be included; use interval arithmetic. \\
+Quantized (int8) inference & No for fp32 cert & Different network; re-certify. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Summary}
+
+The data audit confirmed (Evidence D01) that the window tensor is an exact float32
+cast of the raw text values. This has three direct consequences for ECDR:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Reproducibility:} The tensor is deterministic and byte-reproducible
+        from the raw text files using the documented cast procedure.
+  \item \textbf{Distance calculations:} float32 precision is adequate for empirical
+        distance analysis; the rounding error is orders of magnitude smaller than
+        the physical signal variation.
+  \item \textbf{Certification soundness:} The formal verifier must operate in the
+        same numerical mode as the deployed classifier. Certification of a float32
+        network requires either (a) interval arithmetic that bounds float32 rounding
+        errors, or (b) sufficient margin slack to absorb the worst-case rounding
+        error budget.
+\end{enumerate}
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\bibitem{higham2002}
+  N.J. Higham. \textit{Accuracy and Stability of Numerical Algorithms}, 2nd ed.
+  SIAM, 2002.
+\bibitem{ieee754}
+  IEEE Standard for Floating-Point Arithmetic. \textit{IEEE Std 754-2019}.
+  IEEE, 2019.
+\end{thebibliography}
+
+\end{document}

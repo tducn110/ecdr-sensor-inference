@@ -1,0 +1,41 @@
+{
+  "full_counts": {
+    "train": 9978,
+    "val": 2422,
+    "test": 5053
+  },
+  "pure_counts": {
+    "train": 5878,
+    "val": 1490,
+    "test": 2993
+  },
+  "majority_counts": {
+    "train": 6955,
+    "val": 1751,
+    "test": 3572
+  },
+  "loader_alignment": {
+    "train": true,
+    "val": true,
+    "test": true
+  },
+  "guard_rejections": {
+    "subject_metadata_mismatch": "Corrupted data: manifest subject disagrees with split subject metadata",
+    "recording_split_leak": "Corrupted data: recordings span multiple splits: [1, 3]",
+    "subject_split_leak": "Corrupted data: train and test splits share subjects",
+    "recording_multiple_subjects": "Corrupted data: recordings span multiple subjects: [1]",
+    "nonfinite_archive": "Corrupted data: windows.npz contains non-finite values (NaN or Inf)"
+  },
+  "model_metrics": {
+    "parameters": 20332,
+    "classes": 12,
+    "test_samples": 3572,
+    "accuracy": 0.7701567749160134,
+    "macro_f1_all12": 0.514974741142365,
+    "confusion_matrix_exact_match": true,
+    "train_only_normalization_exact_match": true,
+    "checkpoint_status": "EXPERIMENTAL_HOLD",
+    "checkpoint_sha256": "10128d8cf0f62b95130e25772397ba14085cf0b6b42600e2e49565e61d1e5e68",
+    "current_operational_model_id": "ab99a5c313e9de08"
+  }
+}

@@ -1,0 +1,135 @@
+\clearpage
+\renewcommand{\conceptid}{Coverage crosswalks}
+\appendix
+\section{Coverage of the previous mathematical explanation}
+The previous report grouped its mathematics as M01--M29. These groups are
+retained as a coverage inventory, not as new concepts or claims of novelty.
+The pages below identify where each group is explained at greater depth.
+\small
+\begin{longtable}{@{}P{1.2cm}P{7.3cm}P{6.7cm}@{}}\toprule
+Group & Mathematical content & Concepts\\\midrule\endhead
+M01 & Reference composition, logits and deterministic argmax & F04, F17, B14--B16\\
+M02 & Universal implication, regions and sufficient certificates & F01--F03, C18, C23\\
+M03 & Sensor observations, tensors and vectorization & B01--B03\\
+M04 & Sampling clock, query stride and tensor payload & B01, B04, B23\\
+M05 & Window counts and annotated-span grid counts & F08--F09, B02, B04--B05\\
+M06 & Label counts and majority thresholds & B06\\
+M07 & Normalization, transported budgets and weighted norms & B07--B08, C14\\
+M08 & Split boundaries, temporal dependence and uncertainty & F30--F34, B13\\
+M09 & Shift--append maps and aligned overlap & F15, B09--B10\\
+M10 & Counterexample to overlap implying a small difference & B11\\
+M11 & Wave-region dimension and fixed overlap & B09, C17\\
+M12 & Marginal/joint coverage and the union bound & F29--F34, B12, B29\\
+M13 & CNN parameters, MAC/FLOP, receptive field and jump & B19--B23; expanded CNN companion\\
+M14 & Accuracy, precision, recall, F1 and dispersion & F31--F32, B30\\
+M15 & Pairwise margins, infima and strict sufficient gates & F25, B16, C18\\
+M16 & Continuity, compactness and local invariance & F26--F28, B17\\
+M17 & Universal-radius, shift and stale-state counterexamples & B11, B18, C24\\
+M18 & Lipschitz constants, operator norms and certified balls & F21--F23, C01--C02\\
+M19 & Interval signs, activation propagation and induction & C03--C04\\
+M20 & Affine ReLU relaxation and sign-aware substitution & C05--C06\\
+M21 & Support functions, duality, boxes and generators & F22, C07--C10\\
+M22 & Linear span, PCA, residuals and normalization & F12--F19, C11--C14\\
+M23 & Containment, selection and the certified union & C15--C16\\
+M24 & Feature shift, GAP and margin-delta identities & B24--B28, C19\\
+M25 & Membership, witnesses and access-complexity bounds & C09, C21--C22\\
+M26 & Fixed anchor, stale certificates and reachable horizons & C23--C25\\
+M27 & Verifier error, reference-program error and containment & C20--C21\\
+M28 & Trace accounting, amortization and break-even cost & C26--C27\\
+M29 & Research metrics, denominators and hypothesis status & B30, C28, Appendix B\\\bottomrule
+\end{longtable}
+\normalsize
+
+\clearpage
+\section{Interpreting all twenty-four research hypotheses}
+This ledger preserves the earlier H01--H24 questions while separating
+mathematical implications from claims that require experiments. ``Conditional''
+means the concept page states and uses the necessary hypotheses; it is not
+a report that an implementation has established those hypotheses.
+\small
+\begin{longtable}{@{}P{0.9cm}P{7.2cm}P{7.1cm}@{}}\toprule
+ID & Question or claim & Logical status and concept connection\\\midrule\endhead
+H01 & Identical raw samples remain equal after a correctly aligned shift. & Identity under the window contract; B10.\\
+H02 & Large aligned overlap forces small ordinary input distance. & False without additional assumptions; B11 gives an amplitude-scalable counterexample.\\
+H03 & The same true activity forces the same CNN decision. & Unsupported in general; B06, B14--B16 distinguish labels and reference decisions.\\
+H04 & Continuity and a strict anchor margin yield a local invariant region. & Conditional theorem; B17. Its usefulness is not implied.\\
+H05 & Sound positive lower margins over a whole region preserve the target. & Conditional sufficient theorem; C18.\\
+H06 & A valid Lipschitz rate supplies a certified distance budget. & Conditional bound; C01--C02, with all competitors and coordinate units specified.\\
+H07 & IBP finds every genuinely invariant region. & False in general because interval independence loses dependencies; C04.\\
+H08 & Direct margin reasoning can preserve cancellation. & Algebraically possible; C06 and B28 give examples, not a universal speed advantage.\\
+H09 & A tighter certificate method always costs less. & Does not follow; C26--C27 require complete cost accounting.\\
+H10 & Temporal variation directions have small impact on the relevant margins. & Model/data hypothesis; C10--C14 show what directional coefficients mean.\\
+H11 & A structured domain is superior to a box. & Open without matched coverage, cost, bounds and output semantics; C07--C17.\\
+H12 & A fixed-overlap wave region can have only $Cs$ free variables. & Conditional geometric result; B09, C17. Additional overlap uncertainty changes it.\\
+H13 & Aligned valid-CNN features coincide on fully shared receptive fields. & Conditional identity; B24.\\
+H14 & GAP changes by new feature sum minus dropped feature sum. & Conditional exact real-arithmetic identity; B25--B26.\\
+H15 & A reused query can automatically replace the old certified anchor. & False without new or transferred evidence; C24 gives a computed counterexample.\\
+H16 & A sound positive certificate remains safe under repeated fixed-anchor membership. & Conditional theorem; C23, with matching identities and conservative acceptance.\\
+H17 & Positive bounds on reachable sets certify a finite horizon. & Conditional induction; C25. Long horizons need not be useful or cheap.\\
+H18 & Exact diagonal-box membership requires linear worst-case coordinate access. & Conditional access-model lower bound, finite positive-width box; C09, C22.\\
+H19 & A sound domain necessarily covers future queries. & False; conditional safety supplies no nonzero coverage guarantee; C18, C28.\\
+H20 & Many reuse hits necessarily reduce total runtime. & False if overhead dominates; C26--C27.\\
+H21 & ECDR outperforms full CNN inference or another cache on HAPT. & Empirical claim not established by these definitions or toy examples; C28.\\
+H22 & An ideal real-arithmetic proof directly certifies a float32 program. & False without executable-error and membership guarantees; C20--C21.\\
+H23 & An event name alone authorizes returning an old class. & False; selector output, membership and positive certificate have different duties; C16--C18.\\
+H24 & There is a regime that is simultaneously sound, useful and cheaper. & Central research hypothesis requiring both proof and correctly scoped measurements; C18, C26--C28.\\\bottomrule
+\end{longtable}
+\normalsize
+
+\clearpage
+\renewcommand{\conceptid}{Sources and evidence}
+\section{Sources, authoring provenance and scope}
+The conceptual coverage comes from the existing ECDR Week1--3 theory and
+the previous mathematical explanation in this workspace. The new exposition
+is written in English and starts from the prerequisites needed to understand
+their formulas. Standard linear-algebra background can be checked in
+Axler's author-hosted open text, especially Sections1B,2A--2C,3A,6A--6C
+and7F \cite{axler}. The concept pages supply their own definitions,
+examples and project-specific reasoning rather than reproducing that text.
+
+The verification methods are established prior work: Lipschitz-margin
+reasoning \cite{lmt}, interval propagation \cite{ibp}, CROWN's output
+relaxations \cite{crown}, and computational-graph LiRPA \cite{lirpa}.
+These references identify method provenance; using them is not a novelty
+claim or proof that a current implementation is compatible with every
+operator. Architecture-dependent streaming reuse has separate prior art
+\cite{streaminnc}. Metadata about HAPT is distinguished from the local
+window policy and from a model actually trained on that data \cite{hapt}.
+
+The theoretical CNN configuration is valid Conv1D--ReLU--GAP with an affine
+head. Its worked counts and miniature network are specified explicitly in
+the relevant concept pages. They are not new training, device measurements
+or certified HAPT coverage results. Mathematical proofs use finite real
+inputs unless a numerical-error assumption is explicitly added.
+
+The English atlas is saved as a standalone editable source:
+\code{ECDR_Mathematics_Concepts_EN.tex}. The former Vietnamese explanation
+remains \code{ECDR_Mathematics_Explained.tex}. The English CNN source uses
+the existing editor path \code{ECDR_CNN_Model_Analysis.tex}; its preserved
+Vietnamese counterpart is \code{ECDR_CNN_Model_Analysis_VI.tex}.
+The data-analysis document is outside this revision's scope.
+
+\begin{thebibliography}{99}
+\bibitem{axler} S. Axler. \emph{Linear Algebra Done Right}, fourth edition.
+Author-hosted open-access edition, revised13 July2026.
+\url{https://linear.axler.net/LADR4e.pdf}.
+\bibitem{hapt} J. Reyes-Ortiz et al. \emph{Smartphone-Based Recognition of
+Human Activities and Postural Transitions}. UCI Machine Learning Repository,
+2015. \url{https://doi.org/10.24432/C54G7M}.
+\bibitem{lmt} Y. Tsuzuku, I. Sato and M. Sugiyama. \emph{Lipschitz-Margin
+Training: Scalable Certification of Perturbation Invariance for Deep Neural
+Networks}. NeurIPS,2018. \url{https://arxiv.org/abs/1802.04034}.
+\bibitem{ibp} S. Gowal et al. \emph{On the Effectiveness of Interval Bound
+Propagation for Training Verifiably Robust Models}.2018.
+\url{https://arxiv.org/abs/1810.12715}.
+\bibitem{crown} H. Zhang et al. \emph{Efficient Neural Network Robustness
+Certification with General Activation Functions}. NeurIPS,2018.
+\url{https://arxiv.org/abs/1811.00866}.
+\bibitem{lirpa} K. Xu et al. \emph{Automatic Perturbation Analysis for Scalable
+Certified Robustness and Beyond}. NeurIPS,2020.
+\url{https://arxiv.org/abs/2002.12920}.
+\bibitem{streaminnc} C. Kechris et al. \emph{Don't Think It Twice: Exploit Shift
+Invariance for Efficient Online Streaming Inference of CNNs}.2024.
+\url{https://arxiv.org/abs/2408.03223}.
+\end{thebibliography}
+\end{document}

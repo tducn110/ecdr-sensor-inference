@@ -1,0 +1,538 @@
+                                              ECDR
+                       Week 2: Dữ liệu và quan hệ với ECDR
+
+                                 Báo cáo nghiên cứu lý thuyết
+
+                                     28 tháng 10 năm 2026
+
+
+Bản tuần độc lập, trích từ báo cáo tổng hợp. Scope: lý thuyết mới theo brief của người nghiên
+cứu; không dùng implementation cũ làm nguồn định nghĩa phương pháp. Các tính toán
+minh họa không phải benchmark.
+
+
+Mục lục
+
+
+I Week 2 — Dữ liệu và quan hệ trực tiếp với bài toán                                                  2
+
+1 Data specification: từ đại lượng vật lý đến tensor                                                  2
+   1.1 Nguồn, ý nghĩa và đơn vị . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   2
+   1.2 Windowing và phép đếm . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        2
+   1.3 Vector hóa không làm mất cấu trúc, nhưng có thể che cấu trúc . . . . . . . . . .               3
+
+2 Nhãn, preprocessing và tính hợp lệ của phép so sánh                                                 3
+   2.1 Nhãn hoạt động và nhãn window . . . . . . . . . . . . . . . . . . . . . . . . . . . .          3
+   2.2 Phân bố lớp và giới hạn của hồ sơ dữ liệu hiện có . . . . . . . . . . . . . . . . . .          4
+   2.3 Normalization và đơn vị của perturbation . . . . . . . . . . . . . . . . . . . . . . .         5
+   2.4 Split và phụ thuộc giữa window . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       5
+
+3 Vì sao dữ liệu này liên quan trực tiếp đến ECDR?                                                    6
+   3.1 Toán tử dịch và phần tín hiệu mới . . . . . . . . . . . . . . . . . . . . . . . . . . . .      6
+   3.2 Overlap không suy ra khoảng cách nhỏ . . . . . . . . . . . . . . . . . . . . . . . . .         6
+   3.3 Từ data identity đến miền cần chứng nhận . . . . . . . . . . . . . . . . . . . . . .           7
+   3.4 Marginal coverage khác joint coverage trong không gian nhiều chiều . . . . . .                 7
+
+4 Reference CNN như một đối tượng lý thuyết                                                           8
+   4.1 Hai cấp mô hình cần tách rõ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      8
+   4.2 Vì sao không thể suy latency từ MAC hoặc overlap? . . . . . . . . . . . . . . . . .            8
+   4.3 Các đại lượng cần đo khi chọn reference sau này . . . . . . . . . . . . . . . . . . .          9
+
+
+
+                                                  1
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                     Week 2
+
+
+
+Phần I
+
+Week 2 — Dữ liệu và quan hệ trực tiếp với
+bài toán
+1     Data specification: từ đại lượng vật lý đến tensor
+
+1.1   Nguồn, ý nghĩa và đơn vị
+
+HAPT có raw inertial recordings và một nhánh vector đặc trưng được dựng sẵn. Trong
+hướng này, input là raw sensor window, không phải vector 561 features. Hồ sơ HAPT mô tả
+điện thoại đeo ở eo, 30 người, accelerometer ba trục và gyroscope ba trục lấy mẫu 50 Hz [1].
+Metadata của dataset là nguồn cho ý nghĩa vật lý; những con số trong raw file chỉ là phép
+đo biểu diễn các đại lượng đó.
+Đặt τn = n/fs , fs = 50 Hz. Một sample là
+
+                       s[n] = [ax [n], ay [n], az [n], ωx [n], ωy [n], ωz [n]]⊤ ∈ R6 .      (1)
+
+Ba a là gia tốc theo ba trục, đơn vị g; 1g = 9.80665 m/s2 . Ba ω là vận tốc góc, đơn vị rad/s
+theo README đi kèm. Raw acceleration có thể chứa thành phần trọng lực; không được gọi
+toàn bộ raw acc là body acceleration đã tách trọng lực nếu chưa áp phép tách đó. Tính căn
+chỉnh acc/gyro, thứ tự kênh và recording identity là một phần data contract.
+
+
+                       Bảng 1: Các cấp biểu diễn và vai trò của chúng.
+Cấp           Không gian             Ý nghĩa trong ECDR
+
+Sample s[n]   R6                     Một thời điểm; chưa đủ lịch sử để gọi là window
+Recording S   R6×T                   Chuỗi liên tục của một recording
+Window Xt     R6×128                 Một query của classifier
+Vector xt     R768                   Cùng dữ liệu theo một thứ tự flatten cố định
+New wave      R6×64                  Mẫu mới đi vào khi dịch 64 bước
+Ut
+Feature       Phụ thuộc kiến Biểu diễn được mạng tính; khác raw data
+H(Xt )        trúc
+Region Sr     Tập con của in- Tập query cần chứng nhận
+              put space
+
+
+
+
+1.2   Windowing và phép đếm
+
+Với recording có T sample, đặt W = 128, stride s = 64 và chỉ tạo cửa sổ nằm trọn trong
+recording:
+                 Xt [:, i] = s[ts + i], i = 0, . . . , W − 1, t = 0, . . . , nT − 1. (2)
+Các chỉ số đã được quy về zero-based. Nếu source annotation dùng quy ước khác, phải
+chuyển sang quy ước này trước khi gán nhãn.
+
+
+
+28/10/2026                                                                                   2
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                    Week 2
+
+
+Mệnh đề 1.1 (Số window của một recording). Với T ≥ W , số window stride s là
+                                                
+                                           T −W
+                                nT = 1 +           .                                       (3)
+                                             s
+
+Nếu T < W thì nT = 0.
+
+Chứng minh. Điều kiện hợp lệ của start là 0 ≤ ts và ts + W ≤ T . Vì t nguyên không âm,
+0 ≤ t ≤ ⌊(T − WP)/s⌋. Đếm các giá trị nguyên thu được công thức. Không nối recording nên
+tổng corpus là r nTr .
+
+Các phép quy đổi thời gian và dung lượng là
+
+                  CW = 6 × 128 = 768,                             W /fs = 2.56 s,          (4)
+                  s/fs = 1.28 s,                                1 − s/W = 50%,             (5)
+                   Cs = 384,                                   C(W − s) = 384.             (6)
+
+Một tensor float32 window chứa 768 × 4 = 3072 byte, tức 3 KiB, chưa gồm metadata hay
+allocator overhead. Nhịp tạo window sau warm-up là fs /s = 0.78125 window/s. Khoảng
+cách từ timestamp sample đầu đến sample cuối là (W − 1)/fs = 2.54 s; cách gọi window 2.56
+s dùng thời lượng W chu kỳ lấy mẫu. Hai quy ước thời gian này cần được phân biệt.
+
+
+1.3   Vector hóa không làm mất cấu trúc, nhưng có thể che cấu trúc
+
+Chọn channel-major vectorization
+
+                           xcW +i = X[c, i],     0 ≤ c < C,   0 ≤ i < W.                   (7)
+
+Phép này là song ánh tuyến tính giữa hai biểu diễn; ∥x∥2 = ∥X∥F . Nếu chỉ đổi thứ tự bằng
+permutation P , P ⊤ P = I nên norm Euclidean không đổi. Tuy nhiên, cấu trúc convolution
+và adjacency phải được chuyển cùng thứ tự. Việc viết x ∈ R768 không khiến 768 tọa độ độc
+lập về thống kê và cũng không biến mọi phương hướng perturbation thành có ý nghĩa vật
+lý.
+
+
+2     Nhãn, preprocessing và tính hợp lệ của phép so sánh
+
+2.1   Nhãn hoạt động và nhãn window
+
+Dataset có 12 nhãn, gồm sáu hoạt động cơ bản và sáu chuyển tư thế. Một nhãn đoạn [a, b)
+nghĩa là sample a, . . . , b − 1 thuộc hoạt động đó. Đặt
+
+                              X
+                              W −1                                      X
+                                                                        12
+                   nk (X) =          1{ℓ[ts + i] = k},   n0 (X) = W −         nk (X),      (8)
+                              i=0                                       k=1
+
+trong đó 0 là chưa annotation, không phải lớp hoạt động thứ 13. Window pure nếu có k
+sao cho nk = W ; unlabeled nếu n0 = W ; majority nếu không pure và maxk nk /W ≥ 0.6; các
+window còn lại ambiguous. Với W = 128, ngưỡng majority là ⌈0.6 × 128⌉ = 77 sample. Mẫu
+số là toàn bộ 128 sample, không phải chỉ sample đã annotation.
+
+
+
+
+28/10/2026                                                                                  3
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 2
+
+
+Mệnh đề 2.1 (Window pure nằm trong một span). Với span half-open [a, b) và lưới start ms,
+số window nằm trọn trong span và recording dài T là
+                                                                
+                               min(b − W, T − W )      max(a, 0)
+              n[a,b) = max 0,                       −              +1 .               (9)
+                                        s                 s
+
+Chứng minh. Window nằm trọn khi a ≤ ms và ms + W ≤ b, đồng thời 0 ≤ ms ≤ T − W . Lấy
+ceil ở cận dưới, floor ở cận trên và đếm số nguyên.
+
+Span ngắn hơn W không có pure window. Điều này giải thích bằng cơ chế đếm vì sao chuyển
+tư thế ngắn có thể ít pure support. Tổng theo span chỉ đúng không đếm trùng nếu các span
+đã chuẩn hóa và không chồng lấn; hai span cùng nhãn liền nhau có thể cần hợp nhất trước
+khi đếm pure windows.
+
+
+2.2     Phân bố lớp và giới hạn của hồ sơ dữ liệu hiện có
+
+
+Bảng 2: Pure windows theo lớp trong artifact audit cũ. Đây là bảng mô tả local window
+policy; không phải phân bố population hoặc kết quả CNN 12 lớp.
+ID Hoạt động                                                     Train   Val   Test    Tổng
+
+ 1    WALKING                                                      965   221   474      1660
+ 2    WALKING_UPSTAIRS                                             814   205   449      1468
+ 3    WALKING_DOWNSTAIRS                                           734   189   394      1317
+ 4    SITTING                                                      991   261   484      1736
+ 5    STANDING                                                    1099   286   541      1926
+ 6    LAYING                                                      1090   288   532      1910
+ 7    STAND_TO_SIT                                                  19     5    15        39
+ 8    SIT_TO_STAND                                                   5     1     6        12
+ 9    SIT_TO_LIE                                                    36    16    25        77
+10    LIE_TO_SIT                                                    30     6    18        54
+11    STAND_TO_LIE                                                  65     7    40       112
+12    LIE_TO_STAND                                                  30     5    15        50
+
+      Tổng 12 lớp                                                 5878 1490 2993 10361
+      Riêng 6 lớp cơ bản                                          5693 1450 2874 10017
+
+Nguồn bảng: data/g2_class_support.json; các count đã được đếm lại từ manifest Parquet
+trong lượt biên soạn và khớp artifact. Tổng transition pure là 10361 − 10017 = 344, chiếm
+khoảng 3.32% pure corpus. Bảng mô tả phụ thuộc convention annotation/window được code
+cũ sử dụng; báo cáo không khẳng định đã xác nhận lại nguồn gốc zero-/one-based của an-
+notation. Hướng lý thuyết mới dùng K tổng quát, với K = 12 cho schema đầy đủ. Kết quả
+của checkpoint 6 lớp cũ không được chuyển thành bằng chứng về classifier 12 lớp.
+Corpus local có 17453 windows trên 61 recordings; các policy counts là 10361 pure, 1917
+majority, 1588 ambiguous, 3587 unlabeled, tổng đúng 17453. Con số 10929 instances trong
+metadata UCI thuộc nhánh đặc trưng được dựng sẵn, không phải số raw samples hay tổng
+windows của policy local. Các số audit được dẫn để mô tả data, không để chọn architecture
+lý thuyết.
+
+
+
+
+28/10/2026                                                                                4
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                         Week 2
+
+
+
+                 Bảng 3: Các denominator khác nhau trong snapshot local.
+Tập                                                                                Train   Val   Test
+
+Subjects                                                                             17    4    9
+Toàn bộ window                                                                     9978 2422 5053
+Pure 12 lớp                                                                        5878 1490 2993
+Pure 6 lớp                                                                         5693 1450 2874
+
+
+
+2.3   Normalization và đơn vị của perturbation
+
+Với mean µc và scale σc > 0 fit chỉ trên train, đặt
+
+                                   X[c, i] − µc
+                       Z[c, i] =                ,       z = P(x) = Dσ−1 (x − µ).                 (10)
+                                       σc
+
+Dσ lặp scale của từng kênh theo thời gian. Mean và scale không được fit lại trên từng query
+nếu certificate tham chiếu preprocessing cố định. Nếu dùng filter, resample, clipping hoặc
+gravity separation, chúng cũng phải nằm trong P; filter có state phải được đưa vào state
+của bài toán, hoặc đầu vào chứng nhận phải là output filter đã cố định.
+
+Mệnh đề 2.2 (Biến đổi budget và metric). Với normalization affine cố định, raw diagonal
+budget braw tương đương normalized budget bi = braw
+                                                i   /σi . Ngoài ra
+                                                         X (xi − x′ )2
+                                   P(x) − P(x′ ) 2 =                                             (11)
+                                                    2                  i
+                                                                           .
+                                                           i
+                                                                 σi2
+
+Chứng minh. Lấy hiệu hai vế của (10), rồi chia từng bất đẳng thức |xi − x′i | ≤ braw
+                                                                                 i   cho σi > 0.
+Bình phương và cộng cho công thức metric.
+
+Raw Euclidean distance cộng bình phương gia tốc và vận tốc góc có nhiều đơn vị. Giá trị của
+nó phụ thuộc scale đo. Normalization định nghĩa một metric có trọng số rõ ràng; nó không
+tự chứng minh metric này phù hợp với decision boundary. Tuyên bố “features nằm trong
+[−1, 1]” của nhánh 561 features không được mặc nhiên áp cho raw signals hoặc z-score.
+
+
+2.4   Split và phụ thuộc giữa window
+
+Vì adjacent windows dùng mẫu chung, random split theo window có thể đặt cùng raw sam-
+ple vào train và test. Để đánh giá sang người khác, subject sets phải rời nhau; để replay,
+cần giữ recording/time order và reset state khi đổi recording. Snapshot local có 17/4/9 sub-
+jects cho train/val/test, khác cách mô tả 70/30 train/test trong dataset gốc vì local có thêm
+validation.
+Overlap làm phát sinh phụ thuộc, nhưng không cho phép suy một hệ số tương quan bất
+kỳ hoặc effective sample size cụ thể. Confidence interval và resampling sau này cần theo
+subject/recording hoặc mô hình phụ thuộc được biện minh. Không coi hàng nghìn windows
+là hàng nghìn quan sát i.i.d. chỉ vì chúng là các row khác nhau.
+
+
+
+
+28/10/2026                                                                                         5
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                          Week 2
+
+
+
+3     Vì sao dữ liệu này liên quan trực tiếp đến ECDR?
+
+3.1   Toán tử dịch và phần tín hiệu mới
+
+Định nghĩa 3.1 (Shift–append). Với 1 ≤ s ≤ W , đặt Ss X = [X[:, s : W ], 0C×s ] và Js U =
+[0C×(W −s) , U ]. Phép chuyển window là
+                              Ts (X, U ) = Ss X + Js U = [X[:, s : W ], U ].                     (12)
+
+Ký hiệu t đếm window, nên window kế tiếp là Xt+1 , không phải Xt+s . New wave Ut+1 có s
+sample mới ở cuối recording stream.
+Định lý 3.2 (Overlap chính xác). Nếu hai window liên tiếp lấy từ cùng recording theo (2) thì
+                     Xt+1 [:, 0 : W − s] = Xt [:, s : W ],   Xt+1 = Ts (Xt , Ut+1 ).             (13)
+
+Chứng minh. Tại vị trí i < W − s, window mới chứa sample s[(t + 1)s + i], bằng s[ts + (i + s)]
+ở vị trí i + s của window cũ. Các vị trí còn lại chính là s sample chưa có trong window trước.
+Lập luận áp dụng cho từng kênh.
+
+Đây là kết quả cho mọi chuỗi dữ liệu, không cần giả định “cùng activity” hoặc “tín hiệu
+mượt”. Khi xuất hiện missing samples, đổi sampling grid hoặc đổi recording, quan hệ này
+phải được kiểm lại theo data contract.
+Đối chiếu data–math bằng dữ liệu lưu. Kiểm read-only ngày 28/10/2026 đọc toàn bộ tensor
+windows.npz: shape (17453, 6, 128), dtype float32, 13403904 scalar đều finite. Trên 17392 cặp có
+cùng recording và win_idx liên tiếp, mọi bước start đều tăng 64. So sánh trực tiếp 6×64 = 384
+tọa độ mỗi cặp cho 17392 × 384 = 6678528 phép so; tất cả bằng nhau, max absolute difference
+bằng 0. Check này xác nhận bridge chỉ số và overlap của corpus lưu, không chứng minh ý
+nghĩa vật lý, tính đúng của annotation, invariant prediction hoặc một certificate neural. Kết
+quả và source hashes ở me/calculations.json.
+
+                Xt             64 mẫu bị loại                     64 mẫu overlap
+
+              Xt+1            64 mẫu overlap                        64 mẫu mới
+
+Hình 1: Overlap là bằng nhau sau dịch chỉ số; mỗi ô biểu diễn cả sáu kênh. Bằng nhau theo
+alignment khác với cùng tọa độ trong vector 768 chiều.
+
+
+
+3.2   Overlap không suy ra khoảng cách nhỏ
+
+Đặt Ps X = X[:, s : W ], Qs X ′ = X ′ [:, 0 : W − s]. Định lý trên cho ∥Qs Xt+1 − Ps Xt ∥F = 0. Ngược
+lại
+                                  Xt+1 − Xt = (Ss − I)Xt + Js Ut+1 ,                              (14)
+nên delta cùng tọa độ có thể lớn trên nhiều hoặc tất cả tọa độ.
+Ví dụ 3.3 (Khoảng cách lớn dù overlap đúng). Với một kênh, W = 4, s = 2, lấy X = (0, 0, M, M )
+và U = (0, 0). Khi đó X ′ = (M, M, 0, 0) giữ đúng hai mẫu overlap nhưng ∥X ′ − X∥2 = 2|M |,
+không bị chặn khi M tăng. Cả overlap 50% và aligned distance bằng 0 đều không suy ra
+ordinary distance nhỏ.
+                                                   √
+Với |Xi |, |Ui | ≤ B thì có cận thô ∥X ′ − X∥2 ≤ 2B CW ; đây là cận từ biên độ, không phải từ
+overlap. Cận không đảm bảo giữ decision nếu margin quá nhỏ.
+
+28/10/2026                                                                                          6
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                                   Week 2
+
+
+
+3.3   Từ data identity đến miền cần chứng nhận
+
+Giữ Xt đã biết và cho new wave biến thiên trong Ue . Miền next window tự nhiên là
+
+                              Sewave (Xt ) = {Ts (Xt , U ) : U ∈ Ue }.                                    (15)
+
+Nếu Ue là box có nội điểm trong RC×s thì tập này có affine dimension Cs = 384, thay vì 768.
+Điều đó giảm số biến tự do của miền, không tự giảm độ phức tạp của mọi verifier hoặc bảo
+đảm bound chặt. Điểm center tự nhiên là [Xt [:, s : W ], Ū ], có thể xa Xt . Chứng nhận target
+class vẫn có thể là h(Xt ) dù Xt không thuộc miền mới.
+Nếu bổ sung overlap noise E thì phải mở rộng miền thành Ts (Xt , U )+E, với constraint của E
+công bố rõ. Lợi ích 384 biến chỉ giữ nguyên khi overlap thật sự cố định; một full-dimensional
+noise box có thể đưa affine dimension trở lại 768.
+
+
+                 Bảng 4: Data property dẫn đến nghĩa vụ toán học cụ thể.
+Data property                   Suy ra được                              Còn phải chứng minh
+
+Overlap cùng recording          Đẳng thức sau căn chỉnh                  Decision invariance
+Chỉ Cs giá trị mới              Wave-domain ít biến tự do                Bound/cost tốt hơn
+Chu kỳ chuyển động              Giả thuyết delta có cấu trúc             Miền bao phủ query và
+                                                                         sound
+Cùng activity label             Quan hệ annotation                       CNN agreement trên từng
+                                                                         query
+Chuỗi liên tục                  Có thể replay theo time                  Anchor lifecycle an toàn
+                                order
+Nhiều đơn vị/kênh               Cần quy ước scale                        Metric có ích cho certificate
+
+
+
+
+3.4   Marginal coverage khác joint coverage trong không gian nhiều chiều
+
+Một budget lấy quantile 90% ở mỗi tọa độ không
+                                         T      làm whole-window coverage tự bằng 90%.
+Đặt Ei = {|∆i | ≤ bi }. Box membership là di=1 Ei . Nếu biết Pr(Eic ) ≤ αi dưới một phân bố
+được khai báo thì union bound cho
+                                     !                       !
+                                \                      X
+                             Pr    Ei ≥ max 0, 1 −        αi .                          (16)
+                                   i                          i
+
+                                                                           S              P
+Chứng minh. Phần bù của giao là hợp của các Eic ; áp dụng Pr(                  i Ei ) ≤
+                                                                                  c
+                                                                                              i Pr(Ei ) rồi lấy
+                                                                                                    c
+
+phần bù.
+
+Nếu thêm giả thiết independence và Pr(Ei ) = q giống nhau thì joint coverage là q d . Chẳng
+hạn, 0.9768 ≈ 7.2152 × 10−36 , 0.99768 ≈ 0.00044446, 0.999768 ≈ 0.4638. HAPT coordinates không
+được giả định độc lập; đây là ví dụ chỉ ra nguy cơ suy từ marginal sang joint, không phải
+ước lượng coverage HAPT. Empirical quantile trên train cũng không chứng minh popula-
+tion inequality Pr(Eic ) ≤ αi . Temporal correlation có thể làm joint coverage khác hẳn ví
+dụ independence, nên cấu trúc miền đáng nghiên cứu nhưng phải được chứng nhận theo
+decision margin riêng.
+
+
+
+
+28/10/2026                                                                                                   7
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 2
+
+
+
+4     Reference CNN như một đối tượng lý thuyết
+
+4.1     Hai cấp mô hình cần tách rõ
+
+Cấp tổng quát giữ F : R768 → RK deterministic và frozen. Các định lý margin, Lipschitz,
+domain và lifecycle không đòi classifier là GAP. Với schema HAPT đầy đủ, xét K = 12, nhưng
+không có accuracy/latency mới được gán cho classifier 12 lớp.
+Cấp chuyên biệt để suy ra exact shift identities là chuỗi Conv1D valid, stride 1, dilation 1,
+ReLU, không pooling trung gian, sau đó GAP và affine head. Đây là giả thiết phân tích mới,
+không phải mô tả checkpoint cũ. Chọn ví dụ 6 → 32 → 64 → 64, kernels 5, 3, 3, K = 12.
+
+
+Bảng 5: CNN valid–GAP minh họa cho lý thuyết, có bias, không BatchNorm. Một MAC là một
+phép nhân–cộng tích lũy; không phải phép đo runtime.
+Layer                                                    Output C × T Parameters MAC/window
+
+Input                                                           6 × 128         0          0
+Conv1 valid, k = 5 + ReLU                                      32 × 124       992     119040
+Conv2 valid, k = 3 + ReLU                                      64 × 122      6208     749568
+Conv3 valid, k = 3 + ReLU                                      64 × 120     12352    1474560
+GAP                                                              64 × 1         0          –
+Affine 64 → 12                                                       12       780        768
+
+Tổng Conv + affine                                                          20332    2343936
+
+
+Với layer ℓ, Tℓ = Tℓ−1 − kℓ + 1 và
+
+                            Pℓ = Cℓ (Cℓ−1 kℓ + 1),   Mℓ = Tℓ Cℓ Cℓ−1 kℓ .                (17)
+
+Head có K(d + 1) parameters và Kd MAC. Quy ước xấp xỉ 2 FLOP/MAC cho phần Conv/head
+cho 4687872 FLOP, chưa gồm bias, ReLU, GAP và memory traffic. GAP có 64(120 − 1) = 7616
+phép cộng và 64 phép scale; ReLU so sánh trên 3968 + 7808 + 7680 = 19456 activation. Số
+parameters không phụ thuộc batch.
+
+
+4.2     Vì sao không thể suy latency từ MAC hoặc overlap?
+
+Runtime còn phụ thuộc kernel implementation, threads, dtype, memory access, batch size
+và overhead. Chỉ biết 50% raw overlap không cho phép chia đôi MAC hay latency: feature
+receptive field, padding và head có thể khác. Week 3 sẽ chỉ ra, trong CNN ví dụ, RF cuối là 9
+và có 56/120 feature positions overlap sau dịch 64. Đó là 46.67%, khác raw overlap 50%.
+Nếu dùng model khác, phải suy lại shape, RF và head dependency. Với Flatten–MLP, cùng
+feature ở vị trí khác có thể mang trọng số khác nên công thức GAP không áp trực tiếp. Với
+zero-padding, biên mới và biên cũ khác nhau; với pooling/stride, cần alignment; với BN
+ở training, output phụ thuộc batch. Đây là lý do ràng buộc kiến trúc phải xuất hiện trước
+chứng minh.
+
+
+
+
+28/10/2026                                                                                 8
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                                Week 2
+
+
+
+4.3   Các đại lượng cần đo khi chọn reference sau này
+
+Cho confusion matrix Cij với true class i, predicted class j,
+                              P
+                                  Cii
+                Accuracy = P i          ,                                                               (18)
+                                ij Cij
+                               Ckk                     Ckk
+               Precisionk = P         ,    Recallk = P       ,                                          (19)
+                                i Cik                  j Ckj
+                                      2Ckk                      1 X
+                      F 1k =                    ,     MacroF1 =     F 1k .                              (20)
+                             2Ckk + FPk + FNk                   K
+                                                                                 k
+
+Quy ước denominator 0 phải ghi rõ. Ground-truth accuracy khác Pr[b   hECDR (X) = h(X)]. Pre-
+diction agreement có thể cao trong khi cả hai sai ground truth. Latency phải ghi scope và
+hardware; số 251.1 µs của forward 6 lớp cũ chỉ xuất hiện trong Week 3 như một phép thay
+số sensitivity có nguồn, không là baseline đo của CNN lý thuyết mới.
+
+
+Nguồn và cách tái kiểm
+
+Nội dung theo bản chuẩn hóa Week 1–3 do người nghiên cứu cung cấp và các nguồn gốc
+trong bibliography. Các số data mô tả snapshot local theo policy đã ghi; mô hình lý thuyết
+không phải checkpoint triển khai cũ. Báo cáo tổng hợp trong cùng thư mục có đầy đủ bảng
+ký hiệu, provenance và các tuần còn lại. Phép tính số học được lưu trong recompute.py và
+calculations.json. Không có training hoặc benchmark ECDR mới.
+
+
+
+Tài liệu
+
+ [1] J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra. Smartphone-Based Recognition of Human Activi-
+     ties and Postural Transitions. UCI Machine Learning Repository, 2015. DOI: 10.24432/C54G7M.
+     Metadata và README local được đối chiếu ngày 28/10/2026.
+ [2] Y. Tsuzuku, I. Sato, M. Sugiyama. Lipschitz-Margin Training: Scalable Certification of Perturba-
+     tion Invariance for Deep Neural Networks. NeurIPS, 2018. https://arxiv.org/abs/1802.04034.
+ [3] S. Gowal et al. On the Effectiveness of Interval Bound Propagation for Training Verifiably Robust
+     Models. arXiv:1810.12715, 2018. https://arxiv.org/abs/1810.12715.
+ [4] H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel. Efficient Neural Network Robustness Cer-
+     tification with General Activation Functions. NeurIPS, 2018. https://arxiv.org/abs/1811.00866.
+ [5] K. Xu et al. Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond.
+     NeurIPS, 2020. https://arxiv.org/abs/2002.12920.
+ [6] H. Zhang et al. Towards Stable and Efficient Training of Verifiably Robust Neural Networks.
+     NeurIPS, 2019. https://arxiv.org/abs/1906.06316.
+ [7] S. Wang et al. Beta-CROWN: Efficient Bound Propagation with Per-neuron Split Constraints for
+     Neural Network Robustness Verification. NeurIPS, 2021. https://papers.neurips.cc/paper_files/
+     paper/2021/hash/fac7fead96dafceaf80c1daffeae82a4-Abstract.html.
+ [8] G. Montúfar, R. Pascanu, K. Cho, Y. Bengio. On the Number of Linear Regions of Deep Neural
+     Networks. NeurIPS, 2014. https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a4
+     69cc4d61a92d96e74617c3d2a-Abstract.html.
+ [9] C. Kechris, J. Dan, J. Miranda, D. Atienza. Don’t Think It Twice: Exploit Shift Invariance for Efficient
+     Online Streaming Inference of CNNs. arXiv:2408.03223, 2024. https://arxiv.org/abs/2408.03223.
+
+
+
+28/10/2026                                                                                                 9
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                          Week 2
+
+
+[10] Z. Huang, E. Baccelli. TinyDéjàVu: Smaller Memory Footprint & Faster Inference on Sensor Data
+     Streams with Always-On Microcontrollers. arXiv:2512.09786, 2025. https://arxiv.org/abs/2512.0
+     9786. Tên theo metadata arXiv được tra 28/10/2026; không nhập số benchmark của paper vào
+     kết quả HAPT.
+[11] Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar. LipCache: A Local Inference Proxy with
+     Certified Caching for Edge Image Classification Service. arXiv:2608.13144, 2026. https://arxiv.or
+     g/abs/2608.13144. Đối chiếu PDF v1 lưu local, đặc biệt phạm vi GuardNet/MainNet tại phần
+     certification và system semantics.
+
+
+
+
+28/10/2026                                                                                         10
+

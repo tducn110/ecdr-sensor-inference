@@ -1,0 +1,2023 @@
+Current source notice. The Week 1 section below is the current English source and su-
+persedes older Week 1 prose. Weeks 2 and 3 remain historical synthesis sections pending
+model-specific revision.
+
+
+
+
+BÁO CÁO NGHIÊN CỨU LÝ THUYẾT
+
+
+ECDR
+Tái sử dụng quyết định có chứng nhận
+trên chuỗi dữ liệu cảm biến
+
+Week 1: Project Brief
+Week 2: Data Foundations
+Week 3: Mathematical Foundations
+
+
+Phạm vi        Problem, dữ liệu HAPT, mô hình toán học, giả thiết, chứng minh, phản ví
+               dụ và điều kiện hiệu quả.
+Nguồn ưu tiên Hai bản tổng hợp do người nghiên cứu cung cấp, đặc biệt bản chuẩn hóa
+               Week 1–3; tài liệu HAPT và bài báo gốc.
+Loại báo cáo   Tổng hợp lý thuyết có diễn giải và tính toán tái kiểm được; chưa phải
+               paper chứng minh hiệu quả thực nghiệm của ECDR.
+Ngày biên soạn 28 tháng 10 năm 2026, Asia/Ho_Chi_Minh.
+
+
+
+
+Quy ước tên gọi. Báo cáo dùng ECDR làm tên làm việc cho Edge Certified Decision Reuse.
+“Event-conditioned” chỉ cơ chế chọn miền theo thông tin biến thiên, không tự tạo ra một
+bảo đảm đúng đắn. Các mệnh đề được đánh số để tham chiếu; việc đặt số không hàm ý
+chúng là đóng góp mới so với literature.
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                          Week 1–3
+
+
+                                          Tóm tắt nội dung
+
+         ECDR nghiên cứu điều kiện cho phép trả lại quyết định của một neural classifier đã
+     cố định mà không tính lại toàn bộ classifier cho mỗi cửa sổ cảm biến. Báo cáo phát triển
+     lập luận theo ba bước: xác định bài toán và phạm vi bảo đảm; định nghĩa dữ liệu từ đại
+     lượng vật lý đến cửa sổ và toán tử dịch; xây dựng các điều kiện chứng nhận trên miền
+     đầu vào. Đối với HAPT, sáu kênh với 128 mẫu tạo một điểm trong R768 ; phép dịch 64 mẫu
+     giữ nguyên 384 giá trị sau căn chỉnh và đưa vào 384 giá trị mới. Đẳng thức này không
+     suy ra khoảng cách tọa độ nhỏ hoặc bất biến phân loại. Báo cáo chứng minh điều kiện
+     margin, certificate Lipschitz, tính sound của IBP theo lớp, các support function cho miền
+     có cấu trúc, định lý dịch đặc trưng cho CNN valid–ReLU–GAP, và hai quy tắc reuse nhiều
+     bước có điều kiện. Các phản ví dụ làm rõ vì sao overlap, cùng nhãn hoạt động, cùng miền
+     ReLU hoặc membership đơn lẻ đều chưa đủ. Phân tích chi phí đưa ra bất đẳng thức hòa
+     vốn, không khẳng định speedup. Hệ thống giả thuyết cuối báo cáo phân biệt kết quả đại
+     số, kết quả phụ thuộc giả thiết và câu hỏi còn mở. Mô hình cũ trong repo được xem là hồ
+     sơ lịch sử; nó không quyết định kiến trúc lý thuyết mới.
+
+Từ khóa: time-series; HAPT; decision invariance; sliding window; certified bounds; Lips-
+chitz; IBP; CROWN; structured domain; amortization.
+
+
+Mục lục
+
+Cách đọc và mức độ khẳng định                                                                           4
+
+1 Executive brief                                                                                       4
+   1.1 Problem and decision contract . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        4
+   1.2 Data and label contract . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    4
+   1.3 Frozen reference architecture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        5
+   1.4 Research questions and hypotheses . . . . . . . . . . . . . . . . . . . . . . . . . . .          5
+   1.5 Domain, event, and certificate semantics . . . . . . . . . . . . . . . . . . . . . . . .         6
+   1.6 Reference classes and architecture audit . . . . . . . . . . . . . . . . . . . . . . . .         6
+
+2 Feasibility baseline results                                                                          6
+   2.1 Objectives, split subjects, and pipeline . . . . . . . . . . . . . . . . . . . . . . . . .       9
+   2.2 Certificate lifecycle and architecture-specific firewall . . . . . . . . . . . . . . . . 10
+   2.3 Grounding and research gap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+   2.4 Evidence status and roadmap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+3 Source and reproducibility contract                                                                  11
+
+
+I Week 2 — Dữ liệu và quan hệ trực tiếp với bài toán                                                   12
+
+4 Data specification: từ đại lượng vật lý đến tensor                                                   12
+   4.1 Nguồn, ý nghĩa và đơn vị . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+   4.2 Windowing và phép đếm . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+   4.3 Vector hóa không làm mất cấu trúc, nhưng có thể che cấu trúc . . . . . . . . . . 13
+
+
+28/10/2026                                                                                              1
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                          Week 1–3
+
+
+5 Nhãn, preprocessing và tính hợp lệ của phép so sánh                                                14
+     5.1 Nhãn hoạt động và nhãn window . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+     5.2 Phân bố lớp và giới hạn của hồ sơ dữ liệu hiện có . . . . . . . . . . . . . . . . . . 14
+     5.3 Normalization và đơn vị của perturbation . . . . . . . . . . . . . . . . . . . . . . . 16
+     5.4 Split và phụ thuộc giữa window . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+
+6 Vì sao dữ liệu này liên quan trực tiếp đến ECDR?                                                   16
+     6.1 Toán tử dịch và phần tín hiệu mới . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+     6.2 Overlap không suy ra khoảng cách nhỏ . . . . . . . . . . . . . . . . . . . . . . . . . 17
+     6.3 Từ data identity đến miền cần chứng nhận . . . . . . . . . . . . . . . . . . . . . . 17
+     6.4 Marginal coverage khác joint coverage trong không gian nhiều chiều . . . . . . 18
+
+7 Reference CNN như một đối tượng lý thuyết                                                          18
+     7.1 Hai cấp mô hình cần tách rõ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+     7.2 Vì sao không thể suy latency từ MAC hoặc overlap? . . . . . . . . . . . . . . . . . 19
+     7.3 Các đại lượng cần đo khi chọn reference sau này . . . . . . . . . . . . . . . . . . . 19
+
+
+II    Week 3 — Cơ sở toán học và hệ thống giả thuyết                                                 20
+
+8 Certification contract và problem formulation                                                      20
+
+9 Decision regions: điều kiện cần, đủ và tồn tại                                                     20
+
+10 Những khẳng định vô điều kiện không thể có                                                        21
+
+11 Lipschitz–margin certification                                                                    22
+
+12 IBP: suy ra cận bằng interval arithmetic                                                          22
+     12.1 Affine, convolution và activation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+     12.2 Dependency loss và nhu cầu cả lower/upper . . . . . . . . . . . . . . . . . . . . . 23
+
+13 CROWN/LiRPA và hình học miền chứng nhận                                                           23
+     13.1 Relaxation của ReLU và cận margin . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+     13.2 Support function: vì sao chọn miền là một bài toán riêng . . . . . . . . . . . . . . 24
+     13.3 Ví dụ tính đầy đủ: cấu trúc giúp khi nào? . . . . . . . . . . . . . . . . . . . . . . . . 24
+     13.4 Normalization, containment và domain identity . . . . . . . . . . . . . . . . . . . 25
+     13.5 Event-conditioned selection và bài toán chọn miền . . . . . . . . . . . . . . . . . 25
+
+14 Từ wave data đến exact feature và margin identities                                               25
+     14.1 Giả thiết kiến trúc chuyên biệt A1–A6 . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+     14.2 Tính toán cho cấu hình HAPT lý thuyết và các giới hạn . . . . . . . . . . . . . . . 27
+
+
+
+28/10/2026                                                                                            2
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                          Week 1–3
+
+
+15 Membership: đúng, rẻ theo bậc, và rẻ thực tế                                                       27
+
+16 Reuse một bước và nhiều bước                                                                       27
+   16.1 One-step composition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+   16.2 Fixed-anchor multi-step certificate . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+   16.3 Finite-horizon wave certificate: một cách giải không cần exact feature state . . 28
+
+17 Từ số thực đến chương trình số hữu hạn                                                             29
+
+18 Amortized cost và giới hạn của claim hiệu quả                                                      29
+   18.1 Accounting chính xác trước mô hình trung bình . . . . . . . . . . . . . . . . . . . 29
+   18.2 Tính nhạy cảm đầy đủ, không dùng làm benchmark . . . . . . . . . . . . . . . . . 30
+   18.3 Build amortization theo số hit/certificate . . . . . . . . . . . . . . . . . . . . . . . . 30
+
+19 Hệ thống giả thuyết nghiên cứu và cách phân biệt đúng/sai                                          30
+   19.1 Các nhóm giả thiết . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+   19.2 Thiết kế kiểm chứng giả thuyết sau báo cáo lý thuyết . . . . . . . . . . . . . . . . 32
+
+20 Tổng hợp mức độ chứng minh và câu trả lời nghiên cứu                                               33
+
+A Nguồn, tính tái lập và ranh giới với implementation cũ                                              34
+
+B Bảng ký hiệu                                                                                        34
+
+
+
+
+28/10/2026                                                                                             3
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                   Week 1–3
+
+
+
+Cách đọc và mức độ khẳng định
+
+“Chứng minh dữ liệu” có hai nghĩa cần tách rõ. Ý nghĩa cảm biến, đơn vị, vị trí thu và cách
+gán nhãn dựa vào hồ sơ thu thập của HAPT; không thể suy ra chúng chỉ từ một ma trận số.
+Shape, chỉ số cửa sổ, số phần tử chồng lấn và các hệ quả toán học được suy ra từ định nghĩa,
+rồi đối chiếu với dữ liệu lưu.
+Trong báo cáo, đẳng thức cấu trúc đúng với mọi chuỗi hữu hạn thỏa định nghĩa, không cần
+giả định chuỗi mượt hoặc cùng hoạt động. Định lý có điều kiện ghi rõ điều kiện về miền,
+mô hình, cận hoặc số học. Giả thuyết nghiên cứu là phát biểu cần dữ liệu hay phép đo để
+kiểm tra. “Vô điều kiện” không được hiểu là có thể bỏ mọi giả thiết: một bảo đảm universal
+cho mọi classifier và mọi đầu vào khác anchor là sai, như các phản ví dụ sẽ chỉ ra.
+Mỗi tuần có câu hỏi và tiêu chí hoàn thành riêng. Bản tổng hợp này giữ ba phần độc lập;
+các bản LaTeX/PDF riêng của từng tuần được cung cấp cùng thư mục để trình bày tuần nào
+thì dùng đúng tuần đó. Ngày biên soạn không phải ngày thực nghiệm. Các phép tính minh
+họa không phải kết quả đo trên thiết bị.
+
+
+1     Executive brief
+
+This Week 1 document fixes the research question, reference contract, evidence bound-
+aries, and experimental plan for Event-Conditioned Certified Decision Reuse (ECDR) on the
+HAPT smartphone inertial-sensing data. The primary reference is a new, frozen twelve-
+class SmallCNN1D specification. The historical six-class checkpoint and the earlier valid-
+convolution/GAP theory remain provenance only. The completed feasibility baseline is re-
+ported below; it does not establish ECDR certification or net savings.
+
+
+1.1   Problem and decision contract
+
+Let Xt ∈ R6×128 be a raw sensor window and let P be fixed per-channel z-score preprocess-
+ing, fitted on training subjects only. The reference function is F = fθ ◦ P , with logits F (X) ∈
+R12 and deterministic tie-breaking. The reference decision is h(X) = arg maxk Fk (X). An
+ECDR policy may reuse a previous decision only when its certificate proves that the current
+input belongs to a region on which the same fixed reference decision holds. The primary
+safety target is therefore ĥECDR (X) = h(X) with zero disagreements over the declared eval-
+uation scope. Agreement with the reference is distinct from agreement with ground-truth
+labels.
+The main research question is: for the frozen SmallCNN1D K=12 reference on HAPT, can an
+event-conditioned certificate preserve every reference decision while reducing total end-to-
+end inference cost under a declared streaming workload? Cost includes reference forward
+evaluation, preprocessing, event detection, membership tests, certificate construction or
+reuse, fallback evaluation, and I/O or scheduling overhead. Forward-only timing cannot
+establish a net saving.
+
+
+1.2   Data and label contract
+
+The source is the UCI Smartphone-Based Recognition of Human Activities and Postural
+Transitions dataset [1], sampled at 50 Hz with three accelerometer and three gyroscope
+channels. Windows are 128 samples with stride 64; each window is tied to its recording and
+
+
+28/10/2026                                                                                     4
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                       Week 1–3
+
+
+raw annotation coordinates. Subject-disjoint splits are fixed as 17 training, 4 validation, and
+9 test subjects. Channel order is [ax , ay , az , gx , gy , gz ]: raw accelerometer channels are mea-
+sured in g and gyroscope channels in radians per second. Windows are 2.56 seconds long
+and advance by a 1.28-second step. Windows never cross recordings. Normalizer statistics
+are fit across all supervised TRAIN windows and recordings; validation and test never enter
+the fit. The inputs are raw sensor signals, not the UCI 561-feature representation.
+The split audit contains 9,978 full train-stream windows, 2,422 validation windows, and
+5,053 test-stream windows. The supervised pure-or-dominant-at-least-0.6 policy contains
+6,955 train, 1,751 validation, and 3,572 test windows. The pure-basic total is 10,017 across
+the corpus; these are different denominators. These counts were reproduced by the fresh
+audit and recorded in the run manifest. Pure windows and majority windows are distinct.
+Ambiguous or unlabeled stream windows remain in full-stream denominators and are ex-
+cluded from supervised classification only under the declared policy. The annotation coor-
+dinate convention and the mapping from samples to windows must be recorded with each
+run.
+The transition snapshot has 344 pure transition windows and 10,017 pure basic windows
+among 10,361 pure windows. Existing support gates therefore remain failed for a high-
+quality twelve-class training claim. The explicit current decision is to permit an exploratory
+K=12 feasibility reference with the pure-or-dominant policy, while retaining the status ex-
+ploratory and making no claim that the historical G2 quality gate passed.
+
+
+1.3   Frozen reference architecture
+
+The K=12 contract is: input (B, 6, 128); same-padded Conv1D 6→32, kernel 5, padding 2, fol-
+lowed by BatchNorm, ReLU and MaxPool2; same-padded Conv1D 32→64, kernel 3, padding
+1, followed by BatchNorm, ReLU and MaxPool2; same-padded Conv1D 64→64, kernel 3,
+padding 1, followed by BatchNorm and ReLU; Flatten of 2,048 features; Linear 2,048→128,
+ReLU; and Linear 128→12. The executed trainable parameter count is 283,692; shape and
+parameter checks passed on the instantiated K=12 model. BatchNorm evaluation uses
+frozen running statistics; a checkpoint and its preprocessing parameters are an inseparable
+reference identity.
+The operational checkpoint was selected after the completed training and evaluation run. It
+uses seeds 42, 43, and 44; at most 30 epochs; Adam with learning rate 10−3 and weight decay
+10−4 ; cosine scheduling; and patience 10. Epoch and seed selection use validation macro-
+F1. Test evaluation occurs after selection. Required outputs include accuracy against ground
+truth, macro-F1, a 12-class confusion matrix, per-class recall, reference-decision agreement,
+point-margin distributions, and timing by declared scope. These outputs are recorded for
+the completed feasibility run. Adjacent prediction stability is measured for the snapshot,
+while ECDR/reference agreement is not established; certificate and full ECDR cost outputs
+remain pending.
+
+
+1.4   Research questions and hypotheses
+RQ1 (reference quality) What classification accuracy and per-class recall does the new
+  K=12 reference achieve against declared ground truth?
+RQ2 (decision preservation) Does ECDR preserve the reference decision with zero dis-
+  agreements on stable and transition windows under the specified certificate and lifecy-
+  cle rules?
+RQ3 (coverage and cost) At what event-conditioned coverage does ECDR reduce total end-
+  to-end cost relative to evaluating the reference on every window, and how does that
+
+
+28/10/2026                                                                                         5
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                 Week 1–3
+
+
+  compare with a fixed fair-cost policy?
+RQ4 (soundness) Which certificate bounds, membership predicates, and lifecycle obliga-
+  tions are executable on this graph?
+The hypothesis ledger is conditional. H1 predicts that stable windows will have more stable
+adjacent reference predictions than transition windows; this is not ECDR/reference agree-
+ment; the current snapshot measures it descriptively from 2,560/2,617 stable pairs versus
+23/44 transition pairs. H2 predicts that event-conditioned certified coverage can improve at
+a fixed matched total cost; this is proposed and requires a fair end-to-end benchmark. H3 is
+a derived theorem obligation: if, for a candidate region Sr and predicted class c, every com-
+peting margin satisfies infX∈Sr (Fc (X) − Fj (X)) > 0 for j ̸= c, then h(X) = c throughout that
+region. This implication is mathematical, not a validated runtime result; executable bound,
+arithmetic, membership, and lifecycle checks remain pending. H4 predicts net savings only
+in an operating regime whose complete cost is measured.
+
+
+1.5   Domain, event, and certificate semantics
+
+An anchor is a specific window X r actually evaluated by the frozen reference, with trusted
+class c = h(X r ). A candidate region is a set of admissible windows, a certificate is a sound
+lower-bound statement over that region, and membership is the runtime predicate that de-
+cides whether a new window belongs to it. These are separate objects. Event descriptors
+are candidate signals for choosing when to rebuild or test a certificate; they do not prove
+coverage by smoothness. The whole-domain condition above is a derived condition over
+all 11 competing margins, not evidence that the condition holds for the current checkpoint.
+Reference weights, BatchNorm running statistics, preprocessing, tie-breaking, and arith-
+metic mode must remain fixed across a certificate’s lifecycle. Cached hits do not establish
+a new trusted anchor: reuse is allowed only for a valid certificate and membership result,
+otherwise the system falls back to the frozen reference.
+
+
+1.6   Reference classes and architecture audit
+
+The class IDs are fixed as follows: 1 WALKING, 2 WALKING_UPSTAIRS, 3 WALK-
+ING_DOWNSTAIRS, 4 SITTING, 5 STANDING, 6 LAYING, 7 STAND_TO_SIT, 8 SIT_TO_STAND,
+9 SIT_TO_LIE, 10 LIE_TO_SIT, 11 STAND_TO_LIE, and 12 LIE_TO_STAND. The order is part of
+the checkpoint identity.
+
+
+2     Feasibility baseline results
+
+The full pipeline completed with exit code 0 and 17 internal verification checks. Vali-
+dation selected seed 43 at epoch 8 by macro-F1 (0.8467853). The selected checkpoint is
+selected_best.pt, SHA-256 8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a
+8b623303adb1; the train-only preprocessing identity is aa8e1cc20829307187e0a78200f9
+957f7dd068b1dc26063c2720ad832bb2fd6e. The three seeds selected epochs 14, 8, and 9
+for seeds 42, 43, and 44; early stopping means the histories must not be described as 30
+completed epochs.
+On the supervised test denominator of 3,572, selected seed 43 achieved accuracy 0.8905375
+and macro-F1 0.7762645. Across seeds, accuracy was 0.8889511 ± 0.0016849 and macro-F1
+was 0.7689781 ± 0.0053332, where the spreads are population standard deviations across
+three seeds, not confidence intervals. The full test stream contains 5,053 windows.
+
+
+28/10/2026                                                                                   6
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                     Week 1–3
+
+
+
+                              Bảng 1: Frozen K=12 architecture audit.
+Layer                 Input         Output        Trainable parameters Role
+
+Input               B × 6 × 128 B × 6 × 128                          0 Raw six-channel window
+Conv1 (same, k5,p2) 6 × 128     32 × 128                           992 Local temporal features
+BN1+ReLU+Pool2      32 × 128    32 × 64                             64 Frozen eval affine and
+                                                                       downsample
+Conv2 (same, k3,p1) 32 × 64         64 × 64                      6,208 Higher-level features
+BN2+ReLU+Pool2      64 × 64         64 × 32                        128 Frozen eval affine and
+                                                                       downsample
+Conv3 (same, k3,p1) 64 × 32         64 × 32                     12,352 Final temporal features
+BN3+ReLU            64 × 32         64 × 32                        128 Fixed evaluation
+                                                                       normalization
+Flatten               64 × 32       2,048                            0 Preserve positional features
+Linear+ReLU           2,048         128                        262,272 Dense decision
+                                                                       representation
+Linear head           128           12                           1,548 Twelve logits
+
+Total                                                          283,692 Executed trainable count;
+                                                                       shape and parameter
+                                                                       checks passed
+
+
+                        Bảng 2: Per-seed selection and test variability.
+Seed History length                           Best epoch Val macro-F1 Test accuracy Test macro-F1
+
+  42 24                                              14       .836829         .886618      .767022
+  43 18                                               8       .846785         .890538      .776265
+  44 19                                               9       .836958         .889698      .763648
+
+
+The selected-seed confusion matrix uses row and column IDs 1,2,3,4,5,6,7,8,9, 10,11,12 in
+the exact class order above; rows are true classes and columns are predicted classes:
+
+                              1 2 3 4 5 6 7 8 9 10 11 12
+                          1 508 0 22 0 0 0 0 0 0 0 0 1
+                          2 16 488 15 0 0 0 2 0 0 3 2 11
+                          3 4 2 484 0 0 0 2 0 0 0 0 0
+                          4 0 21 0 459 57 0 1 2 1 0 5 0
+                          5 0 3 0 106 483 0 1 0 1 0 2 1
+                          6 0 0 0 0 0 583 0 0 0 0 3 0
+                          7 1 2 0 4 1 0 32 3 1 0 1 0
+                          8 0 2 0 1 7 0 1 21 0 0 0 0
+                          9 0 0 0 0 1 6 0 0 33 0 11 0
+                         10 0 1 0 2 0 0 0 0 0 27 1 15
+                         11 0 1 1 2 0 4 2 0 20 0 36 2
+                         12 0 3 2 0 0 0 1 1 0 5 2 27
+
+Adjacent prediction stability is descriptive only: among 5,034 valid adjacent pairs (18
+recording-boundary/gap pairs excluded), pure stable pairs agreed 2,560/2,617 (97.8219%),
+pure transition pairs 23/44 (52.2727%), and mixed other pairs 1,399/2,373 (58.9549%). This
+supports H1 descriptively for this snapshot, but transition support is small and this is not
+
+28/10/2026                                                                                         7
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                Week 1–3
+
+
+
+        Bảng 3: Pure-plus-majority support by split; each cell is windows/subjects.
+ID Class                                                                  Train     Val    Test
+
+ 1   WALKING                                                            1077/17   246/4   531/9
+ 2   WALKING_UPSTAIRS                                                    973/17   247/4   537/9
+ 3   WALKING_DOWNSTAIRS                                                  894/17   231/4   492/9
+ 4   SITTING                                                            1103/17   289/4   546/9
+ 5   STANDING                                                           1206/17   312/4   597/9
+ 6   LAYING                                                             1188/17   316/4   586/9
+ 7   STAND_TO_SIT                                                         79/17    19/4    45/9
+ 8   SIT_TO_STAND                                                         53/17    13/4    32/9
+ 9   SIT_TO_LIE                                                           90/17    26/4    51/9
+10   LIE_TO_SIT                                                           89/17    15/3    46/9
+11   STAND_TO_LIE                                                        119/17    18/3    68/9
+12   LIE_TO_STAND                                                         84/17    19/4    41/9
+
+
+       Bảng 4: Selected-seed class support, recall and F1 (supervised test, n = 3572).
+ID Class                                                               Support Recall       F1
+
+ 1   WALKING                                                                531   .9567   .9585
+ 2   WALKING_UPSTAIRS                                                       537   .9088   .9208
+ 3   WALKING_DOWNSTAIRS                                                     492   .9837   .9528
+ 4   SITTING                                                                546   .8407   .8196
+ 5   STANDING                                                               597   .8090   .8429
+ 6   LAYING                                                                 586   .9949   .9890
+ 7   STAND_TO_SIT                                                            45   .7111   .7356
+ 8   SIT_TO_STAND                                                            32   .6563   .7119
+ 9   SIT_TO_LIE                                                              51   .6471   .6168
+10   LIE_TO_SIT                                                              46   .5870   .6667
+11   STAND_TO_LIE                                                            68   .5294   .5496
+12   LIE_TO_STAND                                                            41   .6585   .5510
+
+
+ECDR/reference certification or a population-level independent test.
+CPU timing used one thread, FP32, batch shape 1 × 6 × 128, 100 warmup calls and 1,000
+varied-input timed calls. Forward-only mean/p50/p95 were 0.173376/0.165034/0.215291 ms;
+reference-core preprocessing plus forward mean/p50/p95 were 0.201103/0.183905/0.287375
+ms. Both scopes exclude raw acquisition, windowing, events, certificate construction, mem-
+bership, cache overhead and disk I/O. No speedup or net-cost claim follows. The winning
+point margin median was 5.9782 and the supervised ground-truth margin median 7.5746;
+these are empirical point margins, not certified bounds. The lowest selected transition re-
+call was STAND_TO_LIE, 36/68 = 0.5294.
+No ECDR runtime certificate agreement has been computed. Formal certificate agreement
+and full net-cost evaluation remain future work; the G2 quality gate is HOLD because tran-
+sition support is insufficient, even though the Week 1 feasibility baseline and independent
+baseline-artifact verification are complete.
+The independent baseline artifact verifier for this Week 1 feasibility run passed 65/65
+checks with zero failures. Receipt: output/week1_closeout_20261102/reference/indepen
+dent_verification.json. It recomputed the 131 source/data hashes, bound the 6,955 training
+windows and IDs to the train-only normalizer, checked all three histories, selection, confu-
+
+
+28/10/2026                                                                                   8
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 1–3
+
+
+sion matrix, per-class precision/recall/F1 and Wilson values, reproduced all three-seed CPU
+batch-512 predictions, validated CSV IDs/class order/margins, 5,034 adjacent pairs and gap
+mask, and checked timing metadata. The finite batch-1 versus batch-512 check matched la-
+bels for all 5,053 stream windows with zero disagreements and maximum absolute logit
+difference 9.5367431640625 × 10−6 . This is an independent baseline-artifact consistency pass,
+not a formal certificate verifier and not an ECDR safety claim; the strict certificate verifier
+remains a Week 3 task. The G2 quality gate remains HOLD because transition support is
+insufficient, and net cost remains unestablished.
+The historical parameterized SmallCNN1D implementation is reused to instantiate K=12
+when supplied the new class count. Its K=6 configuration and old checkpoints remain histor-
+ical and cannot transfer metrics or certificates. BatchNorm statistics are fixed in evaluation
+mode; the official PyTorch 2.14 BatchNorm contract is cited in the bibliography [2].
+
+
+2.1   Objectives, split subjects, and pipeline
+
+The objectives are separate: (O1) measure classification accuracy and per-class recall
+against ground truth; (O2) measure reference-decision agreement with a strict zero-
+disagreement target; and (O3) measure net end-to-end cost against a full-reference baseline.
+A single score cannot substitute for these three.
+The      split     audit     artifact   data/split_audit.json        lists    train     subjects
+1,3,5,6,7,8,11,14,15,16,17,19,21,22,23,25,26, validation subjects 27,28,29,30, and test subjects
+2,4,9,10,12,13,18,20,24; it reports subject-disjoint and recording-disjoint checks with zero
+issues.
+The reproducible pipeline is: (1) load raw HAPT recordings and annotations; (2) construct
+recording-local 128-sample windows at stride 64; (3) attach raw annotation spans and apply
+the declared pure/dominant label rule; (4) join the fixed subject split; (5) fit channel means
+and standard deviations across all supervised training windows only, then reuse them for
+validation and test; (6) instantiate and count the K=12 graph; (7) train three seeds with the
+declared protocol and select by validation macro-F1; (8) evaluate test after selection; (9) run
+agreement, certificate and cost experiments separately. The normalization fit spans training
+windows across records; windows themselves never cross recording boundaries.
+The sole pipeline entry point is scripts/week1_reference_pipeline.py. The help-verified
+all-run command is ./.venv/bin/python scripts/week1_reference_pipeline.py all
+--output-dir output/week1_closeout_20261102/reference --epochs 30 --seeds 42,43,44
+--device cpu. No legacy K=6 command or nonexistent K=12 config is presented as a
+reproduction command. A fresh reproduction must substitute a new output directory;
+the recorded directory is immutable evidence. The run record must preserve run ID,
+command, environment, checkpoint hash, model config hash, preprocessing hash, data
+manifest hash, and seed.
+The current audit artifact is run week1_ref_1793620216_9d6c1d85, created 2026-11-
+02T11:50:16Z, with pipeline hash 1ef93101f658f8a18ebf19f0c8743ec5311ffe94933aee35
+05be6ec29a0be4d6. It covers 131 source/data hashes, 122 raw sensor files, 17,453 windows
+from 61 recordings, float32 shape 17,453 × 6 × 128, zero raw-slice mismatches, zero label-
+builder mismatches, and verified aligned overlap for all pairs. A one-sample offset changes
+98 window policy/label assignments; this is an explicit provenance caveat and does not
+change the current run. The CPU environment is Xeon W-11855M, Python 3.11.15, PyTorch
+2.14.1+cpu, NumPy 2.4.6, pandas 3.0.6, one thread. These are audit and feasibility results,
+not a quality-gate pass; ECDR certification and net-cost evaluation remain pending.
+
+
+
+
+28/10/2026                                                                                    9
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                   Week 1–3
+
+
+
+              Bảng 5: Feasibility outputs and remaining external dependencies.
+Field                        Evidence                           Status
+
+Per-class support/recall Selected test table, all 12 classes    VERIFIED RUN
+Confusion matrix         12 by 12 with class IDs 1–12           VERIFIED RUN
+Adjacent stability       5,034 valid pairs, stable/transition   VERIFIED DESCRIPTIVE
+                         strata
+Reference timing         Mean/p50/p95 preprocessing plus        VERIFIED BASELINE
+                         forward
+Three-seed variability   Selected epochs and population         VERIFIED RUN
+                         spread
+ECDR/reference agreement Runtime certificate comparison         NOT ESTABLISHED
+Certificate and net cost Formal certificate verifier and full   WEEK 3 DEPENDENCY
+                         ECDR benchmark
+
+
+                   Bảng 6: Hypothesis ledger and measurement boundary.
+ID    Basis                        Test                            Status
+
+H1 Stable/transition event         Adjacent reference-prediction   MEASURED DESCRIPTIVE
+   distinction                     stability; 2,560/2,617 versus
+                                   23/44, descriptive only
+H2 Event-conditioned reuse may     Future matched-cost             PROPOSED
+   avoid unnecessary rebuilds      coverage, fallback rate and
+                                   certificate-failure rate,
+                                   stratified by pure-basic,
+                                   pure-transition and mixed
+                                   windows; exclude
+                                   cross-recording/gap pairs
+H3 All 11 positive regional        Sound bound, membership         DERIVED
+   margins imply one class         and lifecycle obligations
+H4 Reuse can save net cost in a    Full end-to-end timing          PROPOSED
+   workload regime                 including fallback and
+                                   overhead
+
+
+2.2     Certificate lifecycle and architecture-specific firewall
+
+Reuse is permitted only when a valid certificate exists and membership holds. Otherwise
+the system falls back to the fixed reference evaluation. A hit does not renew the trusted
+anchor. Model or preprocessing changes invalidate the certificate, as do recording or gap-
+boundary changes that violate the declared region. The mathematical condition quantifies
+every point in the candidate region and every one of the 11 competing classes; it does not
+assume that a stable window is correct, and point margins are not regional bounds.
+The exact overlap between adjacent stride-64 windows is 64 samples across six channels,
+hence 384 shared coordinates. This is a reuse opportunity, not a zero-difference input: the
+remaining coordinates change, and the full-input distance must be computed under the
+declared norm if a bound requires it. The old valid-convolution/GAP feature cancellation
+formulas are therefore firewalled from this BatchNorm–MaxPool–Flatten graph. Week 3
+must derive or verify bounds on this actual graph.
+
+
+
+
+28/10/2026                                                                                  10
+ECDR | Cơ sở nghiên cứu và lý thuyết                                               Week 1–3
+
+
+
+                             Bảng 7: Native Week 1 evidence register.
+ID      Scope and artifact                           Status
+
+W1-01 Project brief, research grounding and          VERIFIED
+      targeted primary literature
+W1-02 K=12 lock, class order and frozen              VERIFIED RUN
+      checkpoint contract
+W1-03 Exact architecture graph and 283,692           VERIFIED RUN
+      trainable parameters
+W1-04 Executed full reference pipeline and           VERIFIED RUN
+      reproducibility artifacts
+W1-05 Transition label policy and support blocker    VERIFIED SNAPSHOT
+W1-06 Main research question and separated           VERIFIED
+      objectives
+W1-07 Evidence register with claim status            VERIFIED
+W1-08 Sensor/data full contract and denominators     VERIFIED SNAPSHOT
+W1-09 Hypothesis ledger H1–H4                        MEASURED/PROPOSED/DERIVED
+W1-10 Stable/transition decision stability plus      VERIFIED DESCRIPTIVE + PROPOSED
+      future coverage/fallback/cost stratification
+W1-11 Week roadmap and dependencies                  VERIFIED
+W1-12 English presentation and editable artifacts    VERIFIED
+
+
+2.3   Grounding and research gap
+
+The targeted primary literature covers Lipschitz-margin certification [4], IBP [5], CROWN
+and auto-LiRPA [6, 7] for sound bounds; StreamiNNC and TinyDejaVu [11, 12] for streaming
+reuse or sensor-stream efficiency; and LipCache/GuardNet [13] for certified caching bound-
+aries. These works motivate the questions but do not establish a result on this HAPT con-
+tract. No novelty, universal speedup, or superiority claim is made here. A GuardNet certifi-
+cate must not be described as a certificate for a different MainNet without matching the
+reference boundary. The earlier Conv-valid–ReLU–GAP derivation is architecture-specific
+and is not transferred to the BatchNorm–MaxPool–Flatten reference.
+
+
+2.4   Evidence status and roadmap
+
+Evidence is labeled VERIFIED (read from a source artifact and checked), DERIVED (a logical
+consequence whose premises remain to be checked), PROPOSED (a planned measurement
+or method), or NOT-ESTABLISHED. Week 1 closes the brief, data and architecture scope lock,
+and a feasibility baseline. Week 2 documents why each data and deep-model component is
+used. Week 3 checks certificate mathematics and executable bounds on the actual graph.
+GAP-specific formulas from the old theory and any deep revisions are dependencies for
+later weeks, not Week 1 results.
+
+
+3     Source and reproducibility contract
+
+Every reported number must cite a run ID, pipeline script, command, environment
+and provenance hash. The closeout register records source file, scope, denominator,
+status, and whether a statement is current, historical, or proposed. The parameterized
+scripts/backbone.py implementation can instantiate the current K=12 graph; the K=6
+
+
+
+28/10/2026                                                                               11
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                               Week 1–3
+
+
+
+                          Bảng 8: Targeted related-work boundary.
+Work                              Reference                   Payload/domain             Cost/evidence
+                                  guaranteed                                             boundary
+
+Lipschitz-margin [4]           Perturbation margin            Classifier robustness No HAPT ECDR cost
+                               under stated norm                                    result
+IBP/CROWN/auto-LiRPA [5, 6, 7] Sound bounds when              Neural-network        Bound runtime is
+                               relaxations and                regions               method/graph
+                               arithmetic hold                                      dependent
+StreamiNNC [11]                Streaming CNN                  Shifted windows;      Efficiency evidence
+                               computation reuse              padding caveats       is workload-specific
+TinyDejaVu [12]                Sensor-stream                  MCU RAM and           No transfer of
+                               inference design               latency               benchmark
+                                                                                    numbers
+LipCache/GuardNet [13]            Certified cache             Edge image service    GuardNet/MainNet
+                                  proxy boundary as                                 scope must not be
+                                  defined by the work                               conflated
+
+
+configuration and old checkpoints are historical evidence only and cannot transfer metrics
+or certificates. User acceptance is not asserted by this document.
+
+
+
+Phần I
+
+Week 2 — Dữ liệu và quan hệ trực tiếp với
+bài toán
+4     Data specification: từ đại lượng vật lý đến tensor
+
+4.1    Nguồn, ý nghĩa và đơn vị
+
+HAPT có raw inertial recordings và một nhánh vector đặc trưng được dựng sẵn. Trong
+hướng này, input là raw sensor window, không phải vector 561 features. Hồ sơ HAPT mô tả
+điện thoại đeo ở eo, 30 người, accelerometer ba trục và gyroscope ba trục lấy mẫu 50 Hz [3].
+Metadata của dataset là nguồn cho ý nghĩa vật lý; những con số trong raw file chỉ là phép
+đo biểu diễn các đại lượng đó.
+Đặt τn = n/fs , fs = 50 Hz. Một sample là
+
+                       s[n] = [ax [n], ay [n], az [n], ωx [n], ωy [n], ωz [n]]⊤ ∈ R6 .                   (1)
+
+Ba a là gia tốc theo ba trục, đơn vị g; 1g = 9.80665 m/s2 . Ba ω là vận tốc góc, đơn vị rad/s
+theo README đi kèm. Raw acceleration có thể chứa thành phần trọng lực; không được gọi
+toàn bộ raw acc là body acceleration đã tách trọng lực nếu chưa áp phép tách đó. Tính căn
+chỉnh acc/gyro, thứ tự kênh và recording identity là một phần data contract.
+
+
+
+
+28/10/2026                                                                                               12
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                 Week 1–3
+
+
+
+                       Bảng 9: Các cấp biểu diễn và vai trò của chúng.
+Cấp           Không gian           Ý nghĩa trong ECDR
+
+Sample s[n]   R6                   Một thời điểm; chưa đủ lịch sử để gọi là window
+Recording S   R6×T                 Chuỗi liên tục của một recording
+Window Xt     R6×128               Một query của classifier
+Vector xt     R768                 Cùng dữ liệu theo một thứ tự flatten cố định
+New wave      R6×64                Mẫu mới đi vào khi dịch 64 bước
+Ut
+Feature       Phụ thuộc kiến Biểu diễn được mạng tính; khác raw data
+H(Xt )        trúc
+Region Sr     Tập con của in- Tập query cần chứng nhận
+              put space
+
+
+4.2   Windowing và phép đếm
+
+Với recording có T sample, đặt W = 128, stride s = 64 và chỉ tạo cửa sổ nằm trọn trong
+recording:
+                 Xt [:, i] = s[ts + i], i = 0, . . . , W − 1, t = 0, . . . , nT − 1. (2)
+Các chỉ số đã được quy về zero-based. Nếu source annotation dùng quy ước khác, phải
+chuyển sang quy ước này trước khi gán nhãn.
+
+Mệnh đề 4.1 (Số window của một recording). Với T ≥ W , số window stride s là
+                                                
+                                           T −W
+                                nT = 1 +           .                                      (3)
+                                             s
+
+Nếu T < W thì nT = 0.
+
+Chứng minh. Điều kiện hợp lệ của start là 0 ≤ ts và ts + W ≤ T . Vì t nguyên không âm,
+0 ≤ t ≤ ⌊(T − WP)/s⌋. Đếm các giá trị nguyên thu được công thức. Không nối recording nên
+tổng corpus là r nTr .
+
+Các phép quy đổi thời gian và dung lượng là
+
+                  CW = 6 × 128 = 768,                           W /fs = 2.56 s,           (4)
+                  s/fs = 1.28 s,                             1 − s/W = 50%,               (5)
+                   Cs = 384,                                C(W − s) = 384.               (6)
+
+Một tensor float32 window chứa 768 × 4 = 3072 byte, tức 3 KiB, chưa gồm metadata hay
+allocator overhead. Nhịp tạo window sau warm-up là fs /s = 0.78125 window/s. Khoảng
+cách từ timestamp sample đầu đến sample cuối là (W − 1)/fs = 2.54 s; cách gọi window 2.56
+s dùng thời lượng W chu kỳ lấy mẫu. Hai quy ước thời gian này cần được phân biệt.
+
+
+4.3   Vector hóa không làm mất cấu trúc, nhưng có thể che cấu trúc
+
+Chọn channel-major vectorization
+
+                           xcW +i = X[c, i],   0 ≤ c < C,   0 ≤ i < W.                    (7)
+
+
+28/10/2026                                                                                13
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                    Week 1–3
+
+
+Phép này là song ánh tuyến tính giữa hai biểu diễn; ∥x∥2 = ∥X∥F . Nếu chỉ đổi thứ tự bằng
+permutation P , P ⊤ P = I nên norm Euclidean không đổi. Tuy nhiên, cấu trúc convolution
+và adjacency phải được chuyển cùng thứ tự. Việc viết x ∈ R768 không khiến 768 tọa độ độc
+lập về thống kê và cũng không biến mọi phương hướng perturbation thành có ý nghĩa vật
+lý.
+
+
+5     Nhãn, preprocessing và tính hợp lệ của phép so sánh
+
+5.1   Nhãn hoạt động và nhãn window
+
+Dataset có 12 nhãn, gồm sáu hoạt động cơ bản và sáu chuyển tư thế. Một nhãn đoạn [a, b)
+nghĩa là sample a, . . . , b − 1 thuộc hoạt động đó. Đặt
+
+                              X
+                              W −1                                      X
+                                                                        12
+                   nk (X) =          1{ℓ[ts + i] = k},   n0 (X) = W −         nk (X),        (8)
+                              i=0                                       k=1
+
+trong đó 0 là chưa annotation, không phải lớp hoạt động thứ 13. Window pure nếu có k
+sao cho nk = W ; unlabeled nếu n0 = W ; majority nếu không pure và maxk nk /W ≥ 0.6; các
+window còn lại ambiguous. Với W = 128, ngưỡng majority là ⌈0.6 × 128⌉ = 77 sample. Mẫu
+số là toàn bộ 128 sample, không phải chỉ sample đã annotation.
+
+Mệnh đề 5.1 (Window pure nằm trong một span). Với span half-open [a, b) và lưới start ms,
+số window nằm trọn trong span và recording dài T là
+                                                                
+                               min(b − W, T − W )      max(a, 0)
+              n[a,b) = max 0,                       −              +1 .               (9)
+                                        s                 s
+
+Chứng minh. Window nằm trọn khi a ≤ ms và ms + W ≤ b, đồng thời 0 ≤ ms ≤ T − W . Lấy
+ceil ở cận dưới, floor ở cận trên và đếm số nguyên.
+
+Span ngắn hơn W không có pure window. Điều này giải thích bằng cơ chế đếm vì sao chuyển
+tư thế ngắn có thể ít pure support. Tổng theo span chỉ đúng không đếm trùng nếu các span
+đã chuẩn hóa và không chồng lấn; hai span cùng nhãn liền nhau có thể cần hợp nhất trước
+khi đếm pure windows.
+
+
+5.2   Phân bố lớp và giới hạn của hồ sơ dữ liệu hiện có
+
+Nguồn bảng: data/g2_class_support.json; các count đã được đếm lại từ manifest Parquet
+trong lượt biên soạn và khớp artifact. Tổng transition pure là 10361 − 10017 = 344, chiếm
+khoảng 3.32% pure corpus. Bảng mô tả phụ thuộc convention annotation/window được code
+cũ sử dụng; báo cáo không khẳng định đã xác nhận lại nguồn gốc zero-/one-based của an-
+notation. Hướng lý thuyết mới dùng K tổng quát, với K = 12 cho schema đầy đủ. Kết quả
+của checkpoint 6 lớp cũ không được chuyển thành bằng chứng về classifier 12 lớp.
+Corpus local có 17453 windows trên 61 recordings; các policy counts là 10361 pure, 1917
+majority, 1588 ambiguous, 3587 unlabeled, tổng đúng 17453. Con số 10929 instances trong
+metadata UCI thuộc nhánh đặc trưng được dựng sẵn, không phải số raw samples hay tổng
+windows của policy local. Các số audit được dẫn để mô tả data, không để chọn architecture
+lý thuyết.
+
+
+
+
+28/10/2026                                                                                   14
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                Week 1–3
+
+
+
+
+Bảng 10: Pure windows theo lớp trong artifact audit cũ. Đây là bảng mô tả local window
+policy; không phải phân bố population hoặc kết quả CNN 12 lớp.
+ID Hoạt động                                                     Train      Val   Test   Tổng
+
+ 1   WALKING                                                       965    221     474    1660
+ 2   WALKING_UPSTAIRS                                              814    205     449    1468
+ 3   WALKING_DOWNSTAIRS                                            734    189     394    1317
+ 4   SITTING                                                       991    261     484    1736
+ 5   STANDING                                                     1099    286     541    1926
+ 6   LAYING                                                       1090    288     532    1910
+ 7   STAND_TO_SIT                                                   19      5      15      39
+ 8   SIT_TO_STAND                                                    5      1       6      12
+ 9   SIT_TO_LIE                                                     36     16      25      77
+10   LIE_TO_SIT                                                     30      6      18      54
+11   STAND_TO_LIE                                                   65      7      40     112
+12   LIE_TO_STAND                                                   30      5      15      50
+
+     Tổng 12 lớp                                                  5878 1490 2993 10361
+     Riêng 6 lớp cơ bản                                           5693 1450 2874 10017
+
+
+
+
+                 Bảng 11: Các denominator khác nhau trong snapshot local.
+Tập                                                                      Train     Val   Test
+
+Subjects                                                                   17    4    9
+Toàn bộ window                                                           9978 2422 5053
+Pure 12 lớp                                                              5878 1490 2993
+Pure 6 lớp                                                               5693 1450 2874
+
+
+
+
+28/10/2026                                                                                15
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 1–3
+
+
+5.3   Normalization và đơn vị của perturbation
+
+Với mean µc và scale σc > 0 fit chỉ trên train, đặt
+
+                                   X[c, i] − µc
+                       Z[c, i] =                ,       z = P(x) = Dσ−1 (x − µ).           (10)
+                                       σc
+
+Dσ lặp scale của từng kênh theo thời gian. Mean và scale không được fit lại trên từng query
+nếu certificate tham chiếu preprocessing cố định. Nếu dùng filter, resample, clipping hoặc
+gravity separation, chúng cũng phải nằm trong P; filter có state phải được đưa vào state
+của bài toán, hoặc đầu vào chứng nhận phải là output filter đã cố định.
+
+Mệnh đề 5.2 (Biến đổi budget và metric). Với normalization affine cố định, raw diagonal
+budget braw tương đương normalized budget bi = braw
+                                                i   /σi . Ngoài ra
+                                                         X (xi − x′ )2
+                                   P(x) − P(x′ ) 2 =                                       (11)
+                                                    2                  i
+                                                                           .
+                                                           i
+                                                                 σi2
+
+Chứng minh. Lấy hiệu hai vế của (10), rồi chia từng bất đẳng thức |xi − x′i | ≤ braw
+                                                                                 i   cho σi > 0.
+Bình phương và cộng cho công thức metric.
+
+Raw Euclidean distance cộng bình phương gia tốc và vận tốc góc có nhiều đơn vị. Giá trị của
+nó phụ thuộc scale đo. Normalization định nghĩa một metric có trọng số rõ ràng; nó không
+tự chứng minh metric này phù hợp với decision boundary. Tuyên bố “features nằm trong
+[−1, 1]” của nhánh 561 features không được mặc nhiên áp cho raw signals hoặc z-score.
+
+
+5.4   Split và phụ thuộc giữa window
+
+Vì adjacent windows dùng mẫu chung, random split theo window có thể đặt cùng raw sam-
+ple vào train và test. Để đánh giá sang người khác, subject sets phải rời nhau; để replay,
+cần giữ recording/time order và reset state khi đổi recording. Snapshot local có 17/4/9 sub-
+jects cho train/val/test, khác cách mô tả 70/30 train/test trong dataset gốc vì local có thêm
+validation.
+Overlap làm phát sinh phụ thuộc, nhưng không cho phép suy một hệ số tương quan bất
+kỳ hoặc effective sample size cụ thể. Confidence interval và resampling sau này cần theo
+subject/recording hoặc mô hình phụ thuộc được biện minh. Không coi hàng nghìn windows
+là hàng nghìn quan sát i.i.d. chỉ vì chúng là các row khác nhau.
+
+
+6     Vì sao dữ liệu này liên quan trực tiếp đến ECDR?
+
+6.1   Toán tử dịch và phần tín hiệu mới
+
+Định nghĩa 6.1 (Shift–append). Với 1 ≤ s ≤ W , đặt Ss X = [X[:, s : W ], 0C×s ] và Js U =
+[0C×(W −s) , U ]. Phép chuyển window là
+
+                            Ts (X, U ) = Ss X + Js U = [X[:, s : W ], U ].                 (12)
+
+Ký hiệu t đếm window, nên window kế tiếp là Xt+1 , không phải Xt+s . New wave Ut+1 có s
+sample mới ở cuối recording stream.
+
+
+
+28/10/2026                                                                                   16
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                        Week 1–3
+
+
+Định lý 6.2 (Overlap chính xác). Nếu hai window liên tiếp lấy từ cùng recording theo (2) thì
+
+                     Xt+1 [:, 0 : W − s] = Xt [:, s : W ],     Xt+1 = Ts (Xt , Ut+1 ).           (13)
+
+Chứng minh. Tại vị trí i < W − s, window mới chứa sample s[(t + 1)s + i], bằng s[ts + (i + s)]
+ở vị trí i + s của window cũ. Các vị trí còn lại chính là s sample chưa có trong window trước.
+Lập luận áp dụng cho từng kênh.
+
+Đây là kết quả cho mọi chuỗi dữ liệu, không cần giả định “cùng activity” hoặc “tín hiệu
+mượt”. Khi xuất hiện missing samples, đổi sampling grid hoặc đổi recording, quan hệ này
+phải được kiểm lại theo data contract.
+Đối chiếu data–math bằng dữ liệu lưu. Kiểm read-only ngày 28/10/2026 đọc toàn bộ tensor
+windows.npz: shape (17453, 6, 128), dtype float32, 13403904 scalar đều finite. Trên 17392 cặp có
+cùng recording và win_idx liên tiếp, mọi bước start đều tăng 64. So sánh trực tiếp 6×64 = 384
+tọa độ mỗi cặp cho 17392 × 384 = 6678528 phép so; tất cả bằng nhau, max absolute difference
+bằng 0. Check này xác nhận bridge chỉ số và overlap của corpus lưu, không chứng minh ý
+nghĩa vật lý, tính đúng của annotation, invariant prediction hoặc một certificate neural. Kết
+quả và source hashes ở me/calculations.json.
+
+                Xt             64 mẫu bị loại                      64 mẫu overlap
+
+              Xt+1            64 mẫu overlap                         64 mẫu mới
+
+Hình 1: Overlap là bằng nhau sau dịch chỉ số; mỗi ô biểu diễn cả sáu kênh. Bằng nhau theo
+alignment khác với cùng tọa độ trong vector 768 chiều.
+
+
+
+6.2   Overlap không suy ra khoảng cách nhỏ
+
+Đặt Ps X = X[:, s : W ], Qs X ′ = X ′ [:, 0 : W − s]. Định lý trên cho ∥Qs Xt+1 − Ps Xt ∥F = 0. Ngược
+lại
+                                  Xt+1 − Xt = (Ss − I)Xt + Js Ut+1 ,                              (14)
+nên delta cùng tọa độ có thể lớn trên nhiều hoặc tất cả tọa độ.
+Ví dụ 6.3 (Khoảng cách lớn dù overlap đúng). Với một kênh, W = 4, s = 2, lấy X = (0, 0, M, M )
+và U = (0, 0). Khi đó X ′ = (M, M, 0, 0) giữ đúng hai mẫu overlap nhưng ∥X ′ − X∥2 = 2|M |,
+không bị chặn khi M tăng. Cả overlap 50% và aligned distance bằng 0 đều không suy ra
+ordinary distance nhỏ.
+                                                   √
+Với |Xi |, |Ui | ≤ B thì có cận thô ∥X ′ − X∥2 ≤ 2B CW ; đây là cận từ biên độ, không phải từ
+overlap. Cận không đảm bảo giữ decision nếu margin quá nhỏ.
+
+
+6.3   Từ data identity đến miền cần chứng nhận
+
+Giữ Xt đã biết và cho new wave biến thiên trong Ue . Miền next window tự nhiên là
+
+                                  Sewave (Xt ) = {Ts (Xt , U ) : U ∈ Ue }.                       (15)
+
+Nếu Ue là box có nội điểm trong RC×s thì tập này có affine dimension Cs = 384, thay vì 768.
+Điều đó giảm số biến tự do của miền, không tự giảm độ phức tạp của mọi verifier hoặc bảo
+đảm bound chặt. Điểm center tự nhiên là [Xt [:, s : W ], Ū ], có thể xa Xt . Chứng nhận target
+class vẫn có thể là h(Xt ) dù Xt không thuộc miền mới.
+
+28/10/2026                                                                                         17
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                       Week 1–3
+
+
+Nếu bổ sung overlap noise E thì phải mở rộng miền thành Ts (Xt , U )+E, với constraint của E
+công bố rõ. Lợi ích 384 biến chỉ giữ nguyên khi overlap thật sự cố định; một full-dimensional
+noise box có thể đưa affine dimension trở lại 768.
+
+
+                 Bảng 12: Data property dẫn đến nghĩa vụ toán học cụ thể.
+Data property                   Suy ra được                    Còn phải chứng minh
+
+Overlap cùng recording          Đẳng thức sau căn chỉnh        Decision invariance
+Chỉ Cs giá trị mới              Wave-domain ít biến tự do      Bound/cost tốt hơn
+Chu kỳ chuyển động              Giả thuyết delta có cấu trúc   Miền bao phủ query và
+                                                               sound
+Cùng activity label             Quan hệ annotation             CNN agreement trên từng
+                                                               query
+Chuỗi liên tục                  Có thể replay theo time        Anchor lifecycle an toàn
+                                order
+Nhiều đơn vị/kênh               Cần quy ước scale              Metric có ích cho certificate
+
+
+
+6.4   Marginal coverage khác joint coverage trong không gian nhiều chiều
+
+Một budget lấy quantile 90% ở mỗi tọa độ không
+                                         Td    làm whole-window coverage tự bằng 90%.
+Đặt Ei = {|∆i | ≤ bi }. Box membership là i=1 Ei . Nếu biết Pr(Eic ) ≤ αi dưới một phân bố
+được khai báo thì union bound cho
+                                     !                      !
+                                \                     X
+                             Pr    Ei ≥ max 0, 1 −       αi .                          (16)
+                                   i                      i
+
+                                                                  S              P
+Chứng minh. Phần bù của giao là hợp của các Eic ; áp dụng Pr(         i Ei ) ≤
+                                                                         c
+                                                                                     i Pr(Ei ) rồi lấy
+                                                                                           c
+
+phần bù.
+
+Nếu thêm giả thiết independence và Pr(Ei ) = q giống nhau thì joint coverage là q d . Chẳng
+hạn, 0.9768 ≈ 7.2152 × 10−36 , 0.99768 ≈ 0.00044446, 0.999768 ≈ 0.4638. HAPT coordinates không
+được giả định độc lập; đây là ví dụ chỉ ra nguy cơ suy từ marginal sang joint, không phải
+ước lượng coverage HAPT. Empirical quantile trên train cũng không chứng minh popula-
+tion inequality Pr(Eic ) ≤ αi . Temporal correlation có thể làm joint coverage khác hẳn ví
+dụ independence, nên cấu trúc miền đáng nghiên cứu nhưng phải được chứng nhận theo
+decision margin riêng.
+
+
+7     Reference CNN như một đối tượng lý thuyết
+
+7.1   Hai cấp mô hình cần tách rõ
+
+Cấp tổng quát giữ F : R768 → RK deterministic và frozen. Các định lý margin, Lipschitz,
+domain và lifecycle không đòi classifier là GAP. Với schema HAPT đầy đủ, xét K = 12, nhưng
+không có accuracy/latency mới được gán cho classifier 12 lớp.
+Cấp chuyên biệt để suy ra exact shift identities là chuỗi Conv1D valid, stride 1, dilation 1,
+ReLU, không pooling trung gian, sau đó GAP và affine head. Đây là giả thiết phân tích mới,
+không phải mô tả checkpoint cũ. Chọn ví dụ 6 → 32 → 64 → 64, kernels 5, 3, 3, K = 12.
+
+
+28/10/2026                                                                                         18
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                    Week 1–3
+
+
+
+Bảng 13: CNN valid–GAP minh họa cho lý thuyết, có bias, không BatchNorm. Một MAC là
+một phép nhân–cộng tích lũy; không phải phép đo runtime.
+Layer                                                    Output C × T Parameters MAC/window
+
+Input                                                           6 × 128             0          0
+Conv1 valid, k = 5 + ReLU                                      32 × 124           992     119040
+Conv2 valid, k = 3 + ReLU                                      64 × 122          6208     749568
+Conv3 valid, k = 3 + ReLU                                      64 × 120         12352    1474560
+GAP                                                              64 × 1             0          –
+Affine 64 → 12                                                       12           780        768
+
+Tổng Conv + affine                                                              20332    2343936
+
+
+Với layer ℓ, Tℓ = Tℓ−1 − kℓ + 1 và
+
+                            Pℓ = Cℓ (Cℓ−1 kℓ + 1),   Mℓ = Tℓ Cℓ Cℓ−1 kℓ .                   (17)
+
+Head có K(d + 1) parameters và Kd MAC. Quy ước xấp xỉ 2 FLOP/MAC cho phần Conv/head
+cho 4687872 FLOP, chưa gồm bias, ReLU, GAP và memory traffic. GAP có 64(120 − 1) = 7616
+phép cộng và 64 phép scale; ReLU so sánh trên 3968 + 7808 + 7680 = 19456 activation. Số
+parameters không phụ thuộc batch.
+
+
+7.2     Vì sao không thể suy latency từ MAC hoặc overlap?
+
+Runtime còn phụ thuộc kernel implementation, threads, dtype, memory access, batch size
+và overhead. Chỉ biết 50% raw overlap không cho phép chia đôi MAC hay latency: feature
+receptive field, padding và head có thể khác. Week 3 sẽ chỉ ra, trong CNN ví dụ, RF cuối là 9
+và có 56/120 feature positions overlap sau dịch 64. Đó là 46.67%, khác raw overlap 50%.
+Nếu dùng model khác, phải suy lại shape, RF và head dependency. Với Flatten–MLP, cùng
+feature ở vị trí khác có thể mang trọng số khác nên công thức GAP không áp trực tiếp. Với
+zero-padding, biên mới và biên cũ khác nhau; với pooling/stride, cần alignment; với BN
+ở training, output phụ thuộc batch. Đây là lý do ràng buộc kiến trúc phải xuất hiện trước
+chứng minh.
+
+
+7.3     Các đại lượng cần đo khi chọn reference sau này
+
+Cho confusion matrix Cij với true class i, predicted class j,
+                              P
+                                  Cii
+                Accuracy = P i          ,                                                   (18)
+                                ij Cij
+                               Ckk                     Ckk
+               Precisionk = P         ,    Recallk = P       ,                              (19)
+                                i Cik                  j Ckj
+                                      2Ckk                      1 X
+                      F 1k =                    ,     MacroF1 =     F 1k .                  (20)
+                             2Ckk + FPk + FNk                   K
+                                                                            k
+
+Quy ước denominator 0 phải ghi rõ. Ground-truth accuracy khác Pr[b   hECDR (X) = h(X)]. Pre-
+diction agreement có thể cao trong khi cả hai sai ground truth. Latency phải ghi scope và
+hardware; số 251.1 µs của forward 6 lớp cũ chỉ xuất hiện trong Week 3 như một phép thay
+số sensitivity có nguồn, không là baseline đo của CNN lý thuyết mới.
+
+
+28/10/2026                                                                                   19
+ECDR | Cơ sở nghiên cứu và lý thuyết                                              Week 1–3
+
+
+
+Phần II
+
+Week 3 — Cơ sở toán học và hệ thống giả
+thuyết
+8     Certification contract và problem formulation
+
+Trong phần này x = vec(X) ∈ Rd , d = CW = 768; ký hiệu F đã bao gồm preprocessing.
+K ≥ 2 tổng quát, áp dụng cho K = 12 khi reference được định nghĩa trên toàn bộ nhãn. Mỗi
+certificate có target c, domain S và identity của reference. Không cần giả định anchor nằm
+trong miền next-wave.
+
+                               Bảng 14: Unified contract C1–C10.
+ID     Điều kiện và trách nhiệm
+
+C1     Reference frozen: weights, graph, BN state, class order và decision rule.
+C2     Preprocessing, layout, units và coordinates cố định, được đưa vào F .
+C3     Mỗi lower bound hợp lệ trên toàn miền, hoặc một enclosure đã chứng minh chứa
+       miền.
+C4     Mọi target–competitor lower margin strictly positive sau xử lý sai số hợp lệ.
+C5     Runtime membership đủ bảo thủ; không false accept ngoài miền.
+C6     Inconclusive/miss/stale/non-finite thì chạy reference hoặc xử lý lỗi input.
+C7     Tính đầy đủ build, verify, lookup, state, fallback và initialization.
+C8     So sánh cùng data, model, preprocessing, numerical/backend/hardware và scope.
+C9     Lifecycle giữ anchor/domain identity hoặc dùng theorem chuyển certificate hợp lệ.
+C10    Nếu claim executable soundness, phải bao sai số float/quantization có biện minh.
+
+C1–C6,C9,C10 phục vụ correctness. C7–C8 phục vụ claim hiệu quả. Một phương pháp có thể
+đúng hoàn toàn theo contract và vẫn chậm hơn full inference. Mọi proof dưới đây dùng số
+thực chính xác, trừ khi phát biểu thêm cận sai số.
+
+
+9     Decision regions: điều kiện cần, đủ và tồn tại
+
+Đặt pairwise margin và robust margin
+                         gcj (x) = Fc (x) − Fj (x),       mc (x) = min gcj (x).       (21)
+                                                                     j̸=c
+                                              T
+Miền quyết định thắng duy nhất là Dc =            j̸=c {x : gcj (x) > 0}.
+
+Định lý 9.1 (Điều kiện margin và whole-domain certificate). Tại một điểm, c là winner duy
+nhất khi và chỉ khi gcj (x) > 0 với mọi j ̸= c. Cho S bất kỳ và các số ℓcj sao cho
+                                           ℓcj ≤ inf gcj (x).                         (22)
+                                                  x∈S
+
+Nếu minj̸=c ℓcj > 0 thì S ⊆ Dc .
+
+Chứng minh. c thắng duy nhất đúng bằng việc Fc (x) > Fj (x) với từng competitor. Với mọi
+x ∈ S, (22) cho gcj (x) ≥ ℓcj > 0. Áp dụng phần đầu cho từng điểm.
+
+28/10/2026                                                                             20
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 1–3
+
+
+Không chứng nhận được không có nghĩa quyết định đổi. Khi lower bound ℓ ≤ 0, có thể
+do bound lỏng hoặc miền thật sự cắt boundary; cần phân biệt bằng bound chặt hơn hay
+counterexample thực.
+
+Mệnh đề 9.2 (Khi nào infimum dương là điều kiện cần?). Nếu S không rỗng và compact, các
+gcj liên tục và c thắng duy nhất trên S, thì minj̸=c infx∈S gcj (x) > 0.
+
+Chứng minh. Mỗi margin liên tục đạt minimum trên compact set. Vì margin dương tại mọi
+điểm, minimum đạt được cũng dương. Có hữu hạn competitor nên minimum của các số
+dương vẫn dương.
+
+Nếu bỏ compactness, kết luận có thể sai: trên S = (0, 1] với F1 (x) = x, F2 (x) = 0, lớp 1 thắng
+mọi điểm nhưng infimum margin bằng 0. Do đó không được gọi uniform positive lower
+bound là điều kiện cần trên mọi tập tùy ý. Certificate bằng một thuật toán cụ thể thường chỉ
+là điều kiện đủ, kể cả khi miền compact.
+
+Định lý 9.3 (Tồn tại một lân cận bất biến). Nếu F liên tục tại xr và c thắng duy nhất tại đó,
+tồn tại ϵ > 0 sao cho h(x) = c khi ∥x − xr ∥ < ϵ.
+
+Chứng minh. Đặt γ = minj̸=c gcj (xr ) > 0. Với từng j, continuity cho một δj > 0 sao cho
+|gcj (x)−gcj (xr )| < γ/2 trong lân cận đó. Chọn ϵ = minj δj . Khi ấy mọi margin lớn hơn γ/2.
+
+Định lý chứng minh có tồn tại một miền quanh anchor cho các mô hình liên tục như CNN
+affine/ReLU/maxpool. Nó không cho bán kính tính được, membership rẻ hoặc xác suất fu-
+ture window rơi vào miền. Nếu anchor tie, không có bảo đảm một ball dương giữ lớp:
+F = (x, −x) tại x = 0 là ví dụ.
+
+
+10    Những khẳng định vô điều kiện không thể có
+
+Định lý 10.1 (Không có bán kính universal cho mọi classifier). Cho bất kỳ ϵ > 0, tồn tại một
+classifier affine hai lớp liên tục, một anchor thắng duy nhất và một query cách anchor nhỏ
+hơn ϵ có quyết định khác.
+
+Chứng minh. Lấy xr = 0, F1 (x) = ϵ/2 − x, F2 (x) = 0. Anchor có margin ϵ/2 > 0; tại x = 3ϵ/4,
+margin bằng −ϵ/4 và khoảng cách nhỏ hơn ϵ. Đây đã là affine classifier, nên không cần một
+mạng phi tuyến để tạo phản ví dụ.
+
+Vì vậy similarity threshold cố định độc lập với weights/margin không thể bảo đảm universal
+decision reuse cho mọi reference.
+Ví dụ 10.2 (Convolution equivariance không kéo theo classification invariance). Conv 1 × 1
+với trọng số 1 là identity, do đó equivariant dưới dịch trên phần overlap. Với W = 2, s = 1,
+X = (1, −1), U = (1) cho X ′ = (−1, 1). Head F1 (X) = X0 , F2 (X) = −X0 đổi winner. Activation
+identity và overlap không cứu được một head phụ thuộc vị trí.
+
+Ngay cả GAP cũng không đủ nếu giá trị thêm/bỏ làm margin đổi dấu. Định lý GAP phía sau
+mô tả đúng mức thay đổi, rồi còn cần bound margin.
+Ví dụ 10.3 (Membership hoặc cùng nhãn không phải chứng nhận). Với F1 (x) = 1 − x, F2 (x) =
+0, anchor 0 và box [−2, 2], query 1.5 nằm trong box nhưng winner đổi. Một annotation gán
+cùng activity cho hai điểm không ràng buộc weights của classifier nên cũng không loại được
+ví dụ này.
+
+
+
+28/10/2026                                                                                   21
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                   Week 1–3
+
+
+Ví dụ 10.4 (Cùng activation pattern vẫn có thể đổi quyết định). Trong x ∈ [0, 1], network
+dùng r = ReLU(x + 1) = x + 1 có cùng ReLU mask. Head F1 = 1.5 − r = 0.5 − x, F2 = 0 đổi
+winner giữa 0 và 1. Miền affine từng phần [10] không đồng nghĩa một decision region.
+
+Các phản ví dụ là kết quả phủ định có giá trị: chúng xác định điều kiện không thể bỏ, thay
+vì cố tạo một “chứng minh vô điều kiện” cho claim sai.
+
+
+11     Lipschitz–margin certification
+
+Định lý 11.1 (Certified ball theo từng margin). Giả sử trên miền chứa ball Bp (xr , ϵ), mỗi
+margin thỏa
+                       |gcj (x) − gcj (xr )| ≤ Lcj ∥x − xr ∥p , Lcj ≥ 0.                (23)
+Nếu gcj (xr ) − Lcj ϵ > 0 với mọi j ̸= c, toàn bộ closed ball giữ winner c.
+
+Chứng minh. Trừ độ lệch tuyệt đối khỏi margin anchor cho gcj (x) ≥ gcj (xr ) − Lcj ϵ > 0. Dùng
+Định lý 9.1.
+
+Với Lcj > 0, chọn ϵ < minj gcj (xr )/Lcj . Nếu Lcj = 0 và margin anchor dương, competitor đó
+không giới hạn bán kính trong miền mà bound L = 0 thực sự hợp lệ. Dấu < tránh trường
+hợp margin bằng 0 ở biên closed ball. Đây là lập luận kế thừa từ Lipschitz–margin [4].
+Nếu chỉ có logit Lipschitz bounds Lc , Lj , có thể chọn bound hợp lệ Lcj := Lc + Lj ; Lips-
+chitz constant tối ưu của margin không vượt quá      √ tổng này. Với vector-output Lipschitz
+∥F (x) − F (x )∥2 ≤ LF ∥x − x ∥2 , có thể chọn Lcj := 2LF theo Cauchy–Schwarz vì ∥ec − ej ∥2 =
+             ′               ′
+√
+  2. Một bound global từ tích operator norm qua các layer là hợp lệ khi mọi layer bound hợp
+lệ theo đúng norm; nó có thể lỏng do tích các worst case không cùng xảy ra.
+Ví dụ 11.2 (Tính bán kính). Với ba lớp, margin anchor đến hai competitor là 0.8 và 0.3,
+Lipschitz bounds là 2 và 1. Certified radius phải nhỏ hơn min(0.8/2, 0.3/1) = 0.3. Tại ϵ = 0.2,
+lower margins là 0.4 và 0.1. Tại ϵ = 0.3, lower margin thứ hai bằng 0 nên contract strict chưa
+nhận.
+
+Không có bất đẳng thức tự động rằng local Lipschitz luôn đủ rẻ hoặc đủ chặt cho HAPT. Ước
+lượng gradient tại một điểm không phải một Lipschitz upper bound hợp lệ trên toàn miền.
+
+
+12     IBP: suy ra cận bằng interval arithmetic
+
+12.1   Affine, convolution và activation
+
+Cho v ∈ [v, v] và affine layer w = Av + b. Đặt A+ = max(A, 0), A− = min(A, 0) theo phần tử.
+Khi đó
+
+                                        w = A+ v + A− v + b,                                (24)
+                                                      −
+                                              +
+                                        w = A v + A v + b.                                  (25)
+
+Bổ đề 12.1 (Affine enclosure). Với mọi v trong interval, w ≤ Av + b ≤ w.
+
+Chứng minh. Ở mỗi hệ số Aki ≥ 0, cực tiểu đạt ở v i và cực đại ở v i ; nếu Aki < 0 thì ngược lại.
+Cộng các bất đẳng thức theo i và thêm bias cho mỗi row.
+
+
+
+
+28/10/2026                                                                                    22
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                      Week 1–3
+
+
+Convolution là affine map có ma trận thưa gắn kernel, nên dùng cùng công thức mà không
+cần dựng dense matrix. ReLU đơn điệu cho
+                                   [r, r] = [max(0, v), max(0, v)].                            (26)
+MaxPool trên một nhóm I có enclosure [maxi∈I v i , maxi∈I v i ]. BN ở eval với running
+mean/variance cố định là affine theo từng kênh, scale âm thì đổi vai trò lower/upper như
+(25).
+Định lý 12.2 (Soundness của IBP trong số thực). Nếu interval đầu vào chứa toàn miền S và
+mỗi layer được bao đúng như trên, output interval chứa F (x) với mọi x ∈ S.
+
+Chứng minh. Quy nạp theo layer. Giả thiết quy nạp bảo đảm activation thực thuộc interval
+đầu layer; enclosure của layer bảo đảm output thuộc interval tiếp theo. Base case là input
+containment. Sau layer cuối thu được kết luận.
+
+Điều kiện đơn giản là
+                                           F c > max F j .                                     (27)
+                                                  j̸=c
+
+Có thể bound trực tiếp gcj bằng ghép class-difference vào lớp cuối, thay vì trừ các logit in-
+terval độc lập.
+
+
+12.2   Dependency loss và nhu cầu cả lower/upper
+
+Ví dụ 12.3 (Bound độc lập quá lỏng). Lấy t ∈ [−1, 1], Fc (t) = t + 1, Fj (t) = t. Margin thật luôn
+bằng 1. IBP độc lập cho Fc ∈ [0, 2], Fj ∈ [−1, 1], nên lower margin bằng 0 − 1 = −1. Bound
+trực tiếp affine difference cho đúng 1.
+Ở bước quyết định cuối, chỉ cần lower bound của margin. Tuy nhiên để tạo nó khi các hệ số
+có dấu khác nhau, phải dùng cả lower và upper activation bounds. Chỉ lấy lower activation
+là sai với hệ số âm. IBP sound không đồng nghĩa IBP complete: nó có thể bỏ lỡ một miền
+bất biến. Phân tích và training IBP trong literature [5] không tự chuyển thành hit rate hoặc
+latency của ECDR.
+
+
+13     CROWN/LiRPA và hình học miền chứng nhận
+
+13.1   Relaxation của ReLU và cận margin
+
+Với preactivation v ∈ [l, u], l < 0 < u, ta có
+                                              u
+                           αv ≤ ReLU(v) ≤        (v − l),      0 ≤ α ≤ 1.                      (28)
+                                             u−l
+Cận dưới đúng vì nếu v < 0 thì αv ≤ 0, nếu v ≥ 0 thì αv ≤ v. Cận trên là dây cung của hàm
+lồi ReLU; có thể kiểm trực tiếp trên [l, 0] và [0, u]. Nếu l ≥ 0 thì ReLU là identity; nếu u ≤ 0 thì
+bằng 0.
+Khi back-substitute một linear objective, hệ số dương dùng lower relaxation để tạo lower
+bound, hệ số âm dùng upper relaxation. Nếu mỗi bước thay đều hợp lệ trên miền xét, kết
+quả có dạng
+                               gcj (x) ≥ a⊤
+                                          cj x + βcj , x ∈ S.                        (29)
+Đây là nguyên lý dùng trong CROWN/LiRPA [6, 7]. Báo cáo không tuyên bố tái chứng minh
+đầy đủ mọi variant CROWN, mọi activation hoặc các heuristic tối ưu relaxation. CROWN-
+IBP và β-CROWN là các hướng kết hợp hoặc làm chặt cận [8, 9]; tăng độ chặt có thể tăng
+cost.
+
+28/10/2026                                                                                       23
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                                       Week 1–3
+
+
+13.2     Support function: vì sao chọn miền là một bài toán riêng
+
+Với tập D, đặt support function σD (v) = supδ∈D v ⊤ δ. Nếu S = c0 + D thì (29) dẫn đến
+
+                                             ℓ = a⊤ c0 + β − σD (−a).                                          (30)
+
+Với tập đối xứng tâm D, σD (−a) = σD (a). Phương pháp bound và hình học miền là hai trục
+độc lập: có thể dùng CROWN trên box hoặc IBP trên một enclosure của miền có cấu trúc.
+Định lý 13.1 (Affine infimum trên các miền thường dùng). Cho 1 ≤ p ≤ ∞, ϵ ≥ 0 và các
+residual budgets ηi ≥ 0. Các infimum dưới đây là chính xác trong số thực:
+
+                        inf a⊤ (c0 + δ) + β = a⊤ c0 + β − ϵ ∥a∥p∗ ,                   1/p + 1/p∗ = 1,          (31)
+                       ∥δ∥p ≤ϵ
+
+                     inf a⊤ (c0 + Bu) + β = a⊤ c0 + β − B ⊤ a                     .                            (32)
+                   ∥u∥∞ ≤1                                                    1
+                                                          P
+Nếu thêm residual |vi | ≤ ηi , infimum giảm thêm              i ηi |ai |.
+
+Chứng minh. Công thức đầu theo Hölder: a⊤ δ ≥ − ∥a∥p∗ ∥δ∥p ; định nghĩa dual norm cho thấy
+tồn tại hướng đạt cận trên ball hữu hạn chiều. Công thức thứ hai tối ưu từng ui ∈ [−1, 1]:
+chọn ui = − sign((B ⊤ a)i ). Residual độc lập tối ưu bằng vi = −ηi sign(ai ). Các biến độc lập
+nên cộng các cực tiểu.
+                                    P
+Với diagonal B = diag(b), penalty là i bi |ai |. Với B = ϵI, đây là L∞ ball. Axis-aligned box
+cho phép budget khác nhau theo tọa độ đã chính là anisotropic/diagonal box; không nên
+mô tả hai tên này như hai họ hình học hoàn toàn khác nhau.
+Định lý 13.2 (Miền PCA với residual trực giao). Cho 0 ≤ q ≤ d, bi ≥ 0, η ≥ 0, V ∈ Rd×q ,
+V ⊤ V = I, P⊥ = I − V V ⊤ và
+
+                      S = {c0 + V diag(b)u + v : ∥u∥∞ ≤ 1, V ⊤ v = 0, ∥v∥2 ≤ η}.                               (33)
+
+Khi đó
+                        inf (a⊤ x + β) = a⊤ c0 + β − diag(b)V ⊤ a                     − η ∥P⊥ a∥2 .            (34)
+                        x∈S                                                       1
+
+
+Chứng minh. Tối ưu u như (32). Do v trực giao V , a⊤ v = (P⊥ a)⊤ v. Cauchy–Schwarz cho infi-
+mum −η ∥P⊥ a∥2 , đạt tại hướng đối của P⊥ a nếu vector khác 0; nếu bằng 0 mọi residual đều
+cho contribution 0.
+
+Với delta đã centered bởi δ̄, center là c0 = xr + δ̄, không mặc định xr . Membership tương
+đương
+                           |V ⊤ (x − c0 )| ≤ b,  ∥P⊥ (x − c0 )∥2 ≤ η                   (35)
+trong số thực với cơ sở trực chuẩn. Residual L2 khác coordinate residual box; công thức
+support khác nhau. Sau normalization không đồng nhất, Dσ−1 V thường không trực chuẩn,
+nên không dùng nguyên công thức projection cũ trên basis đã transform.
+
+
+13.3     Ví dụ tính đầy đủ: cấu trúc giúp khi nào?
+
+Xét margin g(x1 , x2 ) = 1 + x1 − x2 và center (0, 0).
+
+          Ssquare = {x : |x1 |, |x2 | ≤ 0.8},                               inf g = 1 − 0.8 − 0.8 = −0.6,      (36)
+             Sline = {(t, t) : |t| ≤ 0.8},                                  inf g = 1,                         (37)
+             Stube = {(t, t) + v : |t| ≤ 0.8, |vi | ≤ 0.1},                 inf g = 1 − 0.1 − 0.1 = 0.8.       (38)
+
+
+28/10/2026                                                                                                      24
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                 Week 1–3
+
+
+Line contribution triệt tiêu do a = (1, −1) trực giao hướng (1, 1). Đây là một chứng minh
+về geometry–margin alignment; nó không chứng minh HAPT có hướng đúng như vậy. Hơn
+nữa, line/tube nhỏ hơn square theo nhiều chiều: không thể gọi đó là cải thiện ở cùng volume
+hoặc coverage nếu chưa chọn tiêu chí matching. Nếu margin đổi thành 1 + x1 + x2 , hướng
+(1, 1) không còn triệt tiêu, nên “correlated” tự nó không bảo đảm tốt hơn.
+
+
+13.4   Normalization, containment và domain identity
+
+Nếu normalized affine lower bound là a⊤
+                                      z z + βz , thì trong raw coordinates
+
+                             ax = Dσ−⊤ az ,     β x = βz − a⊤  −1
+                                                            z Dσ µ.                      (39)
+
+Đẳng thức này chỉ biến đổi biểu thức; phải biết relaxation hợp lệ trên P(S) trước khi tối ưu
+nó. Nếu S ⊆ Sb đã được chứng minh, certificate trên Sb đủ cho S. Chiều ngược lại sai: một
+proof trên tập nhỏ không tự mở rộng sang tập lớn.
+
+
+13.5   Event-conditioned selection và bài toán chọn miền
+
+Mệnh đề 13.3 (Selector không cần là một oracle hoạt động). Cho họ certificate {(Se , ce )}e∈E
+mà mỗi miền đều có lower margins hợp lệ và dương cho target riêng. Một selector bất kỳ, kể
+cả phụ thuộc query, có thể chọn e = e(x). Nếu chỉ accept khi identity khớp và x ∈ Se(x) qua
+checker sound, output ce(x) vẫn bằng h(x).
+
+Chứng minh. Sau khi selector chọn một e, các giả thiết certificate áp dụng cho chính miền
+đó. Membership gắn query với miền, rồi Định lý 9.1 cho kết quả. Không có bước nào cần
+tên event trùng ground truth.
+
+Với nhiều miền cùng target, union của chúng giữ target khi từng miền giữ target; nhưng phải
+kiểm query thuộc ít nhất một miền bằng một witness sound. Selector thay đổi region/budget
+sau khi build mà không cập nhật proof không nằm trong mệnh đề này.
+Có thể viết câu hỏi nghiên cứu chọn policy π dưới dạng
+
+              min E[Tπ ]   với ràng buộc      ∀x được accept bởi π, b
+                                                                    hπ (x) = h(x).       (40)
+                π
+
+Kỳ vọng đòi một workload distribution hoặc trace rõ ràng. Phần ràng buộc là universal trên
+accepted set; phần mục tiêu là thống kê/hệ thống. Với hai miền S1 ⊆ S2 , nếu miền lớn thật sự
+invariant thì miền nhỏ cũng invariant. Nhưng thuật toán bound cụ thể không tự được bảo
+đảm monotonically chứng nhận nhiều hơn, và volume lớn hơn không tự suy ra probability
+mass lớn hơn nếu các miền không lồng nhau. Mở rộng miền có thể tăng membership đồng
+thời làm mất positive margin. Đây là trade-off cần đo của event-conditioned ECDR.
+
+
+14     Từ wave data đến exact feature và margin identities
+
+14.1   Giả thiết kiến trúc chuyên biệt A1–A6
+
+Các kết quả trong mục này dùng: A1, window shift–append cùng sampling grid; A2, Conv1D
+valid, stride 1, dilation 1; A3, ReLU hoặc pointwise map giống nhau ở mọi vị trí; A4, không
+pooling/position encoding/stateful preprocessing ẩn; preprocessing trong mục này là iden-
+tity hoặc một pointwise affine per-channel giống nhau tại mọi vị trí thời gian (hoặc X đã
+
+
+28/10/2026                                                                                25
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                       Week 1–3
+
+
+là tensor sau normalization đó). A5, GAP rồi affine logits; A6, 1 ≤ s ≤ n với n là số feature
+positions cuối. Đây là các giả thiết đủ cho công thức gọn, không phải các điều kiện cần cho
+mọi thuật toán streaming có thể thiết kế.
+Định lý 14.1 (Receptive field và shift equivalence). Với L layer kernels k1 , . . . , kL , đặt
+                                        X
+                                        L
+                               R=1+           (kℓ − 1),   n = W − R + 1.                         (41)
+                                        ℓ=1
+
+Feature Hi (X) chỉ phụ thuộc X[:, i : i + R]. Với window mới X ′ ,
+                               Hi (X ′ ) = Hi+s (X),       0 ≤ i < n − s.                        (42)
+
+Chứng minh. Một valid convolution tại i lấy chính k1 sample bắt đầu ở i. Layer sau mở rộng
+vùng phụ thuộc thêm kℓ − 1 ở stride 1. Quy nạp cho R. Với i < n − s, mọi input mà Hi (X ′ )
+dùng nằm trong overlap và, theo Định lý 6.2, bằng input của Hi+s (X). Kernel/bias cố định
+và pointwise map giống nhau nên giá trị output bằng nhau. Có thể viết cùng lập luận bằng
+quy nạp qua từng layer.
+
+“Frozen” ở đây nghĩa là giá trị bằng activation cũ sau căn chỉnh chỉ số; không có nghĩa
+activation cùng chỉ số giữ nguyên hay ReLU pattern không đổi trên một perturbation region.
+                                                                    Pn−1
+Định lý 14.2 (GAP delta và pairwise-margin delta). Cho µ(X) = n−1 i=0      Hi (X), F = Aµ + b.
+Đặt
+                           X
+                           s−1                 X
+                                               n−1
+                 Ddrop =       Hi (X), Dnew =      Hi (X ′ ), qj = Ac − Aj .             (43)
+                            i=0                        i=n−s
+
+Khi các giả thiết trên đúng,
+                                         Dnew − Ddrop
+                          µ(X ′ ) − µ(X) =              ,                                 (44)
+                                                n
+                                                  1
+                            gcj (X ′ ) = gcj (X) + qj⊤ (Dnew − Ddrop ).                   (45)
+                                                  n
+                                       P
+Chứng minh. Tổng H(X ′ ) gồm phần n−1    i=s Hi (X) nhờ (42) và phần Dnew . Trừ tổng cũ triệt
+tiêu phần chung, còn Dnew − Ddrop . Chia cho n. Margin bằng (Ac − Aj )⊤ µ + bc − bj , nên bias
+triệt tiêu khi lấy delta.
+
+Phần đuôi s feature có thể phụ thuộc cả overlap và new wave, tổng vùng input cần cho đuôi
+là s + R − 1 sample trong giả thiết stride 1. Do đó “chỉ có s sample mới” khác với “chỉ tính
+convolution trên đúng s sample đầu vào”.
+Hệ quả 14.3 (Certificate từ interval của feature sum). Nếu D ≤ Dnew (U ) ≤ D với mọi U ∈ U ,
+đặt qj+ = max(qj , 0), qj− = min(qj , 0). Khi đó
+
+                                              (qj+ )⊤ D + (qj− )⊤ D − qj⊤ Ddrop
+                           ℓcj = gcj (X) +                                                       (46)
+                                                               n
+là lower margin hợp lệ cho wave-domain. Nếu mọi ℓcj > 0, target giữ trên toàn miền đó.
+
+Chứng minh. Tối thiểu hóa qj⊤ Dnew theo từng tọa độ trong enclosure; hệ số dương dùng
+lower, âm dùng upper. Thay vào (45) và dùng Định lý 9.1.
+Ví dụ 14.4 (Thay số cho tail certificate). Lấy n = 10, một competitor có margin cũ 0.4, q =
+(2, −1), Ddrop = (1, 2), D = (0, 1), D = (2, 3). Khi đó q ⊤ Ddrop = 0 và minimum enclosure
+contribution là 2 × 0 − 1 × 3 = −3. Lower margin là 0.4 − 3/10 = 0.1 > 0. Nếu chỉ dùng D
+cho cả hệ số âm sẽ cho 0.3, không phải lower bound hợp lệ trên toàn interval. Với nhiều
+competitor phải kiểm tất cả.
+
+28/10/2026                                                                                        26
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                    Week 1–3
+
+
+14.2   Tính toán cho cấu hình HAPT lý thuyết và các giới hạn
+
+Với k = (5, 3, 3), R = 1 + 4 + 2 + 2 = 9, n = 128 − 9 + 1 = 120. Dịch s = 64 cho n − s = 56 shared
+positions và 64 new positions ở layer cuối. Tỷ lệ shared là 56/120 = 46.6%. Sau q lần dịch, số
+feature positions còn chia sẻ trực tiếp với anchor là
+
+                                 nshared (q) = max(120 − 64q, 0).                            (47)
+
+Với q = 2, không còn shared final feature, đồng thời raw window cũng đã thay toàn bộ 128
+sample. Vì vậy exact overlap identity một bước không đủ để hứa hẹn chuỗi reuse dài trong
+cấu hình này.
+Zero-padding có thể đưa số 0 vào nơi window cũ từng có sample thật; equality chỉ có thể
+lập lại trên interior có RF tương ứng hoặc bằng một thiết kế biên khác được chứng minh.
+Với stride/pooling, shift phải căn theo effective stride và phải kiểm biên. BN eval cố định là
+affine pointwise theo kênh, có thể đưa vào proof thích hợp; BN training không có tính chất
+đó. GAP delta không áp cho arbitrary Flatten–MLP. Những giới hạn này thống nhất với việc
+prior work streaming phải xử lý padding/pooling [11].
+
+
+15     Membership: đúng, rẻ theo bậc, và rẻ thực tế
+
+Với full diagonal box |z − zr | ≤ b, có d coordinate checks; chi phí worst-case O(d). Với wave
+box U ≤ U ≤ U và overlap/state identity đã bảo đảm, membership chỉ cần Cs coordinate
+checks, worst-case O(Cs). HAPT s = 64 cho 384 tọa độ, thường là hai ordered comparisons
+mỗi tọa độ, ngoài finite/identity checks.
+Mệnh đề 15.1 (Lower bound của exact box membership). Trong mô hình truy cập từng tọa
+độ, với một box không suy biến trong Rm , một thuật toán luôn quyết định chính xác member-
+ship cần đọc mọi tọa độ trong worst case, tức Ω(m) coordinate accesses.
+
+Chứng minh. Giả sử thuật toán nhận một điểm interior mà chưa đọc tọa độ i. Giữ mọi tọa độ
+đã đọc, thay tọa độ i bằng giá trị ngoài box. Hai input không phân biệt được theo những dữ
+liệu thuật toán đã xem nhưng membership khác nhau, mâu thuẫn với tính chính xác.
+
+Kết hợp hai chiều cho Θ(m) trong mô hình này. SIMD hoặc parallel hardware có thể thay
+đổi wall-clock; theorem không cấm vectorization. Một conservative filter có thể false reject,
+nhưng nếu luôn reject thì trivially an toàn mà không hữu ích. Bound tiệm cận không chứng
+minh một checker nhanh hơn CNN nhỏ trong runtime cụ thể.
+Với PCA, tính scores/residual theo basis dense có thể tốn O(dq); không phải cùng giá của
+box. Với miền c0 + Bu + v dạng Minkowski sum tổng quát, membership là tìm tồn tại u, v
+thỏa constraints. Một decomposition witness hợp lệ đủ để accept; projection bất kỳ thất bại
+không chứng minh query ở ngoài miền, trừ khi đã chứng minh tính tương đương cho miền
+đó.
+
+
+16     Reuse một bước và nhiều bước
+
+16.1   One-step composition
+
+Định lý 16.1 (Sound reuse gate). Giả sử reference identity khớp, lower margins hợp lệ và
+dương trên S, membership chỉ accept khi query thật sự thuộc S. Policy trả c khi accept, còn
+lại chạy reference, trả đúng reference decision trên mọi input hợp lệ trong phạm vi giả thiết.
+
+28/10/2026                                                                                     27
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 1–3
+
+
+Chứng minh. Nhánh accept dùng Định lý 9.1; nhánh fallback trả kết quả của chính refer-
+ence. Hai nhánh bao hết trường hợp.
+
+Policy trên không cho phép tự đổi center sau một hit. Ví dụ F1 (x) = 1 − x, F2 = 0 chứng nhận
+center 0, radius 0.6. Query 0.6 thuộc miền và vẫn lớp 1. Nếu chuyển center sang 0.6 nhưng
+giữ radius/claim cũ, query 1.2 sẽ bị accept sai. Khoảng cách nhỏ liên tiếp không có tính bắc
+cầu theo một bán kính cố định.
+
+
+16.2   Fixed-anchor multi-step certificate
+
+Định lý 16.2 (Nhiều query dùng cùng certificate). Giả sử toàn bộ các điều kiện của Định
+lý 16.1 đúng, đặc biệt có certificate với lower margins hợp lệ và dương trên Sr . Giữ cố định
+anchor, target c, identity và domain Sr . Với bất kỳ chuỗi hữu hạn hay vô hạn các query hợp lệ,
+nếu mỗi lần reuse đều kiểm query hiện tại thuộc Sr bằng checker sound, mọi reused decision
+đúng reference. Không yêu cầu query được reuse trước phải làm anchor mới.
+
+Chứng minh. Tại mỗi thời điểm accept, áp dụng trực tiếp certificate trên Sr ; không phụ
+thuộc các query trước. Tương đương quy nạp theo chiều dài prefix của trace. Khi miss,
+policy chạy reference và chỉ xây certificate mới theo các điều kiện giống ban đầu.
+
+Định lý đóng bài toán soundness của fixed-anchor policy. Nó không cho hit rate dương hoặc
+bảo đảm anchor vẫn hữu ích mãi. Nếu certificate được xây riêng cho transition với overlap
+cố định của window cũ, checker phải kiểm cả state/domain identity đó; không được chỉ
+kiểm new wave rồi tự áp cho overlap khác sau một hit.
+
+
+16.3   Finite-horizon wave certificate: một cách giải không cần exact feature
+       state
+
+Cho horizon H và các miền new wave U1 , . . . , UH được khai báo từ lúc build. Đặt reachable
+sets
+             R0 = {Xr },   Rq = {Ts (X, U ) : X ∈ Rq−1 , U ∈ Uq }, 1 ≤ q ≤ H.           (48)
+
+Định lý 16.3 (Horizon certificate). Nếu với mọi q ≤ H và j ̸= c có bound ℓq,cj ≤ infX∈Rq gcj (X)
+và ℓq,cj > 0, thì mọi chuỗi new waves thỏa Uq ∈ Uq tạo ra h(Xr+q ) = c cho mọi q ≤ H.
+
+Chứng minh. Quy nạp reachable membership. Xr ∈ R0 . Nếu window tại bước q − 1 thuộc
+Rq−1 và Uq ∈ Uq , định nghĩa (48) cho window kế tiếp thuộc Rq . Các lower margins dương rồi
+suy winner c ở từng q.
+
+Runtime của product-wave box có thể chỉ kiểm Uq và counter q, với toàn bộ các bước trước
+đã accept, recording/reference identity khớp và không có state mutation sai. Nếu một bước
+fail, phải invalidate horizon hoặc dùng certificate khác đã chứng minh; không bỏ qua bước
+rồi tiếp tục. Nếu miền các new waves có dependency, checker phải xác nhận dependency
+đó, không tự rút về các box độc lập.
+Đây là một giải pháp lý thuyết cho lifecycle: certificate được tạo cho toàn bộ reachable se-
+quence. Nó có thể rất lỏng hoặc rất đắt khi H tăng; chưa có theorem rằng nó thực dụng.
+Sau qs ≥ W , không còn raw sample nào từ anchor trong window hiện tại. Reuse xa anchor
+vẫn có thể đúng nếu reachable domain được chứng nhận, nhưng không còn được giải thích
+bằng “còn mẫu overlap với anchor”.
+
+
+
+
+28/10/2026                                                                                   28
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                      Week 1–3
+
+
+
+17     Từ số thực đến chương trình số hữu hạn
+
+Các phép toán float32/quantization không tự được bao bởi một chứng minh số thực. Giả sử
+ℓcj là lower bound thực sự sound cho ideal margin, và có chứng minh
+
+                        |e
+                         gcj (x) − gcj (x)| ≤ ηcj        trên miền được kiểm.                 (49)
+
+Khi đó điều kiện ℓcj > ηcj đủ giữ executable margin dương. Nếu ℓb là bound tính bằng float
+và đã chứng minh ℓb − δ ≤ inf g thì dùng ℓb > δ + η.
+Membership cũng cần containment: có thể accept nếu verified intervals cho giá trị nor-
+malized hoàn toàn nằm trong domain. Một tolerance tùy chọn không chứng minh được
+containment. Sai số của normalization, operator, bound computation và decision output
+phải được gắn đúng vai trò; không cộng một ϵ tùy ý rồi gọi là formal soundness.
+Ngay cả khi numerical semantics đã sound, model identity sai vẫn phá proof. Certificate
+cần khóa checkpoint/graph, normalization, class order, dtype và semantics cần thiết, an-
+chor/domain, cũng như horizon/state khi có. Zero observed mismatches là kiểm thử hữu
+ích, không thay proof cho mọi query có thể được accept.
+
+
+18     Amortized cost và giới hạn của claim hiệu quả
+
+18.1   Accounting chính xác trước mô hình trung bình
+
+Cho Nw query, tập hits H, miss set M, B lần build. Với chi phí chung được xử lý nhất quán
+giữa hai phương án, viết
+
+                                      X
+                                      Nw
+                            Tfull =         ft ,                                              (50)
+                                      t=1
+                                      X
+                                      Nw           X                X
+                                                                    B
+                          TECDR =           vt +         ftmiss +         bb + Tstate .       (51)
+                                      t=1          t∈M              b=1
+
+vt gồm selector/lookup/membership/certificate validation; build gồm cả build thất bại và
+initialization. Tstate là phần quản lý chưa được tính nơi khác, để không đếm hai lần. Shadow-
+reference dùng kiểm chứng thực nghiệm phải được tách khỏi operational path khi báo cả
+hai.
+
+Định lý 18.1 (Break-even trong mô hình chi phí hằng). Nếu full và miss forward cùng cost
+tf > 0, verify overhead mỗi query tv ≥ 0, mỗi build tb ≥ 0 và state overhead trung bình tm , đặt
+r = |H|/Nw , b = B/Nw . Khi đó
+
+                                t̄ECDR = tv + tm + (1 − r)tf + btb ,                          (52)
+
+và ECDR nhanh hơn khi và chỉ khi
+
+                                            rtf > tv + tm + btb .                             (53)
+
+Chứng minh. Thay các cost hằng vào (51), chia Nw , rồi chuyển t̄ECDR < tf sang (53).
+
+Không đặt b = 1 − r nếu policy không build mỗi miss. Với cost phụ thuộc query, cần đo tổng
+trace hoặc dùng conditional expectations thay vì tự tách E[1miss ft ] thành (1 − r)E[ft ].
+
+
+28/10/2026                                                                                     29
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                  Week 1–3
+
+
+Nếu build mỗi miss, b = 1 − r khi counting policy khớp, ngưỡng là
+                                              tv + tm + tb
+                                         r>                .                               (54)
+                                                 tf + tb
+
+Điều kiện này chỉ có thể đạt với r ≤ 1 khi tv + tm < tf , ngoài các trường hợp degenerate.
+Khi r = 0 và overhead/build dương, ECDR chắc chắn chậm hơn trong mô hình đó, dù mọi
+certificate đều sound.
+
+
+18.2   Tính nhạy cảm đầy đủ, không dùng làm benchmark
+
+
+Bảng 15: Minh họa giả định: tf = 4 ms, tv = 0.06 ms, tm = 0.02 ms; build mỗi miss. Mọi con
+số là phép thay số.
+                       r tb = 1.5 ms Speed ratio tb = 8 ms Speed ratio
+
+                    0.50       2.830          1.4134           6.080   0.6579
+                    0.80       1.180          3.3898           2.480   1.6129
+                    0.95       0.355         11.2676           0.680   5.8824
+
+Speed ratio ở đây là 4/t̄ECDR , có thể nhỏ hơn 1. Ngưỡng r tương ứng là (0.08 + 1.5)/(4 + 1.5) =
+28.7273% và (0.08 + 8)/(4 + 8) = 67.3333%. Các giá trị không mô tả HAPT runtime.
+Để đối chiếu với số đã ghi trong kế hoạch cũ, nếu giả sử reference có mean forward tf =
+251.1 µs và giả sử r = 0.5, thì
+
+                            tv + tm + btb < 0.5 × 251.1 = 125.55 µs.                       (55)
+
+Số 251.1 đến từ data/g2_cpu_latency.json: forward CPU của model 6 lớp cũ trên tensor nor-
+malized trong RAM, không phải timing của reference 12 lớp hay của valid–GAP family. Báo
+cáo không chạy lại benchmark và không chuyển mốc này thành kết quả của hướng mới.
+
+
+18.3   Build amortization theo số hit/certificate
+
+Một certificate tốn tb , dùng cho L query sau build và có h hit, tổng chi phí tránh được là htf
+trong mô hình hằng. Lợi ích cần
+
+                                       htf > tb + L(tv + tm ).                             (56)
+
+Nếu mọi query sau build đều hit, cần L > tb /(tf − tv − tm ) với mẫu số dương. Trong ví dụ
+tf = 4, tv + tm = 0.08 ms, tb = 1.5 ms cho L > 0.3827; tb = 8 ms cho L > 2.0408, tức cần ít nhất
+3 hits liên tiếp trong policy lý tưởng này. Điều kiện integer và counting horizon phải khớp
+lúc đo.
+
+
+19     Hệ thống giả thuyết nghiên cứu và cách phân biệt đúng/sai
+
+19.1   Các nhóm giả thiết
+
+Các giả thiết structural là data/window/operator contract, có thể kiểm bằng nguồn và
+đẳng thức. Các giả thiết analytic là continuity, Lipschitz hoặc valid relaxation; phải chứng
+
+
+28/10/2026                                                                                   30
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                Week 1–3
+
+
+minh/bound. Các giả thuyết empirical như useful coverage, margin alignment và cost
+không được thay bằng giả định rồi dùng làm kết luận nghiên cứu.
+
+                  Bảng 16: Hypothesis ledger: phát biểu, trạng thái và cách
+                  kiểm tra.
+
+       ID    Phát biểu                 Trạng thái lý thuyết      Phép kiểm/điều kiện
+                                                                 còn cần
+
+       H01 Window kế tiếp giữ          Đã chứng minh với Kiểm             sampling
+           nguyên overlap sau          grid/recording contract alignment/missing
+           dịch chỉ số                                         samples
+       H02 Overlap 50% khiến           Sai vô điều kiện; có Chỉ có thể khảo sát
+           ordinary     distance       counterexample          một phân bố cụ thể
+           nhỏ
+       H03 Cùng activity cho           Sai vô điều kiện       Đo agreement có
+           cùng prediction                                    strata, không dùng
+                                                              làm certificate
+       H04 Unique winner và            Đã chứng minh tồn tại; Margin/bound      và
+           continuity cho miền         không cho radius hữu coverage
+           bất biến cục bộ             ích
+       H05 Positive valid lower        Đã chứng minh trong Numerical contain-
+           margins đủ cho reuse        số thực và đúng domain ment khi triển khai
+                                       identity
+       H06 Lipschitz bound hợp         Đã chứng minh có điều Cách lấy L sound và
+           lệ cho certified ball       kiện                   đủ chặt
+       H07 IBP luôn tìm được           Sai; sound nhưng in- Đo bound gap trên
+           miền invariant              complete               domain cố định
+       H08 Direct margin có thể        Có ví dụ exact         So sánh cùng domain
+           tránh logit depen-                                 và bound budget
+           dency loss
+       H09 CROWN luôn rẻ hơn           Không    được      chứng Đo              build
+           mọi phương pháp             minh                     cost/tightness   theo
+           khác                                                 cấu hình
+       H10 Temporal/PCA direc-         Giả thuyết mở            Đo alignment, abla-
+           tion phù hợp margin                                  tion và held-out data
+           normals
+       H11 Structured       region     Giả thuyết mở             Chốt criterion match-
+           cho coverage tốt hơn                                  ing trước đánh giá
+           matched box
+       H12 Wave-domain giảm số  Đúng khi overlap cố Không đồng nhất
+           biến từ CW xuống Cs  định                 giảm dimension với
+                                                     giảm runtime
+       H13 Valid–ReLU      CNN Đã chứng minh với A1– Không tự áp cho
+           reuse exact shared A6                     padding/pool khác
+           activations
+       H14 GAP delta chỉ phụ Đã chứng minh cho Bound phần mới và
+           thuộc     new-minus- head được khai báo   đủ mọi competitor
+           dropped sum
+
+
+
+
+28/10/2026                                                                               31
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                Week 1–3
+
+
+
+       ID    Phát biểu                 Trạng thái lý thuyết     Phép kiểm/điều kiện
+                                                                còn cần
+
+       H15 Có thể recenter sau         Sai; có drift counterex- Giữ anchor hoặc
+           mỗi hit không cần           ample                    chứng minh transfer
+           proof mới                                            rule
+       H16 Fixed-anchor mem-           Đã chứng minh có điều Useful       lifetime/hit
+           bership mỗi lần cho         kiện                     count còn mở
+           multi-step soundness
+       H17 Product-wave hori-          Đã chứng minh có điều Bound tightness và
+           zon certificate cho         kiện trên reachable sets cost theo H
+           nhiều bước
+       H18 Box membership có           Đúng trong coordinate     Wall-clock phụ thuộc
+           cost Θ(m) worst-case        query model               backend/memory
+       H19 Soundness kéo theo          Sai; miền có thể không    Báo hit denominator
+           useful coverage             chứa query mới            và no-hit case
+       H20 Useful coverage kéo         Sai khi build/overhead    Accounting đầy đủ
+           theo speedup                lớn                       theo (53)
+       H21 ECDR hơn CNN hoặc           Chưa chứng minh           Reference-
+           LipCache trên HAPT                                    equivalent     bench-
+                                                                 mark và matched
+                                                                 semantics
+       H22 Float32 tự kế thừa          Sai nếu không bao sai Bound error, mem-
+           proof số thực               số                        bership và output se-
+                                                                 mantics
+       H23 Event name đúng là          Sai; selector chỉ đề xuất Gate độc lập certifi-
+           đủ để reuse                 region                    cate và membership
+       H24 Có operating regime         Giả thuyết trung tâm Chứng minh con-
+           vừa sound, coverage         còn mở                    tract, rồi đo cùng
+           hữu ích, cost thấp                                    workload
+
+
+
+19.2   Thiết kế kiểm chứng giả thuyết sau báo cáo lý thuyết
+
+Để kiểm H10–H11, cố định reference, data representation và bound method, rồi thay geom-
+etry. Để kiểm H08–H09, cố định model và domain, rồi thay cách bound. Để kiểm H16–H17,
+cố định certificate semantics, so policy horizon và anchor, báo age/hit count. Để kiểm H20–
+H24, đo full path theo cùng trace và hardware, tính cả failed builds và no-hit periods.
+Các đại lượng nên tách là
+                               #domain xây chứng nhận thành công
+                       pbuild =                                     ,                    (57)
+                                         #domain đã thử
+                               #query thuộc candidate theo policy
+                    pmember =                                     ,                      (58)
+                                        #query được xét
+                               #query được reuse với certificate hợp lệ
+                       rcert =                                          ,                (59)
+                                           #stream query
+                               #reused query trùng reference
+                     Areuse =                                 .                          (60)
+                                       #reused query
+Nếu không có reused query, Areuse là N/A. Không lấy pbuild pmember làm rcert nếu chưa có
+independence hoặc joint trace phù hợp. Quantile coverage trên adjacent pair không bằng
+
+28/10/2026                                                                                32
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                     Week 1–3
+
+
+anchor-based coverage, và membership coverage không bằng certified reuse.
+
+
+20     Tổng hợp mức độ chứng minh và câu trả lời nghiên cứu
+
+
+                         Bảng 17: Phân loại các kết quả được báo cáo.
+Nhóm                    Đã xác lập                             Không được suy thêm
+
+Data algebra            Window count, shift–append,            Tín hiệu mượt, same prediction,
+                        overlap, normalization transform       population coverage
+General certification   Margin theorem, local existence,       HAPT usefulness hoặc numerical
+                        Lipschitz rule, IBP soundness,         soundness tự động
+                        support identities
+Specialized CNN         RF, aligned feature equality,          Exact rule cho mọi CNN architecture
+                        GAP/margin delta, interval rule
+Lifecycle               Fixed-anchor và finite-horizon         Reuse vô hạn với recenter không
+                        sufficient rules                       proof
+Complexity              Coordinate-model membership            Latency, energy hoặc edge speedup
+                        bounds, cost break-even                đã đo
+Contribution            Một formulation và tập giả thuyết có   Novelty/superiority đã được xác
+                        thể kiểm tra                           nhận
+
+Trả lời RQ1: quan hệ chắc chắn là overlap theo alignment và shift–append; sự mượt, co-
+variance hoặc cùng decision là những vấn đề khác. RQ2: mọi valid lower pairwise margin
+dương trên domain là một điều kiện đủ, có các cách tạo cận và các numerical obligations đã
+nêu. RQ3: có ví dụ toán học chứng minh cấu trúc có thể giúp, nhưng chưa có kết luận tổng
+quát hoặc kết quả HAPT cho directions mới. RQ4: có hai policy multi-step sound có điều
+kiện; việc chuyển certificate tự do sau hit không hợp lệ. RQ5: điều kiện hòa vốn đã được
+suy ra; speedup thực tế vẫn mở.
+Kết quả của ba tuần là một nền tảng lý thuyết có thể dùng làm chuẩn cho nghiên cứu tiếp
+theo: brief xác định thuộc tính, data chỉ ra miền biến thiên, và mathematics quyết định khi
+nào miền đó giữ class. Câu hỏi trung tâm còn lại là tìm được miền vừa chứng nhận được,
+vừa chứa đủ query, vừa có chi phí sử dụng thấp trong một thiết lập được xác định rõ.
+
+
+
+
+28/10/2026                                                                                       33
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                      Week 1–3
+
+
+
+A    Nguồn, tính tái lập và ranh giới với implementation cũ
+
+Hai attachment do người nghiên cứu cung cấp là brief cho lần biên soạn: bản tổng hợp ECDR
+đầu tiên và bản “Chuẩn hóa lại ECDR: Week 1 → Week 2 → Week 3”. Chúng được dùng để
+xác định scope và các phát biểu cần chuẩn hóa; citation token trong attachment không được
+xem là nguồn đã xác minh.
+Nguồn vật lý/nhãn là UCI HAPT và data/hapt/README.txt; các số corpus lấy từ data/build_win
+dows_summary.json, data/g2_class_support.json, data/split_audit.json. Các phép tính số học
+trong báo cáo có script me/recompute.py và artifact me/calculations.json. Script không train
+hay benchmark ECDR. Phép kiểm overlap là exhaustive trên toàn bộ adjacent pairs trong
+corpus lưu; nó không thay thế các chứng minh neural trên toàn miền đã trình bày.
+Backbone cũ là CNN K=6 có BN/MaxPool/Flatten–MLP, khác CNN valid–GAP dùng phân tích.
+Các gate/status cũ, probe P0 và số accuracy của checkpoint đó không được dùng như tiến
+độ của lý thuyết mới. Chỉ bảng data và một mốc timing được ghi provenance rõ được giữ
+làm dữ kiện phụ. Không có thí nghiệm ECDR mới hoặc kết quả superiority nào được tạo ra
+để điền báo cáo.
+Về nguồn data, metadata UCI hiện ghi CC BY 4.0, còn README local kèm câu hạn chế com-
+mercial use. Đây là khác biệt provenance cần giữ trong hồ sơ; báo cáo này không phân xử
+quyền sử dụng hoặc thực hiện phân phối dataset.
+
+
+B Bảng ký hiệu
+
+
+        Ký hiệu                   Ý nghĩa
+
+        C, W, s, fs               Số kênh, số sample/window, stride sample, sampling rate
+                                  Hz.
+        t, n                      t đếm window; n là sample index hoặc số feature positions
+                                  khi được định nghĩa cục bộ.
+        Nw                        Tổng query trong mô hình cost; tránh nhầm n feature po-
+                                  sitions.
+        X, x, z                   Raw window, vectorized raw window, normalized input.
+        U, U                      New wave thực tế và tập các new waves khả dĩ.
+        F, fθ , P                 Reference pipeline, classifier, preprocessing.
+        h, c, K                   Decision rule, target class, số lớp.
+        Xr , x r , Sr             Trusted anchor và domain gắn với anchor.
+        gcj , ℓcj , Lcj           Pairwise margin, lower bound và Lipschitz bound.
+        R, Hi , µ, A, b           Receptive field, feature tại vị trí i, GAP vector, head
+                                  weights và bias; H riêng trong horizon là số bước.
+        Dnew , Ddrop              Tổng feature thêm và bỏ trong identity GAP.
+        V, P⊥                     Orthonormal PCA basis và orthogonal-complement pro-
+                                  jector.
+        r, b, tf , tv , tb , tm   Hit fraction, build/query, forward, verify, build và state
+                                  overhead; b head bias chỉ dùng trong mục CNN.
+        ∥·∥p , p∗                 Norm Lp và dual exponent.
+
+
+
+
+28/10/2026                                                                                     34
+ECDR | Cơ sở nghiên cứu và lý thuyết                                                 Week 1–3
+
+
+Tài liệu
+
+ [1] UCI Machine Learning Repository. Smartphone-Based Recognition of Human Activities
+     and Postural Transitions. Dataset 341, 2015. https://archive.ics.uci.edu/dataset/341/sm
+     artphone+based+recognition+of+human+activities+and+postural+transitions.
+
+ [2] PyTorch. BatchNorm1d documentation. Version 2.14 API, accessed 2026-11-02. https:
+     //docs.pytorch.org/docs/2.14/generated/torch.nn.BatchNorm1d.html.
+
+ [3] J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra. Smartphone-Based Recognition of Hu-
+     man Activities and Postural Transitions. UCI Machine Learning Repository, 2015. DOI:
+     10.24432/C54G7M. Metadata và README local được đối chiếu ngày 28/10/2026.
+
+ [4] Y. Tsuzuku, I. Sato, M. Sugiyama. Lipschitz-Margin Training: Scalable Certification of
+     Perturbation Invariance for Deep Neural Networks. NeurIPS, 2018. https://arxiv.org/ab
+     s/1802.04034.
+
+ [5] S. Gowal et al. On the Effectiveness of Interval Bound Propagation for Training Verifiably
+     Robust Models. arXiv:1810.12715, 2018. https://arxiv.org/abs/1810.12715.
+
+ [6] H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel. Efficient Neural Network Robust-
+     ness Certification with General Activation Functions. NeurIPS, 2018. https://arxiv.org/
+     abs/1811.00866.
+
+ [7] K. Xu et al. Automatic Perturbation Analysis for Scalable Certified Robustness and Be-
+     yond. NeurIPS, 2020. https://arxiv.org/abs/2002.12920.
+
+ [8] H. Zhang et al. Towards Stable and Efficient Training of Verifiably Robust Neural Net-
+     works. NeurIPS, 2019. https://arxiv.org/abs/1906.06316.
+
+ [9] S. Wang et al. Beta-CROWN: Efficient Bound Propagation with Per-neuron Split Con-
+     straints for Neural Network Robustness Verification. NeurIPS, 2021. https://papers.neuri
+     ps.cc/paper_files/paper/2021/hash/fac7fead96dafceaf80c1daffeae82a4-Abstract.html.
+
+[10] G. Montúfar, R. Pascanu, K. Cho, Y. Bengio. On the Number of Linear Regions of Deep
+     Neural Networks. NeurIPS, 2014. https://proceedings.neurips.cc/paper_files/paper/201
+     4/hash/fa6f2a469cc4d61a92d96e74617c3d2a-Abstract.html.
+
+[11] C. Kechris, J. Dan, J. Miranda, D. Atienza. Don’t Think It Twice: Exploit Shift Invariance
+     for Efficient Online Streaming Inference of CNNs. arXiv:2408.03223, 2024. https://arxiv.
+     org/abs/2408.03223.
+
+[12] Z. Huang, E. Baccelli. TinyDejaVu: Smaller RAM and Faster Inference with Neural Net-
+     works on MCUs for Sensor Data Streams. arXiv v2, 2026. https://arxiv.org/abs/2512.097
+     86v2.
+
+[13] Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar. LipCache: A Local Inference
+     Proxy with Certified Caching for Edge Image Classification Service. arXiv:2608.13144,
+     2026. https://arxiv.org/abs/2608.13144. Đối chiếu PDF v1 lưu local, đặc biệt phạm vi
+     GuardNet/MainNet tại phần certification và system semantics.
+
+
+
+
+28/10/2026                                                                                  35
+

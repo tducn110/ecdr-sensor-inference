@@ -1,0 +1,30 @@
+[
+  {
+    "document": "ECDR_Mathematics_Concepts_EN.tex",
+    "source_sha256": "71aa3ecde6b25915f2c996624b69785cf91e502c2aca11f1f76af751d94b5286",
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"path\":\"/home/pro/Downloads/research/me/ECDR_Mathematics_Concepts_EN.tex\",\"kind\":\"success\",\"message\":\"The current source compiled successfully with the desktop editor's compiler.\"}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "document": "ECDR_CNN_Model_Analysis.tex",
+    "source_sha256": "420df7540328a2b010d56da66c5990677d3febc54bee3376ea562fd8cd211659",
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"path\":\"/home/pro/Downloads/research/me/ECDR_CNN_Model_Analysis.tex\",\"kind\":\"success\",\"message\":\"The current source compiled successfully with the desktop editor's compiler.\"}"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

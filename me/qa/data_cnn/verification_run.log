@@ -1,0 +1,81 @@
+{
+  "scope": "Fresh data audit + theoretical CNN arithmetic + document QA; no HAPT inference or ECDR benchmark.",
+  "data": {
+    "source_hashes_current": true,
+    "span_grid_enumeration": 10361,
+    "short_spans": 40,
+    "long_spans_without_grid_window": 91,
+    "spans_with_grid_windows": 1083,
+    "annotation_percent": 72.64288742505157,
+    "boundary_percent": 7.293874978513722,
+    "independence_toy_joint_probability": 7.215181317747974e-36
+  },
+  "cnn": {
+    "lengths": [
+      124,
+      122,
+      120
+    ],
+    "receptive_fields": [
+      5,
+      7,
+      9
+    ],
+    "parameters": 20332,
+    "macs": 2343936,
+    "two_flop_per_mac": 4687872,
+    "relu_scalars": 19456,
+    "gap_additions": 7616,
+    "weight_payload_float32_bytes": 81328,
+    "listed_activation_payload_bytes": 81200,
+    "two_buffer_payload_bytes": 61952,
+    "toy_minima": [
+      "35/4",
+      "11/8"
+    ],
+    "toy_stale_logits": [
+      "17/2",
+      "-4",
+      "9"
+    ]
+  },
+  "five_previous_sources_and_pdfs_unchanged": true,
+  "documents": [
+    {
+      "stem": "ECDR_Data_Analysis",
+      "pages": 23,
+      "pdf_sha256": "a20552f0ff620602c6f7c4c42ca538a9c13458b5353b18b845af95a009411e8f",
+      "tex_sha256": "7a5cce0edb6ea923f370e33491db4f116e0a38a44cae89f4eca866f375ebaf26",
+      "citations_resolved": 1,
+      "references_resolved": 5,
+      "all_fonts_embedded": true,
+      "empty_pages": [],
+      "outer_words": [],
+      "bbox_extractor_control_math_glyphs": 0,
+      "contact_sheets": [
+        "qa/data_cnn/ECDR_Data_Analysis_contact_1.jpg",
+        "qa/data_cnn/ECDR_Data_Analysis_contact_2.jpg",
+        "qa/data_cnn/ECDR_Data_Analysis_contact_3.jpg"
+      ],
+      "visual_inspection": "Review all contact sheets and detail pages separately."
+    },
+    {
+      "stem": "ECDR_CNN_Model_Analysis",
+      "pages": 24,
+      "pdf_sha256": "4871b4d356b12ffabb32d7743ad75335549588735c8c95e21c2e8d166c9a960e",
+      "tex_sha256": "4d175fb126f1ee3767fd8a17d1c539260e516a0a369f491d5c1617a41688dc5c",
+      "citations_resolved": 11,
+      "references_resolved": 8,
+      "all_fonts_embedded": true,
+      "empty_pages": [],
+      "outer_words": [],
+      "bbox_extractor_control_math_glyphs": 3,
+      "contact_sheets": [
+        "qa/data_cnn/ECDR_CNN_Model_Analysis_contact_1.jpg",
+        "qa/data_cnn/ECDR_CNN_Model_Analysis_contact_2.jpg",
+        "qa/data_cnn/ECDR_CNN_Model_Analysis_contact_3.jpg"
+      ],
+      "visual_inspection": "Review all contact sheets and detail pages separately."
+    }
+  ]
+}

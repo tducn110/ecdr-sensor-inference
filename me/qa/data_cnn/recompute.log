@@ -1,0 +1,61 @@
+{
+  "output": "/home/pro/Downloads/research/me/qa/data_cnn/data_analysis.json",
+  "totals": {
+    "recordings": 61,
+    "subjects": 30,
+    "label_spans": 1214,
+    "unique_raw_time_samples": 1122772,
+    "raw_sensor_coordinates": 6736632,
+    "duration_sample_count_s": 22455.44,
+    "sum_first_to_last_elapsed_s": 22454.219999999998,
+    "annotation_inclusive_samples": 815614,
+    "inherited_labeled_raw_samples": 815614,
+    "windows": 17453,
+    "window_coordinates": 13403904,
+    "label_policy_counts": {
+      "pure": 10361,
+      "unlabeled": 3587,
+      "majority": 1917,
+      "ambiguous": 1588
+    },
+    "crosses_boundary_windows": 1273,
+    "grid_sample_multiplicity": {
+      "0": 1876,
+      "1": 7808,
+      "2": 1113088
+    },
+    "unique_covered_time_samples": 1120896,
+    "window_time_sample_occurrences": 2233984,
+    "duplicate_time_sample_occurrences": 1113088,
+    "uncovered_time_samples": 1876
+  },
+  "integrity": {
+    "pair_count": 61,
+    "acc_only": [],
+    "gyro_only": [],
+    "unaligned": [],
+    "nonfinite_raw_coordinates": 0,
+    "label_span_out_of_bounds": [],
+    "overlapping_label_samples": 0,
+    "window_raw_mismatch_coordinates": 0,
+    "window_raw_compared_coordinates": 13403904,
+    "label_policy_mismatch_windows": 0,
+    "annotation_conflicts": 0,
+    "saved_windows_nonfinite_coordinates": 0,
+    "saved_shape": [
+      17453,
+      6,
+      128
+    ],
+    "saved_dtype": "float32"
+  },
+  "pairs": {
+    "total": 17392,
+    "same_activity_pure": 9278,
+    "label_majority_change": 1651,
+    "equal_nonpure_or_unlabeled": 6463,
+    "overlap_coordinates_compared": 6678528,
+    "overlap_coordinates_unequal": 0,
+    "overlap_all_pairs_exact_equal": true
+  }
+}

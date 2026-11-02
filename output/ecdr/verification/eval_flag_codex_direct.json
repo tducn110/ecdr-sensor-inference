@@ -1,0 +1,8 @@
+{
+  "actual_output_path": "/tmp/ecdr-k12-check/eval_output_flag_test.json",
+  "output_exists": true,
+  "matches_original_metrics": true,
+  "samples": 3572,
+  "accuracy": 0.7701567749160134,
+  "macro_f1": 0.514974741142365
+}

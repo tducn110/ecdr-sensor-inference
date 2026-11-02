@@ -1,0 +1,1702 @@
+TÀI LIỆU GIẢI THÍCH CHI TIẾT
+
+
+Toàn bộ nền tảng
+toán học của ECDR
+
+Từ dữ liệu cảm biến đến chứng nhận quyết định,
+reuse nhiều bước và điều kiện hòa vốn
+
+
+Vai trò          Tài liệu đồng hành với báo cáo lý thuyết Week 1–3.
+Cách giải thích  Ký hiệu → trực giác → từng bước suy ra → ví dụ số → điều kiện và giới
+                 hạn.
+Phạm vi          Bao gồm phần toán của data, CNN, probability, certification, structured
+                 domains, lifecycle và cost; không chỉ Lipschitz.
+Ví dụ xuyên suốt Một CNN nhỏ tính tay được; mọi số trong ví dụ là minh họa toán học,
+                 không phải mô hình HAPT đã train.
+Nguồn đối chiếu ECDR_Weeks_1_2_3_Theory.tex trong cùng thư mục và các nguồn gốc trong
+                 bibliography.
+
+
+
+
+Mục tiêu đọc. Sau khi đọc, người đọc có thể giải thích mỗi công thức đang tính đại lượng gì,
+vì sao bất đẳng thức có chiều đó, cần giả thiết nào và điều gì vẫn chưa được kết luận. Số học
+dùng số thực, trừ mục riêng về sai số chương trình. Tài liệu này bổ sung diễn giải; không
+tuyên bố các kết quả nền tảng là định lý mới của ECDR.
+ECDR | Giải thích toán học                                                      Tài liệu đồng hành Week 1–3
+
+
+Lộ trình đọc
+
+ECDR muốn trả một quyết định đã biết khi có bằng chứng rằng quyết định đó vẫn đúng với
+reference hiện tại. Chuỗi lập luận cần đủ sáu cầu nối:
+
+   data → input space → domain → margin bound → membership và reuse → total cost.
+
+Thiếu một cầu nối, ta dễ nhầm “hai cửa sổ giống nhau” với “CNN chắc chắn cùng quyết
+định”, hoặc nhầm “tránh được CNN” với “hệ thống nhanh hơn”.
+Đọc mục 1–7 để hiểu data và classifier; mục 8–16 để hiểu proof và miền; mục 17–21 để thấy
+CNN/window/membership/lifecycle nối với nhau; mục 22–24 để hiểu numerical semantics,
+cost và evidence. Các phụ lục map đủ các nhóm công thức và H01–H24 của báo cáo chính.
+Một số tên ký hiệu được làm rõ để tránh overload: dx = CW là input dimension; dh là số
+feature channels trước head; n là số feature positions; Q là horizon theo số bước, không
+phải feature tensor H(X); ρb là build/query, không phải bias hay box budget.
+
+
+Mục lục
+Lộ trình đọc                                                                                                   1
+
+1 Đọc ngôn ngữ toán học trong báo cáo                                                                          4
+  1.1 Điểm, tập, hàm và lượng từ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     4
+  1.2 Tích vô hướng, ma trận, các norm và đơn vị . . . . . . . . . . . . . . . . . . . . . . . . . . .         4
+
+2 Dữ liệu được biến thành một điểm toán học như thế nào?                                                       5
+  2.1 Từ sample đến recording và window . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          5
+  2.2 Vector hóa và kiểm dimension . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       5
+
+3 Đếm window và gán nhãn: vì sao công thức có floor và ceil?                                                   5
+  3.1 Số window trên recording . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     5
+  3.2 Pure window nằm trong label span . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         6
+  3.3 Tỉ lệ annotation và ngưỡng majority . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        6
+
+4 Normalization biến đổi cả input, metric và domain                                                            6
+  4.1 Tại sao trừ mean rồi chia scale? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     6
+  4.2 Biến đổi budget và affine certificate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+
+5 Sliding window: bằng nhau sau căn chỉnh khác với gần nhau                                                    7
+  5.1 Viết toán tử bằng ma trận nhỏ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      7
+  5.2 Suy ra overlap identity từng chỉ số . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+  5.3 Từ identity đến wave-domain ít biến tự do . . . . . . . . . . . . . . . . . . . . . . . . . . . .        8
+
+6 Xác suất và geometry: các phân biệt cần thiết                                                                8
+  6.1 Marginal và joint coverage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     8
+  6.2 Tập product không đồng nghĩa xác suất independence . . . . . . . . . . . . . . . . . . . .               9
+
+7 Reference CNN, logits, argmax và các metrics                                                                 9
+  7.1 Reference là toàn bộ hàm nào? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      9
+  7.2 Accuracy, precision, recall, F1 và Macro-F1 tính ra sao? . . . . . . . . . . . . . . . . . . . .         9
+
+8 Decision margin: biến bài toán argmax thành bất đẳng thức                                                   10
+  8.1 Tại sao phải so từng competitor? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    10
+  8.2 Infimum và lower bound khác nhau thế nào? . . . . . . . . . . . . . . . . . . . . . . . . . .           10
+
+9 Tồn tại local invariant region, compactness và giới hạn universal                                           10
+  9.1 Continuity và positive anchor margin cho điều gì? . . . . . . . . . . . . . . . . . . . . . . .         10
+  9.2 Vì sao thêm compactness mới suy được uniform margin dương? . . . . . . . . . . . . . .                  11
+  9.3 Tại sao không thể có radius độc lập mọi model? . . . . . . . . . . . . . . . . . . . . . . . .          11
+
+
+28/10/2026                                                                                                    1
+ECDR | Giải thích toán học                                                         Tài liệu đồng hành Week 1–3
+
+
+10 Lipschitz: đổi độ lớn perturbation thành độ giảm margin                                                         11
+   10.1 Suy bất đẳng thức từng bước . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        11
+   10.2 Lipschitz upper bound được tạo từ đâu? . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           11
+
+11 IBP: đọc và tính interval theo từng layer                                                                       12
+   11.1 Vì sao hệ số âm phải dùng upper input để lấy lower output? . . . . . . . . . . . . . . . . .               12
+   11.2 ReLU, convolution, pooling và BN . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         12
+   11.3 Vì sao IBP sound, và vì sao nó vẫn có thể thất bại? . . . . . . . . . . . . . . . . . . . . . . .          12
+
+12 CROWN/LiRPA: affine relaxation và lựa chọn theo dấu                                                             13
+   12.1 Dây cung trên ReLU được suy ra thế nào? . . . . . . . . . . . . . . . . . . . . . . . . . . . .            13
+   12.2 Một ví dụ đầy đủ: IBP âm nhưng CROWN chứng nhận được . . . . . . . . . . . . . . . . .                     13
+
+13 Support function: biến một affine bound thành một con số                                                        13
+   13.1 Hai công việc khác nhau . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      13
+   13.2 Dual norm và ball . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    14
+   13.3 Diagonal box, correlated generator và coordinate residual . . . . . . . . . . . . . . . . . .              14
+
+14 PCA domain: projection, residual và cận đúng                                                                    14
+   14.1 PCA giữ những hướng nào và bỏ những gì? . . . . . . . . . . . . . . . . . . . . . . . . . . .              14
+   14.2 Suy support residual từng bước . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         15
+   14.3 Tại sao normalization có thể làm hỏng projection formula? . . . . . . . . . . . . . . . . .                15
+
+15 Containment và event selection bảo toàn proof thế nào?                                                          15
+   15.1 Chiều bao hàm của miền . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       15
+   15.2 Selector, certificate và membership là ba trách nhiệm . . . . . . . . . . . . . . . . . . . . .            15
+
+16 CNN valid–ReLU–GAP: receptive field và phép tính độ phức tạp                                                    16
+   16.1 Một convolution thực sự tính gì? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       16
+   16.2 Receptive field tại sao cộng (kℓ − 1)? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     16
+
+17 Tại sao feature overlap bằng nhau, và vì sao điều đó chưa giữ class?                                            17
+   17.1 Chứng minh shift feature theo receptive field . . . . . . . . . . . . . . . . . . . . . . . . . .          17
+   17.2 Các điều kiện không được bỏ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        17
+
+18 GAP delta và margin delta: phép triệt tiêu cốt lõi                                                              17
+   18.1 Cộng feature trước khi lấy trung bình . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        17
+   18.2 Từ pooled feature sang từng competitor . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           18
+
+19 Ví dụ xuyên suốt: tính cả CNN rồi chứng nhận một miền wave                                                      18
+   19.1 Dữ liệu, filters và head . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   18
+   19.2 Tính convolution và GAP từng giá trị . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         19
+   19.3 Logits và margin, gồm competitor nguy hiểm . . . . . . . . . . . . . . . . . . . . . . . . . .             19
+   19.4 Bound cả một box của new waves . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           19
+   19.5 Giữ dependency để thấy bound chặt hơn . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            20
+
+20 Membership và complexity: vì sao O(Cs) chưa là speedup?                                                         20
+   20.1 Đúng một điểm thuộc đúng miền . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            20
+   20.2 PCA và miền generator cần checker nào? . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           20
+
+21 Reuse gate và multi-step: proof không đi theo nhãn đã reuse                                                     20
+   21.1 One-step proof bằng chia hai nhánh . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         21
+   21.2 Fixed anchor và lỗi drift khi tự recenter . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        21
+   21.3 Finite-horizon reachable sets đóng gap bằng giả thiết mạnh hơn . . . . . . . . . . . . . .                 21
+
+22 Numerical soundness: tại sao margin dương chưa đủ cho float32?                                                  22
+   22.1 Tách ba đối tượng khác nhau . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        22
+   22.2 Membership cũng phải bảo thủ về số học . . . . . . . . . . . . . . . . . . . . . . . . . . . .             22
+
+23 Cost và amortization: suy điều kiện nhanh hơn từng bước                                                         22
+   23.1 Đếm chi phí trên trace trước khi lấy trung bình . . . . . . . . . . . . . . . . . . . . . . . . .          22
+   23.2 Mô hình hằng và bất đẳng thức hòa vốn . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            23
+
+
+28/10/2026                                                                                                         2
+ECDR | Giải thích toán học                                                     Tài liệu đồng hành Week 1–3
+
+
+   23.3 Bao nhiêu hits mới bù một certificate? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   23
+
+24 Metrics nghiên cứu, denominator và cách đọc các giả thuyết                                                24
+   24.1 Bốn tỉ lệ không thể đổi tên cho nhau . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   24
+   24.2 Giả thiết toán học khác giả thuyết cần thí nghiệm . . . . . . . . . . . . . . . . . . . . . . .      24
+
+A Bản đồ bao phủ toàn bộ phần toán của báo cáo chính                                                         24
+
+B Giải nghĩa từng giả thuyết H01–H24                                                                         26
+
+C Các lỗi đọc công thức thường gặp                                                                           27
+
+D Nguồn và phép tính tái kiểm                                                                                27
+
+
+
+
+28/10/2026                                                                                                   3
+ECDR | Giải thích toán học                                                  Tài liệu đồng hành Week 1–3
+
+
+1     Đọc ngôn ngữ toán học trong báo cáo
+
+1.1   Điểm, tập, hàm và lượng từ
+
+Một điểm x ∈ Rdx là một đầu vào cụ thể. Một tập S ⊆ Rdx là nhiều đầu vào có thể xét. Hàm
+F : Rdx → RK nhận một điểm và trả K số. Khi viết
+
+                                          ∀x ∈ S,   h(x) = c,                                       (1)
+
+ta nói “với mọi điểm trong miền này, reference đều chọn lớp c”. Nó mạnh hơn việc kiểm một
+vài điểm. Viết ∃x ∈ S : h(x) ̸= c chỉ cần một điểm phản ví dụ để bác (1).
+Ký hiệu A ⇒ B nói A là điều kiện đủ cho B; B là điều kiện cần của A. Ký hiệu A ⇔ B đòi
+cả hai chiều. Một thuật toán có thể không nhận được certificate dù B thực sự đúng; vì vậy
+không được đổi mọi dấu ⇒ thành ⇔.
+
+
+1.2   Tích vô hướng, ma trận, các norm và đơn vị
+                      P
+Với a, x ∈ Rm , a⊤ x = mi=1 ai xi là tích vô hướng. Nếu A ∈ R
+                                                              K×m thì Ax có K phần tử, mỗi row
+
+của A tạo một tích vô hướng. A chuyển row thành column; ký hiệu này không phải nghịch
+                                   ⊤
+
+đảo.
+Ba norm thường dùng là
+                             X                      sX
+                    ∥v∥1 =       |vi |,   ∥v∥2 =         vi2 ,     ∥v∥∞ = max |vi |.                (2)
+                                                                             i
+                             i                       i
+
+
+Với v = (3, −4), các giá trị lần lượt là 7, 5, 4. Ball L2 ở 2D là hình tròn; ball L∞ là hình vuông;
+ball L1 là hình thoi. Tất cả đều có tâm và bán kính, nhưng mỗi norm định nghĩa “gần” khác
+nhau.
+                                            v2
+
+
+                                                                 ∥v∥2 ≤ 1
+
+                                                             v1 ∥v∥∞ ≤ 1
+                                                                 ∥v∥1 ≤ 1
+
+
+
+
+Hình 1: Hình học minh họa của ba unit balls; cùng radius không có nghĩa cùng tập. Hình
+dùng tọa độ toán học không có sensor units.
+                                           qP
+Với ma trận X, Frobenius norm là ∥X∥F =       c,i Xci . Nó bằng Euclidean norm của vector
+                                                   2
+
+chứa cùng các giá trị. Norm của raw acceleration và raw angular velocity cần quy ước scale:
+không nên coi một đơn vị g và một đơn vị rad/s là những biến thiên vật lý tương đương chỉ
+vì hai số cùng bằng 1.
+
+
+
+
+28/10/2026                                                                                           4
+ECDR | Giải thích toán học                                                      Tài liệu đồng hành Week 1–3
+
+
+
+2     Dữ liệu được biến thành một điểm toán học như thế nào?
+
+2.1   Từ sample đến recording và window
+
+Theo mô tả HAPT [1], một sample gồm ba trục gia tốc và ba trục vận tốc góc. Đặt
+
+                         s[n] = (ax [n], ay [n], az [n], ωx [n], ωy [n], ωz [n])⊤ .                     (3)
+
+Ở đây n đếm sample, không phải giây; timestamp tương ứng là n/fs với fs = 50 sample/s. Một
+recording có T sample được xếp thành ma trận S ∈ R6×T , mỗi column là một sample. Đây
+là nhánh raw inertial data; vector 561 features được dựng sẵn trong một nhánh HAPT khác
+không phải input tensor đang xét. Raw acceleration dùng đơn vị g và angular velocity dùng
+rad/s theo README; normalization không tự tách gravity hay sửa calibration của sensor.
+Window thứ t lấy W column bắt đầu ở ts:
+
+                              Xt [:, i] = s[ts + i],    i = 0, . . . , W − 1.                           (4)
+
+Dấu “:” lấy toàn bộ kênh; đoạn [a : b] là half-open, chứa a nhưng không chứa b. Stride s là số
+sample tiến thêm mỗi window. Với C = 6, W = 128, s = 64,
+
+                dx = CW = 768,                             W /fs = 2.56 s,                              (5)
+                      s/fs = 1.28 s,                        fs /s = 0.78125 window/s.                   (6)
+
+Window convention dùng W /fs ; thời gian từ sample đầu đến sample cuối là (W −1)/fs = 2.54
+s vì có 127 khoảng giữa 128 sample. Hai con số không mâu thuẫn; chúng đếm hai đối tượng
+khác nhau.
+
+
+2.2   Vector hóa và kiểm dimension
+
+Đặt xcW +i = X[c, i] theo channel-major order. Với C = 2, W = 3,
+                                      !
+                               1 2 3
+                          X=               ←→ x = (1, 2, 3, 4, 5, 6)⊤ .                                 (7)
+                               4 5 6
+
+Không mất số nào; chỉ đổi cách xếp. Nếu chọn time-major order thì vector khác, nhưng
+có một permutation matrix P đổi giữa hai vector. Do P ⊤ P = I, ∥P x∥22 = x⊤ P ⊤ P x = x⊤ x.
+Classifier và miền phải dùng cùng layout; bảo toàn norm không có nghĩa được phép hoán
+vị input tùy ý rồi dùng nguyên weights CNN.
+Một window float32 có 768 × 4 = 3072 byte, tức 3 KiB; new wave có 6 × 64 × 4 = 1536 byte.
+Đây chỉ là payload tensor, không phải RAM toàn hệ thống, decoded dataset size hay GPU
+memory.
+
+
+3     Đếm window và gán nhãn: vì sao công thức có floor và ceil?
+
+3.1   Số window trên recording
+
+Window start ở ts và phải kết thúc trước hoặc tại T :
+
+                                                                T −W
+                                 ts + W ≤ T         ⇒      t≤        .                                  (8)
+                                                                  s
+
+
+28/10/2026                                                                                               5
+ECDR | Giải thích toán học                                            Tài liệu đồng hành Week 1–3
+
+
+t nguyên không âm nên t = 0, 1, . . . , ⌊(T − W )/s⌋. Vì đếm cả 0, số window là
+                                                           
+                                                       T −W
+                              nT = max 0, 1 +                   .                             (9)
+                                                          s
+
+Với T = 1000, W = 128, s = 64, (T − W )/s = 13.625, nên có 14 window, start cuối 13 × 64 = 832,
+kết thúc ở 960. Start tiếp theo 896 kết thúc ở 1024 nên không hợp lệ. Không nối recording;
+tổng corpus là tổng các nT của từng recording.
+
+
+3.2   Pure window nằm trong label span
+
+Với span [a, b), một window nằm trọn khi a ≤ ts và ts + W ≤ b. Kết hợp với recording limits,
+                                                              
+                            max(a, 0)         min(b − W, T − W )
+                                        ≤t≤                        .                    (10)
+                               s                      s
+
+Số nguyên trong đoạn là cận trên trừ cận dưới cộng 1, rồi lấy max với 0. Ví dụ span [100, 400)
+trong recording đủ dài, W = 128, s = 64, cho tmin = ⌈100/64⌉ = 2, tmax = ⌊272/64⌋ = 4. Có ba
+starts 128,192,256. Start 320 không hợp lệ vì window sẽ chạm 448 ngoài span.
+Span ngắn hơn W không chứa pure window. Nếu hai span cùng nhãn tiếp giáp, cần xác định
+có hợp nhất hay không trước khi cộng các count. Annotation one-based/inclusive phải được
+quy về convention này; chỉ viết công thức đúng không tự xác minh file annotation gốc đã
+được chuyển đúng.
+
+
+3.3   Tỉ lệ annotation và ngưỡng majority
+
+Đặt
+P12 nk là số sample có nhãn k trong window và n0 là số sample chưa annotation. Ta có
+  k=0 nk = W . Một pure window có nk = W cho một lớp; unlabeled có n0 = W . Majority
+policy trong báo cáo dùng
+                                         nk
+                                    max     ≥ 0.6,                              (11)
+                                     k≥1 W
+
+với điều kiện không pure. Vì nk nguyên, W = 128 cần ít nhất ⌈76.8⌉ = 77 sample. Nếu nk =
+70, n0 = 58, tỉ lệ trên annotated samples là 100% nhưng tỉ lệ whole-window chỉ 70/128 =
+54.6875%; policy không nhận majority. Denominator là một phần của định nghĩa, không
+phải chi tiết tùy chọn.
+Schema HAPT có 12 nhãn; số lớp K của classifier được chọn riêng. Các count pure của snap-
+shot báo cáo là 10361, trong đó basic-6 là 10017, nên transition pure là 344, tỉ lệ 344/10361 ≈
+3.3201%. Con số này là đặc tính của window policy và corpus lưu, không phải xác suất hoạt
+động của người dùng ngoài thực tế.
+
+
+4     Normalization biến đổi cả input, metric và domain
+
+4.1   Tại sao trừ mean rồi chia scale?
+
+Với train-fit mean µi và σi > 0 lặp theo kênh,
+                                      xi − µi
+                               zi =           ,   z = Dσ−1 (x − µ).                          (12)
+                                         σi
+
+Mean chuyển gốc tọa độ; scale thay độ dài một đơn vị. Ví dụ một raw coordinate có µ =
+2, σ = 0.5, raw value 2.1 trở thành (2.1 − 2)/0.5 = 0.2. Một coordinate khác có σ = 2 thì cùng
+
+28/10/2026                                                                                     6
+ECDR | Giải thích toán học                                                     Tài liệu đồng hành Week 1–3
+
+
+raw delta 0.1 chỉ thành 0.05. Do đó một isotropic box trong normalized coordinates thường
+là anisotropic box trong raw coordinates.
+Lấy hiệu hai query, mean triệt tiêu:
+
+                                         z − zr = Dσ−1 (x − xr ),                                     (13)
+                                                    X (xi − xr,i )2
+                                      ∥z − zr ∥22 =                 .                                 (14)
+                                                    i
+                                                           σi2
+
+Đây là một weighted raw metric. Không được đo distance ở raw space rồi so với radius được
+chứng nhận trong normalized space mà không transform.
+
+
+4.2   Biến đổi budget và affine certificate
+
+Nếu |xi − xr,i | ≤ braw
+                    i   thì normalized budget là bi = braw
+                                                       i   /σi ; ngược lại braw
+                                                                            i   = σi bi . Trong ví dụ
+σ = 0.5, raw budget 0.1 tương đương normalized budget 0.2.
+                                   z z + βz trên miền hợp lệ. Thay (12) vào,
+Giả sử bound normalized là g(z) ≥ a⊤
+
+                       a⊤  −1                 −⊤    ⊤          ⊤ −1
+                        z Dσ (x − µ) + βz = (Dσ az ) x + βz − az Dσ µ,                                (15)
+                                           ax = Dσ−⊤ az ,     β x = βz − a⊤  −1
+                                                                          z Dσ µ.                     (16)
+
+Ví dụ scalar az = 3, βz = 1, µ = 2, σ = 0.5 cho ax = 6, βx = −11. Tại raw 2.1, hai biểu thức cùng
+bằng 1.6. Biến đổi công thức chỉ đúng về đại số; vẫn phải biết bound normalized hợp lệ trên
+ảnh của raw domain.
+
+
+5     Sliding window: bằng nhau sau căn chỉnh khác với gần nhau
+
+5.1   Viết toán tử bằng ma trận nhỏ
+
+Đặt Ss X = [X[:, s : W ], 0] và Js U = [0, U ]. Khi đó
+
+                                Xt+1 = Ts (Xt , Ut+1 ) = Ss Xt + Js Ut+1 .                            (17)
+
+Với một kênh W = 4, s = 2,
+                                                                       
+                                       0    0   1   0              0    0
+                                     0             1           0     0
+                                           0   0                       
+                                Ss =                 ,    Js =         .                          (18)
+                                     0     0   0   0           1     0
+                                       0    0   0   0              0    1
+
+Nhân Ss với (a, b, c, d)⊤ cho (c, d, 0, 0)⊤ ; thêm Js (u, v)⊤ cho (c, d, u, v)⊤ . Với nhiều kênh, áp cùng
+phép dịch cho từng row hoặc dùng block-diagonal operator trong vectorized space.
+
+
+5.2   Suy ra overlap identity từng chỉ số
+
+Từ (4),
+
+                        Xt+1 [:, i] = s[(t + 1)s + i]                                                 (19)
+                                  = s[ts + (i + s)] = Xt [:, i + s],    i < W − s.                    (20)
+
+
+
+28/10/2026                                                                                              7
+ECDR | Giải thích toán học                                                       Tài liệu đồng hành Week 1–3
+
+
+Hai biểu thức truy đúng một raw sample. Đó là lý do equality chính xác, không phải vì người
+đang “cùng hoạt động”. Với HAPT có 6(128 − 64) = 384 giá trị overlap và 6 × 64 = 384 giá trị
+mới.
+Lấy hiệu ở cùng tọa độ cho
+
+                               Xt+1 − Xt = (Ss − I)Xt + Js Ut+1 .                                          (21)
+
+Hạng (Ss − I)Xt có thể lớn. Ví dụ (0, 0, M, M ) chuyển thành   √(M, M, 0, 0) với new wave 0, giữ
+50% overlap sau alignment nhưng distance Euclidean là 4M 2 = 2|M |. Không có cận nhỏ
+độc lập với M . Nếu thêm amplitude
+                               √       bound |Xi |, |Ui | ≤ B, mỗi coordinate difference không
+vượt 2B, nên ∥X − X∥F ≤ 2B CW . Cận này đến từ amplitude assumption, không đến từ
+                 ′
+
+overlap và không tự giữ class.
+
+
+5.3   Từ identity đến wave-domain ít biến tự do
+
+Giữ Xt cố định và cho U chạy trong một tập U :
+
+                              S wave (Xt ) = {Ss Xt + Js U : U ∈ U }.                                      (22)
+
+Map Js injective: nếu Js U1 = Js U2 thì đọc phần đuôi được U1 = U2 . Nếu U có interior trong
+RCs , affine dimension của miền là Cs, tức 384 với cấu hình trên. Không phải toàn bộ R768
+được cho biến thiên. Nếu thêm noise tự do trên overlap, số biến có thể tăng lại. Giảm domain
+dimension không tự suy verifier runtime giảm theo đúng tỉ lệ.
+
+
+6     Xác suất và geometry: các phân biệt cần thiết
+
+6.1   Marginal và joint coverage
+                                                                         T
+Với mỗi tọa độ đặt Ei = {|∆i | ≤ bi }. Box membership là giao                i Ei . Nếu biết Pr(Ei ) ≤ αi , thì
+                                                                                                 c
+
+                                       !               !
+                                \               [
+                          Pr       Ei = 1 − Pr     Eic                                                     (23)
+                                i                         i
+                                                X                        X
+                                          ≥1−           Pr(Eic ) ≥ 1 −        αi .                         (24)
+                                                i                        i
+
+Xác suất không âm nên lấy max với 0. Đây là union bound, không cần independence. Với
+dx = 768 và αi = 0.1, cận này chỉ cho 0: nó hợp lệ nhưng không hữu ích.
+Nếu thêm giả thiết các event độc lập và có cùng probability q thì
+                                        !
+                                   \         Y
+                              Pr      Ei =     Pr(Ei ) = q dx .                                            (25)
+                                      i             i
+
+Ví dụ 90% mỗi tọa độ cho 0.9768 ≈ 7.2152 × 10−36 dưới giả thiết independence. Đây không
+phải estimate HAPT: temporal sensor coordinates phụ thuộc nhau. Quantile train 90% cũng
+không tự là một bound population 90%. Công thức giúp nhận ra lỗi suy luận từ marginal
+sang joint. Ngay ở hai tọa độ, nếu cùng event E1 = E2 có probability 0.9 thì joint là 0.9; nếu
+hai failure events rời nhau và đều probability 0.1 thì joint là 0.8; nếu independent thì joint
+là 0.81. Cùng marginal, dependency khác cho joint khác.
+
+
+
+
+28/10/2026                                                                                                    8
+ECDR | Giải thích toán học                                                Tài liệu đồng hành Week 1–3
+
+
+6.2   Tập product không đồng nghĩa xác suất independence
+
+Horizon domain U1 × U2 cho phép mọi cặp U1 , U2 thỏa hai constraints. Đây là một mệnh đề
+hình học về các giá trị được phép, không phải mệnh đề thống kê rằng U1 và U2 ngẫu nhiên
+độc lập. Proof có thể đúng cho product set ngay cả khi actual stream rất phụ thuộc theo thời
+gian.
+Adjacent windows chung raw samples nên không được mặc nhiên coi là i.i.d. Random split
+theo window có thể đưa mẫu chung sang train và test; subject disjointness giải quyết một loại
+leakage, không khiến mọi window trong mỗi subject độc lập. Mean, variance và confidence
+interval cần đơn vị thống kê đúng, ví dụ subject/recording và một mô hình phụ thuộc có
+biện minh.
+
+
+7     Reference CNN, logits, argmax và các metrics
+
+7.1   Reference là toàn bộ hàm nào?
+
+Định nghĩa đầy đủ là
+                   F = f θ ◦ P : Rd x → RK ,   K ≥ 2,       h(x) = arg max Fk (x).                  (26)
+                                                                        1≤k≤K
+
+Viết F = fθ ◦ P nghĩa là xử lý x bằng preprocessing P trước, rồi mới đưa vào classifier fθ .
+Nếu chứng nhận chỉ cho fθ nhưng runtime đổi P, không còn cùng hàm. Frozen gồm weights,
+graph, BN state ở eval, class order, decision rule và các numerical semantics liên quan.
+Logits F (x) = (F1 (x), . . . , FK (x)) là các số để so thứ tự. Với F (x) = (2.4, 1.1, 2.0), h(x) = 1 khi
+dùng nhãn 1-based. Argmax trả index, khác max trả 2.4. Softmax bảo toàn thứ tự trong số
+thực vì hàm exponential tăng và denominator chung, nên không cần softmax để so winner.
+Khi tie, phải có rule; contract ở đây chỉ certify winner duy nhất.
+Một trusted anchor là điểm đã thực sự chạy F . Reuse chỉ trả class; không biết logits query
+mới chỉ từ việc class được giữ. Cùng reference decision cũng khác với đúng ground-truth
+activity.
+
+
+7.2   Accuracy, precision, recall, F1 và Macro-F1 tính ra sao?
+
+Với confusion matrix true rows, predicted columns,
+                                                 !
+                                             8 2
+                                      C=           ,                                                (27)
+                                             1 9
+
+có 20 mẫu, đúng 8 + 9 = 17, accuracy 17/20 = 0.85. Lớp 1 có TP=8, FP=1, FN=2; precision 8/9,
+recall 8/10, F1 2 × 8/(16 + 1 + 2) = 16/19. Lớp 2 có F1 18/21 = 6/7.
+                                                 
+                                        1 16 6         113
+                           MacroF1 =          +     =      ≈ 0.849624.                  (28)
+                                        2 19 7         133
+Macro-F1 lấy trung bình theo lớp, không phải lấy accuracy rồi đổi tên. Nếu một lớp không
+có support/prediction, quy ước denominator 0 phải công bố.
+                                               P                     p   P
+Qua nhiều seeds v1 , . . . , vn , mean v̄ = n−1 vi ; population SD là n−1 (vi − v̄)2 ; sample SD
+dùng n−1 khi n > 1. Hai SD khác nhau, và cả hai đều không tự là confidence interval. Dataset
+split/seed protocol quyết định ý nghĩa thống kê của việc lấy trungpbình. Với các số minh họa
+p 4, 6), mean là 4, tổng squared deviations là 8; population SD 8/3 ≈ 1.63299, sample SD
+(2,
+  8/2 = 2. Đây là ví dụ để đọc công thức, không phải metric của ECDR.
+
+28/10/2026                                                                                             9
+ECDR | Giải thích toán học                                                  Tài liệu đồng hành Week 1–3
+
+
+
+8     Decision margin: biến bài toán argmax thành bất đẳng thức
+
+8.1   Tại sao phải so từng competitor?
+
+Với target c, đặt gcj (x) = Fc (x) − Fj (x). Lấy logits (2.4, 1.1, 2.0) ở trên, margins của target 1 là
+(1.3, 0.4). Target thắng duy nhất vì cả hai đều dương. Nếu chỉ kiểm competitor 2, có thể bỏ lỡ
+competitor 3 đã vượt target. Vì vậy cần mọi j ̸= c.
+Robust margin tại một điểm là
+                                          mc (x) = min gcj (x).                                    (29)
+                                                    j̸=c
+
+Nó bằng margin đến competitor nguy hiểm nhất, ở ví dụ là 0.4. Decision region thắng duy
+nhất viết được thành giao của các tập:
+                                       \
+                                 Dc =    {x : gcj (x) > 0}.                         (30)
+                                             j̸=c
+
+Đây là giải thích trực tiếp vì sao certification dùng pairwise differences chứ không chỉ nhìn
+logit target lớn hay confidence anchor cao.
+
+
+8.2   Infimum và lower bound khác nhau thế nào?
+
+Infimum infx∈S g(x) là cận dưới lớn nhất của toàn bộ các giá trị g(x) trên miền. Minimum
+là giá trị nhỏ nhất đạt được tại một điểm. Trên (0, 1], g(x) = x có infimum 0 nhưng không có
+minimum 0.
+Một thuật toán có thể tính ℓ sao cho
+
+                                ℓ ≤ inf g(x) ≤ g(x)        với mọi x ∈ S.                          (31)
+                                    x∈S
+
+Dấu thứ nhất phải là “≤” vì ℓ được phép bảo thủ, nhỏ hơn worst case thật. Nếu ℓ > 0, chuỗi
+(31) cho g(x) > 0 ở mọi điểm. Nếu ℓ = −0.2, có thể infimum thật bằng 0.5: certificate fail
+không chứng minh classifier fail.
+
+Mệnh đề 8.1 (Margin gate). Nếu mỗi ℓcj ≤ infx∈S gcj (x) và minj̸=c ℓcj > 0, thì S ⊆ Dc .
+
+Chứng minh. Chọn một điểm bất kỳ trong S và một competitor bất kỳ. Chuỗi (31) cho target
+logit lớn hơn competitor. Vì competitor và điểm đều tùy ý, kết luận đúng toàn miền và mọi
+competitor.
+
+Proof ngắn vì phần khó đã nằm trong giả thiết “bound đúng trên toàn miền”. Tính margin
+tại anchor hoặc kiểm vài random points không xác lập giả thiết đó.
+
+
+9     Tồn tại local invariant region, compactness và giới hạn univer-
+      sal
+
+9.1   Continuity và positive anchor margin cho điều gì?
+
+Đặt γ = minj̸=c gcj (xr ) > 0. Với F liên tục tại anchor, mỗi margin cũng liên tục. Chọn tolerance
+output γ/2; continuity cho một radius δj khiến margin thứ j thay đổi nhỏ hơn γ/2. Vì số
+lớp hữu hạn, lấy ϵ = minj̸=c δj > 0. Mọi điểm cách anchor nhỏ hơn ϵ có margin ít nhất
+γ − γ/2 = γ/2 > 0.
+
+28/10/2026                                                                                          10
+ECDR | Giải thích toán học                                                      Tài liệu đồng hành Week 1–3
+
+
+Điều này chứng minh existence; nó không tính được radius thực dụng nếu chưa có bound
+định lượng như Lipschitz. Unique winner là điều kiện cốt lõi: với F = (x, −x) tại 0, tie-
+breaking chọn một lớp nhưng hai phía của mọi lân cận có winner khác nhau.
+
+
+9.2    Vì sao thêm compactness mới suy được uniform margin dương?
+
+Trong hữu hạn chiều, closed và bounded cho compactness. Hàm liên tục trên tập compact
+không rỗng đạt minimum. Nếu nó dương tại mọi điểm, giá trị minimum đạt được đó dương.
+Có hữu hạn competitors nên minimum của các minimum vẫn dương. Ngược lại, trên (0, 1],
+margin x luôn dương nhưng tiến sát 0; không có positive uniform lower bound.
+Do đó “mọi điểm giữ unique class” và “infimum margin dương” tương đương khi có các điều
+kiện compact/continuity phù hợp, còn certificate do IBP/CROWN sinh ra vẫn có thể không
+phát hiện được property thật.
+
+
+9.3    Tại sao không thể có radius độc lập mọi model?
+
+Cho radius bất kỳ ϵ > 0, lấy F1 (x) = ϵ/2 − x, F2 (x) = 0. Anchor 0 có margin ϵ/2; query 3ϵ/4
+nằm trong radius ϵ nhưng margin −ϵ/4. Đây là classifier affine, đã đủ bác claim universal.
+“Không điều kiện” đúng ở đây là một kết quả phủ định; không thể chứng minh một positive
+reuse rule cho mọi model khi statement sai.
+
+
+10     Lipschitz: đổi độ lớn perturbation thành độ giảm margin
+
+10.1    Suy bất đẳng thức từng bước
+
+Giả sử trên domain đang xét,
+
+                                  |gcj (x) − gcj (xr )| ≤ Lcj ∥x − xr ∥p .                             (32)
+
+Đặt d = gcj (x) − gcj (xr ) và a = Lcj ∥x − xr ∥p ≥ 0. |d| ≤ a nghĩa là −a ≤ d ≤ a; lấy nửa trái cho
+
+                                   gcj (x) ≥ gcj (xr ) − Lcj ∥x − xr ∥p .                              (33)
+
+Trên ball bán kính ϵ, thay norm bằng cận trên ϵ được lower margin gcj (xr ) − Lcj ϵ. Nếu mọi
+lower margin dương, margin gate áp dụng. Đây là nền tảng Lipschitz–margin [2].
+Với margin anchor (0.8, 0.3) và bounds (2, 1), radius phải nhỏ hơn min(0.8/2, 0.3/1) = 0.3. Tại
+0.2, cận là (0.4, 0.1); tại 0.3, cận thứ hai là 0 nên strict gate chưa nhận closed ball. Với L = 0
+và margin dương, competitor đó không hạn chế radius trong miền bound L = 0 hợp lệ.
+
+
+10.2    Lipschitz upper bound được tạo từ đâu?
+
+Nếu từng logit có bounds Lc , Lj , triangle inequality cho
+
+                       |gcj (x) − gcj (x′ )| ≤ |Fc (x) − Fc (x′ )| + |Fj (x) − Fj (x′ )|               (34)
+                                                                  ′
+                                           ≤ (Lc + Lj ) x − x         p
+                                                                          .                            (35)
+
+Ta được chọn Lcj = Lc + Lj làm bound hợp lệ. Không được tùy ý chọn một số nhỏ hơn tổng
+nếu chưa chứng minh.
+
+
+28/10/2026                                                                                              11
+ECDR | Giải thích toán học                                                     Tài liệu đồng hành Week 1–3
+
+
+Nếu ∥F (x) − F (x′ )∥2 ≤ LF ∥x√− x′ ∥2 , viết margin difference bằng (ec − ej )⊤ (F (x) − F (x′ )).
+Cauchy–Schwarz cho bound 2LF vì vector ec − ej có hai phần tử 1, −1.
+                                                                                          Q
+Với composition các layer Lipschitz L1 , . . . , LL , liên tiếp thay bound cho Lip(F ) ≤ ℓ Lℓ .
+ReLU là 1-Lipschitz theo các norm Lp thông dụng. Với affine layer theo L2 , operator norm là
+spectral norm; theo L∞ , là max absolute row sum. Ví dụ A = 01 −2   3  có ∥A∥∞→∞ = max(3, 3) =
+3. Bound tích có thể lỏng vì các worst-case directions ở những layer khác nhau không cùng
+đạt được. Gradient tại một điểm không phải global Lipschitz upper bound trên cả miền.
+
+
+11     IBP: đọc và tính interval theo từng layer
+
+11.1   Vì sao hệ số âm phải dùng upper input để lấy lower output?
+
+Giả sử v1 ∈ [1, 2], v2 ∈ [−1, 3] và w = 2v1 − 3v2 + 1. Muốn w nhỏ nhất, lấy v1 nhỏ và v2 lớn:
+
+                  w = 2 × 1 − 3 × 3 + 1 = −6,       w = 2 × 2 − 3 × (−1) + 1 = 8.                     (36)
+
+Lấy lower của cả hai input sẽ cho 6, bị sai vì có những input cho output thấp hơn 6. Đây là
+nguồn gốc của công thức dấu:
+
+                              A+ = max(A, 0),        A− = min(A, 0),                                  (37)
+                                               −
+                                      +
+                                w = A v + A v + b,                                                    (38)
+                                               −
+                                      +
+                                w = A v + A v + b.                                                    (39)
+
+A− chứa số âm, không phải absolute value của phần âm.
+
+
+11.2   ReLU, convolution, pooling và BN
+
+ReLU max(0, v) tăng theo v, nên interval [−6, 8] biến thành [0, 8]. Convolution là affine
+map có weights dùng lặp theo vị trí; công thức interval giữ nguyên, không cần dựng
+dense matrix. Với MaxPool trên hai input v1 ∈ [−1, 2], v2 ∈ [1, 3], output được bao bởi
+[max(−1, 1), max(2, 3)] = [1, 3].
+BN eval có running mean/variance cố định:
+                                           γ                     γµB
+                             BN(v) = q              v + βB − q             .                          (40)
+                                           2 +ϵ
+                                          σB                      2 +ϵ
+                                                                 σB
+                                                B                      B
+
+                   2 + ϵ > 0. Nếu γ < 0 thì scale âm đảo lower/upper. BN training dùng batch
+Nó là affine, cần σB    B
+statistics, nên không mặc nhiên là cùng hàm pointwise cố định. Số ϵB của BN khác radius
+perturbation; cùng chữ epsilon không làm chúng có cùng ý nghĩa.
+
+
+11.3   Vì sao IBP sound, và vì sao nó vẫn có thể thất bại?
+
+Quy nạp theo layer: input domain nằm trong input interval; nếu activation thật nằm trong
+interval cũ, công thức enclosure đưa output vào interval mới. Hết network, output thật nằm
+trong interval cuối. Đây là soundness trong số thực của interval propagation [3].
+Nếu output intervals thỏa F c > maxj̸=c F j , target chắc thắng. Tuy nhiên, khoảng độc lập làm
+mất dependency. Với Fc (t) = t + 1, Fj (t) = t, t ∈ [−1, 1], margin thật bằng 1, nhưng intervals
+[0, 2] và [−1, 1] cho lower margin 0 − 1 = −1. Hai cực trị dùng để trừ không thể xảy ra đồng
+thời tại cùng t. Gộp difference trước khi bound giữ sự triệt tiêu này và trả 1.
+
+28/10/2026                                                                                             12
+ECDR | Giải thích toán học                                             Tài liệu đồng hành Week 1–3
+
+
+
+12     CROWN/LiRPA: affine relaxation và lựa chọn theo dấu
+
+12.1   Dây cung trên ReLU được suy ra thế nào?
+
+Xét v ∈ [l, u], l < 0 < u. Hai endpoint của ReLU là (l, 0) và (u, u). Đường qua hai điểm có slope
+u/(u − l) và intercept −ul/(u − l):
+                                                   u
+                                      ReLU(v) ≤        (v − l).                               (41)
+                                                u−l
+Với l = −1, u = 2, cận trên là 2(v + 1)/3. Tại v = −1, 0, 2 nó lần lượt cho 0, 2/3, 2, trong khi ReLU
+cho 0, 0, 2. Cận có thể cao hơn actual nhưng không được thấp hơn. Một họ lower bound là
+                                  αv ≤ ReLU(v),           0 ≤ α ≤ 1.                            (42)
+Nếu v < 0, trái không dương; nếu v ≥ 0, trái không vượt v. Khi l ≥ 0 hoặc u ≤ 0, activation
+ổn định, dùng exact identity hoặc 0.
+Muốn lower-bound objective ar, hệ số a ≥ 0 dùng lower relaxation của r; hệ số a < 0 dùng
+upper relaxation, vì nhân số âm đảo inequality. Thay lần lượt các layer sẽ cho affine bound
+        x x+βx hợp lệ trên miền đã xét. Đây là nguyên lý giải thích, không thay cho derivation
+g(x) ≥ a⊤
+đầy đủ của mọi CROWN variant [4, 5]. Ví dụ g = 3 − ReLU(v) trên v ∈ [−1, 2]: upper chord
+ReLU(v) ≤ 2(v + 1)/3 cho g ≥ 3 − 2(v + 1)/3, global lower bằng 1. Dùng lower ReLU bằng 0 để
+suy g ≥ 3 là sai tại v = 2. Đây là cách thấy trực tiếp tác dụng của dấu âm.
+
+
+12.2   Một ví dụ đầy đủ: IBP âm nhưng CROWN chứng nhận được
+
+Cho x ∈ [−1, 1], r1 = ReLU(x), r2 = ReLU(x + 1) và
+                                                  3
+                                         g(x) =     + 2r1 − r2 .                                (43)
+                                                  2
+Do x + 1 ∈ [0, 2], r2 = x + 1 chính xác. Do đó
+                                         1                  1
+                               g(x) =      + 2 ReLU(x) − x = + |x|,                             (44)
+                                         2                  2
+nên minimum thật là 1/2 tại x = 0.
+IBP độc lập dùng r1 ∈ [0, 1], r2 ∈ [0, 2] cho g = 3/2 + 2 × 0 − 2 = −1/2. CROWN giữ r2 = x + 1 và
+dùng r1 ≥ αx vì hệ số 2 dương:
+                                    3                  1
+                                g(x) ≥+ 2αx − (x + 1) = + (2α − 1)x,                            (45)
+                                    2                  2
+                                    1
+                          inf g(x) ≥ − |2α − 1|.                                                (46)
+                        x∈[−1,1]    2
+Chọn α = 1/2 cho bound 1/2, đúng minimum thật. Chọn α = 0 hoặc 1 chỉ cho −1/2 và fail. Họ
+relaxation đều sound, nhưng chất lượng khác nhau. Ví dụ không chứng minh CROWN luôn
+exact, luôn thắng IBP hoặc đủ rẻ trên HAPT. CROWN-IBP/β-CROWN là các cơ chế cải thiện
+khác cần đánh giá cost riêng [6, 7].
+
+
+13     Support function: biến một affine bound thành một con số
+
+13.1   Hai công việc khác nhau
+
+Bound method tạo g(x) ≥ a⊤ x + β; geometry quyết định minimum của vế phải trên miền.
+Nếu bỏ qua bước tối ưu trên domain, affine expression chưa phải một constant certificate.
+
+28/10/2026                                                                                        13
+ECDR | Giải thích toán học                                              Tài liệu đồng hành Week 1–3
+
+
+Viết S = c0 + D, support function σD (v) = supδ∈D v ⊤ δ. Khi đó
+
+                               inf (a⊤ x + β) = a⊤ c0 + β + inf a⊤ δ                             (47)
+                               x∈S                          δ∈D
+                                             = a⊤ c0 + β − sup(−a)⊤ δ                            (48)
+                                                            δ∈D
+                                             = a⊤ c0 + β − σD (−a).                              (49)
+
+Nếu D = −D thì σD (−a) = σD (a). Nếu tập không đối xứng, không được tự bỏ dấu âm.
+
+
+13.2   Dual norm và ball
+
+Hölder inequality cho |a⊤ δ| ≤ ∥a∥p∗ ∥δ∥p , với 1 ≤ p ≤ ∞ và 1/p + 1/p∗ = 1. Vì hướng xấu nhất
+trên ball hữu hạn chiều đạt dual norm,
+
+                              inf a⊤ (c0 + δ) + β = a⊤ c0 + β − ϵ ∥a∥p∗ .                        (50)
+                             ∥δ∥p ≤ϵ
+
+
+Với a = (3, −4), c0 = 0, β = 2, ϵ = 0.1: L2 ball cho 2 − 0.1 × 5 = 1.5; L∞ ball cho 2 − 0.1 × 7 = 1.3;
+L1 ball cho 2 − 0.1 × 4 = 1.6. Các tập khác nhau nên ba con số khác nhau không chứng minh
+norm nào “luôn tốt hơn”.
+
+
+13.3   Diagonal box, correlated generator và coordinate residual
+
+Nếu x = c0 + Bu, ∥u∥∞ ≤ 1, thì a⊤ Bu = (B ⊤ a)⊤ u. Mỗi ui chọn độc lập về hình học trong [−1, 1],
+minimum là −|(B ⊤ a)i |, nên
+                                     ℓ = a⊤ c0 + β − B ⊤ a .                                (51)
+                                                             1
+                             P
+Với B = diag(b), penalty là iP  bi |ai |, bi ≥ 0. Đây là axis-aligned anisotropic box. Nếu thêm
+|vi | ≤ ηi , minimum giảm thêm i ηi |ai |.
+Ví dụ g = 1+x1 −x2 : box |xi | ≤ 0.8 cho 1−0.8−0.8 = −0.6; line x = (t, t) với |t| ≤ 0.8 cho đúng 1
+vì t−t = 0; thêm coordinate residual |vi | ≤ 0.1 cho lower 1−0.1−0.1 = 0.8. Line direction giúp
+vì nó trực giao margin normal (1, −1), không phải chỉ vì được gọi là temporal/correlated. Với
+margin 1 + x1 + x2 , cùng direction không triệt tiêu nữa. Các tập khác volume/coverage; muốn
+so công bằng phải chọn matching criterion.
+
+
+14     PCA domain: projection, residual và cận đúng
+
+14.1   PCA giữ những hướng nào và bỏ những gì?
+
+Cho V ∈ Rdx ×q với V ⊤ V = I. Các column là orthonormal directions. Với w = x − c0 , scores là
+V ⊤ w; projection vào subspace là V V ⊤ w; residual là
+
+                                        P⊥ w = (I − V V ⊤ )w.                                    (52)
+
+Do V ⊤ P⊥ = 0, residual trực giao retained directions. Domain trong báo cáo dùng score box
+và residual L2 ball:
+
+                    S = {c0 + V diag(b)u + v : ∥u∥∞ ≤ 1, V ⊤ v = 0, ∥v∥2 ≤ η},                   (53)
+
+với bi ≥ 0, η ≥ 0. Nó tương đương |V ⊤ w| ≤ b và ∥P⊥ w∥2 ≤ η trong số thực. Chiều ngược: lấy
+v = P⊥ w, scores s = V ⊤ w; với bi > 0 đặt ui = si /bi , còn bi = 0 buộc si = 0 và chọn ui = 0. Khi
+
+28/10/2026                                                                                         14
+ECDR | Giải thích toán học                                                 Tài liệu đồng hành Week 1–3
+
+
+q = 0, không giữ direction nào, residual space là toàn bộ input và domain chỉ còn L2 ball
+quanh c0 . Khi q = dx , basis đầy đủ cho P⊥ = 0, không còn residual component; domain là
+một rotated box.
+PCA thường fit trên centered deltas ∆ − ¯ ∆. Khi đó c0 = xr + ¯
+                                                              ∆, không mặc định xr . Mean
+shift có thể khiến domain không chứa anchor. Certificate vẫn có thể dùng class anchor làm
+target; proof chỉ cần target thắng trên domain query thực sự.
+
+
+14.2   Suy support residual từng bước
+
+Do v trực giao V , a⊤ v = (P⊥ a)⊤ v. Cauchy–Schwarz cho minimum −η ∥P⊥ a∥2 trên residual
+ball. Ghép score-box contribution,
+
+                             ℓ = a⊤ c0 + β − diag(b)V ⊤ a       − η ∥P⊥ a∥2 .                     (54)
+                                                            1
+                             √
+Trong 2D, chọn√V = (1, 1)⊤ / 2, a = (1, −1)⊤ , base margin 1, η = 0.1. Ta có V ⊤ a = 0, P⊥ a = a,
+nên ℓ = 1 − 0.1 2 ≈ 0.858579. Đây khác coordinate residual box |vi | ≤ 0.1 cho lower 0.8; hai
+residual sets khác nhau.
+                                               √
+Ví dụ membership w = (0.2,    √ 0): score 0.2/ 2 ≈ 0.141421, projection (0.1, 0.1), residual
+(0.1, −0.1), residual norm 0.1 2 ≈ 0.141421. Với score budget 0.3, residual budget 0.15, query
+thuộc miền; với residual budget 0.1 thì không.
+
+
+14.3   Tại sao normalization có thể làm hỏng projection formula?
+
+Scale raw coordinates bằng Dσ−1 đưa directions thành Dσ−1 V . Các column mới thường không
+còn orthonormal. Vì vậy I − (Dσ−1 V )(Dσ−1 V )⊤ không tự là orthogonal projector. Có thể giữ
+raw-domain và đưa normalization vào F , hoặc transform/rederive domain đúng cách. Đổi
+một ma trận trong công thức cũ không tự bảo toàn ý nghĩa residual.
+
+
+15     Containment và event selection bảo toàn proof thế nào?
+
+15.1   Chiều bao hàm của miền
+
+Nếu S ⊆ Sb và target thắng trên S,
+                                b thì thắng trên S vì mọi điểm của tập nhỏ cũng ở tập lớn.
+Ngược lại sai: với margin 1 − x, [−0.5, 0.5] invariant nhưng [−2, 2] không. Bound sinh trên
+enclosure lớn đủ cho candidate nhỏ khi đã chứng minh containment; bound trên tập nhỏ
+không được đem dùng ngoài miền.
+
+
+15.2   Selector, certificate và membership là ba trách nhiệm
+
+Giả sử mỗi record (Se , ce ) có certificate sound và positive margins. Selector chọn e bằng
+heuristic bất kỳ, thậm chí nhìn query. Sau đó checker sound xác nhận query thuộc chính Se .
+Khi accept, margin theorem cho output ce = h(x). Proof không cần event name là ground-
+truth activity.
+Union các certified domains cùng target vẫn giữ target. Nhưng để accept query trên union,
+cần witness nó thuộc ít nhất một certified domain. Thay budget/center mà giữ certificate cũ
+là đổi miền, không phải chỉ đổi tên.
+
+
+
+28/10/2026                                                                                         15
+ECDR | Giải thích toán học                                                       Tài liệu đồng hành Week 1–3
+
+
+Policy optimization có thể viết
+
+                    min E[Tπ ]    subject to      ∀x accepted by π, b
+                                                                    hπ (x) = h(x).                      (55)
+                     π
+
+Objective cần workload distribution/trace; correctness constraint là universal trên accepted
+set. Một miền nhỏ có thể dễ certify nhưng ít query; miền lớn có thể tăng membership nhưng
+mất positive margin. Tối ưu expected cost không cho phép bỏ universal correctness con-
+straint.
+
+
+16     CNN valid–ReLU–GAP: receptive field và phép tính độ phức
+       tạp
+
+16.1   Một convolution thực sự tính gì?
+
+Trong quy ước CNN dùng cross-correlation, output channel r tại vị trí i:
+
+                                                  X   X
+                                                  Cin k−1
+                                  vr [i] = br +             wr,c,j Xc [i + j].                          (56)
+                                                  c=1 j=0
+
+Valid nghĩa kernel không vượt biên; stride 1 cho Tout = Tin − k + 1. Có Cout Cin k weights và
+Cout biases. Mỗi output cần Cin k MAC theo convention của báo cáo, nên
+
+                             P = Cout (Cin k + 1),          M = Tout Cout Cin k.                        (57)
+
+MAC là một multiply–accumulate; FLOP ≈ 2M chỉ cho các phép tương ứng theo convention,
+không gồm mọi operator và memory traffic.
+
+
+16.2   Receptive field tại sao cộng (kℓ − 1)?
+
+Layer đầu RF là k1 . Layer tiếp lấy k2 activation liên tiếp, mỗi activation dịch một raw position,
+nên union RF dài k1 + k2 − 1. Quy nạp cho
+
+                                       X
+                                       L
+                              R=1+           (kℓ − 1),        n = W − R + 1.                            (58)
+                                       ℓ=1
+
+Công thức này cần stride 1/dilation 1. Với effective input jump j, công thức tổng quát cho
+local layers là Rℓ = Rℓ−1 + (kℓ − 1)dℓ jℓ−1 và jℓ = jℓ−1 sℓ , base R0 = j0 = 1. Nó cho RF extent và
+jump; không tự giải quyết padding boundary hoặc streaming alignment.
+Với kernels (5, 3, 3), R = 1 + 4 + 2 + 2 = 9, n = 120. Với channels 6 → 32 → 64 → 64, K=12, phép
+tính từng layer là Head Aµ + β head dùng A ∈ RK×dh , dh = 64, không phải dx = 768. GAP cần
+64(120 − 1) = 7616 additions và 64 scales; ReLU so sánh 32 × 124 + 64 × 122 + 64 × 120 = 19456
+giá trị. Tổng 2M = 4687872 FLOP xấp xỉ không bao gồm các phần này. Latency còn phụ thuộc
+backend, batching, threads và memory; không thể chia MAC cho một hằng bất kỳ rồi gọi là
+latency đo.
+
+
+
+
+28/10/2026                                                                                               16
+ECDR | Giải thích toán học                                               Tài liệu đồng hành Week 1–3
+
+
+
+             Bảng 1: Tính tay cấu hình lý thuyết; không có training/latency claim.
+Layer                                      Length              Parameters                      MAC
+
+Conv1                                          124    32(6 × 5 + 1) = 992   124 × 32 × 30 = 119040
+Conv2                                          122 64(32 × 3 + 1) = 6208    122 × 64 × 96 = 749568
+Conv3                                          120 64(64 × 3 + 1) = 12352 120 × 64 × 192 = 1474560
+Head                                             1       12(64 + 1) = 780             12 × 64 = 768
+
+Tổng                                                                20332                   2343936
+
+
+17      Tại sao feature overlap bằng nhau, và vì sao điều đó chưa giữ
+        class?
+
+17.1    Chứng minh shift feature theo receptive field
+
+Giả sử Conv valid/stride 1/dilation 1, pointwise maps giống nhau mọi vị trí, input prepro-
+cessing identity hoặc fixed per-channel pointwise normalization. Feature Hi (X) chỉ nhìn
+X[:, i : i + R]. Với i < n − s, RF này trong window mới nằm trọn overlap và bằng RF của
+Hi+s (X) trong window cũ. Cùng weights/maps trên cùng các giá trị input cho
+
+                             Hi (Xt+1 ) = Hi+s (Xt ),   0 ≤ i < n − s.                          (59)
+
+Chứng minh theo layer cũng cho cùng kết quả: convolution shift bằng nhau, rồi pointwise
+nonlinearity giữ equality, lặp qua stack.
+Với W = 128, R = 9, s = 64, có 120 − 64 = 56 shared positions, tức 56/120 = 46.6667%, khác
+50% raw overlap. Phần đuôi s feature dùng s + R − 1 = 72 input samples ở ví dụ này: 64 mới
+và 8 overlap context. “64 sample mới” không có nghĩa chỉ cần đúng 64 sample để tính mọi
+tail convolution mà không có context.
+
+
+17.2    Các điều kiện không được bỏ
+
+Padding có thể thay raw context cũ bằng zero ở biên mới. Pool/stride cần alignment theo
+effective jump. Preprocessing nhân vị trí i với i + 1 là fixed nhưng phá shift equality, vì cùng
+raw sample ở vị trí mới có scale khác. BN eval có thể fold vào affine theo kênh; BN training
+không như vậy. Các vấn đề padding/pooling cũng là lý do prior streaming methods cần thiết
+kế riêng [9, 10].
+Ngay cả khi (59) đúng, head có thể phụ thuộc vị trí. Identity convolution với X = (1, −1),
+X ′ = (−1, 1) và head logits (X0 , −X0 ) đổi class. ReLU mask cũng không đủ: trên x ∈ [0, 1],
+r = ReLU(x + 1) luôn active nhưng margin 1.5 − r = 0.5 − x đổi dấu. Piecewise affine regions
+của ReLU [8] cần thêm decision inequalities.
+
+
+18      GAP delta và margin delta: phép triệt tiêu cốt lõi
+
+18.1    Cộng feature trước khi lấy trung bình
+
+Đặt Hi (X) ∈ Rdh và
+
+                                1X
+                                 n−1
+                       µ(X) =      Hi (X),        F (X) = Aµ(X) + β head .                      (60)
+                                n
+                                  i=0
+
+
+28/10/2026                                                                                       17
+ECDR | Giải thích toán học                                                       Tài liệu đồng hành Week 1–3
+
+
+Khi dịch s ≤ n, đặt
+                                    X
+                                    s−1                             X
+                                                                    n−1
+                         Ddrop =          Hi (Xt ),       Dnew =           Hi (Xt+1 ).                  (61)
+                                    i=0                            i=n−s
+
+Nhờ (59), tổng feature mới là tổng feature cũ, bỏ Ddrop rồi thêm Dnew :
+
+                             X                    X
+                                                  n−1
+                                  Hi (Xt+1 ) =          Hi (Xt ) + Dnew                                 (62)
+                              i                   i=s
+                                                  X
+                                              =         Hi (Xt ) − Ddrop + Dnew .                       (63)
+                                                   i
+
+Chia n và trừ µ(Xt ) cho
+                                               Dnew − Ddrop
+                                   µ(Xt+1 ) − µ(Xt ) =      .                                           (64)
+                                                     n
+Vector identity tính đúng mức thay đổi, chưa nói nó đủ nhỏ hay cùng class.
+
+
+18.2   Từ pooled feature sang từng competitor
+
+Đặt qj = (Ac,: − Aj,: )⊤ ∈ Rdh , tức chuyển hiệu hai row của A thành column vector. Margin là
+gcj (X) = qj⊤ µ(X) + βchead − βjhead . Lấy hiệu hai window, head biases triệt tiêu:
+                                                           1 ⊤
+                             gcj (Xt+1 ) = gcj (Xt ) +      q (Dnew − Ddrop ).                          (65)
+                                                           n j
+Nếu có lower/upper cho feature sum mới trên toàn new-wave domain, D ≤ Dnew (U ) ≤ D,
+thì
+                                           (qj+ )⊤ D + (qj− )⊤ D − qj⊤ Ddrop
+                         ℓcj = gcj (Xt ) +                                   .         (66)
+                                                            n
+Đây là affine interval rule đã gặp trong IBP. Ddrop biết chính xác nếu feature anchor được
+tính/stored đúng. Bounds Dnew phải bao mọi U trong miền; lấy bounds từ một observed new
+wave không đủ.
+Ví dụ của báo cáo chính: n = 10, old margin 0.4, q = (2, −1), Ddrop = (1, 2), D = (0, 1), D = (2, 3).
+q ⊤ Ddrop = 0; worst new contribution 2 × 0 − 3 = −3; lower margin 0.4 − 3/10 = 0.1. Dùng
+lower D cho hệ số âm sẽ cho 0.3, quá cao để là lower bound hợp lệ trên enclosure.
+
+
+19     Ví dụ xuyên suốt: tính cả CNN rồi chứng nhận một miền wave
+
+19.1   Dữ liệu, filters và head
+
+Chọn C = 1, W = 6, s = 2, X = (1, 2, 3, 4, 5, 6), new wave U = (7, 8), nên X ′ = (3, 4, 5, 6, 7, 8).
+Một Conv valid k = 3 có hai filters:
+
+                   w(1) = (1, −1, 1), b(1) = −2;            w(2) = (−1, 0, 1), b(2) = −1.               (67)
+
+Sau Conv là ReLU; có R = 3, n = 6 − 3 + 1 = 4. Feature viết theo position, mỗi position là
+vector hai kênh. Head ba lớp là
+                                                        
+                                  1 −1                     4
+                                                head    
+                            A = −1 0  ,       β      =  1 .                       (68)
+                                  2 −2                     0
+
+Đây là một hệ đại số minh họa, không phải weights hay accuracy của HAPT.
+
+28/10/2026                                                                                               18
+ECDR | Giải thích toán học                                                       Tài liệu đồng hành Week 1–3
+
+
+19.2    Tính convolution và GAP từng giá trị
+
+Position 0 của filter 1 trên X: 1 − 2 + 3 − 2 = 0. Position 1 là 2 − 3 + 4 − 2 = 1; tương tự được
+2,3. Filter 2 cho −1 + 3 − 1 = 1, rồi luôn 1 ở các positions còn lại. ReLU không đổi các giá trị
+không âm này:
+                       H(X) = ((0, 1), (1, 1), (2, 1), (3, 1)), µ(X) = (3/2, 1).              (69)
+Trên X ′ , tính tương tự:
+
+                        H(X ′ ) = ((2, 1), (3, 1), (4, 1), (5, 1)),   µ(X ′ ) = (7/2, 1).               (70)
+
+Hai positions đầu mới bằng positions 2,3 cũ, khớp shift theorem.
+
+                                     Ddrop = (0, 1) + (1, 1) = (1, 2),                                  (71)
+                                     Dnew = (4, 1) + (5, 1) = (9, 2),                                   (72)
+                                       ∆µ = ((9, 2) − (1, 2))/4 = (2, 0).                               (73)
+
+Kết quả cũng bằng (7/2, 1) − (3/2, 1); hai cách tính kiểm chéo nhau.
+
+
+19.3    Logits và margin, gồm competitor nguy hiểm
+
+Head cho
+                         F (X) = (9/2, −1/2, 1),           F (X ′ ) = (13/2, −5/2, 5).                  (74)
+Target là lớp 1. Old margins đến lớp 2 và 3 là 5, 7/2; new margins là 9, 3/2. Margin thứ nhất
+tăng nhưng margin thứ hai giảm. Vì q2 = (2, −1) còn q3 = (−1, 1), cùng ∆µ = (2, 0) cho
+contributions +4 và −2. Điều này minh họa vì sao “pooled activation tăng” không đồng nghĩa
+mọi decision margin tăng.
+
+
+19.4    Bound cả một box của new waves
+
+Giờ không cố định U = (7, 8); xét u ∈ [6.5, 7.5], v ∈ [7.5, 8.5], tức X ′ (u, v) = (3, 4, 5, 6, u, v). Shared
+features vẫn (2, 1), (3, 1). Tail features trước ReLU là
+
+                            H2 = (u − 3, u − 6),          H3 = (4 − u + v, v − 7).                      (75)
+
+Cả bốn scalar đều dương trên box: lower lần lượt 3.5, 0.5, 4, 0.5. Do đó ReLU là identity trên
+chính miền này. Bound độc lập cho tail sums:
+
+                                      D = (7.5, 1),        D = (10.5, 3).                               (76)
+
+Thay (66) cho competitor 2:
+
+                                              2(7.5) − 3 − (2 × 1 − 2)
+                                 ℓ12 = 5 +                             = 8.                             (77)
+                                                         4
+Cho competitor 3:
+                                     7 −10.5 + 1 − (−1 + 2)  7
+                             ℓ13 =     +                    = = 0.875.                                  (78)
+                                     2           4           8
+Cả hai dương nên mọi new wave trong box giữ lớp 1, theo assumptions của CNN và số thực.
+Runtime query (7, 8) chỉ cần membership và identities đúng để dùng certificate, không cần
+tính lại CNN cho quyết định.
+
+
+
+
+28/10/2026                                                                                                19
+ECDR | Giải thích toán học                                           Tài liệu đồng hành Week 1–3
+
+
+19.5   Giữ dependency để thấy bound chặt hơn
+
+Cộng công thức tail trước khi bound cho D1 = 1 + v, D2 = u + v − 13. Margin contribution
+đến lớp 3 có q3⊤ D = −D1 + D2 = u − 14, nên
+                                             7 u − 14 − 1   u−1
+                              g13 (X ′ ) =     +          =     .                           (79)
+                                             2     4         4
+Minimum thật trên box là (6.5 − 1)/4 = 11/8 = 1.375, chặt hơn 0.875. Đến lớp 2,
+                                                      15 + v − u
+                                   g12 (X ′ ) = 5 +              ,                          (80)
+                                                          4
+minimum là 5 + 15/4 = 35/4 = 8.75 tại u = v = 7.5. Nếu cộng trước để bound riêng từng
+coordinate của Dnew , ta có enclosure chặt hơn D1 ∈ [8.5, 9.5], D2 ∈ [1, 3]. Thay vào tail rule
+cho ℓ12 = 8.5, ℓ13 = 1.125; các cận này nằm giữa position-wise intervals (8, 0.875) và exact
+margin minima (8.75, 1.375). Vẫn mất dependency giữa D1 , D2 , nên chưa exact. Bounds độc
+lập vẫn sound dù lỏng. Ví dụ đồng thời minh họa data shift, RF, GAP delta, pairwise sign,
+whole-domain certification và dependency loss.
+
+
+20     Membership và complexity: vì sao O(Cs) chưa là speedup?
+
+20.1   Đúng một điểm thuộc đúng miền
+
+Full diagonal box kiểm |zi − zr,i | ≤ bi với mọi input coordinate. Wave box chỉ cần kiểm
+U ≤ U ≤ U nếu overlap đã được bảo đảm bởi builder/state identity của certificate. Nếu
+nhận một window tùy ý có overlap khác mà chỉ xem tail, checker không sound.
+Với m ≥ 1 coordinate và một rectangular box hữu hạn không rỗng, không suy biến (li < ui
+ở mọi coordinate), scan có worst-case O(m). Một exact checker luôn quyết định đúng cần
+Ω(m) coordinate access: nếu chưa đọc coordinate i của một interior input, adversary có thể
+đổi chỉ coordinate đó ra ngoài box mà thuật toán không biết. Hai input nhìn giống nhau qua
+các access đã thực hiện nhưng membership khác nhau. Vậy là Θ(m) trong coordinate-query
+model.
+Với full input m = dx = 768; với wave m = Cs = 384. SIMD/parallelization có thể đổi
+wall-clock, và early rejection có thể cải thiện average cost. Big-O không chứa hằng số,
+memory/identity overhead, nên không chứng minh membership nhanh hơn một CNN nhỏ.
+Always-reject checker có thể an toàn và rất rẻ nhưng reuse bằng 0.
+
+
+20.2   PCA và miền generator cần checker nào?
+
+PCA dense scores thường cần O(dx q) arithmetic; residual phải tính theo đúng geometry. Với
+miền c0 + Bu + v tổng quát, membership là một bài toán tồn tại witness u, v thỏa constraints.
+Có một witness hợp lệ đủ để accept; một cách projection thất bại không chứng minh query
+ngoài miền nếu chưa chứng minh projection đó tương đương membership. Sound conser-
+vative checker được phép false reject, không được false accept.
+
+
+21     Reuse gate và multi-step: proof không đi theo nhãn đã reuse
+
+Các ID C1–C10 dưới đây giữ nghĩa của Unified contract trong báo cáo chính. Chúng được
+nhắc lại để tài liệu này đọc độc lập được.
+
+28/10/2026                                                                                   20
+ECDR | Giải thích toán học                                                    Tài liệu đồng hành Week 1–3
+
+
+
+                   Bảng 2: Điều kiện gắn các chứng minh với đúng đối tượng.
+ID     Điều kiện
+
+C1     Frozen reference: graph/weights/BN state/class order/decision rule.
+C2     Fixed preprocessing và coordinate/layout/units đúng với certificate.
+C3     Lower bounds sound trên toàn domain hoặc enclosure chứa domain.
+C4     Mọi competitor có safe lower margin strictly positive.
+C5     Membership đủ bảo thủ, không accept điểm ngoài miền.
+C6     Miss/inconclusive/stale thì fallback reference trên input hợp lệ.
+C7     Cost gồm build/verify/lookup/state/fallback/initialization.
+C8     Evaluation cùng semantics, model, data và điều kiện đo phù hợp.
+C9     Anchor/domain/lifecycle identity hoặc transfer rule đã chứng minh.
+C10    Có containment/error justification nếu claim executable soundness.
+
+
+21.1   One-step proof bằng chia hai nhánh
+
+Nếu query thuộc domain đã có valid positive lower margins và identity khớp, margin the-
+orem cho output target bằng reference. Nếu bất kỳ check nào fail/inconclusive, chạy ref-
+erence trên valid input. Hai nhánh trả đúng reference decision theo assumptions. Điều này
+không làm reference đúng ground truth và không giải quyết automatically numerical round-
+ing.
+
+
+21.2   Fixed anchor và lỗi drift khi tự recenter
+
+Fixed-anchor policy giữ xr , certificate domain Sr và identity. Mỗi query accept được chứng
+minh trực tiếp bằng cùng certificate; không cần induction từ prediction của query trước.
+Có thể phát biểu theo induction trace, nhưng invariant quan trọng là certificate không đổi
+nghĩa.
+Với margin 1 − x, domain quanh 0 radius 0.6 giữ lớp 1. Query 0.6 thuộc domain; nếu đổi
+center sang 0.6 mà giữ radius/claim cũ, query 1.2 sẽ bị nhận sai dù margin −0.2. Quan hệ
+|xt − xt−1 | ≤ 0.6 không suy |xt − xr | ≤ 0.6: triangle inequality chỉ cho cận tăng theo số bước.
+Nếu certificate là một-step wave-domain có overlap cố định của Xt , sau hit overlap của Xt+1
+khác đi. Không được dùng certificate đó cho step tiếp chỉ vì class vừa reuse vẫn là c. Exact
+feature sums tại query mới cũng không tự có nếu CNN đã bị skip; đây là state-information
+gap.
+Chính CNN nhỏ ở mục 19 cho phản ví dụ cụ thể. Dùng U1 = U2 = (7, 8); cả hai wave đều ở
+box được chứng nhận cho bước đầu. Sau bước hai, X ′′ = (5, 6, 7, 8, 7, 8) có
+
+                     H(X ′′ ) = ((4, 1), (5, 1), (4, 0), (7, 0)),   µ(X ′′ ) = (5, 1/2),             (81)
+
+và logits (17/2, −4, 9): winner chuyển sang lớp 3. Không có mâu thuẫn với certificate bước
+đầu vì overlap của nó là (3, 4, 5, 6), còn bước hai dùng overlap (5, 6, 7, 8). Chỉ check wave box
+mà bỏ overlap/domain identity sẽ accept sai ở chính ví dụ này.
+
+
+21.3   Finite-horizon reachable sets đóng gap bằng giả thiết mạnh hơn
+
+Chọn horizon Q, new-wave domains U1 , . . . , UQ từ lúc build. Định nghĩa
+
+                       R0 = {Xr },         Rq = {Ts (X, U ) : X ∈ Rq−1 , U ∈ Uq }.                   (82)
+
+
+28/10/2026                                                                                            21
+ECDR | Giải thích toán học                                                  Tài liệu đồng hành Week 1–3
+
+
+Nếu mọi Rq đã có positive valid lower margins cho cùng target, thì mọi chuỗi new waves
+hợp lệ giữ target. Proof quy nạp: base window ở R0 ; transition hợp lệ đưa từ Rq−1 vào Rq ;
+margin gate áp tại từng bước.
+Ví dụ W = 4, s = 2, X0 = (a, b, c, d): X1 = (c, d, u1 , u2 ), X2 = (u1 , u2 , v1 , v2 ). Step 2 không còn
+sample anchor, nhưng proof vẫn có thể đúng nếu đã bound cả reachable domain. Runtime
+có thể chỉ kiểm wave hiện tại và counter nếu các bước trước đã accept, mọi identity đúng
+và certificate thật sự bao toàn bộ product history. Một bước fail phải invalidate rule đó hoặc
+chuyển certificate khác; không được quên history rồi tiếp tục.
+Số raw anchor sample còn chung sau q bước là max(W − qs, 0) mỗi kênh; final valid feature
+chung là max(n−qs, 0). HAPT example W = 128, n = 120, s = 64 có 56 feature positions chung
+sau một bước, 0 sau hai. Horizon soundness không bảo đảm bound tight hoặc build rẻ khi
+reachable sets lớn dần.
+
+
+22     Numerical soundness: tại sao margin dương chưa đủ cho
+       float32?
+
+22.1   Tách ba đối tượng khác nhau
+
+Ideal function g là công thức số thực; executable margin ge có rounding; computed lower
+bound ℓb cũng có thể có rounding. Nếu đã chứng minh
+                               ℓb − δ ≤ inf g(x),     |e
+                                                       g (x) − g(x)| ≤ η,                           (83)
+                                        x∈S
+
+thì với query thật sự trong domain,
+                                     ge(x) ≥ g(x) − η ≥ ℓb − δ − η.                                 (84)
+Điều kiện đủ executable positive margin là ℓb > δ + η. Ví dụ ℓb = 0.02, sound error bounds
+δ = 0.003, η = 0.004 cho safe lower 0.013. Nếu ℓb = 0.005, safe lower −0.002 nên chưa nhận.
+Các error bounds trong ví dụ được giả sử đã chứng minh, không phải ngưỡng được chọn tùy
+ý.
+
+
+22.2   Membership cũng phải bảo thủ về số học
+
+Giả sử exact normalized query coordinate được bao bởi interval [0.099, 0.101], domain co-
+ordinate là [0, 0.1]. Một computed point estimate 0.1 không đủ để accept; interval còn vượt
+miền. Interval [0.098, 0.099] nằm hoàn toàn trong miền thì có thể nhận coordinate đó. Cần
+bao cả lower/upper endpoints và normalization arithmetic liên quan.
+Nếu chưa giải quyết được numerical error, statement hợp lệ là theorem có điều kiện về số
+học. Random tests, zero mismatch và arbitrary tolerance không thay universal error proof.
+Checkpoint/domain/class-order sai cũng làm proof không áp dụng dù mọi phép toán số học
+đều đúng.
+
+
+23     Cost và amortization: suy điều kiện nhanh hơn từng bước
+
+23.1   Đếm chi phí trên trace trước khi lấy trung bình
+
+Cho Nw windows, Hw hits, B builds. Baseline chạy forward cho mọi query; ECDR chạy verify
+cho mọi query, forward khi miss, cộng mọi build (kể cả failed build và initialization) và state
+
+28/10/2026                                                                                            22
+ECDR | Giải thích toán học                                                         Tài liệu đồng hành Week 1–3
+
+
+overhead chưa tính nơi khác:
+
+                                        X
+                                        Nw
+                              Tfull =         ft ,                                                        (85)
+                                        t=1
+                                        X            X                X
+                                                                      B
+                                                           ftmiss +                                       (86)
+                                                                         (b)
+                             TECDR =          vt +                      tb + Tstate .
+                                         t           t∈M              b=1
+
+Nếu normalization/I/O chung được loại khỏi cả hai phương án, phải nói rõ; nếu đo end-to-
+end, tính nhất quán cho cả hai. Shadow-reference chạy để kiểm mismatch không được giấu
+vào hoặc bỏ khỏi operational timing tùy tiện.
+
+
+23.2   Mô hình hằng và bất đẳng thức hòa vốn
+
+Giả sử forward cost cùng bằng tf > 0, verify cost tv ≥ 0, state/query tm ≥ 0, build cost tb ≥ 0
+và Nw ≥ 1. Đặt r = Hw /Nw , ρb = B/Nw . Chia tổng cho Nw :
+
+                                 t̄ECDR = tv + tm + (1 − r)tf + ρb tb .                                   (87)
+
+So với tf , chuyển vế:
+
+                                   tv + tm + (1 − r)tf + ρb tb < tf                                       (88)
+                                                     tv + tm + ρb tb < rtf .                              (89)
+
+Vế phải là forward cost tránh được trên một query trung bình; vế trái là overhead. Đây là
+cost balance, khác soundness theorem.
+Ví dụ giả định Nw = 100, Hw = 80, B = 20, tf = 4 ms, tv + tm = 0.08 ms, tb = 1.5 ms: baseline
+400 ms; ECDR verify/state 8 ms + miss forward 80 ms + build 30 ms = 118 ms. Speed ratio
+400/118 ≈ 3.38983. Đây là arithmetic, không phải measured runtime trên HAPT.
+Nếu build mỗi miss và counting khớp ρb = 1 − r, thì
+                                                     tv + tm + tb
+                                                r>                .                                       (90)
+                                                        tf + tb
+
+Với tb = 1.5 ms, ngưỡng là 1.58/5.5 ≈ 28.7273%; với tb = 8 ms, ngưỡng 8.08/12 ≈ 67.3333%. Ở
+reuse 50%, cost tương ứng 0.08 + 0.5(4 + 1.5) = 2.83 ms và 0.08 + 0.5(4 + 8) = 6.08 ms. Cùng hit
+rate có thể nhanh hoặc chậm hơn baseline tùy build cost.
+
+
+23.3   Bao nhiêu hits mới bù một certificate?
+
+Một build tb dùng cho L query sau build, có h hits. Lợi ích cần htf > tb + L(tv + tm ). Nếu mọi
+query hit thì h = L, suy
+                                       tb
+                             L>                , t f > t v + tm .                           (91)
+                                  tf − tv − tm
+Với cost trên, tb = 8 ms cho L > 8/3.92 ≈ 2.04082, nên ít nhất 3 hits trong mô hình này. Nếu
+denominator không dương, không có số hits hữu hạn nào cứu được một per-query overhead
+đã không rẻ hơn forward.
+Số 251.1 µs trong báo cáo gốc là archived mean-forward của model K=6 cũ; lấy r = 0.5 chỉ
+cho budget giả định 125.55 µs. Nó không là timing của CNN lý thuyết này. Mean không được
+thay bằng p50 trong một expectation; với variable/path-dependent forward cost, dùng con-
+ditional expectation hoặc tổng trace thay vì mặc nhiên nhân (1 − r) với unconditional mean.
+
+28/10/2026                                                                                                 23
+ECDR | Giải thích toán học                                                 Tài liệu đồng hành Week 1–3
+
+
+Ví dụ ft = (1, 1, 9, 9) ms, hit hai query đầu và overhead 1 ms/query: baseline 20 ms, ECDR
+4 + 9 + 9 = 22 ms dù hit rate 50%. Mean forward là 5 ms, nhưng saved forward mean/query
+chỉ (1 + 1)/4 = 0.5 ms, không phải 0.5 × 5 = 2.5 ms. Công thức đúng cho phần miss là
+
+                                    E[1miss f ] = Pr(miss)E[f | miss],                            (92)
+
+với điều kiện conditional expectation được định nghĩa; chỉ thay bằng unconditional mean
+khi có giả thiết hoặc phép đo biện minh.
+
+
+24     Metrics nghiên cứu, denominator và cách đọc các giả thuyết
+
+24.1   Bốn tỉ lệ không thể đổi tên cho nhau
+
+Đặt Nb domain attempts, Nb+ certified domains, Nm query được checker xét, Nm
+                                                                           + membership
+
+successes, Nr reused queries, Na reused queries agreement với shadow reference. Khi đó
+
+             pbuild = Nb+ /Nb ,              +
+                                  pmember = Nm /Nm ,    rcert = Nr /Nw ,   Areuse = Na /Nr .      (93)
+
+Nếu Nr = 0, agreement là N/A. Đặt 100% khi không có hit khiến người đọc hiểu nhầm đã
+có positive evidence. Một candidate có membership tốt nhưng certificate fail thì không tạo
+certified reuse.
+Giả sử trên cùng 100 query, 60 có membership success và 50 có certificate hợp lệ. Intersection
+có thể từ max(0, 60 + 50 − 100) = 10 đến min(60, 50) = 50 query, tức 10%–50%. Tích 0.6 × 0.5 =
+30% chỉ đúng nếu các event độc lập theo distribution phù hợp. Nếu certificate attempts và
+membership counts còn khác denominator, ngay cả phép ghép intersection này cũng cần
+định nghĩa lại. Adjacent-pair coverage không bằng fixed-anchor coverage vì anchor có thể
+cũ nhiều bước.
+
+
+24.2   Giả thiết toán học khác giả thuyết cần thí nghiệm
+
+Một theorem có dạng “nếu C1–C6,C9,C10 đúng thì mọi accept giữ decision”. Một research
+hypothesis có dạng “domain temporal tạo useful certified hits với cost thấp trên HAPT”.
+Theorem không thể chứng minh hypothesis chỉ bằng việc lặp lại assumptions. Ba property
+cần riêng evidence:
+
+                          soundness,        useful coverage,       net saving.                    (94)
+
+Miền chỉ chứa anchor có thể sound mà không useful; build rất đắt có thể sound và nhiều
+hits mà vẫn không saving. LipCache cũng phải so đúng model được certificate: bảo đảm
+GuardNet không tự là bảo đảm MainNet [11]. So sánh ECDR với bất kỳ phương pháp nào
+cần cùng semantics đầu ra hoặc công bố rõ khác biệt.
+
+
+A Bản đồ bao phủ toàn bộ phần toán của báo cáo chính
+
+
+
+
+28/10/2026                                                                                         24
+ECDR | Giải thích toán học                                         Tài liệu đồng hành Week 1–3
+
+
+                  Bảng 3: Mỗi nhóm toán trong báo cáo Week 1–3 có phần
+                  giải thích ở đây.
+
+       ID    Nhóm cần giải thích                   Mục của tài liệu này
+
+       M01 Hàm reference, composition, logits,     Mục 7; nối với 8
+           argmax
+       M02 Universal implication, region và        Mục 1,8,15,21
+           certificate
+       M03 Sensor sample, tensor và vectoriza-     Mục 2
+           tion
+       M04 Sampling, time, window, stride và       Mục 2,3
+           payload arithmetic
+       M05 Window count và span grid count         Mục 3
+       M06 Label count và majority threshold       Mục 3
+       M07 Normalization,        budgets      và   Mục 4
+           weighted norm
+       M08 Split/temporal                 depen-   Mục 6,7
+           dence/statistical caveats
+       M09 Shift–append matrices và overlap        Mục 5
+           identity
+       M10 Ordinary distance counterexample        Mục 5
+       M11 Wave-domain         dimension      và   Mục 5,17,19
+           model/data bridge
+       M12 Marginal/joint coverage, union          Mục 6
+           bound
+       M13 CNN params/MAC/FLOP, RF/jump            Mục 16
+       M14 Accuracy, precision, recall, F1, SD     Mục 7
+       M15 Margin, minimum/infimum, suffi-         Mục 8
+           cient gate
+       M16 Compactness, continuity và local        Mục 9
+           existence
+       M17 Universal/activation/shift      coun-   Mục 9,17,21
+           terexamples
+       M18 Lipschitz ball, constants và operator   Mục 10
+           norm
+       M19 IBP affine signs/ReLU/pool/BN, in-      Mục 11
+           duction
+       M20 CROWN relaxation, sign-aware sub-       Mục 12
+           stitution
+       M21 Support, dual norm, boxes và resid-     Mục 13
+           uals
+       M22 PCA score, residual, support và nor-    Mục 14
+           malization
+       M23 Containment, selector và policy op-     Mục 15
+           timization
+       M24 Exact feature shift, GAP và margin      Mục 17–19
+           delta
+
+
+
+28/10/2026                                                                                 25
+ECDR | Giải thích toán học                                         Tài liệu đồng hành Week 1–3
+
+
+
+       ID    Nhóm cần giải thích                  Mục giải thích
+
+       M25 Membership, witness và complexity      Mục 20
+           bounds
+       M26 One-step/fixed-anchor/horizon          Mục 21
+           induction
+       M27 Float bounds và conservative con-      Mục 22
+           tainment
+       M28 Trace            accounting/break-     Mục 23
+           even/amortization
+       M29 Research metrics, denominator và       Mục 24, Phụ lục B
+           hypotheses
+
+
+
+B   Giải nghĩa từng giả thuyết H01–H24
+
+
+       ID    Nghĩa toán học cần nhớ                 Kết luận và nơi giải thích
+
+       H01   Cùng raw sample sau dịch chỉ số cho Đúng với window contract; mục
+             equality                               5.
+       H02   Overlap có ép ∥X − X∥ nhỏ không?
+                                ′                   Không; term (S − I)X có thể lớn;
+                                                    mục 5.
+       H03   Annotation cùng activity có ràng buộc Không; reference error có thể
+             CNN weights không?                     khác nhau; mục 3,7,8.
+       H04   Continuity và strict margin tại anchor Cho một local radius tồn tại,
+                                                    chưa suy ra useful coverage;
+                                                    mục 9.
+       H05   ℓcj > 0 và ℓ valid whole-domain        Đủ giữ target, không cần biết ex-
+                                                    act infimum; mục 8.
+       H06   Margin giảm tối đa Lϵ                  Có certified ball theo assump-
+                                                    tions; mục 10.
+       H07   Interval enclosure có phát hiện mọi Không; dependency loss gây in-
+             invariant domain?                      complete; mục 11.
+       H08   Gộp margin có giữ cancellation?        Có thể, như t + 1 − t và toy
+                                                    CROWN; mục 11,12.
+       H09   Bound method chặt có luôn rẻ?          Không suy từ proof; build cost
+                                                    cần đo; mục 12,23.
+       H10   Temporal directions có projec- Là hypothesis; toy có cancella-
+             tion/penalty nhỏ theo margin normal? tion không chứng minh HAPT;
+                                                    mục 13,14.
+       H11   Geometry structured hơn box ở Cần matching và held-out cov-
+             matched condition?                     erage, không chỉ volume/tên
+                                                    miền; mục 13,15.
+       H12   Cs biến mới thay vì CW biến tự do      Đúng khi overlap fixed; noise có
+                                                    thể mở dimension; mục 5.
+       H13   Aligned features của valid CNN bằng Theo RF/input/architecture con-
+             nhau                                   tract; mục 17.
+
+
+
+
+28/10/2026                                                                                 26
+ECDR | Giải thích toán học                                         Tài liệu đồng hành Week 1–3
+
+
+
+       ID     Nghĩa toán học cần nhớ                  Kết luận và nơi giải thích
+
+       H14    GAP update là new-minus-dropped         Exact identity, sau đó vẫn cần
+                                                      margin bounds; mục 18,19.
+       H15    Recenter sau hit giữ certificate cũ     Sai vì đổi miền, có drift; mục 21.
+       H16    Giữ fixed anchor và checker sound       Sound        nếu       certificate
+              mỗi lần                                 valid/positive và identity khớp;
+                                                      mục 21.
+       H17    Horizon bound trên reachable sets       Quy nạp đúng; usefulness/cost
+                                                      còn mở; mục 21.
+       H18    Exact box checker có Θ(m) worst case    Coordinate access model, không
+                                                      là latency theorem; mục 20.
+       H19    Sound domain có chắc hit query mới?     Không; singleton anchor đã là
+                                                      counterexample; mục 24.
+       H20    Nhiều hits có chắc nhanh hơn?           Không nếu overhead/build lớn;
+                                                      mục 23.
+       H21    ECDR hơn CNN/LipCache trên HAPT         Chưa suy được; phải so đúng se-
+                                                      mantics và runtime; mục 24.
+       H22    Ideal proof tự áp cho float32           Không; cần ℓb > δ + η với bounds
+                                                      hợp lệ; mục 22.
+       H23    Event name đủ để reuse                  Không; event chỉ chọn miền,
+                                                      certificate và membership mới
+                                                      áp property; mục 15.
+       H24    Có regime đồng thời sound, useful,      Câu hỏi trung tâm cần cả proof
+              saving                                  và thí nghiệm; mục 24.
+
+
+
+C Các lỗi đọc công thức thường gặp
+ 1. Đọc ℓ ≤ inf g thành ℓ là exact minimum. Bound được phép lỏng.
+ 2. Dùng một lower activation bound cho cả hệ số dương và âm. Hệ số âm cần upper để tạo
+    lower objective.
+ 3. Lấy “không chứng nhận được” làm counterexample. Fail có thể chỉ do bound.
+ 4. Xem sample, window và region là cùng một thứ. Một là observation, một là query có lịch
+    sử, một là tập các query.
+ 5. Nhầm dx = 768 với dh = 64, hoặc nhầm horizon Q với tensor feature.
+ 6. Đổi norm/coordinate/preprocessing sau khi certificate được xây.
+ 7. Dùng projection formula của orthonormal PCA cho scaled basis không còn orthonormal.
+ 8. Dùng membership coverage làm certified reuse, hoặc nhân hai tỉ lệ khác denominator.
+ 9. Nâng reused input thành trusted anchor khi chưa có reference forward hoặc transfer
+    proof riêng.
+10. Bỏ initial build/failed builds, dùng p50 thay mean, hoặc gọi phép thay số giả định là mea-
+    sured speedup.
+
+
+D Nguồn và phép tính tái kiểm
+
+Đối tượng được giải thích là toàn bộ mathematical content của ECDR_Weeks_1_2_3_Theory.tex.
+Tài liệu này không thay đổi báo cáo chính, dataset hoặc model. Các source facts về HAPT
+
+
+
+28/10/2026                                                                                 27
+ECDR | Giải thích toán học                                           Tài liệu đồng hành Week 1–3
+
+
+dựa trên dataset documentation; những theorem/bound principles tham khảo các bài gốc
+dưới đây. Những ví dụ nhỏ là minh họa tự dựng và được kiểm arithmetic riêng.
+Các checks/JSON trong qa/ ghi provenance và kết quả số cho tài liệu đồng hành. Enumerating
+corners kiểm các affine examples; sampled cases chỉ đối chiếu implementation arithmetic,
+không thay proof trên continuous domain. Không chạy training, neural verifier hoặc bench-
+mark ECDR. Những property empirical và floating-point obligations chưa giải quyết vẫn giữ
+trạng thái mở.
+
+
+Tài liệu
+
+ [1] J. Reyes-Ortiz et al. Smartphone-Based Recognition of Human Activities and Postural
+     Transitions. UCI, 2015. https://doi.org/10.24432/C54G7M.
+
+ [2] Y. Tsuzuku, I. Sato, M. Sugiyama. Lipschitz-Margin Training: Scalable Certification of Per-
+     turbation Invariance for Deep Neural Networks. NeurIPS, 2018. https://arxiv.org/abs/18
+     02.04034.
+
+ [3] S. Gowal et al. On the Effectiveness of Interval Bound Propagation for Training Verifiably
+     Robust Models. 2018. https://arxiv.org/abs/1810.12715.
+
+ [4] H. Zhang et al. Efficient Neural Network Robustness Certification with General Activation
+     Functions. NeurIPS, 2018. https://arxiv.org/abs/1811.00866.
+
+ [5] K. Xu et al. Automatic Perturbation Analysis for Scalable Certified Robustness and Be-
+     yond. NeurIPS, 2020. https://arxiv.org/abs/2002.12920.
+
+ [6] H. Zhang et al. Towards Stable and Efficient Training of Verifiably Robust Neural Net-
+     works. NeurIPS, 2019. https://arxiv.org/abs/1906.06316.
+
+ [7] S. Wang et al. Beta-CROWN: Efficient Bound Propagation with Per-neuron Split Con-
+     straints for Neural Network Robustness Verification. NeurIPS, 2021. https://arxiv.org/
+     abs/2103.06624.
+
+ [8] G. Montúfar et al. On the Number of Linear Regions of Deep Neural Networks. NeurIPS,
+     2014. https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a9
+     2d96e74617c3d2a-Abstract.html.
+
+ [9] C. Kechris et al. Don’t Think It Twice: Exploit Shift Invariance for Efficient Online Stream-
+     ing Inference of CNNs. 2024. https://arxiv.org/abs/2408.03223.
+
+[10] Z. Huang, E. Baccelli. TinyDéjàVu: Smaller Memory Footprint & Faster Inference on Sen-
+     sor Data Streams with Always-On Microcontrollers. 2025. https://arxiv.org/abs/2512.0
+     9786.
+
+[11] Z. Xiang et al. LipCache: A Local Inference Proxy with Certified Caching for Edge Image
+     Classification Service. 2026. https://arxiv.org/abs/2608.13144. Phạm vi guarantee đối
+     chiếu PDF v1 đã dùng trong báo cáo chính, không tái đo benchmark của paper.
+
+
+
+
+28/10/2026                                                                                     28
+

@@ -1,0 +1,340 @@
+% ============================================================
+%  SUPPLEMENT 02 — NORM GEOMETRY IN HIGH DIMENSIONS
+%  L_p Norms, Normalization Distortion, and Certification Geometry
+%  Companion to: ECDR_Data_Analysis.tex
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
+\newcommand{\Se}{\mathcal{S}_e}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} Norm Geometry in High Dimensions}\\[0.5em]
+  {\large\color{muted} $L_p$ Norms, Normalization Distortion, and Certification Geometry in $\R^{768}$}\\[1.2em]
+  {\normalsize Supplement~02 to \textit{ECDR Data Analysis} \textbar{} October~2026}\\[0.3em]
+  {\small\color{muted} This document is supplementary only. The main document is not modified.}
+\end{center}
+
+\vspace{1em}\hrule\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{The $L_p$ Family of Norms}
+
+For a vector $v \in \R^n$, the $L_p$ norm is defined as:
+\begin{equation}
+  \norm{v}{p} \;\coloneqq\; \left(\sum_{i=1}^n |v_i|^p\right)^{1/p}, \quad p \ge 1.
+\end{equation}
+Two special cases are critical for ECDR certification:
+
+\begin{definition}[$L_2$ Euclidean Norm]
+  \[
+    \norm{v}{2} = \sqrt{\sum_{i=1}^n v_i^2}.
+  \]
+  This is the standard Euclidean distance. Its unit ball is a perfect
+  \emph{hypersphere}: all points equidistant from the origin.
+\end{definition}
+
+\begin{definition}[$L_\infty$ Chebyshev Norm]
+  \[
+    \norm{v}{\infty} = \max_{i \in \{1,\ldots,n\}} |v_i|.
+  \]
+  The $L_\infty$ norm measures the \emph{largest coordinate deviation}.
+  Its unit ball is a \emph{hypercube}: all points with all coordinates in $[-1, 1]$.
+\end{definition}
+
+\subsection{Why $L_\infty$ Is Preferred for Box Domains}
+
+In ECDR, the perturbation domain is often a \textbf{hyperrectangle} (box):
+\[
+  \mathcal{B} = \prod_{i=1}^{768} [-b_i, b_i]
+  = \bigl\{ v \in \R^{768} : \norm{v}{\infty} \le \bar{b} \bigr\}
+  \quad \text{(when all $b_i = \bar{b}$).}
+\]
+The $L_\infty$ ball is exactly a box. IBP (Interval Bound Propagation) operates
+natively with box inputs, propagating coordinate-wise intervals through each neural
+network layer. This makes $L_\infty$ perturbation the natural choice for certifiers.
+
+% ============================================================
+\section{Norm Equivalence in $\R^n$}
+
+\begin{theorem}[Standard Norm Bounds]
+  For any $v \in \R^n$:
+  \begin{equation}\label{eq:norm_bounds}
+    \norm{v}{\infty}
+    \;\le\; \norm{v}{2}
+    \;\le\; \sqrt{n}\,\norm{v}{\infty}.
+  \end{equation}
+\end{theorem}
+
+\begin{proof}
+  \textbf{Left inequality:} $\norm{v}{\infty}^2 = \max_i v_i^2 \le \sum_i v_i^2 = \norm{v}{2}^2$.
+  Take square roots.
+
+  \textbf{Right inequality:} $\norm{v}{2}^2 = \sum_{i=1}^n v_i^2 \le n \max_i v_i^2 = n\,\norm{v}{\infty}^2$.
+  Take square roots: $\norm{v}{2} \le \sqrt{n}\,\norm{v}{\infty}$.
+\end{proof}
+
+\subsection{The ECDR-Specific Case: $n = 768$}
+
+The window tensor $Z \in \R^{6 \times 128}$ is vectorized to $\R^{768}$ (6 channels
+$\times$ 128 time steps). The norm bounds become:
+\begin{equation}
+  d_\infty \;\le\; d_2 \;\le\; \sqrt{768}\,d_\infty \;\approx\; 27.7128\,d_\infty,
+\end{equation}
+where $d_\infty = \norm{\Delta z}{\infty}$ and $d_2 = \norm{\Delta z}{2}$ for
+the difference $\Delta z = Z_{k+1} - Z_k$ between consecutive windows.
+
+\subsection{What This Means for Reading the Data Table}
+
+The main data analysis reports empirical distance percentiles in both norms:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Pair Subset / Norm & p50 & p90 & p99 \\
+\midrule
+Same-pure / $L_2$ & 4.936 & 46.42 & 65.26 \\
+Same-pure / $L_\infty$ & 0.987 & 7.064 & 12.31 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{example}[Verifying the Bound]
+  At the p50, $d_2 = 4.936$ and $d_\infty = 0.987$.
+  Check: $d_\infty \le d_2$? $\;0.987 \le 4.936$. \checkmark \\
+  Check: $d_2 \le 27.71 \, d_\infty$? $\;4.936 \le 27.71 \times 0.987 = 27.35$. \checkmark \\
+  The actual ratio is $d_2 / d_\infty = 4.936 / 0.987 \approx 5.0$, far below
+  the worst-case $\sqrt{768} \approx 27.7$. This is expected: real sensor data
+  is highly correlated across time steps, so the maximum coordinate deviation
+  and the RMS deviation are much closer together than for a worst-case vector.
+\end{example}
+
+\begin{remark}[Do Not Translate Percentiles Across Norms]
+  The bounds in~\eqref{eq:norm_bounds} relate individual vector norms, not
+  statistical percentiles across a population of vectors. The p90 of $d_\infty$
+  is \textbf{not} $\le$ the p90 of $d_2$ divided by $\sqrt{768}$. The two
+  distributions are computed on the same set of pairs but measure different
+  scalar summaries. Use the empirical table; do not attempt norm conversion of
+  quantiles.
+\end{remark}
+
+% ============================================================
+\section{Geometric Distortion Under Normalization}
+
+\subsection{The Diagonal Scaling Map}
+
+Let the channel-wise standardization be defined by means $\mu_c$ and standard
+deviations $\sigma_c$ for $c \in \{1, \ldots, 6\}$. Each sample is transformed as:
+\[
+  Z[c, i] = \frac{X[c, i] - \mu_c}{\sigma_c}.
+\]
+The perturbation $\Delta x = X_t - X^r$ in raw space maps to
+$\Delta z = N(X_t) - N(X^r) = D^{-1} \Delta x$ in normalized space, where
+\[
+  D = \operatorname{diag}(\underbrace{\sigma_1, \ldots, \sigma_1}_{128 \text{ times}},
+                           \underbrace{\sigma_2, \ldots, \sigma_2}_{128 \text{ times}},
+                           \ldots,
+                           \underbrace{\sigma_6, \ldots, \sigma_6}_{128 \text{ times}})
+  \in \R^{768 \times 768}.
+\]
+
+\subsection{Isotropic Ball in Normalized Space $\to$ Ellipsoid in Raw Space}
+
+An $L_2$ ball of radius $\epsilon$ in normalized space is:
+\[
+  \mathcal{B}_{\text{norm}} = \bigl\{ \Delta z \in \R^{768} : \norm{\Delta z}{2} \le \epsilon \bigr\}.
+\]
+Its preimage under $D^{-1}$ (i.e., the set of raw-space perturbations $\Delta x$
+that map into the ball) is:
+\[
+  \mathcal{E} = \left\{ \Delta x \in \R^{6 \times 128} :
+    \sum_{c=1}^6 \frac{1}{\sigma_c^2} \sum_{i=0}^{127} \Delta x[c,i]^2 \le \epsilon^2 \right\}.
+\]
+This is a \textbf{hyperellipsoid} in raw space with semi-axes of length
+$\epsilon \sigma_c$ along each channel direction. Channels with larger $\sigma_c$
+admit larger raw-space perturbations for the same normalized radius.
+
+\begin{example}[Semi-Axis Comparison]
+  Using the audit's fitted parameters:
+  \begin{center}
+  \small
+  \begin{tabular}{@{}lrr@{}}
+  \toprule
+  Channel & $\sigma_c$ & Raw semi-axis at $\epsilon = 1$ \\
+  \midrule
+  \code{acc\_x} & 0.413195 & 0.413 $g$ \\
+  \code{acc\_y} & 0.402293 & 0.402 $g$ \\
+  \code{acc\_z} & 0.356522 & 0.357 $g$ \\
+  \code{gyro\_x} & 0.417901 & 0.418 rad/s \\
+  \code{gyro\_y} & 0.406792 & 0.407 rad/s \\
+  \code{gyro\_z} & 0.261610 & 0.262 rad/s \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+  A certified $\epsilon = 1$ ball in normalized space corresponds to very different
+  raw perturbation tolerances across channels. \code{gyro\_z} tolerates the smallest
+  raw perturbation ($\approx 0.26$ rad/s) before exiting the certified set.
+\end{example}
+
+\subsection{Why Mixing Units Without Normalization Is Wrong}
+
+Raw accelerometer values are in gravitational units ($g$), while gyroscope values
+are in rad/s. These are physically incommensurable quantities: adding them as if
+they were the same type of number violates dimensional analysis.
+
+Specifically, the ``naive'' raw $L_2$ distance adds $g^2$ and $(\mathrm{rad/s})^2$:
+\[
+  d_{\text{naive}} = \sqrt{\sum_{c=1}^3 \sum_i \Delta x_{\text{acc}}[c,i]^2
+                           + \sum_{c=4}^6 \sum_i \Delta x_{\text{gyro}}[c,i]^2},
+\]
+where the first sum has units $g^2$ and the second has units $(\mathrm{rad/s})^2$.
+The root has \emph{no consistent unit}. Normalization resolves this by mapping both
+into dimensionless standard-deviation units.
+
+% ============================================================
+\section{High-Dimensional Geometry: Intuitions That Fail}
+
+\subsection{Almost All Volume Is Near the Shell}
+
+In low dimensions, most of the volume of a ball is near the center. In high
+dimensions, the opposite is true: an $L_2$ ball of radius $r$ in $\R^n$ has most
+of its volume concentrated in a thin shell near the surface.
+
+Formally, for $\epsilon < r$:
+\[
+  \frac{\operatorname{Vol}\bigl(B(r) \setminus B(r - \epsilon)\bigr)}
+       {\operatorname{Vol}\bigl(B(r)\bigr)}
+  = 1 - \left(1 - \frac{\epsilon}{r}\right)^n \;\xrightarrow{n \to \infty}\; 1.
+\]
+In $\R^{768}$, with $\epsilon = 0.01r$, the fraction of volume outside the
+innermost 1\% shell is $1 - 0.99^{768} \approx 1 - 0.00041 = 99.96\%$.
+
+\textbf{Implication for ECDR:} Almost all random perturbations of an anchor will
+land near the boundary of the $L_2$ ball, not near the anchor itself. The margin
+bound $\underline{m}_{cj}$ must hold at all points in $\Se$, including those on
+the far shell.
+
+\subsection{Coordinate-Wise Coverage Collapse}
+
+As discussed in the main document, marginal coverage does not imply joint coverage.
+The geometric equivalent is that a Cartesian product of 90th-percentile intervals
+in each of 768 dimensions contains nearly \emph{zero} probability mass from the
+joint empirical distribution of $\Delta z$. The joint distribution lives on a
+low-dimensional manifold (driven by sensor correlations), not in the full 768-cube.
+
+\subsection{Consequence: Prefer Structured Domains}
+
+Because the data lies on a low-dimensional manifold, a domain that reflects this
+structure (wave-domain, PCA-based domain) will simultaneously:
+\begin{enumerate}[leftmargin=1.5em]
+  \item Contain most of the empirical data (high coverage).
+  \item Be small enough to certify (tight enough for the verifier to confirm $\underline{m}_{cj} > 0$).
+\end{enumerate}
+A naive hyperrectangle constructed from marginal percentiles does neither: it is
+too large to certify and simultaneously misses the actual data distribution.
+
+% ============================================================
+\section{$L_\infty$ Box Domains and the Normalization Constraint}
+
+\subsection{Box in Normalized vs.\ Raw Space}
+
+An $L_\infty$ box in normalized space:
+\[
+  \mathcal{B}_\infty = \bigl\{ \Delta z \in \R^{768} : |\Delta z[c,i]| \le b \;\forall c, i \bigr\}
+\]
+corresponds to a box in raw space with channel-dependent half-widths $b \cdot \sigma_c$:
+\[
+  \mathcal{B}_{\text{raw}} = \bigl\{ \Delta x \in \R^{6 \times 128} : |\Delta x[c,i]| \le b \cdot \sigma_c \;\forall c, i \bigr\}.
+\]
+
+\subsection{The Non-Linearity Trap: Dynamic Per-Window Normalization}
+
+If instead of a fixed $N$ using global parameters $(\mu_c, \sigma_c)$, one applied
+per-window z-score normalization:
+\[
+  Z_w[c, i] = \frac{X_w[c, i] - \bar{X}_w[c]}{\hat{\sigma}_w[c]},
+\]
+then the map $N_w$ depends on $X_w$ itself. This makes $N_w$ \emph{non-linear},
+and the composed classifier $F_w = f_\theta \circ N_w$ is no longer an affine
+transformation of $X_w$. IBP and CROWN require the input transformation to be
+affine (or at minimum piecewise-linear) to propagate interval bounds efficiently.
+Dynamic normalization invalidates all affine certification results.
+
+\begin{remark}
+  This is why the data analysis mandates that normalization parameters be
+  ``frozen prior to evaluation'' and not re-fitted per window or per inference call.
+\end{remark}
+
+% ============================================================
+\section{Summary of Key Relationships}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lYY@{}}
+\toprule
+Concept & Formula & ECDR Implication \\
+\midrule
+Norm bounds & $d_\infty \le d_2 \le \sqrt{768}\,d_\infty$ & Cannot translate percentile of one norm to the other. \\
+Normalization & $\Delta z = D^{-1} \Delta x$ & $L_2$ ball in $\R^{768}$ $\leftrightarrow$ ellipsoid in raw space. \\
+$L_\infty$ box & $|\Delta z[c,i]| \le b$ & Raw equivalent: $|\Delta x[c,i]| \le b \sigma_c$ per channel. \\
+Volume shell & $1-(1-\epsilon/r)^{768}$ & Most of ball volume is near the surface in $\R^{768}$. \\
+Non-linear norm & Dynamic $N_w$ & Breaks affine certificate; prohibited. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\bibitem{math}
+  ECDR Research Workspace. \textit{ECDR Mathematics Concepts}.
+  \code{ECDR\_Mathematics\_Concepts\_EN.tex}, October~2026.
+\end{thebibliography}
+
+\end{document}

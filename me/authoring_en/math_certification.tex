@@ -1,0 +1,495 @@
+% Advanced certification and lifecycle concepts. Included by the English atlas.
+\concept{C01}{Lipschitz continuity and compositional network bounds}{Norms, induced operator norms, and function composition; B-series classifier notation.}
+\paragraph{Definition and foundation.}
+A Lipschitz constant limits how much a function can amplify a change in its input. For a map $f:\R^d\to\R^m$ on a set $S\subseteq\R^d$, a valid constant $L\ge0$ satisfies
+\[
+ \norm{f(x)-f(y)}_q\le L\norm{x-y}_p\qquad\text{for every }x,y\in S.
+\]
+The quantifier is essential: a ratio observed on finitely many pairs is evidence about those pairs, rather than an upper bound on every possible pair. Lipschitz continuity implies continuity, but ordinary continuity need not supply a usable linear rate.
+\paragraph{Symbols and dimensions.}
+Here $d,m$ are positive integer dimensions; $x,y$ are input columns; $p,q$ identify norms; $L$ has output-unit/input-unit scale. Normalized sensor coordinates and logits are usually dimensionless. A bound must still name the normalization because changing coordinates changes its numerical value.
+\paragraph{Derivation and example.}
+For $f(x)=Ax+b$ with $A\in\R^{m\times d}$, subtraction cancels the bias $b\in\R^m$. The induced norm gives $\norm{A(x-y)}_q\le\norm{A}_{p\to q}\norm{x-y}_p$. If $f=f_r\circ\cdots\circ f_1$, integer $r\ge1$ counts layers, and layer $i$ has compatible constant $L_i$, repeated substitution yields
+\[
+ \operatorname{Lip}(f)\le\prod_{i=1}^{r}L_i.
+\]
+ReLU is 1-Lipschitz for the usual $p$-norms because its coordinatewise differences do not exceed the original differences. For $A=\left(\begin{smallmatrix}1&-2\\0&3\end{smallmatrix}\right)$, the $\infty$-norm constant is the largest absolute row sum, namely 3.
+\paragraph{Why ECDR uses this concept.}
+A valid rate converts an input-distance budget into a worst-case logit or margin change. It therefore connects data geometry to decision invariance.
+\paragraph{Conditions and connections.}
+The layer bounds must hold on every intermediate set reached from $S$. Their product may be loose because different layers' worst directions need not align. A gradient at one point is insufficient. C02 combines a valid rate with the anchor margin.
+
+\concept{C02}{A margin certificate and its admissible radius}{C01; pairwise margin, unique winner, and norm balls.}
+\paragraph{Definition and foundation.}
+A distance certificate combines a positive margin at one evaluated input with a bound on how quickly that margin can fall. Let $F:\R^d\to\R^K$ be the fixed logit map, $x_r\in\R^d$ an evaluated anchor, and $c\in\{1,\ldots,K\}$ its target class. For each competitor $j\ne c$, define $g_{cj}(x)=F_c(x)-F_j(x)$.
+\paragraph{Symbols and dimensions.}
+The integer $K\ge2$ counts classes; $r$ labels the anchor, not a radius. Write $\gamma_j=g_{cj}(x_r)>0$ and assume a valid constant $L_j\ge0$ for this scalar margin throughout the considered domain. A radius $\epsilon\ge0$ uses the same norm units as $x$. The index $j$ ranges over all $K-1$ competitors.
+\paragraph{Derivation and example.}
+From $\abs{g_{cj}(x)-\gamma_j}\le L_j\norm{x-x_r}_p$, the lower half of the absolute-value inequality gives
+\[
+ g_{cj}(x)\ge\gamma_j-L_j\norm{x-x_r}_p
+ \ge\gamma_j-L_j\epsilon.
+\]
+Consequently, a closed ball of radius $\epsilon$ is certified by the strict gate $\gamma_j-L_j\epsilon>0$ for every $j\ne c$. With margins $(0.8,0.3)$ and constants $(2,1)$, radius 0.2 gives bounds $(0.4,0.1)$. Radius 0.3 gives a zero second bound and does not pass this strict gate.
+\paragraph{Why ECDR uses this concept.}
+Once these bounds are valid, runtime can test membership in the certified ball and return $c$. Confidence or small distance alone supplies neither half of this argument.
+\paragraph{Conditions and connections.}
+For $L_j>0$, use $\epsilon<\gamma_j/L_j$; a competitor with $L_j=0$ and $\gamma_j>0$ imposes no further radius restriction within the domain where its bound is valid. These are sufficient conditions. A failed gate does not prove a changed class. A smaller certified ball may exist, and a non-ball domain can succeed where this isotropic construction fails. Numerical executable guarantees additionally require C20--C21.
+
+\concept{C03}{Interval bounds for an affine operation}{Order on real numbers, coordinate intervals, and matrix multiplication.}
+\paragraph{Definition and foundation.}
+An interval enclosure records a lower and upper bound for every possible coordinate. Suppose an unknown vector $v\in\R^n$ satisfies $l\le v\le u$ coordinatewise, and an affine operation computes $w=Av+b\in\R^m$. The problem is to enclose every resulting $w$, rather than to estimate its average.
+\paragraph{Symbols and dimensions.}
+The columns $l,u\in\R^n$ obey $l_i\le u_i$. The matrix $A\in\R^{m\times n}$ and bias $b\in\R^m$ are fixed. Define $A^+_{ki}=\max(A_{ki},0)$ and $A^-_{ki}=\min(A_{ki},0)$. Thus $A^-$ contains nonpositive entries; it is not the absolute magnitude of negative entries. All coordinates use the input or activation units of their layer.
+\paragraph{Derivation and example.}
+For a positive coefficient, the smallest product uses the smaller input. Multiplication by a negative coefficient reverses order, so the smallest product uses the larger input. Adding these scalar inequalities row by row yields
+\[
+ \underline w=A^+l+A^-u+b,\qquad
+ \overline w=A^+u+A^-l+b.
+\]
+For $v_1\in[1,2]$, $v_2\in[-1,3]$, and $w=2v_1-3v_2+1$, the resulting interval is $[-6,8]$. The lower endpoint is $2(1)-3(3)+1=-6$. Using both lower inputs would produce 6, which fails to enclose valid outputs.
+\paragraph{Why ECDR uses this concept.}
+Convolutions, dense heads, fixed affine normalization, and channel sums all admit this rule. Shared convolution weights do not require an explicitly materialized dense matrix.
+\paragraph{Conditions and connections.}
+The rule is exact for each output coordinate over the full input box, but it can lose relationships between outputs. If the true input set occupies only part of the box, the result remains sound and may be loose. C04 propagates the enclosure through a network; C19 applies the same sign logic to tail sums.
+
+\concept{C04}{Interval propagation and inductive soundness}{F35, C03; monotone functions and induction.}
+\paragraph{Definition and foundation.}
+Interval bound propagation, or IBP, transports an input enclosure through each operation of a fixed computation graph. Its central invariant is set inclusion: every true intermediate activation lies inside the interval assigned to that activation. Soundness means preserving this invariant, rather than obtaining narrow intervals.
+\paragraph{Symbols and dimensions.}
+Let $S\subseteq\R^{d_0}$ be the input domain, $f_i:\R^{d_{i-1}}\to\R^{d_i}$ the $i$th layer, and $v_i=f_i(v_{i-1})$ its true activation, with $v_0=x\in S$. Bounds $l_i,u_i\in\R^{d_i}$ are coordinatewise enclosures. The layer index is $i=1,\ldots,r$.
+\paragraph{Derivation and example.}
+Begin with $S\subseteq[l_0,u_0]$. For an affine layer use C03. Because $\relu(a)=\max(0,a)$ is nondecreasing,
+\[
+ l_i=\relu(l_{i-1}),\qquad u_i=\relu(u_{i-1})
+\]
+for a ReLU layer. Thus $[-6,8]$ becomes $[0,8]$. A maximum over coordinates is enclosed by the maximum of their lowers and the maximum of their uppers. Assume the invariant at layer $i-1$; a sound enclosure rule establishes it at layer $i$. Induction proves the final enclosure for every $x\in S$.
+\paragraph{Why ECDR uses this concept.}
+If final logit intervals satisfy $l_{r,c}>u_{r,j}$ for every competitor $j\ne c$, class $c$ wins throughout $S$. This is one route to a reusable certificate.
+\paragraph{Conditions and connections.}
+Every operation must have a correct enclosure rule, including preprocessing. Training-time batch normalization is not automatically a fixed pointwise affine map. Independent intervals can lose dependencies: for $F_c(t)=t+1$ and $F_j(t)=t$ on $[-1,1]$, the true margin is 1, while separate logit intervals yield a lower margin of $-1$. C06 explains a tighter relational alternative. Floating-point soundness requires more than this real-arithmetic induction.
+
+\concept{C05}{Affine relaxations of an unstable ReLU}{C03--C04; affine lines, convexity, and inequality direction.}
+\paragraph{Definition and foundation.}
+A relaxation replaces an operation with inequalities that contain its entire graph on a specified interval. A ReLU is unstable when its input interval crosses zero: some admissible inputs activate it and others do not. Its exact behavior is then not one affine map over the entire interval.
+\paragraph{Symbols and dimensions.}
+Let $v\in[l,u]\subset\R$, with $l<0<u$, and let $r=\relu(v)$. The endpoints $l,u$ have activation units. Define the dimensionless slope $a_U=u/(u-l)$ and intercept $b_U=-ul/(u-l)$, with activation units. A lower slope $\alpha$ is any real number in $[0,1]$.
+\paragraph{Derivation and example.}
+The line through the graph endpoints $(l,0)$ and $(u,u)$ has slope $(u-0)/(u-l)$, giving
+\[
+ \alpha v\le\relu(v)\le a_Uv+b_U
+ =\frac{u}{u-l}(v-l).
+\]
+For $v\le0$, the lower expression is nonpositive; for $v\ge0$, it is at most $v$. For the upper inequality, when $v\le0$ the chord is nonnegative. When $v\ge0$, subtracting $v$ from the chord gives $l(v-u)/(u-l)\ge0$. Both inequalities therefore hold on the entire interval.
+For $[l,u]=[-1,2]$, the upper line is $2(v+1)/3$, including an upper value $2/3$ at $v=0$, where ReLU is exactly zero.
+\paragraph{Why ECDR uses this concept.}
+These lines let a verifier carry affine information through nonlinear CNN layers and retain dependencies that independent intervals discard.
+\paragraph{Conditions and connections.}
+If $l\ge0$, use the exact identity; if $u\le0$, use exact zero. The interval itself must be sound. A relaxation valid only on $[l,u]$ cannot be reused on a wider interval without justification. C06 chooses the correct line according to the sign of the downstream coefficient.
+
+\concept{C06}{Backward linear relaxation and sign-aware substitution}{C05; linear objectives, lower bounds, and cancellation.}
+\paragraph{Definition and foundation.}
+Linear relaxation based perturbation analysis replaces nonlinear terms while preserving a bound on the particular output objective of interest. To lower-bound a scalar term $a r$, use a lower bound on $r$ when $a\ge0$, and an upper bound when $a<0$. A negative multiplier reverses inequality direction.
+\paragraph{Symbols and dimensions.}
+Here $r$ is a scalar activation and $a$ its downstream coefficient. For the example let $x\in[-1,1]$, $r_1=\relu(x)$, $r_2=\relu(x+1)$, and margin $g(x)=3/2+2r_1-r_2$. All example quantities are dimensionless. The lower ReLU slope is $\alpha\in[0,1]$.
+\paragraph{Derivation and example.}
+Because $x+1\in[0,2]$, $r_2=x+1$ exactly. Because the coefficient of $r_1$ is positive, substitute $r_1\ge\alpha x$:
+\[
+ g(x)\ge\tfrac32+2\alpha x-(x+1)
+ =\tfrac12+(2\alpha-1)x.
+\]
+Minimizing the affine expression on $[-1,1]$ gives $1/2-\abs{2\alpha-1}$. Choosing $\alpha=1/2$ certifies the exact minimum $1/2$, since the true expression is $g(x)=1/2+\abs{x}$. Independent intervals $r_1\in[0,1]$ and $r_2\in[0,2]$ instead give $-1/2$.
+\paragraph{Why ECDR uses this concept.}
+Backward substitution can produce $g_{cj}(x)\ge a_x^\top x+\beta_x$, keeping shared input dependencies until the final domain optimization. Here $a_x\in\R^d$ and $\beta_x\in\R$ define that affine lower expression.
+\paragraph{Conditions and connections.}
+Every substitution must be valid over the reachable activation range. The example explains a CROWN/LiRPA principle, not every algorithmic variant. Relaxation quality and computation cost remain separate questions. A sign error creates an invalid certificate; a loose but sound relaxation merely fails to certify. C07 converts the final affine expression into a constant domain bound. Optimizing the relaxation slope can improve that constant without changing the domain. It changes the proof approximation, rather than changing the underlying CNN or adding information to the observed input.
+
+\concept{C07}{Support functions and minimization of affine bounds}{Linear functionals, supremum and infimum; C06.}
+\paragraph{Definition and foundation.}
+For a nonempty set $D\subseteq\R^d$, its support function in direction $v\in\R^d$ is $\sigma_D(v)=\sup_{\delta\in D}v^\top\delta$. It measures the farthest extent of the set along a linear direction. If $D$ is unbounded, this value can be $+\infty$; nonempty compact domains avoid that difficulty and attain their extrema.
+\paragraph{Symbols and dimensions.}
+Write the input domain as $S=c_0+D$, where $c_0\in\R^d$ is its center and $\delta\in D$ is a displacement. Suppose the scalar margin obeys $g(x)\ge a^\top x+\beta$ throughout $S$, with $a\in\R^d$ and scalar $\beta$. The subscript 0 distinguishes the center from a class label. Products $a^\top x$ and $\beta$ use margin units.
+\paragraph{Derivation and example.}
+Substitute $x=c_0+\delta$ and use $\inf z=-\sup(-z)$:
+\[
+ \inf_{x\in S}(a^\top x+\beta)
+ =a^\top c_0+\beta-\sigma_D(-a).
+\]
+For the asymmetric interval $D=[0,2]$ and $a=-1$, the correct value $\sigma_D(-a)=\sigma_D(1)=2$ gives minimum $-2$ when $c_0=\beta=0$. Incorrectly using $\sigma_D(a)=\sigma_D(-1)=0$ would claim minimum zero and fail at displacement 2. Thus a missing minus sign can invalidate the bound, rather than merely reduce its precision.
+\paragraph{Why ECDR uses this concept.}
+Network relaxation and domain geometry perform different jobs. The former supplies an affine lower expression; the support function evaluates its worst case over the chosen input domain.
+\paragraph{Conditions and connections.}
+Only a centrally symmetric displacement set, $D=-D$, permits replacing $\sigma_D(-a)$ with $\sigma_D(a)$. The lower expression must hold for every domain point. C08--C10 and C13 derive supports for balls, boxes, generators, and orthogonal residuals. The construction asks a directional worst-case question about a set; it neither averages data points nor assigns probabilities to them.
+
+\concept{C08}{Norm-ball support and duality through Hölder's inequality}{C07; $p$-norms, dual norms, and Hölder's inequality.}
+\paragraph{Definition and foundation.}
+The dual norm of a vector $a\in\R^d$ is the largest linear response $a^\top v$ over the unit ball of the chosen input norm. For the standard $p$-norm, $1\le p\le\infty$, the dual is the $p^*$-norm, where $1/p+1/p^*=1$, interpreting the endpoints as $1^*=\infty$ and $\infty^*=1$.
+\paragraph{Symbols and dimensions.}
+Let $D=\{\delta\in\R^d:\norm{\delta}_p\le\epsilon\}$ with radius $\epsilon\ge0$, and let $S=c_0+D$. An affine margin lower bound has coefficient $a\in\R^d$, center $c_0\in\R^d$, and intercept $\beta\in\R$. The radius has input units; $\epsilon\norm{a}_{p^*}$ has margin units.
+\paragraph{Derivation and example.}
+Hölder gives $a^\top\delta\le\norm{a}_{p^*}\norm{\delta}_p\le\epsilon\norm{a}_{p^*}$. In finite dimension, a maximizing direction on the closed unit ball attains the dual norm. Hence this upper bound is the exact support:
+\[
+ \inf_{x\in S}(a^\top x+\beta)
+ =a^\top c_0+\beta-\epsilon\norm{a}_{p^*}.
+\]
+For $a=(3,-4)^\top$, $c_0=0$, $\beta=2$, and $\epsilon=0.1$, the minima are $1.5$ for a Euclidean ball, $1.3$ for an $\infty$-ball, and $1.6$ for a 1-ball. Their penalties are respectively $0.1(5)$, $0.1(7)$, and $0.1(4)$.
+\paragraph{Why ECDR uses this concept.}
+It turns an affine verifier output into a scalar lower margin using a closed-form geometric calculation.
+\paragraph{Conditions and connections.}
+The three examples use different sets: an equal numeric radius does not make coverage or volume comparable. This exact support does not make the preceding neural relaxation exact. It evaluates that relaxation exactly. C09 replaces a uniform radius with coordinate-specific budgets. A Euclidean ball pays according to the coefficient vector's Euclidean length; a coordinate box can choose adverse signs separately. This difference explains the distinct penalties without appealing to a probabilistic interpretation of either set.
+
+\concept{C09}{Diagonal boxes: exact support and coordinate-access limits}{C07; Cartesian products and adversarial indistinguishability.}
+\paragraph{Definition and foundation.}
+A diagonal box is $S=\{c_0+\delta:\abs{\delta_i}\le b_i,\ i=1,\ldots,d\}$, with center $c_0\in\R^d$ and budgets $b_i\ge0$. Coordinate constraints are independent geometrically; this says nothing about statistical independence of the observed sensor channels.
+\paragraph{Symbols and dimensions.}
+The affine lower expression is $a^\top x+\beta$, where $a\in\R^d$, $\beta\in\R$, and each $b_i$ has the units of coordinate $x_i$. The integer $d\ge1$ is the number of coordinates tested. Define a coordinate-access model in which reading one previously unknown query coordinate has unit cost.
+\paragraph{Derivation and example.}
+Each term $a_i\delta_i$ is minimized independently at $-b_i\abs{a_i}$. Summing yields
+\[
+ \inf_{x\in S}(a^\top x+\beta)
+ =a^\top c_0+\beta-\sum_{i=1}^d b_i\abs{a_i}.
+\]
+For $a=(2,-1)^\top$, $b=(0.1,0.3)^\top$, $c_0=0$, and $\beta=1$, the lower value is $1-0.2-0.3=0.5$.
+An exact membership algorithm has worst-case $\Omega(d)$ coordinate accesses for a finite nonempty box with every width positive. Run it on an interior point. If a coordinate remains unread, change only that coordinate beyond its finite bound. The algorithm observes the same values but must now return a different answer, a contradiction. A complete scan achieves $O(d)$, so the bound is $\Theta(d)$.
+\paragraph{Why ECDR uses this concept.}
+Both certification and membership have transparent formulas, making boxes a useful reference geometry.
+\paragraph{Conditions and connections.}
+The lower bound assumes exact membership for arbitrary inputs, no prior query summary, and all nondegenerate finite coordinates. Early rejection can improve average cost. Parallel hardware changes elapsed time, and an always-reject conservative checker avoids the exactness requirement while providing no reuse. Big-O alone establishes no speedup. The access argument concerns the information needed to distinguish inputs, not the number of machine instructions generated by one particular loop. It therefore survives routine code refactoring under the same input model.
+
+\concept{C10}{Generator domains and additive residual support}{C07; matrix images, Minkowski sums, and coordinate boxes.}
+\paragraph{Definition and foundation.}
+A generator domain represents coordinated movement through a smaller latent vector. Let $S=\{c_0+Bu+v:\norm{u}_\infty\le1,\ \abs{v_i}\le\eta_i\}$. Its first component follows columns of $B$; its residual permits coordinatewise departures. These are set constraints, not a probability model.
+\paragraph{Symbols and dimensions.}
+The center is $c_0\in\R^d$, generator matrix $B\in\R^{d\times q}$, latent column $u\in\R^q$, residual $v\in\R^d$, and residual budgets $\eta_i\ge0$. The dimension $q\ge1$ counts generators. For affine lower bound $a^\top x+\beta$, $a\in\R^d$ and $\beta\in\R$. Columns of $B$ have input units when $u$ is dimensionless; they need not be orthogonal.
+\paragraph{Derivation and example.}
+The two constraint sets form a Cartesian product, so their infima separate. Since $a^\top Bu=(B^\top a)^\top u$,
+\[
+ \inf_{x\in S}(a^\top x+\beta)
+ =a^\top c_0+\beta-\norm{B^\top a}_1
+   -\sum_{i=1}^d\eta_i\abs{a_i}.
+\]
+For margin $1+x_1-x_2$, choose $c_0=0$, $B=(0.8,0.8)^\top$, and $\eta_1=\eta_2=0.1$. The generator contribution vanishes because $(1,-1)B=0$; the residual penalty is 0.2, leaving bound 0.8. The enclosing box $\abs{x_i}\le0.9$ instead gives $-0.8$.
+\paragraph{Why ECDR uses this concept.}
+A correlated temporal displacement can be broad in directions harmless to the decision margin, while keeping a small support in harmful directions.
+\paragraph{Conditions and connections.}
+Low dimension alone gives no guarantee: margin $1+x_1+x_2$ changes along the same generator. Coordinate residuals here are not orthogonal Euclidean residuals. C11--C14 derive that distinct geometry and explain how normalization changes it. The support is especially cheap once $B^\top a$ is computed, but checking a query's generator representation can be substantially harder. Proof cost and membership cost must therefore be evaluated separately, even for this simple closed-form lower bound.
+
+\concept{C11}{Linear span, orthogonal projection, and residual decomposition}{Vector spaces, inner products, and linear independence; C10.}
+\paragraph{Definition and foundation.}
+The linear span of columns $v_1,\ldots,v_q\in\R^d$ is the set of every real linear combination of those columns. It is a subspace because it contains zero and is closed under addition and scalar multiplication. A bounded generator domain occupies only a constrained portion of a span; ``span'' itself does not impose coefficient budgets.
+\paragraph{Symbols and dimensions.}
+Let $V=[v_1\ \cdots\ v_q]\in\R^{d\times q}$ have orthonormal columns, so $V^\top V=I_q$, with $1\le q\le d$. The symbols $I_q$ and $I_d$ denote identity matrices of their indicated sizes. For displacement $w\in\R^d$, define score $s=V^\top w\in\R^q$, projector $P=VV^\top\in\R^{d\times d}$, and complementary projector $P_\perp=I_d-P$.
+\paragraph{Derivation and example.}
+The identity $P^2=V(V^\top V)V^\top=P$ proves idempotence; $P^\top=P$ proves symmetry. Also $V^\top P_\perp=0$. Therefore
+\[
+ w=Vs+P_\perp w,\qquad
+ \norm{w}_2^2=\norm{s}_2^2+\norm{P_\perp w}_2^2.
+\]
+The second equation follows because the two components are orthogonal. With $V=(1,1)^\top/\sqrt2$ and $w=(0.2,0)^\top$, the score is $0.1\sqrt2$, the projection is $(0.1,0.1)^\top$, and the residual is $(0.1,-0.1)^\top$.
+\paragraph{Why ECDR uses this concept.}
+A query can be tested against separate budgets along retained temporal directions and outside their span. This gives a precise meaning to ``structured motion plus residual uncertainty.''
+\paragraph{Conditions and connections.}
+The formula $VV^\top$ is an orthogonal projector only under the stated orthonormality condition. A general full-column-rank matrix $B$ requires $B(B^\top B)^{-1}B^\top$. C12 obtains directions from training data, while C14 explains why rescaling them can invalidate the original projector. The residual is the component not represented by the chosen span; it is not automatically measurement noise, annotation error, or a random variable independent of the scores.
+
+\concept{C12}{PCA, explained variance, and what a fitted subspace does not prove}{F32, F37--F39, C11; training/test separation.}
+\paragraph{Definition and foundation.}
+Principal component analysis, or PCA, selects orthogonal directions maximizing variation in a finite collection of centered observations. It describes the data used to fit it. A high explained-variance fraction is neither a universal support constraint nor a statement that every future displacement lies close to the selected span.
+\paragraph{Symbols and dimensions.}
+Let $\Delta^{(i)}\in\R^d$, $i=1,\ldots,N$, be $N\ge2$ training displacements. Their mean is $\bar\Delta=N^{-1}\sum_i\Delta^{(i)}$. The sample covariance is
+\[
+ C=\frac1{N-1}\sum_{i=1}^{N}(\Delta^{(i)}-\bar\Delta)
+ (\Delta^{(i)}-\bar\Delta)^\top\in\R^{d\times d}.
+\]
+Its eigenvalues satisfy $\lambda_1\ge\cdots\ge\lambda_d\ge0$. The retained matrix $V\in\R^{d\times q}$ contains $q$ orthonormal eigenvectors, with $1\le q\le d$.
+\paragraph{Derivation and example.}
+For a unit direction $v$, its sample projected variance is $v^\top Cv$. Maximizing this expression selects a leading eigenvector; successive orthogonal directions select subsequent eigenvectors. If $\sum_i\lambda_i>0$, the retained variance fraction is $\sum_{i=1}^{q}\lambda_i/\sum_{i=1}^{d}\lambda_i$. Eigenvalues $(9,1)$ give 90\% for $q=1$, yet an unseen displacement can still lie arbitrarily far along the discarded direction.
+\paragraph{Why ECDR uses this concept.}
+PCA proposes a geometry worth testing: score budgets along $V$ and a residual budget outside its span. Actual query membership and a sound whole-domain certificate perform the subsequent correctness work.
+\paragraph{Conditions and connections.}
+If PCA fits centered deltas around $\bar\Delta$, the corresponding query-domain center is generally $x_r+\bar\Delta$, not automatically the anchor $x_r$. Training-only fitting prevents leakage; it does not prove future coverage. A quantile budget remains empirical. With zero total variance the displayed fraction is undefined. C13 supplies the support formula for a specified PCA-shaped domain.
+
+\concept{C13}{Support of an orthogonal residual domain}{C07--C08 and C11; score boxes and Euclidean orthogonality.}
+\paragraph{Definition and foundation.}
+An orthogonal residual domain combines bounded retained scores with a Euclidean residual restricted to their orthogonal complement:
+\[
+ S=\{c_0+V\diag(b)u+v:\norm{u}_\infty\le1,
+          V^\top v=0,\ \norm{v}_2\le\eta\}.
+\]
+Here $V\in\R^{d\times q}$ has orthonormal columns, $c_0\in\R^d$ is a center, $b\in\R^q$ has nonnegative score budgets, and $\eta\ge0$ is a residual radius. Columns $u\in\R^q$ and $v\in\R^d$ are constrained latent and residual variables.
+\paragraph{Symbols and dimensions.}
+Let $a^\top x+\beta$ be an affine margin lower expression, with $a\in\R^d$, $\beta\in\R$, and $P_\perp=I_d-VV^\top$. Budgets $b$ and $\eta$ use the displacement coordinates' units. The diagonal matrix $\diag(b)$ is $q\times q$.
+\paragraph{Derivation and example.}
+The score contribution minimizes to $-\norm{\diag(b)V^\top a}_1$. Since $v$ is orthogonal to the retained span, $a^\top v=(P_\perp a)^\top v$. Cauchy--Schwarz gives its exact minimum as $-\eta\norm{P_\perp a}_2$, attained opposite $P_\perp a$ when that vector is nonzero. Thus
+\[
+ \ell=a^\top c_0+\beta-\norm{\diag(b)V^\top a}_1
+                  -\eta\norm{P_\perp a}_2.
+\]
+For $V=(1,1)^\top/\sqrt2$, $a=(1,-1)^\top$, base value $a^\top c_0+\beta=1$, and $\eta=0.1$, the score term vanishes and $\ell=1-0.1\sqrt2\approx0.858579$.
+\paragraph{Why ECDR uses this concept.}
+It penalizes the margin only for residual directions that can actually occur in the defined domain, instead of charging the entire coefficient norm.
+\paragraph{Conditions and connections.}
+The residual must satisfy both orthogonality and the Euclidean bound. A coordinate residual box is a different set and has a different support. This exact geometry calculation still relies on the preceding affine neural bound being sound. C14 handles coordinate changes. The construction does not assert that a learned direction has physical causal meaning. Its immediate mathematical benefit is an explicitly defined feasible set whose linear worst case can be derived and checked.
+
+\concept{C14}{Normalization changes generators and orthogonality}{B07--B08; C11--C13; invertible diagonal coordinate transformations.}
+\paragraph{Definition and foundation.}
+Normalization is a change of coordinates. A raw-coordinate domain can be transformed exactly, but its old geometric interpretation must also be transported. In particular, independent channel scaling does not generally preserve Euclidean angles, orthonormality, or a spherical residual constraint.
+\paragraph{Symbols and dimensions.}
+Let $x\in\R^d$ be raw input, $z=D^{-1}(x-\mu)$ normalized input, $\mu\in\R^d$ a fixed mean, and $D=\diag(\sigma_1,\ldots,\sigma_d)$ with every $\sigma_i>0$. For raw domain $x=c_0+Vu+v$, $c_0,v\in\R^d$, $V\in\R^{d\times q}$, and $u\in\R^q$, the transformed generator is $B=D^{-1}V$.
+\paragraph{Derivation and example.}
+Substitution gives $z=D^{-1}(c_0-\mu)+Bu+D^{-1}v$. Even when $V^\top V=I_q$,
+\[
+ B^\top B=V^\top D^{-2}V
+\]
+need not equal $I_q$. For $V=(1,1)^\top/\sqrt2$ and $D=\diag(1,2)$, $\norm{B}_2^2=5/8$, so $BB^\top$ is not idempotent. Consequently $I_d-BB^\top$ is not the required complementary orthogonal projector.
+A raw orthogonality constraint $V^\top v=0$ becomes $V^\top Dv_z=0$ for $v_z=D^{-1}v$; its raw Euclidean budget becomes $\norm{Dv_z}_2\le\eta$.
+\paragraph{Why ECDR uses this concept.}
+A certificate and membership checker must describe the same coordinates. Silently placing scaled directions in an old PCA projector can accept inputs outside the intended domain.
+\paragraph{Conditions and connections.}
+One safe option keeps the raw domain and includes normalization inside the certified network. Another transports every constraint and recomputes support and membership. Reorthonormalizing $B$ alone does not preserve the original coefficient box: its coefficient constraints must also be transformed. Positive scales and fixed fitted statistics are necessary for this invertible transformation. If a scale were zero, the inverse map would not exist; if statistics changed between certificate construction and use, runtime would be evaluating a different coordinate map.
+
+\concept{C15}{Containment and the direction of certificate transfer}{Set inclusion, universal statements, and infima; C18's margin criterion.}
+\paragraph{Definition and foundation.}
+A certificate valid on a larger set also applies to every subset. This follows directly from a universal quantifier: if a statement is true for every member of $\widehat S$, then it is true for every member of $S\subseteq\widehat S$. Transferring a bound in the opposite direction has no such justification.
+\paragraph{Symbols and dimensions.}
+Let $S,\widehat S\subseteq\R^d$ be nonempty domains, with $S\subseteq\widehat S$. For target class $c$ and competitor $j\ne c$, the scalar margin is $g_{cj}:\R^d\to\R$. A sound lower bound $\ell_j$ on $\widehat S$ means $\ell_j\le\inf_{x\in\widehat S}g_{cj}(x)$.
+\paragraph{Derivation and example.}
+Enlarging a minimization set cannot increase the minimum or infimum:
+\[
+ \inf_{x\in S}g_{cj}(x)\ge
+ \inf_{x\in\widehat S}g_{cj}(x)\ge\ell_j.
+\]
+If $\ell_j>0$ for every competitor, the target wins on both sets. For $g(x)=1-x$, the smaller interval $[-0.5,0.5]$ has minimum $0.5$, but the larger interval $[-2,2]$ has minimum $-1$. Certification of the smaller interval therefore says nothing sufficient about the larger one.
+\paragraph{Why ECDR uses this concept.}
+A difficult structured domain can be enclosed by a simpler box or ball. Proving positivity over that enclosure is sufficient for the original domain, provided containment has actually been established.
+\paragraph{Conditions and connections.}
+A verifier's numerical output need not improve monotonically when the domain shrinks because its optimization procedure can behave differently. The mathematical property and any already-valid bound do transfer. Lower-bound failure on an enclosure does not prove failure on the enclosed set. Changing a center, radius, normalization, or generator may destroy containment and must be checked explicitly before reusing a certificate.
+
+\concept{C16}{Selectors and unions of certified domains}{C15 and C18; disjunction, witnesses, and finite unions.}
+\paragraph{Definition and foundation.}
+Selection decides which certificate to try; membership determines whether that certificate applies. Their responsibilities can be separated without weakening soundness. A selector may be heuristic, but an accepted query must have a witness: a specific valid certificate whose domain contains it.
+\paragraph{Symbols and dimensions.}
+Let $\mathcal E$ be a finite set of record identifiers. Record $e\in\mathcal E$ contains domain $S_e\subseteq\R^d$, target $c_e\in\{1,\ldots,K\}$, reference identity, and sound positive lower margins. A selector $s(x)$ proposes an identifier for query $x\in\R^d$. The conservative checker $M_e(x)\in\{0,1\}$ must satisfy $M_e(x)=1\Rightarrow x\in S_e$.
+\paragraph{Derivation and example.}
+If all chosen records share target $c$, then
+\[
+ \bigl(\exists e\in\mathcal E:M_e(x)=1\bigr)
+ \Longrightarrow x\in\bigcup_{e\in\mathcal E}S_e
+ \Longrightarrow h(x)=c,
+\]
+where $h$ is the certified reference decision. The first implication uses checker soundness; the second uses the certificate of whichever domain contains $x$. A selector mistake can cause a miss and extra cost. It cannot cause a false accept if the selected certificate and membership check remain sound.
+\paragraph{Why ECDR uses this concept.}
+Temporal event names, nearest-anchor rules, and data-driven routing can propose useful domains without themselves proving the class. The proof travels with each record, rather than with the selector's confidence.
+\paragraph{Conditions and connections.}
+Domains with different targets can also coexist: return the target of a valid witnessed record. For a single deterministic reference, sound certified domains of distinct strict winners cannot overlap. If two such records both accept, some assumption or implementation is inconsistent. Do not merge centers or budgets while keeping old bounds; a union is represented by a disjunction of memberships, not automatically by its enclosing box.
+
+\concept{C17}{A wave domain is an embedded full-window domain}{B09--B10 and B24--B26; C15--C16.}
+\paragraph{Definition and foundation.}
+A wave-domain certificate fixes the retained part of an anchor window and varies only the newly appended samples. It therefore describes a particular subset of full windows. Checking the new tail alone is valid only when the retained part is guaranteed to be the one used in that subset's definition.
+\paragraph{Symbols and dimensions.}
+Let $X_r\in\R^{C\times W}$ be a fixed anchor with $C$ channels and $W$ samples, and let integer shift $s$ satisfy $1\le s\le W$. A new wave is $U\in\R^{C\times s}$ with admissible set $\mathcal U$. Define $\mathcal T_s(X_r,U)$ by dropping the first $s$ columns of $X_r$ and appending $U$. Vectorization maps the window to $\R^{CW}$.
+\paragraph{Derivation and example.}
+The full certified domain corresponding to a wave set is
+\[
+ S_r=\{\operatorname{vec}(\mathcal T_s(X_r,U)):U\in\mathcal U\}.
+\]
+This is an affine embedding of $Cs$ variable coordinates into $CW$ coordinates. For $C=1,W=4,s=2$, anchor $(1,2,3,4)$ and wave box $[5,6]^2$ produce exactly windows $(3,4,u_1,u_2)$ with $u_1,u_2\in[5,6]$. Window $(30,40,5,6)$ has an admissible tail but is outside $S_r$.
+\paragraph{Why ECDR uses this concept.}
+The geometry explains why a checker may inspect only $Cs$ new values when trusted stream state already guarantees the overlap. It also identifies precisely what can invalidate that shortcut.
+\paragraph{Conditions and connections.}
+The domain record must bind the anchor, overlap, layout, normalization, and stream position. A full-window perturbation box varies different coordinates and cannot be silently substituted. After one shift, the overlap changes; C23--C25 address lifecycle rules rather than assuming the wave certificate follows the predicted class. The reduced number of free variables is useful only while that affine embedding remains fixed.
+
+\concept{C18}{The whole-domain strict-positive margin theorem}{B15--B16; universal quantification and sound lower bounds.}
+\paragraph{Definition and foundation.}
+The central decision theorem needs every competitor and every input in the certified domain. Let $F:\R^d\to\R^K$ be fixed, and let $h(x)$ choose an argmax logit under a fixed deterministic tie rule. For target $c$, each margin is $g_{cj}(x)=F_c(x)-F_j(x)$.
+\paragraph{Symbols and dimensions.}
+The domain $S\subseteq\R^d$ is nonempty, $K\ge2$, and $j\in\{1,\ldots,K\}\setminus\{c\}$. A scalar $\ell_j$ is sound when $\ell_j\le g_{cj}(x)$ for every $x\in S$. Logits, margins, and lower bounds are dimensionless scores unless a different scale is declared.
+\paragraph{Derivation and proof.}
+Assume $\ell_j>0$ for every competitor. Pick an arbitrary $x\in S$. For each $j\ne c$, soundness gives $F_c(x)-F_j(x)\ge\ell_j>0$, so $F_c(x)>F_j(x)$. Therefore $c$ is the unique maximizer and $h(x)=c$. Since the chosen $x$ was arbitrary,
+\[
+ \left[\forall j\ne c:\ \ell_j\le\inf_{x\in S}g_{cj}(x),\ \ell_j>0\right]
+ \Longrightarrow\left[\forall x\in S:\ h(x)=c\right].
+\]
+No distributional assumption is used in this implication.
+\paragraph{Why ECDR uses this concept.}
+The theorem separates offline proof from online membership. Runtime need not evaluate the CNN again once it establishes that the current input belongs to this unchanged, valid domain.
+\paragraph{Conditions and connections.}
+The implication is universal but conditional on valid premises. It does not claim that every domain is certifiable. A zero bound fails the strict gate, but may merely reflect looseness or a tie handled in favor of $c$. Even a true positive margin at every point need not have a positive uniform infimum on a noncompact set. Numerical code, model identity, preprocessing, and membership add C20--C23 obligations.
+
+\concept{C19}{Sign-aware certification from new and dropped feature sums}{B24--B26; C03 and C18.}
+\paragraph{Definition and foundation.}
+For a valid, stride-one, local CNN with ReLU and global average pooling, aligned overlapping feature positions cancel in the difference between consecutive windows. Only newly arriving and dropped final-layer features contribute to the pooled-feature change. The resulting margin identity permits a specialized certificate.
+\paragraph{Symbols and dimensions.}
+Let $Z_r\in\R^{C\times W}$ be the old normalized window, $U\in\R^{C\times s}$ a wave, and $Z^\prime=\mathcal T_s(Z_r,U)$. Integers $C,W$ count channels/samples, $d_h$ counts final channels, $n\ge1$ counts final positions, and $1\le s\le n$ is the shift. The head is $A\in\R^{K\times d_h}$ for $K\ge2$ classes; $c$ is target and $j\ne c$ is competitor. Define $q_j=(A_{c,:}-A_{j,:})^\top$, $\gamma_{cj}=f_{\theta,c}-f_{\theta,j}$ and $m_j=\gamma_{cj}(Z_r)$. Dropped/new sums $D_{\rm drop},D_{\rm new}(U)\in\R^{d_h}$ are as in B25.
+\paragraph{Derivation and example.}
+The cancellation identity gives $\gamma_{cj}(Z^\prime)=m_j+q_j^\top(D_{\rm new}(U)-D_{\rm drop})/n$. Suppose $l\le D_{\rm new}(U)\le u$ for every admissible wave, with $l,u\in\R^{d_h}$. Writing $q_j^+=\max(q_j,0)$ and $q_j^-=\min(q_j,0)$ coordinatewise gives
+\[
+ \ell_j=m_j+\frac{(q_j^+)^\top l+(q_j^-)^\top u
+                   -q_j^\top D_{\rm drop}}{n}.
+\]
+For $n=10$, $m_j=0.4$, $q_j=(2,-1)^\top$, $D_{\rm drop}=(1,2)^\top$, $l=(0,1)^\top$, and $u=(2,3)^\top$, the bound is $0.4-3/10=0.1$.
+\paragraph{Why ECDR uses this concept.}
+It uses known anchor features and localized uncertainty rather than rebuilding an unrelated full-window bound.
+\paragraph{Conditions and connections.}
+The feature-shift identity must actually hold; padding, pooling alignment, or stateful operators require separate treatment. New-sum bounds must cover the whole wave domain. Dropped sums must be known with justified numerical semantics. Every competitor must pass C18, and a reused class alone does not supply new exact feature sums. The numerical example covers one competitor only. In a three-class problem, the second competitor needs its own coefficient column and positive bound before any query can be accepted as class-invariant.
+
+\concept{C20}{Numerical soundness requires two separate error budgets}{C18--C19; real arithmetic versus executable arithmetic.}
+\paragraph{Definition and foundation.}
+A real-number theorem describes an ideal mathematical function. A deployed program evaluates rounded operations, while a verifier also computes rounded bounds. These are three distinct objects: the ideal margin, the executable margin, and the computed certificate. A positive computed number proves executable positivity only after both discrepancies are bounded.
+\paragraph{Symbols and dimensions.}
+For one competitor, let $g:S\to\R$ be the ideal margin, $\widetilde g:S\to\R$ the actual executable-reference margin, and $\widehat\ell\in\R$ the verifier's computed lower value. Suppose proved budgets $\delta\ge0$ and $\eta\ge0$ satisfy
+\[
+ \widehat\ell-\delta\le\inf_{x\in S}g(x),\qquad
+ \abs{\widetilde g(x)-g(x)}\le\eta\quad\text{for every }x\in S.
+\]
+All four scalar quantities have margin units. The budgets may differ by competitor and domain.
+\paragraph{Derivation and example.}
+For any accepted query whose exact represented input belongs to $S$,
+\[
+ \widetilde g(x)\ge g(x)-\eta
+ \ge\widehat\ell-\delta-\eta.
+\]
+Thus $\widehat\ell>\delta+\eta$ is a sufficient strict gate. With $\widehat\ell=0.020$, $\delta=0.003$, and $\eta=0.004$, the executable lower margin is 0.013. With $\widehat\ell=0.005$, the lower value becomes $-0.002$ and this gate cannot certify.
+\paragraph{Why ECDR uses this concept.}
+The operational objective is agreement with the frozen reference program, not merely agreement with an idealized formula that may round differently near a decision boundary.
+\paragraph{Conditions and connections.}
+These example budgets are assumed valid for illustration; they are not arbitrary tolerances. Their derivation must cover the actual operations, weights, precisions, reduction order, preprocessing, and supported inputs. NaNs or unsupported exceptional values require explicit rejection or treatment. Zero mismatches in sampled tests cannot replace a universal error bound. Membership arithmetic needs its own enclosure, addressed in C21.
+
+\concept{C21}{Conservative numerical membership}{C09 and C20; interval containment and rounding error.}
+\paragraph{Definition and foundation.}
+A conservative membership checker may reject an admissible query when uncertain, but must never accept an inadmissible one. In numerical code, the exact mathematical coordinate represented after preprocessing can differ from a rounded point estimate. The checker therefore needs a justified enclosure of that coordinate, rather than an informal tolerance added to the certified set.
+\paragraph{Symbols and dimensions.}
+Let the certified box be $S=\{z\in\R^d:l_i\le z_i\le u_i\}$, where $l,u\in\R^d$ and $l\le u$. For the particular query, let $[\underline z_i,\overline z_i]$ be a sound interval for its exact normalized coordinate $z_i$. These endpoints must include preprocessing and comparison-related numerical uncertainty. All coordinates are in the normalization used when building the certificate.
+\paragraph{Derivation and example.}
+Accept the box test only if
+\[
+ l_i\le\underline z_i\le\overline z_i\le u_i
+ \qquad\text{for every }i=1,\ldots,d.
+\]
+Then every possible exact query consistent with the enclosures lies in $S$, so the actual query does too. For a one-dimensional domain $[0,0.1]$, interval $[0.099,0.101]$ cannot be accepted even if the rounded estimate is 0.1. Interval $[0.098,0.099]$ lies entirely inside and can pass.
+\paragraph{Why ECDR uses this concept.}
+Membership is the logical bridge from a whole-domain theorem to the concrete runtime query. An unsound bridge invalidates even a perfectly computed margin bound.
+\paragraph{Conditions and connections.}
+The domain endpoints themselves must have fixed, justified meaning. Directed rounding or interval arithmetic can implement enclosures, but their correctness depends on the actual operation sequence. For PCA membership, score errors, residual errors, and orthogonality errors must also be enclosed. Enlarging a comparison threshold without certifying the enlarged domain is unsafe. Rejecting uncertainty and falling back can preserve soundness, at the cost of lower coverage.
+
+\concept{C22}{Membership algorithms and their computational obligations}{C09--C14 and C21; arithmetic complexity and existential constraints.}
+\paragraph{Definition and foundation.}
+Domain membership is an algorithmic task with a geometry-specific proof obligation. An explicit box requires comparisons; a projection domain requires linear algebra; a general generator domain asks whether a feasible latent representation exists. Giving these all the same complexity hides materially different work.
+\paragraph{Symbols and dimensions.}
+Let $x,c_0\in\R^d$ and $w=x-c_0$. A PCA matrix $V\in\R^{d\times q}$ has orthonormal columns, score budgets $b\in\R^q_{\ge0}$, and residual radius $\eta\ge0$. For a general generator domain use $B\in\R^{d\times q}$, latent $u\in\R^q$, and residual $v\in\R^d$. Here complexity counts scalar arithmetic or coordinate accesses, not measured elapsed time.
+\paragraph{Derivation and example.}
+A diagonal box uses $d$ coordinate comparisons in a full scan. The PCA domain of C13 has equivalent tests
+\[
+ \abs{V^\top w}\le b,\qquad
+ \norm{w-VV^\top w}_2\le\eta.
+\]
+Dense score and reconstruction operations cost $O(dq+d)$, with the $d$ term accounting for residual processing. This page assumes $1\le q\le d$. If some $b_i=0$, the corresponding exact score must be zero. Under exact orthonormality, the residual squared norm also equals $\norm{w}_2^2-\norm{V^\top w}_2^2$, but numerical cancellation requires care.
+\paragraph{Why ECDR uses this concept.}
+The checker can dominate a small CNN's cost. A domain with better geometric coverage can still produce worse total latency if membership is expensive.
+\paragraph{Conditions and connections.}
+For $x=c_0+Bu+v$ with box constraints, membership is feasibility of a linear system of equalities and inequalities. A verified feasible witness suffices to accept; a failed heuristic witness does not prove nonmembership. General residual norms can require other constrained solvers. Replacing feasibility by a projection shortcut needs an equivalence proof. Wave-only checks reduce the dimension to $Cs$ only with C17's trusted overlap identity.
+
+\concept{C23}{The fixed-anchor reuse theorem}{C18 and C20--C21; frozen reference identity and two-branch reasoning.}
+\paragraph{Definition and foundation.}
+Fixed-anchor reuse keeps the meaning of a certificate unchanged while testing successive queries against it. A reused output is a decision result; it does not automatically become a newly evaluated anchor. The proof can apply independently to each accepted query, without assuming successive queries are close.
+\paragraph{Symbols and dimensions.}
+Let $R$ denote the frozen reference identity: graph, weights, evaluation state, preprocessing, class order, precision semantics, and tie rule. Its deterministic decision is $h_R:\mathcal X\to\{1,\ldots,K\}$ on valid input space $\mathcal X\subseteq\R^d$. A record $(x_r,S_r,c_r,R)$ stores an anchor $x_r$, a certified domain $S_r$, and target $c_r$. Queries are $x_t\in\mathcal X$, indexed by integer $t\ge1$.
+\paragraph{Derivation and proof.}
+Assume the record has sound strictly positive margins over $S_r$, including any necessary numerical justification. Assume a conservative checker $M_r$ satisfies $M_r(x)=1\Rightarrow x\in S_r$. The policy is
+\[
+ \widehat h(x_t)=
+ \begin{cases}c_r,&\text{if identity matches and }M_r(x_t)=1,\\
+ h_R(x_t),&\text{otherwise.}\end{cases}
+\]
+On acceptance, C18 gives $c_r=h_R(x_t)$. On rejection or uncertainty, the fallback returns $h_R(x_t)$ directly. These exhaustive branches establish equality for every valid query under the assumptions.
+\paragraph{Why ECDR uses this concept.}
+It states precisely what certified decision reuse promises: agreement with the chosen reference while avoiding some reference evaluations.
+\paragraph{Conditions and connections.}
+The anchor, domain, and reference identity must remain the same. An updated model or recentered domain requires a new certificate or a proved transfer. Reused predictions do not provide uncomputed feature tensors. The theorem guarantees neither ground-truth accuracy, useful hit rate, nor lower cost. C24 shows why moving the anchor without transferring the proof is unsafe.
+
+\concept{C24}{A stale certificate and the danger of automatic recentering}{C17 and C23; B27--B28's computed toy CNN.}
+\paragraph{Definition and foundation.}
+A certificate is stale when runtime applies it to inputs outside the domain for which its bounds were proved. Class agreement at one accepted point is insufficient to transfer a neighborhood or a wave-domain certificate to that point. This is a logical failure even in exact arithmetic.
+\paragraph{Symbols and dimensions.}
+For a scalar counterexample let $g(x)=1-x$, where positive margin selects class 1. The original anchor is $x_r=0$ and the certified set is $S_r=[-0.6,0.6]$. Let $x_1=0.6$ be an accepted query and $x_2=1.2$ a later query. All quantities in this counterexample are dimensionless.
+\paragraph{Derivation and example.}
+The original minimum is $\inf_{x\in S_r}g(x)=0.4>0$. Although $x_1$ is certified, replacing the center by $x_1$ while keeping radius 0.6 admits $x_2$. Yet $g(x_2)=-0.2$, so class 1 loses. The triangle inequality gives $\abs{x_2-x_r}\le\abs{x_2-x_1}+\abs{x_1-x_r}=1.2$, not 0.6.
+The B27--B28 toy CNN gives the same lifecycle failure with $W=6$ and shift $s=2$. Repeating admissible wave $(7,8)$ produces second-step window $(5,6,7,8,7,8)$. Its pooled features are $(5,1/2)$ and logits $(17/2,-4,9)$, so class 3 beats the formerly certified class 1.
+\paragraph{Why ECDR uses this concept.}
+A tail checker can appear valid while silently ignoring a changed overlap. The counterexample identifies what record identity must protect.
+\paragraph{Conditions and connections.}
+In the CNN example, $W$ counts input samples, $s$ counts dropped/appended samples, and the three logits correspond to the toy's fixed class order. The first-step proof remains correct: the second overlap is a different object. A fresh reference evaluation with a fresh certificate, a proved transfer rule, or C25's reachable-domain construction can justify continuation.
+
+\concept{C25}{Finite-horizon reachable sets and inductive reuse}{C17--C18 and C24; mathematical induction and set-valued transitions.}
+\paragraph{Definition and foundation.}
+A horizon certificate covers every input reachable through an entire admissible sequence of waves. Its guarantee is stronger than certifying each wave against the original overlap independently. The state uncertainty from all earlier waves must be preserved in each reachable set.
+\paragraph{Symbols and dimensions.}
+Let integer $C\ge1$ count channels and $W\ge1$ count samples; $X_r\in\R^{C\times W}$ is the evaluated starting window, $1\le s\le W$ the shift, and $Q\ge1$ the finite number of steps. For each step $q=1,\ldots,Q$, let $\mathcal U_q\subseteq\R^{C\times s}$ be a predefined wave domain. Define the shift-and-append map $\mathcal T_s$ as in B09 and the sets
+\[
+ \mathcal R_0=\{X_r\},\qquad
+ \mathcal R_q=\{\mathcal T_s(X,U):X\in\mathcal R_{q-1},\ U\in\mathcal U_q\}.
+\]
+The fixed target class is $c$; vectorization is implicit when evaluating the reference.
+\paragraph{Derivation and proof.}
+Assume sound strictly positive target margins on every $\mathcal R_q$. The actual initial state belongs to $\mathcal R_0$. If the actual state belongs to $\mathcal R_{q-1}$ and the next wave belongs to $\mathcal U_q$, the transition definition puts the next state in $\mathcal R_q$. Induction gives membership at every step, and C18 gives class $c$ throughout.
+\paragraph{Why ECDR uses this concept.}
+Runtime may check the current wave and horizon counter when trusted state guarantees all earlier conditions and the certificate covers their complete possible history.
+\paragraph{Conditions and connections.}
+A failed wave check breaks this induction path; runtime must fall back or use another justified record. For $W=4,s=2$, two steps remove all original samples, yet a valid reachable-set proof can still work. In general only $\max(W-qs,0)$ original sample positions remain per channel. Enlarging reachable sets can loosen bounds and increase build cost. Soundness alone does not establish that a long useful horizon exists.
+
+\concept{C26}{Trace accounting and amortized inference cost}{Finite sums, means, and conditional expectation; C23--C25.}
+\paragraph{Definition and foundation.}
+Amortized cost distributes every operation over the queries that incur it. The first task is complete trace accounting, before replacing variable costs by constants or averages. A failed certificate attempt still consumes time and must be charged even though it produces no reuse.
+\paragraph{Symbols and dimensions.}
+Let $N\ge1$ be the query count, $\mathcal M\subseteq\{1,\ldots,N\}$ the miss indices, and $B\ge0$ the number of all build attempts. Let $f_t$ be baseline forward time for query $t$, $f_t^{\rm miss}$ its fallback time, $v_t$ lookup/verification time, $b_k$ build time for attempt $k$, and $T_{\rm state}$ uncounted state/initialization time. Every cost uses one time unit, such as milliseconds.
+\paragraph{Derivation and example.}
+The totals are
+\[
+ T_{\rm full}=\sum_{t=1}^{N}f_t,\qquad
+ T_{\rm ECDR}=\sum_{t=1}^{N}v_t+
+ \sum_{t\in\mathcal M}f_t^{\rm miss}+
+ \sum_{k=1}^{B}b_k+T_{\rm state}.
+\]
+Divide by $N$ only after counting all terms. If forward costs vary, the expected miss contribution is $\Pr(\mathrm{miss})\E[f\mid\mathrm{miss}]$, whenever that conditional expectation is defined. It is not automatically miss probability times unconditional mean forward time.
+For forward costs $(1,1,9,9)$ ms, hitting the first two queries saves only 2 ms. Verification of 1 ms per query gives total 22 ms versus baseline 20 ms, despite a 50\% hit rate.
+\paragraph{Why ECDR uses this concept.}
+The arithmetic prevents a high reuse percentage from hiding expensive builds, misses, or membership checks.
+\paragraph{Conditions and connections.}
+Baseline and policy must share the same inclusion boundary for normalization, input handling, and initialization. Shadow-reference evaluations used for validation need a separately stated timing role. Avoid double-counting state work already inside verification or builds. C27 derives a break-even threshold only after adding explicit constant-cost assumptions.
+
+\concept{C27}{Break-even thresholds and useful certificate lifetimes}{C26; algebraic inequalities and dimensionally consistent costs.}
+\paragraph{Definition and foundation.}
+Break-even means total ECDR time is strictly less than the corresponding reference-only total. It is a performance condition, independent of decision soundness. A sound policy can be slower, and an apparently faster unsound policy does not satisfy the certified objective.
+\paragraph{Symbols and dimensions.}
+Assume constant forward cost $t_f>0$, verification cost $t_v\ge0$, additional state cost $t_m\ge0$ per query, and build cost $t_b\ge0$. Let $N\ge1,H\ge0,B\ge0$ be integer query, hit and build counts, with $H\le N$. Let $r=H/N\in[0,1]$ be hits divided by queries, and $\rho_b=B/N\ge0$ builds per query. All $t$ quantities use milliseconds; the rates are dimensionless.
+\paragraph{Derivation and example.}
+C26 reduces under these assumptions to
+\[
+ \bar t_{\rm ECDR}=t_v+t_m+(1-r)t_f+\rho_b t_b.
+\]
+Subtracting this from baseline $t_f$ gives the saving condition $rt_f>t_v+t_m+\rho_b t_b$. If one build occurs on every miss, so $\rho_b=1-r$, then
+\[
+ r>\frac{t_v+t_m+t_b}{t_f+t_b}.
+\]
+With $t_f=4$ ms, $t_v+t_m=0.08$ ms, and $t_b=1.5$ ms, the threshold is $1.58/5.5\approx28.7273\%$. For 100 queries, 80 hits, and 20 builds, the total is $8+80+30=118$ ms versus 400 ms, an illustrative ratio of approximately 3.38983.
+\paragraph{Why ECDR uses this concept.}
+It identifies the overhead budget that a proposed domain and lifecycle must meet, rather than using coverage alone as evidence of efficiency.
+\paragraph{Conditions and connections.}
+For one build followed by $L$ all-hit queries, benefit requires $L>t_b/(t_f-t_v-t_m)$ when the denominator is positive. With $t_b=8$ ms and the same other costs, at least 3 such hits are needed. These are assumed costs, not HAPT measurements. Variable or path-dependent costs require C26's trace equation instead. Likewise, a build scheduled periodically rather than on every miss must retain its actual $\rho_b$; substituting $1-r$ would charge the wrong number of attempts. The useful lifetime is the number of later verified hits, not merely elapsed wall time.
+
+\concept{C28}{Soundness, agreement, accuracy, coverage, and net benefit}{B30; C18, C23, and C26--C27; explicit metric denominators.}
+\paragraph{Definition and foundation.}
+These quantities answer different questions. Soundness is a universal implication under declared assumptions. Agreement measures equality with the reference on evaluated cases. Accuracy measures equality with a ground-truth label. Coverage measures how often a domain or gate accepts. Net benefit measures saved cost after overhead. None is a substitute for the others.
+\paragraph{Symbols and dimensions.}
+Let $N$ be all queries, $N_b$ build attempts, $N_b^+$ successful certified builds, $N_m$ membership trials, $N_m^+$ membership successes, $N_r$ actual reused queries, and $N_a$ reused queries agreeing with shadow reference. These are nonnegative integer counts. Let $y_t$ be a known ground-truth class and $\widehat h_t$ the policy's prediction on query $t$.
+\paragraph{Derivation and example.}
+The operational rates are
+\[
+ p_b=\frac{N_b^+}{N_b},\quad p_m=\frac{N_m^+}{N_m},\quad
+ r=\frac{N_r}{N},\quad A_r=\frac{N_a}{N_r}.
+\]
+A zero denominator makes the associated rate undefined, reported as N/A. Accuracy on a declared labeled index set $\mathcal L$ is $\abs{\mathcal L}^{-1}\sum_{t\in\mathcal L}\mathbf1\{\widehat h_t=y_t\}$ when $\abs{\mathcal L}>0$.
+If, on the same 100 queries, 60 satisfy membership and 50 have a valid relevant certificate, their intersection can contain 10--50 queries. The product $0.6(0.5)=0.3$ requires an independence assumption, not just the two marginal rates.
+\paragraph{Why ECDR uses this concept.}
+It prevents reporting geometric hits as certified reuse, empirical zero mismatch as a universal theorem, or reference agreement as ground-truth correctness.
+\paragraph{Conditions and connections.}
+Build counts and query counts often have different denominators, making even the intersection example inapplicable without alignment. Adjacent-pair coverage also differs from fixed-anchor lifecycle coverage. A singleton domain can be sound but useless; a broad certified domain can be too costly. An ECDR result therefore needs separate evidence for correctness assumptions, useful reuse, and net time or energy saving.

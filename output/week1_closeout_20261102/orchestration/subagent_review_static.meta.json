@@ -1,0 +1,26 @@
+{
+  "worker": "subagent_review_static",
+  "model": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "start_unix": 1793619688.4856997,
+  "timeout_seconds": 360,
+  "prompt_path": "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/subagent_review_static.prompt.txt",
+  "argv_without_prompt": [
+    "agy",
+    "--conversation",
+    "ad4bd471-d307-4be6-82a3-0d76aacb2a3d",
+    "--model",
+    "gemini-3.8-flash-medium",
+    "--effort",
+    "medium",
+    "--output-format",
+    "stream-json",
+    "--print-timeout",
+    "300s",
+    "--log-file",
+    "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/subagent_review_static.agy.log"
+  ],
+  "pid": 121565,
+  "returncode": 0,
+  "end_unix": 1793619984.0363293
+}

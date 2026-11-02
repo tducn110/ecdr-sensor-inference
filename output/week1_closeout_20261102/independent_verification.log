@@ -1,0 +1,31 @@
+Running independent verification on output/week1_closeout_20261102/reference...
+Traceback (most recent call last):
+  File "/home/pro/Downloads/research/scripts/week1_independent_verify.py", line 1162, in <module>
+    main()
+  File "/home/pro/Downloads/research/scripts/week1_independent_verify.py", line 1150, in main
+    out_file.write_text(json.dumps(receipt, indent=2))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/pro/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable

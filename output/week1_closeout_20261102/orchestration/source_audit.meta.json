@@ -1,0 +1,27 @@
+{
+  "worker": "source_audit",
+  "model": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "start_unix": 1793619018.0179284,
+  "timeout_seconds": 360,
+  "prompt_path": "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/source_audit.prompt.txt",
+  "argv_without_prompt": [
+    "agy",
+    "--new-project",
+    "--model",
+    "gemini-3.8-flash-medium",
+    "--effort",
+    "medium",
+    "--mode",
+    "auto",
+    "--output-format",
+    "stream-json",
+    "--print-timeout",
+    "300s",
+    "--log-file",
+    "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/source_audit.agy.log"
+  ],
+  "pid": 107419,
+  "returncode": 1,
+  "end_unix": 1793619244.7779903
+}

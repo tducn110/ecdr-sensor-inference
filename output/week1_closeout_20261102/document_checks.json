@@ -1,0 +1,124 @@
+{
+  "scope": "LaTeX/PDF artifact QA, numeric consistency and data overlap audit; no ECDR benchmark or formal executable verification.",
+  "documents": [
+    {
+      "stem": "Week_1_Project_Brief",
+      "source_path": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.tex",
+      "log_path": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.log",
+      "pdf_pages": 11,
+      "pdf_bytes": 94963,
+      "pdf_sha256": "7208b9e80e7b22e77d3be3aeb6cef727aced106132078bc1e629d1d5419f1f0d",
+      "source_sha256": "5728770e7f697549f8ebc12a41840581491322082b8409a9889e8bc2bb905187",
+      "dependency_hash": "9ba15bc0fee3df5699a9ffccc057992d6e25d4e068b24d9aa1f8ffc9ea75485a",
+      "dependencies_sha256": "9ba15bc0fee3df5699a9ffccc057992d6e25d4e068b24d9aa1f8ffc9ea75485a",
+      "dependency_files": [
+        "/home/pro/Downloads/research/00_OVERVIEW/week1/brief_body.tex"
+      ],
+      "citations_resolved": 9,
+      "references_resolved": 0,
+      "forbidden_compile_diagnostics": [],
+      "empty_pages": [],
+      "contact_sheets": [
+        "qa/Week_1_Project_Brief_contact_1.jpg",
+        "qa/Week_1_Project_Brief_contact_2.jpg"
+      ],
+      "visual_review": "Required human/agent inspection of contact sheets and detailed pages; not inferred from these checks.",
+      "generated_body": {
+        "path": "/home/pro/Downloads/research/00_OVERVIEW/week1/brief_body.tex",
+        "sha256": "9ba15bc0fee3df5699a9ffccc057992d6e25d4e068b24d9aa1f8ffc9ea75485a",
+        "matches_canonical_extract": true,
+        "role": "derivative_extract_for_combined_master"
+      },
+      "compat_wrapper": {
+        "compat_wrapper_path": "/home/pro/Downloads/research/me/Week_1_Project_Brief.tex",
+        "compat_wrapper_sha256": "9c26086d19354bcd0a269ac3fafa36e8154f1d3e6566ad8b4ae0a778146dd522",
+        "note": "Physical compatibility wrapper in me/; not the canonical compiled entry."
+      }
+    },
+    {
+      "stem": "ECDR_Weeks_1_2_3_Theory",
+      "source_path": "/home/pro/Downloads/research/me/ECDR_Weeks_1_2_3_Theory.tex",
+      "log_path": "/home/pro/Downloads/research/me/ECDR_Weeks_1_2_3_Theory.log",
+      "pdf_pages": 36,
+      "pdf_bytes": 252355,
+      "pdf_sha256": "7965cc56c09acde3f1a8eac946e9ef6f0c973ee06eb7f91173d31b1aad072510",
+      "source_sha256": "2352622fc15e5733bbee0170c2cb859a9f7c03c0c491175a0f8e3abbd733aa00",
+      "dependency_hash": "9ba15bc0fee3df5699a9ffccc057992d6e25d4e068b24d9aa1f8ffc9ea75485a",
+      "dependencies_sha256": "9ba15bc0fee3df5699a9ffccc057992d6e25d4e068b24d9aa1f8ffc9ea75485a",
+      "dependency_files": [
+        "/home/pro/Downloads/research/00_OVERVIEW/week1/brief_body.tex"
+      ],
+      "citations_resolved": 13,
+      "references_resolved": 14,
+      "forbidden_compile_diagnostics": [],
+      "empty_pages": [],
+      "contact_sheets": [
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_1.jpg",
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_2.jpg",
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_3.jpg",
+        "qa/ECDR_Weeks_1_2_3_Theory_contact_4.jpg"
+      ],
+      "visual_review": "Required human/agent inspection of contact sheets and detailed pages; not inferred from these checks."
+    }
+  ],
+  "calculation_checks": "PASS",
+  "hypotheses_in_master": [
+    "H01",
+    "H02",
+    "H03",
+    "H04",
+    "H05",
+    "H06",
+    "H07",
+    "H08",
+    "H09",
+    "H10",
+    "H11",
+    "H12",
+    "H13",
+    "H14",
+    "H15",
+    "H16",
+    "H17",
+    "H18",
+    "H19",
+    "H20",
+    "H21",
+    "H22",
+    "H23",
+    "H24"
+  ],
+  "legacy_master_hypotheses_count": 24,
+  "legacy_math_snapshot_checks": {
+    "scope": "LaTeX/PDF artifact QA, legacy master numeric consistency and data overlap audit; no ECDR benchmark or formal executable verification. Note: 20332 parameters and 24 hypotheses belong to legacy master/data/math snapshot, not new Week 1 Small CNN K12.",
+    "calculation_checks": "PASS",
+    "legacy_master_parameters_total": 20332,
+    "legacy_master_hypotheses_count": 24,
+    "legacy_master_hypotheses": [
+      "H01",
+      "H02",
+      "H03",
+      "H04",
+      "H05",
+      "H06",
+      "H07",
+      "H08",
+      "H09",
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H15",
+      "H16",
+      "H17",
+      "H18",
+      "H19",
+      "H20",
+      "H21",
+      "H22",
+      "H23",
+      "H24"
+    ]
+  }
+}

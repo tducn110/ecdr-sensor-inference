@@ -1,41 +1,103 @@
-# GATES.md — Research Acceptance Gates (3/7 passed: G0, G1, G2)
+# GATES.md — Research Evidence Gates
 
-> Copy this checklist. A gate passes only with evidence, not confidence.
-> report.md stays LEGACY_REFERENCE. Evidence lives in 01/02/refs.bib first.
+> **Current Week 1 scope (2026-11-02):** The executed run `week1_ref_1793620216_9d6c1d85` provides a verified SmallCNN1D K=12 baseline: seed 43 at epoch 8, 17 internal checks passed, 89.0538% supervised test accuracy and 77.6265% macro-F1 on 3,572 windows. This verifies the baseline execution; formal certification and net savings remain pending Week3/G5 evidence. The historical gate body below remains preserved.
 
-- [x] G0 — Literature verified (passed 2026-10-15: refs.bib 7 entries, C4+C10 upgraded with PDF/API quotes, 01+02 done, new docs clean of turnX)
-  - CHECK: every key claim in 02 has a refs.bib entry with URL + page/quote.
-  - CHECK: LipCache metadata+speedup+GuardNet scope verified from arXiv/PDF.
-  - CHECK: STBP existence verified from Springer; numbers only if full PDF quote.
-  - CHECK: prior-work table on 4 axes (cert target, perturbation structure, temporal reuse, runtime cost) exists.
-  - CHECK: novelty claims labeled SUPPORTED / PARTIALLY_SUPPORTED / UNVERIFIED.
-  - EXPECT: 01_RQ_GAP.md + 02_LITERATURE.md done, gap stated as hypothesis.
+> Reconciled 22/10/2026, documentation only. **G0 PASS; G1
+> COMPLETE_WITH_REVISIONS; G2 PASS; G3–G6 PENDING.** The three completed baseline
+> stages are not three unconditional scientific claims and do not establish
+> novelty, certified reuse or net savings. New specifications/reports do not
+> pass a gate without its required evidence. Saved measurements were not rerun.
+> Current theory: [04_THEORY.md](04_THEORY.md); minimal next contract:
+> [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md).
 
-- [x] G1 — Dataset feasible (passed 2026-10-15, verdict REVISE = COMPLETE_WITH_REVISIONS in paper wording: scripts 01-06b ran, integrity/splits/labels clean, 0 issues; event-model numbers RECOMPUTED after 05 index fix — p90 box test_same 52.5% vs test_change 2.3%; revise items per 03_DATA_AUDIT Sec 5)
-  - CHECK: streaming order, subject split, event coverage, temporal deltas measured. — done (data/event_audit.json, data/corr_semantics.json)
-  - EXPECT: 03_DATA_AUDIT.md answers 3 questions (delta distribution? coverage? label balance?). — done + verdict + post-review correction note
-  - NOTE: pre-fix values preserved at commit cefd171; F1/F2/F3 restated 2026-10-15.
+- [x] **G0 — Initial literature/RQ baseline PASS** (historical 15/10/2026 gate)
+  - EVIDENCE: initial 7-entry bibliography and scoped PDF/API checks; ledger,
+    four-axis comparison and gap hypothesis in `01_RQ_GAP.md`/`02_LITERATURE.md`.
+    The 21/10/2026 pilot added NoScope and refreshed Wei metadata; the bibliography
+    gained CROWN and automatic-LiRPA paper metadata on 22/10/2026, making 10
+    source records. This is not a complete review of the P01–P23 corpus.
+  - KEEP: every promoted factual claim needs its source and locator/scope;
+    GuardNet/backbone, verification/inference speed and certified-accuracy/runtime
+    metrics remain distinct. `report.md` is the current scientific working
+    report; its previous legacy content remains in Git history.
+  - OPEN: C11 novelty and C12 net saving remain UNVERIFIED; the expanded
+    literature review must test collisions rather than infer novelty from G0.
 
-- [x] G2 — Backbone reproducible (passed 2026-10-15: configs/backbone.yaml + training.yaml frozen; seeds 42/43/44; test acc 0.9349 / macro-F1 0.9354 best seed44 (val mF1 0.9504), 3-seed test macro-F1 0.9122 ± 0.0183; params 282,918; CPU p50/p95 = 0.236/0.331 ms batch1 = G5 baseline only)
-  - CHECK: config, seed, checkpoint, accuracy, macro-F1, param count via count_params.py. — all done (data/g2_training.json, data/g2_metrics.json, data/g2_model_summary.json)
-  - EXPECT: shape test (B,6,128)->(B,K) passes. — PASS (scripts/07)
-  - SCOPE: K=6 pure-only per G2_CLASS_DECISION.md; denominator test=2,874 pure K=6 windows; weakest classes SITTING (F1 0.858) / STANDING (0.878).
-  - NEXT: PredictionChangeRate on full stream now computable from frozen backbone (scripts/09 margins exist); G3 waits for event-model revision + 04_THEORY freeze.
+- [x] **G1 — Dataset feasible, COMPLETE_WITH_REVISIONS** (historically REVISE)
+  - EVIDENCE: scripts 01–06b and saved integrity/split/label artifacts; chronology
+    and subject/recording disjointness checked. Post-fix raw diagonal q90 test
+    membership: same-activity 52.54%, label-change 2.26%, all pairs 31.94%.
+  - CORRECTION: the script-05 row-index bug and recomputed F1/F2/F3 are documented
+    in `03_DATA_AUDIT.md`; pre-fix values remain historical, not current evidence.
+  - LIMIT: q50/q75/q90 names are budget levels, not implemented semantic events.
+    PCA audit is centered score box plus orthogonal residual L2; its 35.42% test
+    coverage is not a certificate, an anchor-reuse rate or a matched comparison.
+  - OPEN: declare consistent domains/normalization; test anchor-based coverage
+    and later matched structured comparisons. Empirical quantiles may define
+    candidates; valid bounds and conservative membership must certify them.
 
-- [ ] G3 — Sound verifier
-  - CHECK: bounds valid math + membership checker independent from event extractor.
-  - CHECK: accepted inputs satisfy membership AND all class-pair margins > 0.
-  - NOTE: zero observed violations = test evidence, NOT a soundness proof. Need both.
-  - EXPECT: model version pin + anchor invalidation + trace log exist.
+- [x] **G2 — Frozen backbone baseline PASS** (saved 15/10/2026 results)
+  - EVIDENCE: `configs/`, `scripts/backbone.py`, scripts 07–10, checkpoint and
+    `data/g2_training.json`, `g2_metrics.json`, `g2_model_summary.json`.
+  - SCOPE: K=6 pure-only, test denominator 2,874; seeds 42/43/44. Validation-selected
+    seed44 has test accuracy 0.9349, macro-F1 0.9354; three-seed macro-F1
+    0.9122 ± 0.0183 (population standard deviation on one fixed split, not CI).
+  - MODEL: 282,918 parameters, BN/MaxPool present; frozen train-fit normalization.
+    Weights, preprocessing and evaluation mode must match the verifier/reference.
+  - LATENCY: saved forward-only CPU batch1 mean/p50/p95 0.2511/0.2357/0.3313 ms
+    on already-normalized RAM tensors, 6 Torch threads. This is neither a fallback
+    trace nor complete-path runtime evidence. Source/JSON inspection is not a rerun.
 
-- [ ] G4 — Event structure useful
-  - CHECK: structured beats Global Lipschitz + confidence gate on reuse or tightness.
-  - EXPECT: ablation Global -> structured -> pair -> reuse.
+- [ ] **G3 — Sound minimal verifier, membership and reuse gate PENDING**
+  - REQUIRED DOMAIN: implement the normalized diagonal contract in
+    `07_G3_DOMAIN_CONTRACT.md`; raw `x`, fixed `N`, `F=f_theta o N`, normalized box
+    and raw preimage must agree. Event selection only proposes a candidate.
+  - REQUIRED VERIFIER: all five class-pair bounds valid on the entire declared
+    domain or a proved enclosure; positive safe lower margins are sufficient.
+    Ties, failed/unsupported bounds and inconclusive cases must fall back.
+  - REQUIRED GATE: conservative membership independent of event heuristics;
+    matched model/preprocessing/anchor/domain identities; trusted-anchor refresh
+    only after actual reference inference; recording reset and stale invalidation.
+  - REQUIRED SOUNDNESS: both mathematical argument and executable numerical
+    assumptions/rounding or error-containment justification. An arbitrary tolerance
+    or zero observed mismatches is not proof. Conditional arithmetic guarantees
+    must be labeled and cannot close an unresolved numerical obligation.
+  - REQUIRED EVIDENCE: independently checkable cases, negative/boundary/stale/
+    non-finite/tie cases, shadow-reference mismatch counts and trace denominators.
+    Zero reused queries do not give a measured 100% agreement result.
+  - REQUIRED INSTRUMENTATION: descriptor/lookup/membership/forward/build timings,
+    build count, anchor age, fallback reasons and identity trace. G3 component
+    costs inform G5; a positive saving is not a G3 prerequisite.
+  - CURRENT: contract/theory documented only; no verifier/runtime implemented.
 
-- [ ] G5 — Net runtime saving
-  - CHECK: parameter region with end-to-end latency better than full inference, INCLUDING rebuild (r*T_f > T_e+T_m+q*T_b).
-  - EXPECT: lookup-only vs end-to-end tables, median+p95+mean on same CPU.
+- [ ] **G4 — Useful event structure PENDING**
+  - CHECK: first distinguish bound-method quality (fixed domain) from region
+    value (fixed bound method). Compare global/diagonal/correlated candidates
+    with stated matching criterion and coverage/reuse denominators.
+  - CHECK: include certified baselines and a clearly labeled non-certified
+    confidence gate. A smaller region or PCA membership coverage alone cannot
+    establish better certified reuse or novelty.
+  - EXPECT: frozen-policy, anchor-based ablation with valid bounds; semantic
+    event selection claims only if such a selector is actually implemented/tested.
 
-- [ ] G6 — Research report
-  - CHECK: real numbers only, subject CIs, scripts, limitations.
-  - EXPECT: 09_RESULTS.md + 10_PAPER_DRAFT.md.
+- [ ] **G5 — Actual net runtime saving PENDING**
+  - CHECK: compare complete full-inference and reuse paths on the same workload,
+    preprocessing, device and declared accounting horizon. Include initialization,
+    membership/lookup, fallback and build/rebuild costs; keep shadow-validation
+    overhead identified separately from operational timing.
+  - MODEL: `E[T]=T_e+T_m+(1-r)T_f+qT_b` is simplified accounting with roughly
+    constant representative forward cost. Otherwise use conditional costs or
+    measured query traces. Count initial build in build costs or add `T_init/N`.
+  - EXPECT: lookup-only and complete-path tables, mean/p50/p95, throughput, memory,
+    runtime environment and workload/split scope. Retain negative findings.
+    Avoided forwards or the saved G2 latency alone do not pass G5.
+
+- [ ] **G6 — Completed scientific report and reproducibility PENDING**
+  - CHECK: source-grounded literature synthesis, formal assumptions, actual
+    experiment results, uncertainty appropriate to design, scripts/artifacts,
+    limitations and reproducibility metadata. Do not invent subject confidence
+    intervals, benchmarks or a completed experiment to fill planned sections.
+  - EXPECT: readable scientific LaTeX source and verified rendering, with
+    existing results/proposed experiments clearly separated. A compiled current
+    status report can be CREATED/VERIFIED as a document without closing the
+    research gate or constituting user acceptance.

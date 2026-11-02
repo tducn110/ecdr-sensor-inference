@@ -1,0 +1,268 @@
+{
+  "source": "/home/pro/Downloads/research/me/ECDR_CNN_Model_Analysis.tex",
+  "language": "English",
+  "prerequisite_count": 8,
+  "cnn_concept_count": 56,
+  "concept_count": 64,
+  "pagination_contract": "One concept per physical page; clearpage before each identified section; no floats. Root verifies physical pagination.",
+  "concepts": [
+    {
+      "id": "P01",
+      "title": "Real-number laws support the algebra and inequalities"
+    },
+    {
+      "id": "P02",
+      "title": "Vectors package coordinates with linear-combination laws"
+    },
+    {
+      "id": "P03",
+      "title": "The inner product defines a local weighted sum"
+    },
+    {
+      "id": "P04",
+      "title": "A matrix represents a linear map"
+    },
+    {
+      "id": "P05",
+      "title": "An affine map is linear structure plus translation"
+    },
+    {
+      "id": "P06",
+      "title": "A derivative is a limit of local change ratios"
+    },
+    {
+      "id": "P07",
+      "title": "A gradient collects partial derivatives"
+    },
+    {
+      "id": "P08",
+      "title": "The chain rule explains backpropagation"
+    },
+    {
+      "id": "C01",
+      "title": "A neural model is a parameterized function"
+    },
+    {
+      "id": "C02",
+      "title": "Tensors, axes and index meanings"
+    },
+    {
+      "id": "C03",
+      "title": "Physical channels and learned feature channels"
+    },
+    {
+      "id": "C04",
+      "title": "Normalization is a change of coordinates"
+    },
+    {
+      "id": "C05",
+      "title": "A kernel is a finite local linear rule"
+    },
+    {
+      "id": "C06",
+      "title": "Cross-correlation versus mathematical convolution"
+    },
+    {
+      "id": "C07",
+      "title": "Weight sharing is a parameter constraint"
+    },
+    {
+      "id": "C08",
+      "title": "Bias creates an affine offset"
+    },
+    {
+      "id": "C09",
+      "title": "Stride chooses output sampling positions"
+    },
+    {
+      "id": "C10",
+      "title": "Padding specifies boundary values"
+    },
+    {
+      "id": "C11",
+      "title": "Dilation separates the taps of a kernel"
+    },
+    {
+      "id": "C12",
+      "title": "Groups restrict channel connectivity"
+    },
+    {
+      "id": "C13",
+      "title": "The output-length formula follows from valid starts"
+    },
+    {
+      "id": "C14",
+      "title": "ReLU is a pointwise nonlinear gate"
+    },
+    {
+      "id": "C15",
+      "title": "An activation region makes the network affine"
+    },
+    {
+      "id": "C16",
+      "title": "Receptive field is a temporal dependency span"
+    },
+    {
+      "id": "C17",
+      "title": "Linear span describes representable directions"
+    },
+    {
+      "id": "C18",
+      "title": "Jump and receptive field obey a recurrence"
+    },
+    {
+      "id": "C19",
+      "title": "Global average pooling aggregates feature positions"
+    },
+    {
+      "id": "C20",
+      "title": "An affine head converts features to class scores"
+    },
+    {
+      "id": "C21",
+      "title": "Logits, argmax and a deterministic tie rule"
+    },
+    {
+      "id": "C22",
+      "title": "Softmax changes score scale, not real ordering"
+    },
+    {
+      "id": "C23",
+      "title": "A pairwise margin is the decision inequality"
+    },
+    {
+      "id": "C24",
+      "title": "The specified architecture fixes every shape"
+    },
+    {
+      "id": "C25",
+      "title": "Parameters count independent learned scalars"
+    },
+    {
+      "id": "C26",
+      "title": "MAC counts repeated dot-product work"
+    },
+    {
+      "id": "C27",
+      "title": "FLOP and non-MAC work need a stated convention"
+    },
+    {
+      "id": "C28",
+      "title": "Memory is a schedule-dependent resource"
+    },
+    {
+      "id": "C29",
+      "title": "Cross-entropy specifies a training objective"
+    },
+    {
+      "id": "C30",
+      "title": "Backpropagation is the chain rule through the graph"
+    },
+    {
+      "id": "C31",
+      "title": "Training mode and inference mode define contracts"
+    },
+    {
+      "id": "C32",
+      "title": "Batch normalization can become a fixed affine map"
+    },
+    {
+      "id": "C33",
+      "title": "Max pooling is a local order statistic"
+    },
+    {
+      "id": "C34",
+      "title": "The complete reference includes preprocessing"
+    },
+    {
+      "id": "C35",
+      "title": "A shift--append operator defines a new window"
+    },
+    {
+      "id": "C36",
+      "title": "Aligned feature equality follows by local substitution"
+    },
+    {
+      "id": "C37",
+      "title": "Shared positions and halo require layerwise accounting"
+    },
+    {
+      "id": "C38",
+      "title": "The GAP delta is an exact cancellation identity"
+    },
+    {
+      "id": "C39",
+      "title": "The affine head turns GAP delta into margin delta"
+    },
+    {
+      "id": "C40",
+      "title": "A domain is a set of admissible complete inputs"
+    },
+    {
+      "id": "C41",
+      "title": "A certificate proves every competitor loses everywhere"
+    },
+    {
+      "id": "C42",
+      "title": "Interval propagation follows coefficient signs"
+    },
+    {
+      "id": "C43",
+      "title": "ReLU relaxations handle an unstable activation"
+    },
+    {
+      "id": "C44",
+      "title": "A tail enclosure yields a whole-domain margin bound"
+    },
+    {
+      "id": "C45",
+      "title": "A complete toy CNN: local features are computed explicitly"
+    },
+    {
+      "id": "C46",
+      "title": "The toy head checks logits and both margin changes"
+    },
+    {
+      "id": "C47",
+      "title": "A continuous toy wave box is certified universally"
+    },
+    {
+      "id": "C48",
+      "title": "Keeping dependence tightens the same valid proof"
+    },
+    {
+      "id": "C49",
+      "title": "Computational reuse preserves current numerical outputs"
+    },
+    {
+      "id": "C50",
+      "title": "Decision reuse preserves a class through a proof"
+    },
+    {
+      "id": "C51",
+      "title": "A stale anchor can invalidate an otherwise valid box"
+    },
+    {
+      "id": "C52",
+      "title": "Reachable sets express a finite-horizon guarantee"
+    },
+    {
+      "id": "C53",
+      "title": "Numerical soundness needs more than real identities"
+    },
+    {
+      "id": "C54",
+      "title": "Total cost determines whether reuse saves work"
+    },
+    {
+      "id": "C55",
+      "title": "Accuracy, agreement and coverage have different denominators"
+    },
+    {
+      "id": "C56",
+      "title": "The historical model is a different reference"
+    }
+  ],
+  "preserved_source": "/home/pro/Downloads/research/me/ECDR_CNN_Model_Analysis_VI.tex",
+  "preserved_pdf": "/home/pro/Downloads/research/me/ECDR_CNN_Model_Analysis_VI.pdf"
+}

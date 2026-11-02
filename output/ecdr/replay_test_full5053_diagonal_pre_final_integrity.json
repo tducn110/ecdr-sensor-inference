@@ -1,0 +1,93 @@
+{
+  "query_counts": {
+    "total_queries": 5053,
+    "hits": 0,
+    "misses": 5053,
+    "hit_rate_pct": 0.0,
+    "build_attempts": 5053,
+    "build_successes": 4038,
+    "build_failures": 1015,
+    "recording_resets": 19,
+    "sequence_gap_resets": 0
+  },
+  "shadow_agreement": {
+    "total_hits": 0,
+    "checked_accepted_queries": 0,
+    "agreed_queries": 0,
+    "agreement_rate": null,
+    "discrepancies": 0
+  },
+  "latencies_ms": {
+    "t_e_candidate_selection": {
+      "count": 5053,
+      "mean_ms": 0.0,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0
+    },
+    "t_m_membership": {
+      "count": 5053,
+      "mean_ms": 0.027303856316635018,
+      "p50_ms": 0.029222999728517607,
+      "p95_ms": 0.05311299992172278
+    },
+    "t_v_gate_validation": {
+      "count": 5053,
+      "mean_ms": 0.0006640775712007121,
+      "p50_ms": 0.0006549998943228275,
+      "p95_ms": 0.0012869999409304
+    },
+    "t_f_full_forward": {
+      "count": 5053,
+      "mean_ms": 2.828433096176644,
+      "p50_ms": 2.7074760000687093,
+      "p95_ms": 3.759723600160214
+    },
+    "t_b_certificate_build": {
+      "count": 5053,
+      "mean_ms": 58.50160707738544,
+      "p50_ms": 57.95140500049456,
+      "p95_ms": 73.12013680020753
+    },
+    "t_shadow_execution": {
+      "count": 0,
+      "mean_ms": 0.0,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0
+    },
+    "operational_query_latency": {
+      "count": 5053,
+      "mean_ms": 61.6793170081077,
+      "p50_ms": 61.14720700043108,
+      "p95_ms": 76.98482639989378
+    }
+  },
+  "computation_mac": {
+    "full_reference_mac_per_window": 2343936,
+    "incremental_mac_per_window": 1241856,
+    "average_mac_per_window": 1245999.9778349495,
+    "theoretical_mac_saving_pct": 46.84155293340137
+  },
+  "empirical_speedup": {
+    "measured_baseline_mean_ms": 3.6381434682430918,
+    "measured_operational_mean_ms": 61.6793170081077,
+    "speedup_factor": 0.058984820920842236
+  },
+  "provenance": {
+    "trained_status": "trained_checkpoint",
+    "checkpoint_path": "output/ecdr/smoke/checkpoints_seed20261031/ecdr_k12_best.pt",
+    "checkpoint_sha256": "10128d8cf0f62b95130e25772397ba14085cf0b6b42600e2e49565e61d1e5e68",
+    "model_id": "e328ca6b1b042f6a",
+    "prep_id": "cf84f76ba4787676",
+    "split": "test",
+    "scope": "full_stream",
+    "expected_full_denominator": 5053,
+    "actual_processed_count": 5053,
+    "domain_type": "diagonal_box",
+    "budget": 0.001,
+    "environment": {
+      "python_version": "3.11.15",
+      "torch_version": "2.14.1+cpu",
+      "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43"
+    }
+  }
+}

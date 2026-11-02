@@ -1,0 +1,2757 @@
+{
+  "source": "Pasted text(20261025-120944).txt",
+  "sha256": "2e0565dd5248ff7e2cefef3f8aad9053df60a5c1fa7e7a8eddad0f2a01a8e62e",
+  "total_bytes": 576298,
+  "total_characters": 478368,
+  "total_lines": 7830,
+  "tokenization": "lossless Unicode lexical segmentation with regex \\s+|\\w+|[^\\w\\s] grouped by full lines; not OpenAI model BPE tokens",
+  "total_lexical_tokens": 208318,
+  "total_chunks": 62,
+  "chunks": [
+    {
+      "chunk_id": "ECDR-001",
+      "line_start": 1,
+      "line_end": 186,
+      "char_start": 0,
+      "char_end": 8163,
+      "lexical_tokens": 3398,
+      "sha256": "20d3d43c3f94456ca138a58b3e99b290f008dd64a1c84de5200b960cece4c10a"
+    },
+    {
+      "chunk_id": "ECDR-002",
+      "line_start": 187,
+      "line_end": 335,
+      "char_start": 8163,
+      "char_end": 16366,
+      "lexical_tokens": 3368,
+      "sha256": "e879e4ca35917a668de76d4919828db7e74605ee361f8ea59f2a089d24535896"
+    },
+    {
+      "chunk_id": "ECDR-003",
+      "line_start": 336,
+      "line_end": 527,
+      "char_start": 16366,
+      "char_end": 26295,
+      "lexical_tokens": 3397,
+      "sha256": "a27775ae1c807636d29677f820dcd1fcdb3298d3aaefacfe5408084b14601dc1"
+    },
+    {
+      "chunk_id": "ECDR-004",
+      "line_start": 528,
+      "line_end": 688,
+      "char_start": 26295,
+      "char_end": 35006,
+      "lexical_tokens": 3296,
+      "sha256": "766b13402e31654d6cfa455c52d2aa6fdd8fc16517af27c34a74a00e9e69e011"
+    },
+    {
+      "chunk_id": "ECDR-005",
+      "line_start": 689,
+      "line_end": 767,
+      "char_start": 35006,
+      "char_end": 42132,
+      "lexical_tokens": 3354,
+      "sha256": "9de71c6d33d3826202add547ff974ae88f49612007799d157fb6fc2f1c1a9878"
+    },
+    {
+      "chunk_id": "ECDR-006",
+      "line_start": 768,
+      "line_end": 855,
+      "char_start": 42132,
+      "char_end": 49305,
+      "lexical_tokens": 3338,
+      "sha256": "af81dea792193ba50e15240a0fb02ad49af513738a7fe4f534cff0cd4bb22a63"
+    },
+    {
+      "chunk_id": "ECDR-007",
+      "line_start": 856,
+      "line_end": 977,
+      "char_start": 49305,
+      "char_end": 56517,
+      "lexical_tokens": 3357,
+      "sha256": "921deebb6e05c45fe908d9c23d21fd6bd7fb4d456085fc9d09639ebf487cdbc9"
+    },
+    {
+      "chunk_id": "ECDR-008",
+      "line_start": 978,
+      "line_end": 1067,
+      "char_start": 56517,
+      "char_end": 63265,
+      "lexical_tokens": 3331,
+      "sha256": "f9a5a0f2375893c870f98cc8cd90626a24e02488282c6dc1d219645a34a26e62"
+    },
+    {
+      "chunk_id": "ECDR-009",
+      "line_start": 1068,
+      "line_end": 1159,
+      "char_start": 63265,
+      "char_end": 70709,
+      "lexical_tokens": 3374,
+      "sha256": "7d621f74ec524e6081730b4f54cb607161bcdfe02f0f459e68779eb05ec88802"
+    },
+    {
+      "chunk_id": "ECDR-010",
+      "line_start": 1160,
+      "line_end": 1338,
+      "char_start": 70709,
+      "char_end": 78296,
+      "lexical_tokens": 3395,
+      "sha256": "524359b810d6a2f3b04c66ee2a15df265df1d3a393ed6b4d424f462ad02f4f3e"
+    },
+    {
+      "chunk_id": "ECDR-011",
+      "line_start": 1339,
+      "line_end": 1445,
+      "char_start": 78296,
+      "char_end": 85643,
+      "lexical_tokens": 3394,
+      "sha256": "b906398e86d4800f00fe17770aa7e3b30f318251e0a153f830b1e49a725fef5a"
+    },
+    {
+      "chunk_id": "ECDR-012",
+      "line_start": 1446,
+      "line_end": 1584,
+      "char_start": 85643,
+      "char_end": 93148,
+      "lexical_tokens": 3385,
+      "sha256": "fc748f01edb87951b1b72572487953356d96e1faf01b3d244f733d0d94cc274a"
+    },
+    {
+      "chunk_id": "ECDR-013",
+      "line_start": 1585,
+      "line_end": 1705,
+      "char_start": 93148,
+      "char_end": 99750,
+      "lexical_tokens": 3340,
+      "sha256": "86d97fa735e1bcbb474453dbcf0cba3c2726d7618469ba52f1e3760a8a1926d5"
+    },
+    {
+      "chunk_id": "ECDR-014",
+      "line_start": 1706,
+      "line_end": 1819,
+      "char_start": 99750,
+      "char_end": 107559,
+      "lexical_tokens": 3381,
+      "sha256": "8c1768923d9e0f6eac153dc3272dabcba692122e9cc7475430355bf34316dedb"
+    },
+    {
+      "chunk_id": "ECDR-015",
+      "line_start": 1820,
+      "line_end": 1969,
+      "char_start": 107559,
+      "char_end": 115258,
+      "lexical_tokens": 3320,
+      "sha256": "7de29c9d4209bdc9a978acfcf84ef1df71d4dab512b4f6f104e1b2a72d2534a2"
+    },
+    {
+      "chunk_id": "ECDR-016",
+      "line_start": 1970,
+      "line_end": 2072,
+      "char_start": 115258,
+      "char_end": 123078,
+      "lexical_tokens": 3301,
+      "sha256": "cdb4dc305a8f608d5c4b03edd3307f0817b1095259500c03946ba9a2a54d00a5"
+    },
+    {
+      "chunk_id": "ECDR-017",
+      "line_start": 2073,
+      "line_end": 2128,
+      "char_start": 123078,
+      "char_end": 131256,
+      "lexical_tokens": 3305,
+      "sha256": "a75c537060033e8248e78d7e1ec6ec57d387105cd9dd5582f254f9afbd976ace"
+    },
+    {
+      "chunk_id": "ECDR-018",
+      "line_start": 2129,
+      "line_end": 2225,
+      "char_start": 131256,
+      "char_end": 138643,
+      "lexical_tokens": 3386,
+      "sha256": "ccc162ccc6fbf4136a9f07f934fb17ba5a3dda3920fe542a45aac7169d4e7148"
+    },
+    {
+      "chunk_id": "ECDR-019",
+      "line_start": 2226,
+      "line_end": 2388,
+      "char_start": 138643,
+      "char_end": 146809,
+      "lexical_tokens": 3394,
+      "sha256": "3f654d273354c3e7d80fd9d742f9fb8873316c5f52432fa505f5bc108c3b9c7f"
+    },
+    {
+      "chunk_id": "ECDR-020",
+      "line_start": 2389,
+      "line_end": 2578,
+      "char_start": 146809,
+      "char_end": 155481,
+      "lexical_tokens": 3353,
+      "sha256": "88379e9a7a6d09ae94e0ef5f87bc18d4dbe51d83b99266b4ade4ca23eebd01c5"
+    },
+    {
+      "chunk_id": "ECDR-021",
+      "line_start": 2579,
+      "line_end": 2707,
+      "char_start": 155481,
+      "char_end": 164269,
+      "lexical_tokens": 3394,
+      "sha256": "73c6833199e2e971da94ba7df2e19a198a34c7225fc1e667dd806fa5c24929a1"
+    },
+    {
+      "chunk_id": "ECDR-022",
+      "line_start": 2708,
+      "line_end": 2927,
+      "char_start": 164269,
+      "char_end": 174535,
+      "lexical_tokens": 3374,
+      "sha256": "3baf2f03fb1088370854037c7f826c9b93c7e98c7d7b5e01b190790833685589"
+    },
+    {
+      "chunk_id": "ECDR-023",
+      "line_start": 2928,
+      "line_end": 3045,
+      "char_start": 174535,
+      "char_end": 182729,
+      "lexical_tokens": 3348,
+      "sha256": "b1d03d4713a90b789de29e0d087eb1ae75bf9a0069b4667f21acfa719d5af21b"
+    },
+    {
+      "chunk_id": "ECDR-024",
+      "line_start": 3046,
+      "line_end": 3131,
+      "char_start": 182729,
+      "char_end": 189887,
+      "lexical_tokens": 3364,
+      "sha256": "e0338b31a8a4c0a9a08c78b192b089176f8b4e7ac17582dc2fd6306c197cbd2c"
+    },
+    {
+      "chunk_id": "ECDR-025",
+      "line_start": 3132,
+      "line_end": 3241,
+      "char_start": 189887,
+      "char_end": 197444,
+      "lexical_tokens": 3379,
+      "sha256": "370e1da7cabda8e9cd06c5f20f96ab676bcea3633a2555fec67fe44363e56082"
+    },
+    {
+      "chunk_id": "ECDR-026",
+      "line_start": 3242,
+      "line_end": 3324,
+      "char_start": 197444,
+      "char_end": 204275,
+      "lexical_tokens": 3389,
+      "sha256": "1e712e85575c8e422bc87156f43abeb027c27650b0c44b172bf4145f51b985e4"
+    },
+    {
+      "chunk_id": "ECDR-027",
+      "line_start": 3325,
+      "line_end": 3425,
+      "char_start": 204275,
+      "char_end": 211516,
+      "lexical_tokens": 3222,
+      "sha256": "ae21c9023352b83f7d1deac80c6e8ab2502ec3af23034ccb35f3053b98c0354f"
+    },
+    {
+      "chunk_id": "ECDR-028",
+      "line_start": 3426,
+      "line_end": 3554,
+      "char_start": 211516,
+      "char_end": 218844,
+      "lexical_tokens": 3371,
+      "sha256": "16e24948ed5317dd84d09dcf17bb8b550eef327ccb1c826f0279167624f4f6f4"
+    },
+    {
+      "chunk_id": "ECDR-029",
+      "line_start": 3555,
+      "line_end": 3705,
+      "char_start": 218844,
+      "char_end": 226694,
+      "lexical_tokens": 3387,
+      "sha256": "ae7f1f176aaa110a9ae114bdd3fb3b2ca28bb6e18b0dbf3dd81a90337b92dd3a"
+    },
+    {
+      "chunk_id": "ECDR-030",
+      "line_start": 3706,
+      "line_end": 3849,
+      "char_start": 226694,
+      "char_end": 234116,
+      "lexical_tokens": 3335,
+      "sha256": "e28976cac88daa2635a16fb2bc031ee508491283633964ccd226dcf556f3c003"
+    },
+    {
+      "chunk_id": "ECDR-031",
+      "line_start": 3850,
+      "line_end": 3958,
+      "char_start": 234116,
+      "char_end": 241476,
+      "lexical_tokens": 3389,
+      "sha256": "273b81b5224a33c58f5ef94fb0af5cc63dc0335046cc74bad5e29967e7de964a"
+    },
+    {
+      "chunk_id": "ECDR-032",
+      "line_start": 3959,
+      "line_end": 4078,
+      "char_start": 241476,
+      "char_end": 248616,
+      "lexical_tokens": 3358,
+      "sha256": "62940e861e702626a656473248b98a998813557c7dbb9e7ea97cb4c2f1f77c8d"
+    },
+    {
+      "chunk_id": "ECDR-033",
+      "line_start": 4079,
+      "line_end": 4206,
+      "char_start": 248616,
+      "char_end": 257136,
+      "lexical_tokens": 3376,
+      "sha256": "8b95591df8d485b01de105a4953cd0496987eea68002ab2608c5c7bab70720c6"
+    },
+    {
+      "chunk_id": "ECDR-034",
+      "line_start": 4207,
+      "line_end": 4349,
+      "char_start": 257136,
+      "char_end": 264436,
+      "lexical_tokens": 3338,
+      "sha256": "5c3144af7ce2f0c1eeb576923f4f1112083b1c19cb45b85c8ed0546c8baaa680"
+    },
+    {
+      "chunk_id": "ECDR-035",
+      "line_start": 4350,
+      "line_end": 4418,
+      "char_start": 264436,
+      "char_end": 273074,
+      "lexical_tokens": 3390,
+      "sha256": "2f34c417f273d2ce396690e7e6f5706f7fd127e3c1b95a88c029923438976ac1"
+    },
+    {
+      "chunk_id": "ECDR-036",
+      "line_start": 4419,
+      "line_end": 4489,
+      "char_start": 273074,
+      "char_end": 281100,
+      "lexical_tokens": 3385,
+      "sha256": "6001460496bfd206930c8ca477547305ba0e5588faecb41e2a3be94700abc842"
+    },
+    {
+      "chunk_id": "ECDR-037",
+      "line_start": 4490,
+      "line_end": 4584,
+      "char_start": 281100,
+      "char_end": 288295,
+      "lexical_tokens": 3356,
+      "sha256": "fa30628a57da458473a63bbb9cf576306c8cb59686bea4dd95603dc62223da1a"
+    },
+    {
+      "chunk_id": "ECDR-038",
+      "line_start": 4585,
+      "line_end": 4700,
+      "char_start": 288295,
+      "char_end": 295748,
+      "lexical_tokens": 3384,
+      "sha256": "4773a26109e7229f12309edc32943ecfd40937226456051fc6d073ab0bd3d8f2"
+    },
+    {
+      "chunk_id": "ECDR-039",
+      "line_start": 4701,
+      "line_end": 4829,
+      "char_start": 295748,
+      "char_end": 303494,
+      "lexical_tokens": 3374,
+      "sha256": "64330d0d951f0e43fa8193beede3aadc93d03feb25a752156edbb6cecfd3db33"
+    },
+    {
+      "chunk_id": "ECDR-040",
+      "line_start": 4830,
+      "line_end": 5042,
+      "char_start": 303494,
+      "char_end": 311281,
+      "lexical_tokens": 3400,
+      "sha256": "76b7c987f2023e29ac8fc35d4508b44be7753d34b4ebeb3d424d8d715657d11b"
+    },
+    {
+      "chunk_id": "ECDR-041",
+      "line_start": 5043,
+      "line_end": 5268,
+      "char_start": 311281,
+      "char_end": 319418,
+      "lexical_tokens": 3380,
+      "sha256": "57a07c5a482cde635ead58ed22eb67f8210915ac536a25e33b1dc1f50acdd3a8"
+    },
+    {
+      "chunk_id": "ECDR-042",
+      "line_start": 5269,
+      "line_end": 5470,
+      "char_start": 319418,
+      "char_end": 327221,
+      "lexical_tokens": 3361,
+      "sha256": "bb317d687bcf92553411f35758180fe38620e0067b27ee9b9c147f1533169244"
+    },
+    {
+      "chunk_id": "ECDR-043",
+      "line_start": 5471,
+      "line_end": 5582,
+      "char_start": 327221,
+      "char_end": 334365,
+      "lexical_tokens": 3343,
+      "sha256": "03307f0a3dd8f00ccde9c85e14f52b5d22bbfbf2ba8b55f58ff70802b279e81c"
+    },
+    {
+      "chunk_id": "ECDR-044",
+      "line_start": 5583,
+      "line_end": 5709,
+      "char_start": 334365,
+      "char_end": 341487,
+      "lexical_tokens": 3319,
+      "sha256": "0c4cfaac7f6e9c76e0c4512fdef9c9d61d04554f83154058c1cccf8a8e13d5ec"
+    },
+    {
+      "chunk_id": "ECDR-045",
+      "line_start": 5710,
+      "line_end": 5857,
+      "char_start": 341487,
+      "char_end": 348878,
+      "lexical_tokens": 3399,
+      "sha256": "92cea480a1869482dbcb526b5f72e0c13dae66346821d90c75df4148eb3bce44"
+    },
+    {
+      "chunk_id": "ECDR-046",
+      "line_start": 5858,
+      "line_end": 5987,
+      "char_start": 348878,
+      "char_end": 356837,
+      "lexical_tokens": 3340,
+      "sha256": "004b42135cb0aa36fed0e46021a327993853aded5a78cf866ac255d8ad113825"
+    },
+    {
+      "chunk_id": "ECDR-047",
+      "line_start": 5988,
+      "line_end": 6063,
+      "char_start": 356837,
+      "char_end": 364366,
+      "lexical_tokens": 3386,
+      "sha256": "0e3a08b31b188513c230acd5c420f20a3eabf7b7926d2372320e3d445f688827"
+    },
+    {
+      "chunk_id": "ECDR-048",
+      "line_start": 6064,
+      "line_end": 6209,
+      "char_start": 364366,
+      "char_end": 371510,
+      "lexical_tokens": 3381,
+      "sha256": "aefb6e971434b485e93a30156d9ad654515fcab52403a88628abc4b9d4b0e589"
+    },
+    {
+      "chunk_id": "ECDR-049",
+      "line_start": 6210,
+      "line_end": 6354,
+      "char_start": 371510,
+      "char_end": 379688,
+      "lexical_tokens": 3382,
+      "sha256": "824640d1e02ae6f555d693368800569f7b6891ee09256b506f0546d366c57805"
+    },
+    {
+      "chunk_id": "ECDR-050",
+      "line_start": 6355,
+      "line_end": 6500,
+      "char_start": 379688,
+      "char_end": 387124,
+      "lexical_tokens": 3393,
+      "sha256": "910a49f781683391a88a7934bf66edb672ade8115fd9fe264ab9ada5a1f27657"
+    },
+    {
+      "chunk_id": "ECDR-051",
+      "line_start": 6501,
+      "line_end": 6609,
+      "char_start": 387124,
+      "char_end": 394806,
+      "lexical_tokens": 3351,
+      "sha256": "1d10dfe39f43e584704b947ef40393688a210c31f4157a7555a0131c851ffd9e"
+    },
+    {
+      "chunk_id": "ECDR-052",
+      "line_start": 6610,
+      "line_end": 6676,
+      "char_start": 394806,
+      "char_end": 402682,
+      "lexical_tokens": 3333,
+      "sha256": "266c2a9a5681237144f853120f10f88b8459476caae4851a210d5ddbf5660a87"
+    },
+    {
+      "chunk_id": "ECDR-053",
+      "line_start": 6677,
+      "line_end": 6783,
+      "char_start": 402682,
+      "char_end": 411127,
+      "lexical_tokens": 3363,
+      "sha256": "916ee7c403de95cc5ae33e40e4b9e213c6e4e433bc513a1c33aa945c10d4cb5c"
+    },
+    {
+      "chunk_id": "ECDR-054",
+      "line_start": 6784,
+      "line_end": 6908,
+      "char_start": 411127,
+      "char_end": 418734,
+      "lexical_tokens": 3349,
+      "sha256": "32b0ea9ae4fb7033c2f5ac5b9eae76e159903c93f8666b096fa625de5b3469f6"
+    },
+    {
+      "chunk_id": "ECDR-055",
+      "line_start": 6909,
+      "line_end": 7028,
+      "char_start": 418734,
+      "char_end": 425983,
+      "lexical_tokens": 3349,
+      "sha256": "4fa7738e616e22e76f9c0b96fbedfe0d1086ce8b302a4b2db144e3977cb172c4"
+    },
+    {
+      "chunk_id": "ECDR-056",
+      "line_start": 7029,
+      "line_end": 7155,
+      "char_start": 425983,
+      "char_end": 432874,
+      "lexical_tokens": 3395,
+      "sha256": "900c52c8f3d4e693424383aa1c271e9b53af115019b30471f455b1dbe04a4181"
+    },
+    {
+      "chunk_id": "ECDR-057",
+      "line_start": 7156,
+      "line_end": 7262,
+      "char_start": 432874,
+      "char_end": 440679,
+      "lexical_tokens": 3346,
+      "sha256": "f2f829ed79e43a3952f4f4ba3da6b7fb7e8fb362e562af299a1053f48a245cbf"
+    },
+    {
+      "chunk_id": "ECDR-058",
+      "line_start": 7263,
+      "line_end": 7385,
+      "char_start": 440679,
+      "char_end": 447628,
+      "lexical_tokens": 3388,
+      "sha256": "54f8011cba403e1de73f746c7c8800ea96e58f509382d6c3071235f2d81298db"
+    },
+    {
+      "chunk_id": "ECDR-059",
+      "line_start": 7386,
+      "line_end": 7499,
+      "char_start": 447628,
+      "char_end": 455783,
+      "lexical_tokens": 3376,
+      "sha256": "d4ecd0e4c6ff04b807ec3a77a7f1fdd6604e71b95acd8ed58e7ebc1cdb553b8e"
+    },
+    {
+      "chunk_id": "ECDR-060",
+      "line_start": 7500,
+      "line_end": 7609,
+      "char_start": 455783,
+      "char_end": 463150,
+      "lexical_tokens": 3351,
+      "sha256": "c8d3b44acbade54fac0737d44395f615c6f759ef107510c525d98b468d6b77a9"
+    },
+    {
+      "chunk_id": "ECDR-061",
+      "line_start": 7610,
+      "line_end": 7760,
+      "char_start": 463150,
+      "char_end": 470819,
+      "lexical_tokens": 3382,
+      "sha256": "e7b0f4e369bcb34cdcdb1b62478ebaa35bac0011574448b64edc2fd06f3440d5"
+    },
+    {
+      "chunk_id": "ECDR-062",
+      "line_start": 7761,
+      "line_end": 7830,
+      "char_start": 470819,
+      "char_end": 478368,
+      "lexical_tokens": 3171,
+      "sha256": "88574c80cc99f3ca6c57713cb06ed01035c4d8cd3e2b6a9ac58ae3fcb3159c9b"
+    }
+  ],
+  "prompts": [
+    {
+      "line": 9,
+      "prompt": "#!/usr/bin/env python3"
+    },
+    {
+      "line": 605,
+      "prompt": "Đã hiểu. Từ đây, phạm vi công việc ECDR là nghiên cứu, phân tích, đối chiếu bằng chứng và lập báo cáo, không phải triển khai phần mềm."
+    },
+    {
+      "line": 843,
+      "prompt": "Đúng. Dựa trên báo cáo Antigravity mới gửi, baseline dữ liệu và CNN của ECDR hiện đã nhất quán về các số liệu chính."
+    },
+    {
+      "line": 1047,
+      "prompt": "thế thì thằng LIP CACHE đâu có giúp nhiều nó chỉ chứng minh việc reuse có khả năng xảy ra đúng không ?"
+    },
+    {
+      "line": 1113,
+      "prompt": "Đúng, nhưng cần phân biệt rõ: ECDR phải chứng minh khả năng tái sử dụng kết quả inference, chứ không phải chứng minh lại cách Neural Networks hoạt động hoặc chứng minh lại các cô"
+    },
+    {
+      "line": 1425,
+      "prompt": "Không. Bạn không cần chứng minh ngược toàn bộ lý thuyết đến tận tiên đề. Trong nghiên cứu toán học, tiên đề là những mệnh đề được chấp nhận làm điểm xuất phát của một hệ thống hì"
+    },
+    {
+      "line": 1474,
+      "prompt": "Có một vùng quanh input đã được CNN phân loại mà mọi input trong vùng đều nhận cùng quyết định."
+    },
+    {
+      "line": 1690,
+      "prompt": "# ECDR — Complete Mathematical & Algorithmic Proof Registry"
+    },
+    {
+      "line": 2229,
+      "prompt": "Có. Data vẫn là thành phần bắt buộc của ECDR. Thậm chí, phải nghiên cứu dữ liệu trước khi quyết định thuật toán reuse nào đáng phát triển."
+    },
+    {
+      "line": 2316,
+      "prompt": "#!/usr/bin/env python3"
+    },
+    {
+      "line": 2920,
+      "prompt": "Đã hiểu. Từ đây, phạm vi công việc ECDR là nghiên cứu, phân tích, đối chiếu bằng chứng và lập báo cáo, không phải triển khai phần mềm."
+    },
+    {
+      "line": 3161,
+      "prompt": "Đúng. Dựa trên báo cáo Antigravity mới gửi, baseline dữ liệu và CNN của ECDR hiện đã nhất quán về các số liệu chính."
+    },
+    {
+      "line": 3368,
+      "prompt": "thế thì thằng LIP CACHE đâu có giúp nhiều nó chỉ chứng minh việc reuse có khả năng xảy ra đúng không ?"
+    },
+    {
+      "line": 3436,
+      "prompt": "Đúng, nhưng cần phân biệt rõ: ECDR phải chứng minh khả năng tái sử dụng kết quả inference, chứ không phải chứng minh lại cách Neural Networks hoạt động hoặc chứng minh lại các cô"
+    },
+    {
+      "line": 3749,
+      "prompt": "Không. Bạn không cần chứng minh ngược toàn bộ lý thuyết đến tận tiên đề. Trong nghiên cứu toán học, tiên đề là những mệnh đề được chấp nhận làm điểm xuất phát của một hệ thống hì"
+    },
+    {
+      "line": 3798,
+      "prompt": "Có một vùng quanh input đã được CNN phân loại mà mọi input trong vùng đều nhận cùng quyết định."
+    },
+    {
+      "line": 4015,
+      "prompt": "# ECDR — Complete Mathematical & Algorithmic Proof Registry"
+    },
+    {
+      "line": 4563,
+      "prompt": "[Pasted text #1 +79 lines] m đưa t  toafn bộ câu hỏi khi m nhận được toàn bộ những cái này"
+    },
+    {
+      "line": 4671,
+      "prompt": "thế cuối cùng nên thử CNN đúng k thử xài với toàn bộ case windows luôn hay sao"
+    },
+    {
+      "line": 5533,
+      "prompt": "tiếp tục  # Đánh giá tiến trình ECDR — có đang đi đúng không?"
+    },
+    {
+      "line": 5623,
+      "prompt": "*\"Cấu trúc miền có giúp tăng số lần reuse hợp lệ không?\"*"
+    },
+    {
+      "line": 5798,
+      "prompt": "T nghĩ vấn đề hiện tại của ECDR không nằm ở chỗ m chưa hiểu toán học, mà là chúng ta đã đi quá sâu vào phương pháp trước khi định nghĩa rõ bài toán nghiên cứu thực sự là gì."
+    },
+    {
+      "line": 5927,
+      "prompt": "Với một CNN đã huấn luyện trên HAPT, liệu có tồn tại những miền đầu vào không tầm thường mà nhãn dự đoán của CNN được đảm bảo không thay đổi, và có thể xác định thành viên của mi"
+    },
+    {
+      "line": 6092,
+      "prompt": "T đồng ý với chẩn đoán trung tâm của bản phản biện: ECDR đang thiếu một feasibility gate có khả năng bác bỏ giả thuyết bằng thực nghiệm, chứ không thiếu thêm một bản lý thuyết."
+    },
+    {
+      "line": 6312,
+      "prompt": "Can event-constrained input regions enable certified MainNet prediction reuse on HAPT time-series streams with sufficient coverage and amortized computational savings to outperfo"
+    },
+    {
+      "line": 6317,
+      "prompt": "Có tồn tại những miền được chứng nhận quanh các HAPT anchors, có thể được tái sử dụng đủ thường xuyên để chi phí xây dựng và kiểm tra chứng nhận thấp hơn chi phí CNN inference đư"
+    },
+    {
+      "line": 6374,
+      "prompt": "T đã đọc toàn bộ bản phản biện S8' (219 dòng). Bản này xác định đúng ba vấn đề còn thiếu: joint certification, tail latency và anchor placement policy. Tuy nhiên, chưa thể lấy ng"
+    },
+    {
+      "line": 6381,
+      "prompt": "Nếu prediction stability giữa hai windows liên tiếp thấp hơn 70%, có thể dừng vì ECDR không thể đạt reuse rate trên 70%.&#x20;"
+    },
+    {
+      "line": 6383,
+      "prompt": "Pasted text(20261025-114950).txt"
+    },
+    {
+      "line": 6720,
+      "prompt": "# Đọc file của T — chấp nhận phần lớn, ba nuance cần giữ"
+    },
+    {
+      "line": 6742,
+      "prompt": "**Multi-anchor caching chỉ hoạt động nếu within-activity variation nhỏ hơn between-activity variation đủ nhiều để region của anchor cũ cover được instance mới của cùng activity.*"
+    },
+    {
+      "line": 6779,
+      "prompt": "**Nếu Gate A fail, cần phân biệt hai khả năng: (i) miền certifiable quá nhỏ hoặc không tồn tại; (ii) miền tồn tại nhưng CROWN quá lỏng để chứng minh.**"
+    },
+    {
+      "line": 6971,
+      "prompt": "# Đọc kết quả — đánh giá thẳng"
+    },
+    {
+      "line": 7264,
+      "prompt": "# Đọc xong toàn bộ — trạng thái hiện tại và quyết định tiếp theo"
+    },
+    {
+      "line": 7546,
+      "prompt": "## [S0] Đánh giá lại ECDR sau các số liệu mới"
+    },
+    {
+      "line": 7828,
+      "prompt": "[Pasted text #1 +113 lines]"
+    }
+  ],
+  "tool_calls": [
+    {
+      "line": 260,
+      "cmd": "Bash(ls -la /home/pro/Downloads/research)"
+    },
+    {
+      "line": 261,
+      "cmd": "Bash(find scripts data configs -maxdepth 3)"
+    },
+    {
+      "line": 262,
+      "cmd": "Read(~/Downloads/research/03_DATA_AUDIT.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 267,
+      "cmd": "Bash(git status -s && git log -n 5 --oneline) (ctrl+o to expand)"
+    },
+    {
+      "line": 272,
+      "cmd": "Bash(grep -rn \"HAPT raw-data inventory\" /home/pro/Downloads/research/ || true)"
+    },
+    {
+      "line": 273,
+      "cmd": "ManageTask(status task-10)"
+    },
+    {
+      "line": 274,
+      "cmd": "ManageTask(kill task-10)"
+    },
+    {
+      "line": 275,
+      "cmd": "Bash(grep -rnI --exclude-dir={.git,data,.venv} \"load_subject_splits\" /home/pro/Downloads/research/ || true)"
+    },
+    {
+      "line": 276,
+      "cmd": "Read(~/Downloads/research/scripts/03_build_windows.py)"
+    },
+    {
+      "line": 277,
+      "cmd": "Read(~/Downloads/research/scripts/04_audit_splits.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 281,
+      "cmd": "Bash(ls -la checkpoints/ && cat configs/backbone.yaml)"
+    },
+    {
+      "line": 282,
+      "cmd": "Bash(cat data/g2_metrics.json && echo \"---\" && cat data/g2_model_summary.json && echo \"---\" && cat data/g2_cpu_latency.json) (ctrl+o to expand)"
+    },
+    {
+      "line": 287,
+      "cmd": "Read(~/Downloads/research/GATES.md)"
+    },
+    {
+      "line": 288,
+      "cmd": "Read(~/Downloads/research/00_START_HERE.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 292,
+      "cmd": "Bash(python3 -c ')"
+    },
+    {
+      "line": 293,
+      "cmd": "Bash(python3 -c ')"
+    },
+    {
+      "line": 294,
+      "cmd": "Bash(python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 299,
+      "cmd": "Bash(head -n 10 data/hapt/RawData/labels.txt) (ctrl+o to expand)"
+    },
+    {
+      "line": 304,
+      "cmd": "Bash(cat data/hapt/README.txt)"
+    },
+    {
+      "line": 305,
+      "cmd": "Read(~/Downloads/research/scripts/02_validate_raw.py)"
+    },
+    {
+      "line": 306,
+      "cmd": "Read(~/Downloads/research/scripts/02_validate_raw.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 310,
+      "cmd": "Bash(grep -rnI --exclude-dir={.git,data,.venv} \"index_base\" /home/pro/Downloads/research/ || true)"
+    },
+    {
+      "line": 311,
+      "cmd": "Bash(ls -la notes/ GPT-sources/)"
+    },
+    {
+      "line": 312,
+      "cmd": "Bash(cat data/split_audit.json)"
+    },
+    {
+      "line": 313,
+      "cmd": "Read(~/Downloads/research/data/build_windows_summary.json)"
+    },
+    {
+      "line": 314,
+      "cmd": "Bash(python3 -c ')"
+    },
+    {
+      "line": 315,
+      "cmd": "Bash(.venv/bin/python3 -c ')"
+    },
+    {
+      "line": 316,
+      "cmd": "Bash(.venv/bin/python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 320,
+      "cmd": "Bash(.venv/bin/python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 697,
+      "cmd": "Read(~/Downloads/research/scripts/backbone.py)"
+    },
+    {
+      "line": 698,
+      "cmd": "Read(~/Downloads/research/scripts/backbone.py)"
+    },
+    {
+      "line": 699,
+      "cmd": "Bash(.venv/bin/python3 -c ')"
+    },
+    {
+      "line": 700,
+      "cmd": "Bash(.venv/bin/python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 704,
+      "cmd": "Read(~/Downloads/research/07_G3_DOMAIN_CONTRACT.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 878,
+      "cmd": "Read(~/Downloads/research/02_LITERATURE.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 883,
+      "cmd": "Read(~/Downloads/research/04_THEORY.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 1052,
+      "cmd": "Bash(.venv/bin/python3 -c ')"
+    },
+    {
+      "line": 1053,
+      "cmd": "Bash(pdftotext -f 1 -l 2 LipCache_Xiang2026_arXiv2608.13144.pdf - | head -n 45)"
+    },
+    {
+      "line": 1054,
+      "cmd": "Bash(pdftotext LipCache_Xiang2026_arXiv2608.13144.pdf - | grep -A 25 -i \"future work\") (ctrl+o to expand)"
+    },
+    {
+      "line": 2568,
+      "cmd": "Bash(ls -la /home/pro/Downloads/research)"
+    },
+    {
+      "line": 2569,
+      "cmd": "Bash(find scripts data configs -maxdepth 3)"
+    },
+    {
+      "line": 2570,
+      "cmd": "Read(~/Downloads/research/03_DATA_AUDIT.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 2576,
+      "cmd": "Bash(git status -s && git log -n 5 --oneline) (ctrl+o to expand)"
+    },
+    {
+      "line": 2582,
+      "cmd": "Bash(grep -rn \"HAPT raw-data inventory\" /home/pro/Downloads/research/ || true)"
+    },
+    {
+      "line": 2583,
+      "cmd": "ManageTask(status task-10)"
+    },
+    {
+      "line": 2584,
+      "cmd": "ManageTask(kill task-10)"
+    },
+    {
+      "line": 2585,
+      "cmd": "Bash(grep -rnI --exclude-dir={.git,data,.venv} \"load_subject_splits\" /home/pro/Downloads/research/ || true)"
+    },
+    {
+      "line": 2586,
+      "cmd": "Read(~/Downloads/research/scripts/03_build_windows.py)"
+    },
+    {
+      "line": 2587,
+      "cmd": "Read(~/Downloads/research/scripts/04_audit_splits.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 2592,
+      "cmd": "Bash(ls -la checkpoints/ && cat configs/backbone.yaml)"
+    },
+    {
+      "line": 2593,
+      "cmd": "Bash(cat data/g2_metrics.json && echo \"---\" && cat data/g2_model_summary.json && echo \"---\" && cat data/g2_cpu_latency.json) (ctrl+o to expand)"
+    },
+    {
+      "line": 2599,
+      "cmd": "Read(~/Downloads/research/GATES.md)"
+    },
+    {
+      "line": 2600,
+      "cmd": "Read(~/Downloads/research/00_START_HERE.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 2605,
+      "cmd": "Bash(python3 -c ')"
+    },
+    {
+      "line": 2606,
+      "cmd": "Bash(python3 -c ')"
+    },
+    {
+      "line": 2607,
+      "cmd": "Bash(python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 2612,
+      "cmd": "Bash(head -n 10 data/hapt/RawData/labels.txt) (ctrl+o to expand)"
+    },
+    {
+      "line": 2618,
+      "cmd": "Bash(cat data/hapt/README.txt)"
+    },
+    {
+      "line": 2619,
+      "cmd": "Read(~/Downloads/research/scripts/02_validate_raw.py)"
+    },
+    {
+      "line": 2620,
+      "cmd": "Read(~/Downloads/research/scripts/02_validate_raw.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 2625,
+      "cmd": "Bash(grep -rnI --exclude-dir={.git,data,.venv} \"index_base\" /home/pro/Downloads/research/ || true)"
+    },
+    {
+      "line": 2626,
+      "cmd": "Bash(ls -la notes/ GPT-sources/)"
+    },
+    {
+      "line": 2627,
+      "cmd": "Bash(cat data/split_audit.json)"
+    },
+    {
+      "line": 2628,
+      "cmd": "Read(~/Downloads/research/data/build_windows_summary.json)"
+    },
+    {
+      "line": 2629,
+      "cmd": "Bash(python3 -c ')"
+    },
+    {
+      "line": 2630,
+      "cmd": "Bash(.venv/bin/python3 -c ')"
+    },
+    {
+      "line": 2631,
+      "cmd": "Bash(.venv/bin/python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 2635,
+      "cmd": "Bash(.venv/bin/python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 3014,
+      "cmd": "Read(~/Downloads/research/scripts/backbone.py)"
+    },
+    {
+      "line": 3015,
+      "cmd": "Read(~/Downloads/research/scripts/backbone.py)"
+    },
+    {
+      "line": 3016,
+      "cmd": "Bash(.venv/bin/python3 -c ')"
+    },
+    {
+      "line": 3017,
+      "cmd": "Bash(.venv/bin/python3 -c ') (ctrl+o to expand)"
+    },
+    {
+      "line": 3022,
+      "cmd": "Read(~/Downloads/research/07_G3_DOMAIN_CONTRACT.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 3198,
+      "cmd": "Read(~/Downloads/research/02_LITERATURE.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 3204,
+      "cmd": "Read(~/Downloads/research/04_THEORY.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 3374,
+      "cmd": "Bash(.venv/bin/python3 -c ')"
+    },
+    {
+      "line": 3375,
+      "cmd": "Bash(pdftotext -f 1 -l 2 LipCache_Xiang2026_arXiv2608.13144.pdf - | head -n 45)"
+    },
+    {
+      "line": 3376,
+      "cmd": "Bash(pdftotext LipCache_Xiang2026_arXiv2608.13144.pdf - | grep -A 25 -i \"future work\") (ctrl+o to expand)"
+    },
+    {
+      "line": 4675,
+      "cmd": "Read(~/Downloads/research/G2_CLASS_DECISION.md) (ctrl+o to expand)"
+    },
+    {
+      "line": 5691,
+      "cmd": "Bash(.venv/bin/python3 -c 'import auto_LiRPA; print(\"auto_LiRPA version:\", auto_LiRPA.__version__)')"
+    },
+    {
+      "line": 5692,
+      "cmd": "Bash(.venv/bin/pip list)"
+    },
+    {
+      "line": 5693,
+      "cmd": "Read(~/Downloads/research/requirements-lock.txt)"
+    },
+    {
+      "line": 5694,
+      "cmd": "Bash(.venv/bin/pip install auto_LiRPA --dry-run)"
+    },
+    {
+      "line": 5695,
+      "cmd": "Bash(.venv/bin/pip install --dry-run --no-deps git+https://github.com/Verified-Intelligence/auto_LiRPA.git) (ctrl+o to expand)"
+    },
+    {
+      "line": 5700,
+      "cmd": "Bash(.venv/bin/pip install --dry-run git+https://github.com/Verified-Intelligence/auto_LiRPA.git)"
+    },
+    {
+      "line": 5701,
+      "cmd": "ManageTask(kill task-113) (ctrl+o to expand)"
+    },
+    {
+      "line": 5705,
+      "cmd": "Bash(.venv/bin/python3 -c 'import torch; print(\"PyTorch version:\", torch.__version__)') (ctrl+o to expand)"
+    },
+    {
+      "line": 5938,
+      "cmd": "Bash(tail -n 20 /home/pro/.gemini/antigravity-cli/brain/4bfb0f7d-a1a9-464c-8dfb-d20d0a243e91/.system_generated/logs/transcript.jsonl)"
+    },
+    {
+      "line": 5939,
+      "cmd": "Bash(python3 -c \")"
+    },
+    {
+      "line": 5940,
+      "cmd": "Bash(python3 -c \")"
+    },
+    {
+      "line": 5941,
+      "cmd": "Bash(python3 -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 5946,
+      "cmd": "Read(~/Downloads/research/scripts/backbone.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 5951,
+      "cmd": "Bash(ls -lh data/)"
+    },
+    {
+      "line": 5952,
+      "cmd": "Bash(python3 -c \")"
+    },
+    {
+      "line": 5953,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5954,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5955,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5956,
+      "cmd": "Bash(ls -l scripts/)"
+    },
+    {
+      "line": 5957,
+      "cmd": "Read(~/Downloads/research/scripts/09_evaluate_backbone.py)"
+    },
+    {
+      "line": 5958,
+      "cmd": "Read(~/Downloads/research/scripts/backbone.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 5961,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5962,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5963,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 5967,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 5971,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 5975,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5976,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 5981,
+      "cmd": "Bash(.venv/bin/pip install --no-deps git+https://github.com/Verified-Intelligence/auto_LiRPA.git)"
+    },
+    {
+      "line": 5982,
+      "cmd": "Bash(.venv/bin/python -c \"import auto_LiRPA; print('auto_LiRPA version:', auto_LiRPA.__version__)\")"
+    },
+    {
+      "line": 5983,
+      "cmd": "Bash(.venv/bin/pip install appdirs)"
+    },
+    {
+      "line": 5984,
+      "cmd": "Bash(.venv/bin/pip install --no-deps tqdm graphviz)"
+    },
+    {
+      "line": 5985,
+      "cmd": "Bash(.venv/bin/python -c \"import auto_LiRPA; from auto_LiRPA import BoundedModule, BoundedTensor, PerturbationLpNorm; print('SUCCESS! auto_LiRPA ready!')\") (ctrl+o to expand)"
+    },
+    {
+      "line": 5990,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 5991,
+      "cmd": "Bash(sed -n '25,35p' /home/pro/Downloads/research/.venv/lib/python3.11/site-packages/auto_LiRPA/operators/pooling.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 5995,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 6328,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 6329,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 6334,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 6339,
+      "cmd": "Bash(git status) (ctrl+o to expand)"
+    },
+    {
+      "line": 6344,
+      "cmd": "Create(~/Downloads/research/scripts/11_gate_a_prototype.py)"
+    },
+    {
+      "line": 6345,
+      "cmd": "Bash(.venv/bin/python scripts/11_gate_a_prototype.py) (ctrl+o to expand)"
+    },
+    {
+      "line": 6571,
+      "cmd": "ManageTask(status task-191) (ctrl+o to expand)"
+    },
+    {
+      "line": 6575,
+      "cmd": "ManageTask(status task-191)"
+    },
+    {
+      "line": 6576,
+      "cmd": "ManageTask(status task-191)"
+    },
+    {
+      "line": 6577,
+      "cmd": "ManageTask(status task-191)"
+    },
+    {
+      "line": 6578,
+      "cmd": "Read(~/Downloads/research/data/p0_verifier_probe.json)"
+    },
+    {
+      "line": 6579,
+      "cmd": "Read(~/Downloads/research/data/p0_verifier_probe.json) (ctrl+o to expand)"
+    },
+    {
+      "line": 6882,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 6887,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7159,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 7160,
+      "cmd": "ManageTask(status task-216)"
+    },
+    {
+      "line": 7161,
+      "cmd": "ManageTask(status task-216) (ctrl+o to expand)"
+    },
+    {
+      "line": 7166,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 7167,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 7168,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7394,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7399,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7404,
+      "cmd": "Bash(.venv/bin/python -c \")"
+    },
+    {
+      "line": 7405,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7410,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7732,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    },
+    {
+      "line": 7736,
+      "cmd": "Bash(.venv/bin/python -c \") (ctrl+o to expand)"
+    }
+  ],
+  "headings": [
+    {
+      "line": 111,
+      "heading": "## 1. Phạm vi baseline"
+    },
+    {
+      "line": 121,
+      "heading": "### Trạng thái dữ liệu đã được ghi nhận trong hồ sơ dự án"
+    },
+    {
+      "line": 125,
+      "heading": "# 30"
+    },
+    {
+      "line": 129,
+      "heading": "# 61"
+    },
+    {
+      "line": 133,
+      "heading": "# 17.453"
+    },
+    {
+      "line": 137,
+      "heading": "# 10.017"
+    },
+    {
+      "line": 141,
+      "heading": "# 5.053"
+    },
+    {
+      "line": 145,
+      "heading": "# 2.874"
+    },
+    {
+      "line": 151,
+      "heading": "## 2. Dữ liệu HAPT chính thức và dữ liệu ECDR không giống nhau"
+    },
+    {
+      "line": 174,
+      "heading": "### Các nhãn phải được giữ nguyên khi kiểm kê"
+    },
+    {
+      "line": 195,
+      "heading": "## 3. Luồng xử lý dữ liệu chuẩn hóa"
+    },
+    {
+      "line": 230,
+      "heading": "## 4. Tài liệu baseline đã tạo"
+    },
+    {
+      "line": 244,
+      "heading": "## 5. Kết quả kiểm chứng"
+    },
+    {
+      "line": 328,
+      "heading": "### 1. Đối chiếu hiện trạng dữ liệu và Model Baseline"
+    },
+    {
+      "line": 347,
+      "heading": "### 2. Script Python hoàn chỉnh (audit_raw_inventory.py)"
+    },
+    {
+      "line": 472,
+      "heading": "# Khởi tạo mảng nhãn từng mẫu (0 = unannotated)"
+    },
+    {
+      "line": 497,
+      "heading": "# Sliding windows"
+    },
+    {
+      "line": 538,
+      "heading": "# Xuất kết quả CSV"
+    },
+    {
+      "line": 599,
+      "heading": "### 3. Đề xuất & Xác nhận phạm vi"
+    },
+    {
+      "line": 609,
+      "heading": "## 1. Hiện trạng ECDR được ghi nhận"
+    },
+    {
+      "line": 648,
+      "heading": "## 2. Phân tích ý nghĩa nghiên cứu"
+    },
+    {
+      "line": 661,
+      "heading": "## 3. Những điểm nghiên cứu chưa được giải quyết"
+    },
+    {
+      "line": 679,
+      "heading": "## 4. Định hướng nghiên cứu tiếp theo"
+    },
+    {
+      "line": 716,
+      "heading": "### 1. Data Characterization & Đối chiếu chính sách gán nhãn"
+    },
+    {
+      "line": 718,
+      "heading": "#### 1.1. Hiện trạng cài đặt trong Pipeline gốc"
+    },
+    {
+      "line": 731,
+      "heading": "#### 1.2. Phân phối khoảng cách giữa các cửa sổ liên tiếp (Temporal Deltas)"
+    },
+    {
+      "line": 739,
+      "heading": "### 2. Reference Model Characterization & Chuẩn hóa dữ liệu"
+    },
+    {
+      "line": 740,
+      "heading": "#### 2.1. Cấu trúc và Trọng số đã Đóng băng"
+    },
+    {
+      "line": 745,
+      "heading": "#### 2.2. Quy trình chuẩn hóa (Preprocessing & Normalization Identity)"
+    },
+    {
+      "line": 754,
+      "heading": "#### 2.3. Phân phối Logit Margins của Baseline"
+    },
+    {
+      "line": 763,
+      "heading": "### 3. Mathematical Foundation của Decision Reuse"
+    },
+    {
+      "line": 811,
+      "heading": "### 4. Comparative Research: Phân tích so sánh lý thuyết"
+    },
+    {
+      "line": 820,
+      "heading": "### 5. Research Gaps & Tiêu chí Bác bỏ Giả thuyết (Falsification Criteria)"
+    },
+    {
+      "line": 836,
+      "heading": "### Đề xuất bước tài liệu tiếp theo"
+    },
+    {
+      "line": 896,
+      "heading": "### 1. Cơ sở toán học của Decision Certification trên Frozen CNN"
+    },
+    {
+      "line": 898,
+      "heading": "#### 1.1. Bài toán Bảo toàn Quyết định (Decision Invariance)"
+    },
+    {
+      "line": 915,
+      "heading": "#### 1.2. Hệ 5 Biên Logit Cặp (Class-Pair Margin Formulation)"
+    },
+    {
+      "line": 928,
+      "heading": "#### 1.3. Thách thức tính cận trên kiến trúc SmallCNN1D thực tế"
+    },
+    {
+      "line": 944,
+      "heading": "### 2. Miền biến thiên theo Event (Event-Conditioned Candidate Regions)"
+    },
+    {
+      "line": 945,
+      "heading": "#### 2.1. Cấu trúc Hình học: Siêu hộp Dị hướng (Anisotropic Coordinate Box)"
+    },
+    {
+      "line": 961,
+      "heading": "#### 2.2. Bản chất của Event Descriptor và Cơ chế Candidate vs. Certified"
+    },
+    {
+      "line": 969,
+      "heading": "### 3. Phân tích So sánh Lý thuyết Chuyên sâu: ECDR vs. LipCache"
+    },
+    {
+      "line": 992,
+      "heading": "#### 3.1. Phân tích chi tiết từng khác biệt"
+    },
+    {
+      "line": 1009,
+      "heading": "### 4. Đánh giá Cân bằng Chi phí & Tiêu chí Bác bỏ Giả thuyết (Falsification Gate)"
+    },
+    {
+      "line": 1064,
+      "heading": "### 1. Tại sao LipCache \"có giúp\" trong bài toán của họ (Edge-Cloud Split Inference)?"
+    },
+    {
+      "line": 1073,
+      "heading": "### 2. Nhưng tại sao LipCache KHÔNG THỂ giúp được nhiều cho bài toán ECDR / Sensor Stream?"
+    },
+    {
+      "line": 1077,
+      "heading": "#### Nghịch lý 1: Backbone của chúng ta quá nhẹ (0, 25 ms) — Không có biên độ lợi nhuận"
+    },
+    {
+      "line": 1083,
+      "heading": "#### Nghịch lý 2: LipCache chỉ chứng nhận cho \"Mạng phụ\" (GuardNet-side), không bảo vệ Backbone chính"
+    },
+    {
+      "line": 1089,
+      "heading": "#### Nghịch lý 3: Giả định dữ liệu tĩnh (i.i.d.) so với Dữ liệu luồng thực tế (Streaming)"
+    },
+    {
+      "line": 1098,
+      "heading": "### 3. Ý nghĩa thực sự của LipCache đối với đề tài ECDR"
+    },
+    {
+      "line": 1123,
+      "heading": "## 1. Mỗi paper cung cấp điều gì cho ECDR?"
+    },
+    {
+      "line": 1148,
+      "heading": "## 2. ECDR cần chứng minh chính xác điều gì?"
+    },
+    {
+      "line": 1152,
+      "heading": "### P1. Chứng minh miền reuse tồn tại về mặt toán học"
+    },
+    {
+      "line": 1186,
+      "heading": "### P2. Chứng minh những miền đó thực sự có giá trị trên dataset"
+    },
+    {
+      "line": 1204,
+      "heading": "### P3. Chứng minh thuật toán nhận biết reuse là sound"
+    },
+    {
+      "line": 1230,
+      "heading": "### P4. Chứng minh reuse thực sự tiết kiệm tài nguyên"
+    },
+    {
+      "line": 1242,
+      "heading": "## 3. Vậy cần nghiên cứu và triển khai phần nào?"
+    },
+    {
+      "line": 1258,
+      "heading": "## 4. Nền tảng cần học sâu tới mức nào?"
+    },
+    {
+      "line": 1296,
+      "heading": "## Kết luận"
+    },
+    {
+      "line": 1327,
+      "heading": "### 1. Bản chất của 4 Mệnh đề Nghiên cứu (P1 → P4)"
+    },
+    {
+      "line": 1342,
+      "heading": "#### P1. Tồn tại miền bất biến quyết định (Mathematical Existence)"
+    },
+    {
+      "line": 1347,
+      "heading": "#### P2. Xác suất rơi vào miền trên dữ liệu thực (Empirical Value)"
+    },
+    {
+      "line": 1352,
+      "heading": "#### P3. Tính đúng đắn của thuật toán chứng nhận (Sound Verification)"
+    },
+    {
+      "line": 1365,
+      "heading": "#### P4. Phương trình hòa vốn hệ thống (System Cost Feasibility)"
+    },
+    {
+      "line": 1384,
+      "heading": "### 2. Hai \"Điểm mù\" cần tránh khi tiếp cận bài toán"
+    },
+    {
+      "line": 1406,
+      "heading": "### 3. Phân bổ Thứ tự Ưu tiên cho Giai đoạn R1 – R4"
+    },
+    {
+      "line": 1418,
+      "heading": "### Bước tiếp theo"
+    },
+    {
+      "line": 1430,
+      "heading": "## 1. Cấu trúc chứng minh khoa học"
+    },
+    {
+      "line": 1470,
+      "heading": "## 2. Ví dụ cụ thể trong ECDR"
+    },
+    {
+      "line": 1522,
+      "heading": "## 3. Phân loại những gì ECDR cần chứng minh"
+    },
+    {
+      "line": 1535,
+      "heading": "## 4. Có phải chứng minh hết rồi mới được thực nghiệm?"
+    },
+    {
+      "line": 1543,
+      "heading": "## 5. Cách tổ chức báo cáo toán học ECDR"
+    },
+    {
+      "line": 1572,
+      "heading": "### Cấu trúc Báo cáo Toán học ECDR (Draft Specification)"
+    },
+    {
+      "line": 1573,
+      "heading": "#### §1. Preliminaries (Kiến thức toán học kế thừa)"
+    },
+    {
+      "line": 1580,
+      "heading": "#### §2. Problem Formulation (Định nghĩa bài toán)"
+    },
+    {
+      "line": 1591,
+      "heading": "#### §3. Assumptions (Các giả định bắt buộc)"
+    },
+    {
+      "line": 1606,
+      "heading": "#### §4. Lemmas (Các bổ đề trung gian)"
+    },
+    {
+      "line": 1619,
+      "heading": "#### §5. Theorem (Định lý Sound Decision Reuse)"
+    },
+    {
+      "line": 1631,
+      "heading": "#### §6. Proof (Chứng minh Định lý 1)"
+    },
+    {
+      "line": 1655,
+      "heading": "#### §7. Limitations (Những gì Định lý 1 KHÔNG bảo đảm)"
+    },
+    {
+      "line": 1666,
+      "heading": "#### §8. Empirical Questions (Các câu hỏi thực nghiệm mở — Bản chất của Systems Research)"
+    },
+    {
+      "line": 1677,
+      "heading": "### Một quan sát thực nghiệm nhanh từ dữ liệu hiện có [A]"
+    },
+    {
+      "line": 1694,
+      "heading": "## [S0] Kết luận về phạm vi chứng minh"
+    },
+    {
+      "line": 1708,
+      "heading": "## [S1] Mục tiêu toán học phải được cố định"
+    },
+    {
+      "line": 1739,
+      "heading": "## [S2] Registry 32 nghĩa vụ cần chứng minh hoặc kiểm chứng"
+    },
+    {
+      "line": 1745,
+      "heading": "### Nhóm F — 9 nghĩa vụ toán học nền tảng"
+    },
+    {
+      "line": 1769,
+      "heading": "### Nhóm S — 10 nghĩa vụ về chứng nhận và correctness"
+    },
+    {
+      "line": 1789,
+      "heading": "### Nhóm W — 7 nghĩa vụ về workload và reuse thực tế"
+    },
+    {
+      "line": 1815,
+      "heading": "### Nhóm P — 6 nghĩa vụ về thuật toán, hiệu quả và đóng góp khoa học"
+    },
+    {
+      "line": 1837,
+      "heading": "## [S3] Inventory thuật toán ECDR"
+    },
+    {
+      "line": 1843,
+      "heading": "# 9"
+    },
+    {
+      "line": 1849,
+      "heading": "# 6"
+    },
+    {
+      "line": 1855,
+      "heading": "# 4"
+    },
+    {
+      "line": 1861,
+      "heading": "### A. Chín thành phần cốt lõi"
+    },
+    {
+      "line": 1877,
+      "heading": "### B. Sáu phương pháp baseline"
+    },
+    {
+      "line": 1890,
+      "heading": "### C. Bốn hướng mở rộng"
+    },
+    {
+      "line": 1910,
+      "heading": "## [S4] Những chứng minh mình có thể thiết lập ngay"
+    },
+    {
+      "line": 1914,
+      "heading": "### T1. Chuyển miền từ raw input sang normalized input"
+    },
+    {
+      "line": 1932,
+      "heading": "### T2. Tính cận dưới trên affine region"
+    },
+    {
+      "line": 1958,
+      "heading": "### T3. Global correctness của cơ chế certified reuse"
+    },
+    {
+      "line": 1984,
+      "heading": "### T4. Điều kiện hòa vốn của ECDR"
+    },
+    {
+      "line": 2013,
+      "heading": "## [S5] Mình có thể chứng minh bao nhiêu?"
+    },
+    {
+      "line": 2043,
+      "heading": "## [S6] Độ phức tạp thuật toán cần phân tích"
+    },
+    {
+      "line": 2061,
+      "heading": "## [S7] Thứ tự nghiên cứu và phụ thuộc chứng minh"
+    },
+    {
+      "line": 2063,
+      "heading": "### Proof dependency map"
+    },
+    {
+      "line": 2116,
+      "heading": "## [S8] Trạng thái nghiên cứu hiện tại"
+    },
+    {
+      "line": 2147,
+      "heading": "### 1. Đối chiếu Registry với Hiện trạng Hồ sơ Repo"
+    },
+    {
+      "line": 2161,
+      "heading": "### 2. Hai Nút thắt Khoa học Trọng yếu trong Registry"
+    },
+    {
+      "line": 2163,
+      "heading": "#### Nút thắt 1: Nghĩa vụ Số học S09 (Floating-Point Numerical Soundness)"
+    },
+    {
+      "line": 2181,
+      "heading": "#### Nút thắt 2: Ba Cổng Phán quyết (Gate A → Gate B → Gate C) và Khả năng Bị Bác bỏ"
+    },
+    {
+      "line": 2209,
+      "heading": "### 3. Đánh giá tính Novelty đối chiếu Prior Art (P06)"
+    },
+    {
+      "line": 2221,
+      "heading": "### Bước tiếp theo trong chế độ Review-only"
+    },
+    {
+      "line": 2236,
+      "heading": "## 1. Data đóng vai trò gì trong ECDR?"
+    },
+    {
+      "line": 2252,
+      "heading": "## 2. Data và toán học liên hệ như thế nào?"
+    },
+    {
+      "line": 2270,
+      "heading": "## 3. Với HAPT hiện tại, cần làm gì?"
+    },
+    {
+      "line": 2289,
+      "heading": "## 4. Có cần dữ liệu ảnh và video không?"
+    },
+    {
+      "line": 2297,
+      "heading": "## Kết luận"
+    },
+    {
+      "line": 2418,
+      "heading": "## 1. Phạm vi baseline"
+    },
+    {
+      "line": 2428,
+      "heading": "### Trạng thái dữ liệu đã được ghi nhận trong hồ sơ dự án"
+    },
+    {
+      "line": 2432,
+      "heading": "# 30"
+    },
+    {
+      "line": 2436,
+      "heading": "# 61"
+    },
+    {
+      "line": 2440,
+      "heading": "# 17.453"
+    },
+    {
+      "line": 2444,
+      "heading": "# 10.017"
+    },
+    {
+      "line": 2448,
+      "heading": "# 5.053"
+    },
+    {
+      "line": 2452,
+      "heading": "# 2.874"
+    },
+    {
+      "line": 2458,
+      "heading": "## 2. Dữ liệu HAPT chính thức và dữ liệu ECDR không giống nhau"
+    },
+    {
+      "line": 2481,
+      "heading": "### Các nhãn phải được giữ nguyên khi kiểm kê"
+    },
+    {
+      "line": 2502,
+      "heading": "## 3. Luồng xử lý dữ liệu chuẩn hóa"
+    },
+    {
+      "line": 2537,
+      "heading": "## 4. Tài liệu baseline đã tạo"
+    },
+    {
+      "line": 2551,
+      "heading": "## 5. Kết quả kiểm chứng"
+    },
+    {
+      "line": 2643,
+      "heading": "### 1. Đối chiếu hiện trạng dữ liệu và Model Baseline"
+    },
+    {
+      "line": 2662,
+      "heading": "### 2. Script Python hoàn chỉnh (audit_raw_inventory.py)"
+    },
+    {
+      "line": 2787,
+      "heading": "# Khởi tạo mảng nhãn từng mẫu (0 = unannotated)"
+    },
+    {
+      "line": 2812,
+      "heading": "# Sliding windows"
+    },
+    {
+      "line": 2853,
+      "heading": "# Xuất kết quả CSV"
+    },
+    {
+      "line": 2914,
+      "heading": "### 3. Đề xuất & Xác nhận phạm vi"
+    },
+    {
+      "line": 2924,
+      "heading": "## 1. Hiện trạng ECDR được ghi nhận"
+    },
+    {
+      "line": 2963,
+      "heading": "## 2. Phân tích ý nghĩa nghiên cứu"
+    },
+    {
+      "line": 2977,
+      "heading": "## 3. Những điểm nghiên cứu chưa được giải quyết"
+    },
+    {
+      "line": 2995,
+      "heading": "## 4. Định hướng nghiên cứu tiếp theo"
+    },
+    {
+      "line": 3034,
+      "heading": "### 1. Data Characterization & Đối chiếu chính sách gán nhãn"
+    },
+    {
+      "line": 3036,
+      "heading": "#### 1.1. Hiện trạng cài đặt trong Pipeline gốc"
+    },
+    {
+      "line": 3049,
+      "heading": "#### 1.2. Phân phối khoảng cách giữa các cửa sổ liên tiếp (Temporal Deltas)"
+    },
+    {
+      "line": 3057,
+      "heading": "### 2. Reference Model Characterization & Chuẩn hóa dữ liệu"
+    },
+    {
+      "line": 3058,
+      "heading": "#### 2.1. Cấu trúc và Trọng số đã Đóng băng"
+    },
+    {
+      "line": 3063,
+      "heading": "#### 2.2. Quy trình chuẩn hóa (Preprocessing & Normalization Identity)"
+    },
+    {
+      "line": 3072,
+      "heading": "#### 2.3. Phân phối Logit Margins của Baseline"
+    },
+    {
+      "line": 3081,
+      "heading": "### 3. Mathematical Foundation của Decision Reuse"
+    },
+    {
+      "line": 3129,
+      "heading": "### 4. Comparative Research: Phân tích so sánh lý thuyết"
+    },
+    {
+      "line": 3138,
+      "heading": "### 5. Research Gaps & Tiêu chí Bác bỏ Giả thuyết (Falsification Criteria)"
+    },
+    {
+      "line": 3154,
+      "heading": "### Đề xuất bước tài liệu tiếp theo"
+    },
+    {
+      "line": 3217,
+      "heading": "### 1. Cơ sở toán học của Decision Certification trên Frozen CNN"
+    },
+    {
+      "line": 3219,
+      "heading": "#### 1.1. Bài toán Bảo toàn Quyết định (Decision Invariance)"
+    },
+    {
+      "line": 3236,
+      "heading": "#### 1.2. Hệ 5 Biên Logit Cặp (Class-Pair Margin Formulation)"
+    },
+    {
+      "line": 3249,
+      "heading": "#### 1.3. Thách thức tính cận trên kiến trúc SmallCNN1D thực tế"
+    },
+    {
+      "line": 3265,
+      "heading": "### 2. Miền biến thiên theo Event (Event-Conditioned Candidate Regions)"
+    },
+    {
+      "line": 3266,
+      "heading": "#### 2.1. Cấu trúc Hình học: Siêu hộp Dị hướng (Anisotropic Coordinate Box)"
+    },
+    {
+      "line": 3282,
+      "heading": "#### 2.2. Bản chất của Event Descriptor và Cơ chế Candidate vs. Certified"
+    },
+    {
+      "line": 3290,
+      "heading": "### 3. Phân tích So sánh Lý thuyết Chuyên sâu: ECDR vs. LipCache"
+    },
+    {
+      "line": 3313,
+      "heading": "#### 3.1. Phân tích chi tiết từng khác biệt"
+    },
+    {
+      "line": 3330,
+      "heading": "### 4. Đánh giá Cân bằng Chi phí & Tiêu chí Bác bỏ Giả thuyết (Falsification Gate)"
+    },
+    {
+      "line": 3386,
+      "heading": "### 1. Tại sao LipCache \"có giúp\" trong bài toán của họ (Edge-Cloud Split Inference)?"
+    },
+    {
+      "line": 3395,
+      "heading": "### 2. Nhưng tại sao LipCache KHÔNG THỂ giúp được nhiều cho bài toán ECDR / Sensor Stream?"
+    },
+    {
+      "line": 3399,
+      "heading": "#### Nghịch lý 1: Backbone của chúng ta quá nhẹ (0, 25 ms) — Không có biên độ lợi nhuận"
+    },
+    {
+      "line": 3406,
+      "heading": "#### Nghịch lý 2: LipCache chỉ chứng nhận cho \"Mạng phụ\" (GuardNet-side), không bảo vệ Backbone chính"
+    },
+    {
+      "line": 3412,
+      "heading": "#### Nghịch lý 3: Giả định dữ liệu tĩnh (i.i.d.) so với Dữ liệu luồng thực tế (Streaming)"
+    },
+    {
+      "line": 3421,
+      "heading": "### 3. Ý nghĩa thực sự của LipCache đối với đề tài ECDR"
+    },
+    {
+      "line": 3446,
+      "heading": "## 1. Mỗi paper cung cấp điều gì cho ECDR?"
+    },
+    {
+      "line": 3471,
+      "heading": "## 2. ECDR cần chứng minh chính xác điều gì?"
+    },
+    {
+      "line": 3475,
+      "heading": "### P1. Chứng minh miền reuse tồn tại về mặt toán học"
+    },
+    {
+      "line": 3509,
+      "heading": "### P2. Chứng minh những miền đó thực sự có giá trị trên dataset"
+    },
+    {
+      "line": 3527,
+      "heading": "### P3. Chứng minh thuật toán nhận biết reuse là sound"
+    },
+    {
+      "line": 3553,
+      "heading": "### P4. Chứng minh reuse thực sự tiết kiệm tài nguyên"
+    },
+    {
+      "line": 3565,
+      "heading": "## 3. Vậy cần nghiên cứu và triển khai phần nào?"
+    },
+    {
+      "line": 3581,
+      "heading": "## 4. Nền tảng cần học sâu tới mức nào?"
+    },
+    {
+      "line": 3619,
+      "heading": "## Kết luận"
+    },
+    {
+      "line": 3651,
+      "heading": "### 1. Bản chất của 4 Mệnh đề Nghiên cứu (P1 → P4)"
+    },
+    {
+      "line": 3666,
+      "heading": "#### P1. Tồn tại miền bất biến quyết định (Mathematical Existence)"
+    },
+    {
+      "line": 3671,
+      "heading": "#### P2. Xác suất rơi vào miền trên dữ liệu thực (Empirical Value)"
+    },
+    {
+      "line": 3676,
+      "heading": "#### P3. Tính đúng đắn của thuật toán chứng nhận (Sound Verification)"
+    },
+    {
+      "line": 3689,
+      "heading": "#### P4. Phương trình hòa vốn hệ thống (System Cost Feasibility)"
+    },
+    {
+      "line": 3708,
+      "heading": "### 2. Hai \"Điểm mù\" cần tránh khi tiếp cận bài toán"
+    },
+    {
+      "line": 3730,
+      "heading": "### 3. Phân bổ Thứ tự Ưu tiên cho Giai đoạn R1 – R4"
+    },
+    {
+      "line": 3742,
+      "heading": "### Bước tiếp theo"
+    },
+    {
+      "line": 3754,
+      "heading": "## 1. Cấu trúc chứng minh khoa học"
+    },
+    {
+      "line": 3794,
+      "heading": "## 2. Ví dụ cụ thể trong ECDR"
+    },
+    {
+      "line": 3847,
+      "heading": "## 3. Phân loại những gì ECDR cần chứng minh"
+    },
+    {
+      "line": 3860,
+      "heading": "## 4. Có phải chứng minh hết rồi mới được thực nghiệm?"
+    },
+    {
+      "line": 3868,
+      "heading": "## 5. Cách tổ chức báo cáo toán học ECDR"
+    },
+    {
+      "line": 3897,
+      "heading": "### Cấu trúc Báo cáo Toán học ECDR (Draft Specification)"
+    },
+    {
+      "line": 3898,
+      "heading": "#### §1. Preliminaries (Kiến thức toán học kế thừa)"
+    },
+    {
+      "line": 3905,
+      "heading": "#### §2. Problem Formulation (Định nghĩa bài toán)"
+    },
+    {
+      "line": 3916,
+      "heading": "#### §3. Assumptions (Các giả định bắt buộc)"
+    },
+    {
+      "line": 3931,
+      "heading": "#### §4. Lemmas (Các bổ đề trung gian)"
+    },
+    {
+      "line": 3944,
+      "heading": "#### §5. Theorem (Định lý Sound Decision Reuse)"
+    },
+    {
+      "line": 3956,
+      "heading": "#### §6. Proof (Chứng minh Định lý 1)"
+    },
+    {
+      "line": 3980,
+      "heading": "#### §7. Limitations (Những gì Định lý 1 KHÔNG bảo đảm)"
+    },
+    {
+      "line": 3991,
+      "heading": "#### §8. Empirical Questions (Các câu hỏi thực nghiệm mở — Bản chất của Systems Research)"
+    },
+    {
+      "line": 4002,
+      "heading": "### Một quan sát thực nghiệm nhanh từ dữ liệu hiện có [A]"
+    },
+    {
+      "line": 4019,
+      "heading": "## [S0] Kết luận về phạm vi chứng minh"
+    },
+    {
+      "line": 4034,
+      "heading": "## [S1] Mục tiêu toán học phải được cố định"
+    },
+    {
+      "line": 4066,
+      "heading": "## [S2] Registry 32 nghĩa vụ cần chứng minh hoặc kiểm chứng"
+    },
+    {
+      "line": 4072,
+      "heading": "### Nhóm F — 9 nghĩa vụ toán học nền tảng"
+    },
+    {
+      "line": 4096,
+      "heading": "### Nhóm S — 10 nghĩa vụ về chứng nhận và correctness"
+    },
+    {
+      "line": 4117,
+      "heading": "### Nhóm W — 7 nghĩa vụ về workload và reuse thực tế"
+    },
+    {
+      "line": 4143,
+      "heading": "### Nhóm P — 6 nghĩa vụ về thuật toán, hiệu quả và đóng góp khoa học"
+    },
+    {
+      "line": 4165,
+      "heading": "## [S3] Inventory thuật toán ECDR"
+    },
+    {
+      "line": 4171,
+      "heading": "# 9"
+    },
+    {
+      "line": 4177,
+      "heading": "# 6"
+    },
+    {
+      "line": 4183,
+      "heading": "# 4"
+    },
+    {
+      "line": 4189,
+      "heading": "### A. Chín thành phần cốt lõi"
+    },
+    {
+      "line": 4205,
+      "heading": "### B. Sáu phương pháp baseline"
+    },
+    {
+      "line": 4218,
+      "heading": "### C. Bốn hướng mở rộng"
+    },
+    {
+      "line": 4239,
+      "heading": "## [S4] Những chứng minh mình có thể thiết lập ngay"
+    },
+    {
+      "line": 4243,
+      "heading": "### T1. Chuyển miền từ raw input sang normalized input"
+    },
+    {
+      "line": 4261,
+      "heading": "### T2. Tính cận dưới trên affine region"
+    },
+    {
+      "line": 4287,
+      "heading": "### T3. Global correctness của cơ chế certified reuse"
+    },
+    {
+      "line": 4313,
+      "heading": "### T4. Điều kiện hòa vốn của ECDR"
+    },
+    {
+      "line": 4342,
+      "heading": "## [S5] Mình có thể chứng minh bao nhiêu?"
+    },
+    {
+      "line": 4374,
+      "heading": "## [S6] Độ phức tạp thuật toán cần phân tích"
+    },
+    {
+      "line": 4392,
+      "heading": "## [S7] Thứ tự nghiên cứu và phụ thuộc chứng minh"
+    },
+    {
+      "line": 4394,
+      "heading": "### Proof dependency map"
+    },
+    {
+      "line": 4448,
+      "heading": "## [S8] Trạng thái nghiên cứu hiện tại"
+    },
+    {
+      "line": 4480,
+      "heading": "### 1. Đối chiếu Registry với Hiện trạng Hồ sơ Repo"
+    },
+    {
+      "line": 4494,
+      "heading": "### 2. Hai Nút thắt Khoa học Trọng yếu trong Registry"
+    },
+    {
+      "line": 4496,
+      "heading": "#### Nút thắt 1: Nghĩa vụ Số học S09 (Floating-Point Numerical Soundness)"
+    },
+    {
+      "line": 4514,
+      "heading": "#### Nút thắt 2: Ba Cổng Phán quyết (Gate A → Gate B → Gate C) và Khả năng Bị Bác bỏ"
+    },
+    {
+      "line": 4542,
+      "heading": "### 3. Đánh giá tính Novelty đối chiếu Prior Art (P06)"
+    },
+    {
+      "line": 4554,
+      "heading": "### Bước tiếp theo trong chế độ Review-only"
+    },
+    {
+      "line": 4573,
+      "heading": "### TẦNG 1: Dữ liệu thực tế & Tính dừng (Workload & Empirical Redundancy)"
+    },
+    {
+      "line": 4587,
+      "heading": "### TẦNG 2: Toán học & Kiểm chứng Hình thức (Formal Verification)"
+    },
+    {
+      "line": 4620,
+      "heading": "### TẦNG 3: Hệ thống, Độ trễ & Điểm hòa vốn (Amortized Systems Cost)"
+    },
+    {
+      "line": 4634,
+      "heading": "### TẦNG 4: Vị thế Học thuật & Đối chứng (Novelty Boundary vs. Prior Art)"
+    },
+    {
+      "line": 4647,
+      "heading": "### TẦNG 5: Kịch bản Bác bỏ Giả thuyết (Falsification & Exit Strategy)"
+    },
+    {
+      "line": 4658,
+      "heading": "### Tóm tắt cốt lõi"
+    },
+    {
+      "line": 4683,
+      "heading": "### 1. Bài toán 1: Đánh giá Độ chính xác của CNN (Accuracy & F1)"
+    },
+    {
+      "line": 4695,
+      "heading": "### 2. Bài toán 2: Đánh giá Hệ thống Tái sử dụng ECDR (Streaming Decision Reuse & Latency)"
+    },
+    {
+      "line": 4716,
+      "heading": "### Bảng tổng kết phân định phạm vi thử nghiệm"
+    },
+    {
+      "line": 5466,
+      "heading": "### 1. Ba Đột phá Tư duy trong Bản Phân tích"
+    },
+    {
+      "line": 5468,
+      "heading": "#### 1. Phân tách rạch ròi 3 loại Run-Length (L^{GT} vs L^F vs L^{cert})"
+    },
+    {
+      "line": 5477,
+      "heading": "#### 2. Giải mã cơ chế vật lý của hiện tượng đuôi khoảng cách (p₉₀ = 17, 35)"
+    },
+    {
+      "line": 5484,
+      "heading": "#### 3. Chuyển hóa kịch bản thất bại thành Đóng góp Khoa học qua T_F^{crit}"
+    },
+    {
+      "line": 5498,
+      "heading": "### 2. Sự đồng thuận về Trật tự Ưu tiên Nghiên cứu"
+    },
+    {
+      "line": 5542,
+      "heading": "## 1. Những gì đang đúng (giữ nguyên)"
+    },
+    {
+      "line": 5557,
+      "heading": "## 2. Những gì đang lệch tiến trình (cần sửa)"
+    },
+    {
+      "line": 5559,
+      "heading": "### 2.1. \"Event\" hiện chưa tồn tại — nhưng là novelty claim"
+    },
+    {
+      "line": 5573,
+      "heading": "### 2.2. G3 — nút thắt kỹ thuật — chưa bắt đầu"
+    },
+    {
+      "line": 5595,
+      "heading": "### 2.3. \"Adjacent-pair coverage\" không phải \"anchor-based coverage\""
+    },
+    {
+      "line": 5605,
+      "heading": "### 2.4. PCA vs diagonal chưa budget-matched"
+    },
+    {
+      "line": 5610,
+      "heading": "### 2.5. Novelty vẫn là hypothesis, không phải evidence"
+    },
+    {
+      "line": 5621,
+      "heading": "## 3. Trả lời trực tiếp câu hỏi trước của bạn, trong context ECDR"
+    },
+    {
+      "line": 5644,
+      "heading": "## 4. Tiến trình đề xuất (thay đổi thứ tự ưu tiên)"
+    },
+    {
+      "line": 5648,
+      "heading": "### P0 — Bắt buộc, làm ngay (1–2 tuần)"
+    },
+    {
+      "line": 5662,
+      "heading": "### P1 — Sau khi có P0"
+    },
+    {
+      "line": 5668,
+      "heading": "### Dừng lại"
+    },
+    {
+      "line": 5676,
+      "heading": "## 5. Kết luận ngắn"
+    },
+    {
+      "line": 5715,
+      "heading": "### 1. Đánh giá tính chuẩn xác của Audit"
+    },
+    {
+      "line": 5735,
+      "heading": "### 2. Chuẩn bị Kỹ thuật cho P0.1 (Pre-flight Check)"
+    },
+    {
+      "line": 5745,
+      "heading": "### 3. Thiết kế Thực nghiệm P0.1 (scripts/11_p0_verifier_probe.py)"
+    },
+    {
+      "line": 5789,
+      "heading": "### Kế hoạch hành động"
+    },
+    {
+      "line": 5802,
+      "heading": "## 1. Rốt cuộc ECDR đang nghiên cứu cái gì?"
+    },
+    {
+      "line": 5823,
+      "heading": "## 2. Vậy LipCache và ECDR khác nhau ở đâu?"
+    },
+    {
+      "line": 5854,
+      "heading": "## 3. Ba khái niệm thực sự của ECDR"
+    },
+    {
+      "line": 5880,
+      "heading": "## 4. Toán học thực sự cần chứng minh điều gì?"
+    },
+    {
+      "line": 5901,
+      "heading": "## 5. Hiện tại ECDR đang đứng ở đâu?"
+    },
+    {
+      "line": 5921,
+      "heading": "## 6. T nên định hướng lại nghiên cứu thế nào?"
+    },
+    {
+      "line": 6007,
+      "heading": "### 1. Mô hình trực quan: ECDR thực sự làm gì?"
+    },
+    {
+      "line": 6035,
+      "heading": "### 2. Dữ liệu thực nghiệm [A]: Cơ hội tái sử dụng lớn tới đâu?"
+    },
+    {
+      "line": 6049,
+      "heading": "### 3. Thử nghiệm chứng nhận toán học [A, C]: Vùng an toàn có tồn tại không?"
+    },
+    {
+      "line": 6067,
+      "heading": "### 4. Kết luận trực diện cho câu hỏi nghiên cứu"
+    },
+    {
+      "line": 6081,
+      "heading": "### 5. Hai hướng đi kỹ thuật có ý nghĩa thực chất"
+    },
+    {
+      "line": 6096,
+      "heading": "## [S1] Chỉnh lại kết luận khoa học"
+    },
+    {
+      "line": 6106,
+      "heading": "### 1. Certified-anchor rate khác cache-hit rate"
+    },
+    {
+      "line": 6130,
+      "heading": "### 2. CROWN không cần chạy nhanh hơn CNN ở mỗi query"
+    },
+    {
+      "line": 6182,
+      "heading": "### 3. Diagonal CROWN thất bại không đồng nghĩa ECDR thất bại"
+    },
+    {
+      "line": 6221,
+      "heading": "### 4. Bài test 1.000 windows chưa đủ để kết luận ngưỡng 0.001"
+    },
+    {
+      "line": 6243,
+      "heading": "### 5. LipCache vẫn cần giữ trong nghiên cứu"
+    },
+    {
+      "line": 6262,
+      "heading": "## [S7] Chốt lại feasibility gate cho ECDR"
+    },
+    {
+      "line": 6284,
+      "heading": "## [S8] Phép thử đầu tiên nên triển khai"
+    },
+    {
+      "line": 6306,
+      "heading": "## [S0] Kết luận đã hiệu chỉnh"
+    },
+    {
+      "line": 6363,
+      "heading": "### Tiến trình thực thi"
+    },
+    {
+      "line": 6377,
+      "heading": "## 1. Lỗi quan trọng nhất: Prediction stability không phải upper bound tổng quát của ECDR"
+    },
+    {
+      "line": 6411,
+      "heading": "## 2. Những điểm còn lại cần sửa trong S8'"
+    },
+    {
+      "line": 6423,
+      "heading": "### 2.1. Joint certification: công thức đúng, nhưng diễn giải xác suất chưa chặt"
+    },
+    {
+      "line": 6455,
+      "heading": "### 2.2. Tail latency cần đo, nhưng không nên giả định MaxPool gây tăng thời gian theo cấp số nhân"
+    },
+    {
+      "line": 6467,
+      "heading": "### 2.3. High-margin anchor không nhất thiết gây test leakage"
+    },
+    {
+      "line": 6485,
+      "heading": "### 2.4. Confidence gate không phải baseline tối ưu hóa inference hợp lệ nếu chạy chính CNN"
+    },
+    {
+      "line": 6493,
+      "heading": "### 2.5. Các con số dataset đang mâu thuẫn"
+    },
+    {
+      "line": 6515,
+      "heading": "## 3. Chốt protocol S8'' để triển khai"
+    },
+    {
+      "line": 6543,
+      "heading": "## 4. Quy tắc quyết định cuối cùng"
+    },
+    {
+      "line": 6557,
+      "heading": "## 5. Kết luận về bản phản biện"
+    },
+    {
+      "line": 6589,
+      "heading": "### 1. Phản hồi và tiếp thu các điểm hiệu chỉnh logic"
+    },
+    {
+      "line": 6625,
+      "heading": "### 2. Kết quả đo thực tế từ Prototype Probe (p0_verifier_probe.json)"
+    },
+    {
+      "line": 6629,
+      "heading": "#### Bảng 1: Gate A — Khả năng chứng nhận (Joint CROWN vs IBP)"
+    },
+    {
+      "line": 6646,
+      "heading": "#### Bảng 2: Gate B — Tần suất Query rơi vào miền (Stream Replay trên Validation)"
+    },
+    {
+      "line": 6656,
+      "heading": "### 3. Đánh giá ranh giới: Gate A và Gate B gặp nhau ở đâu?"
+    },
+    {
+      "line": 6704,
+      "heading": "### 4. Áp dụng quy tắc quyết định cuối cùng"
+    },
+    {
+      "line": 6738,
+      "heading": "## 1. Điểm tôi vẫn muốn giữ: stability vẫn là economic indicator mạnh"
+    },
+    {
+      "line": 6767,
+      "heading": "## 2. Điểm MaxPool: T đúng về time, nhưng tôi muốn nói thêm về tightness"
+    },
+    {
+      "line": 6788,
+      "heading": "## 3. Điểm leakage: T đúng, tôi đã quá chặt"
+    },
+    {
+      "line": 6817,
+      "heading": "## 4. Về effective sample size — T đúng, nhưng cần cách xử lý cụ thể"
+    },
+    {
+      "line": 6832,
+      "heading": "## 5. Về S8'' — chấp nhận làm protocol, với hai refinement nhỏ"
+    },
+    {
+      "line": 6855,
+      "heading": "## 6. Đồng ý dừng meta-debate"
+    },
+    {
+      "line": 6896,
+      "heading": "### 1. Nuance 1: Conditional same-label stability qua các lag thời gian k"
+    },
+    {
+      "line": 6912,
+      "heading": "### 2. Nuance 2: \"Bằng chứng thép\" về độ lỏng của CROWN trên MaxPool"
+    },
+    {
+      "line": 6942,
+      "heading": "### 3. Nuance 3: Tác động của chi phí thử nghiệm thất bại A_{fail}"
+    },
+    {
+      "line": 6956,
+      "heading": "### 4. Kết luận phân loại theo S8''"
+    },
+    {
+      "line": 6978,
+      "heading": "## 1. Hai phát hiện thực sự có giá trị"
+    },
+    {
+      "line": 6980,
+      "heading": "### 1.1. Conditional stability ≥95% ở mọi lag — đây là tin tốt thật"
+    },
+    {
+      "line": 6993,
+      "heading": "### 1.2. Chẩn đoán CROWN quá lỏng — đây là smoking gun đúng nghĩa"
+    },
+    {
+      "line": 7005,
+      "heading": "## 2. Ba vấn đề phân tích hiện tại bỏ qua"
+    },
+    {
+      "line": 7007,
+      "heading": "### 2.1. Kinh tế học tệ hơn nhiều so với kết luận \"PIVOT\""
+    },
+    {
+      "line": 7027,
+      "heading": "### 2.2. Penultimate pivot có lỗ hổng membership"
+    },
+    {
+      "line": 7044,
+      "heading": "### 2.3. Nghịch lý \"small-k\" — k=0.001 có thể vô dụng về coverage"
+    },
+    {
+      "line": 7063,
+      "heading": "## 3. Vấn đề phụ: PGD 20-step quá yếu"
+    },
+    {
+      "line": 7073,
+      "heading": "## 4. Đánh giá lại kết luận \"PIVOT\""
+    },
+    {
+      "line": 7077,
+      "heading": "### 4.1. Bắt buộc đo trước khi chọn hướng"
+    },
+    {
+      "line": 7089,
+      "heading": "### 4.2. Ba kịch bản có thể xảy ra"
+    },
+    {
+      "line": 7099,
+      "heading": "### 4.3. Về hướng \"change architecture\""
+    },
+    {
+      "line": 7108,
+      "heading": "## 5. Về con số dataset"
+    },
+    {
+      "line": 7122,
+      "heading": "## 6. Tóm lại"
+    },
+    {
+      "line": 7124,
+      "heading": "### Điều tôi chấp nhận (không tranh luận):"
+    },
+    {
+      "line": 7130,
+      "heading": "### Điều cần bổ sung trước khi chọn hướng pivot:"
+    },
+    {
+      "line": 7137,
+      "heading": "### Hướng đi cụ thể:"
+    },
+    {
+      "line": 7148,
+      "heading": "### Điều tôi muốn nhấn mạnh:"
+    },
+    {
+      "line": 7174,
+      "heading": "### 1. Bằng chứng số liệu cho ba điểm bạn chỉ ra"
+    },
+    {
+      "line": 7176,
+      "heading": "#### (a) 100-step PGD với 10 Random Restarts (Kiểm chứng H1 chuẩn mực)"
+    },
+    {
+      "line": 7189,
+      "heading": "#### (b) Nghịch lý Small-k: Giao điểm giữa p_c(k) và r(k) là TẬP RỖNG"
+    },
+    {
+      "line": 7207,
+      "heading": "#### (c) Tử huyệt kinh tế T_{build}: \"Cái chết toán học\" của Certified Streaming"
+    },
+    {
+      "line": 7226,
+      "heading": "### 2. Thừa nhận và đóng lại \"Lỗ hổng Penultimate\""
+    },
+    {
+      "line": 7237,
+      "heading": "### 3. Đối chiếu 3 Kịch bản và Định vị Nghiên cứu"
+    },
+    {
+      "line": 7243,
+      "heading": "#### Kịch bản C: Negative Result rõ ràng và có giá trị cao cho Certified Reuse"
+    },
+    {
+      "line": 7249,
+      "heading": "#### Kịch bản B: Chuyển hẳn sang Empirical / Heuristic Reuse (DeltaCNN / NoScope style)"
+    },
+    {
+      "line": 7256,
+      "heading": "### Chốt trạng thái"
+    },
+    {
+      "line": 7272,
+      "heading": "## 1. Điều mà dữ liệu thực sự nói (không phải \"CROWN quá lỏng\")"
+    },
+    {
+      "line": 7300,
+      "heading": "## 2. Tại sao cả B và C đều chưa capture được đóng góp mạnh nhất"
+    },
+    {
+      "line": 7315,
+      "heading": "## 3. Đề xuất: C-plus-B với crossover equation là trung tâm"
+    },
+    {
+      "line": 7319,
+      "heading": "### 3.1. Đóng góp chính (không phải \"ECDR works\" hay \"ECDR fails\")"
+    },
+    {
+      "line": 7335,
+      "heading": "### 3.2. Empirical baseline (Scenario B, nhưng đóng vai trò phụ)"
+    },
+    {
+      "line": 7345,
+      "heading": "### 3.3. Một thí nghiệm bổ sung duy nhất (trước khi đóng gói)"
+    },
+    {
+      "line": 7366,
+      "heading": "## 4. Decision rule cụ thể"
+    },
+    {
+      "line": 7380,
+      "heading": "## 5. Điều tôi muốn nhấn mạnh lần cuối"
+    },
+    {
+      "line": 7417,
+      "heading": "### 1. Kết quả thực nghiệm: PCA Subspace Certification"
+    },
+    {
+      "line": 7419,
+      "heading": "#### (a) Phân tích phương sai hình học (Geometric Audit)"
+    },
+    {
+      "line": 7428,
+      "heading": "#### (b) CROWN trên mô hình hợp thành 5 chiều PCA"
+    },
+    {
+      "line": 7450,
+      "heading": "### 2. Phán quyết cuối cùng từ Phương trình Crossover (Crossover Equation)"
+    },
+    {
+      "line": 7488,
+      "heading": "### 3. Khung bài báo C-plus-B hoàn chỉnh (Paper Blueprint)"
+    },
+    {
+      "line": 7535,
+      "heading": "### Chốt hành động"
+    },
+    {
+      "line": 7561,
+      "heading": "## [S1] Chi phí 117 ms thực sự nghiêm trọng đến mức nào?"
+    },
+    {
+      "line": 7565,
+      "heading": "# 0,2511 ms"
+    },
+    {
+      "line": 7571,
+      "heading": "# 117 ms"
+    },
+    {
+      "line": 7596,
+      "heading": "## [S4] Penultimate certification: lỗ hổng có thật, nhưng vẫn có một cách triển khai sound"
+    },
+    {
+      "line": 7662,
+      "heading": "## [S5] Hai kết luận về robustness cần hạ mức độ chắc chắn"
+    },
+    {
+      "line": 7681,
+      "heading": "## [S8] Thứ tự thực nghiệm t chốt"
+    },
+    {
+      "line": 7705,
+      "heading": "## [S9] Trạng thái cuối"
+    },
+    {
+      "line": 7743,
+      "heading": "### 1. P0: Xác minh cấu hình phần cứng, Checkpoint & Log CROWN 117 ms"
+    },
+    {
+      "line": 7760,
+      "heading": "### 2. P1: Causal Replay — Coverage r(k) và Trần thời gian sống của Anchor"
+    },
+    {
+      "line": 7774,
+      "heading": "### 3. P2: Kiểm chứng Penultimate Method B (IBP Trunk → Head Certification)"
+    },
+    {
+      "line": 7801,
+      "heading": "### 4. P3: 100-step PGD với 10 Random Restarts"
+    },
+    {
+      "line": 7815,
+      "heading": "### 5. Kết luận phân loại cuối cùng"
+    }
+  ],
+  "repeated_25line_blocks": {
+    "count": 6,
+    "examples": [
+      [
+        415,
+        2381
+      ],
+      [
+        416,
+        2382
+      ],
+      [
+        417,
+        2383
+      ],
+      [
+        418,
+        2384
+      ],
+      [
+        419,
+        2385
+      ],
+      [
+        420,
+        2386
+      ]
+    ]
+  }
+}

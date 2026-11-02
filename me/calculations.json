@@ -1,0 +1,2050 @@
+{
+  "schema": "ecdr-theory-calculations-v1",
+  "report_date": "2026-10-28",
+  "method": "Deterministic arithmetic + read-only audit; rerun recreates this JSON. Only this file is written.",
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6"
+  },
+  "theoretical": {
+    "status": "Derived arithmetic for hypothetical frozen valid-Conv/ReLU/GAP architecture; no trained K12 model is asserted.",
+    "window": {
+      "channels": 6,
+      "width_samples": 128,
+      "dimension": 768,
+      "stride_samples": 64,
+      "sampling_hz": 50,
+      "window_duration_convention_s": 2.56,
+      "first_to_last_sample_elapsed_s": 2.54,
+      "query_interval_s": 1.28,
+      "query_rate_hz": 0.78125,
+      "raw_overlap_samples_per_channel": 64,
+      "overlap_coordinates": 384,
+      "new_coordinates": 384,
+      "raw_overlap_fraction": {
+        "numerator": 64,
+        "denominator": 128,
+        "fraction_reduced": "1/2",
+        "value": 0.5
+      },
+      "q_shifts": [
+        {
+          "q": 0,
+          "new_since_anchor_per_channel": 0,
+          "raw_shared_per_channel": 128,
+          "formula_without_truncation_requires_qs_le_W": true
+        },
+        {
+          "q": 1,
+          "new_since_anchor_per_channel": 64,
+          "raw_shared_per_channel": 64,
+          "formula_without_truncation_requires_qs_le_W": true
+        },
+        {
+          "q": 2,
+          "new_since_anchor_per_channel": 128,
+          "raw_shared_per_channel": 0,
+          "formula_without_truncation_requires_qs_le_W": true
+        },
+        {
+          "q": 3,
+          "new_since_anchor_per_channel": 128,
+          "raw_shared_per_channel": 0,
+          "formula_without_truncation_requires_qs_le_W": false
+        },
+        {
+          "q": 4,
+          "new_since_anchor_per_channel": 128,
+          "raw_shared_per_channel": 0,
+          "formula_without_truncation_requires_qs_le_W": false
+        }
+      ]
+    },
+    "marginal_vs_joint_coverage": {
+      "status": "Illustrative only, conditional on independent coordinate events with equal marginal probability q; not a HAPT independence assumption or coverage estimate.",
+      "union_bound": "P(intersection E_i) >= max(0, 1-sum alpha_i), if P(not E_i)<=alpha_i",
+      "examples": [
+        {
+          "q": 0.9,
+          "q_to_d768": 7.215181317747974e-36,
+          "q_to_newwave_d384": 2.686108954928667e-18
+        },
+        {
+          "q": 0.99,
+          "q_to_d768": 0.00044445669337294416,
+          "q_to_newwave_d384": 0.02108214157463478
+        },
+        {
+          "q": 0.999,
+          "q_to_d768": 0.46376178351239383,
+          "q_to_newwave_d384": 0.6810005752658318
+        }
+      ]
+    },
+    "cnn": {
+      "assumptions": [
+        "valid padding",
+        "stride 1",
+        "dilation 1",
+        "fixed weights and biases",
+        "ReLU",
+        "no BatchNorm",
+        "no intermediate pooling",
+        "global average pooling",
+        "affine K12 head"
+      ],
+      "layers": [
+        {
+          "layer": "conv1_valid_relu",
+          "input_channels": 6,
+          "output_channels": 32,
+          "kernel": 5,
+          "output_length": 124,
+          "weight_params": 960,
+          "bias_params": 32,
+          "parameters": 992,
+          "macs": 119040,
+          "relu_elements": 3968,
+          "receptive_field": 5
+        },
+        {
+          "layer": "conv2_valid_relu",
+          "input_channels": 32,
+          "output_channels": 64,
+          "kernel": 3,
+          "output_length": 122,
+          "weight_params": 6144,
+          "bias_params": 64,
+          "parameters": 6208,
+          "macs": 749568,
+          "relu_elements": 7808,
+          "receptive_field": 7
+        },
+        {
+          "layer": "conv3_valid_relu",
+          "input_channels": 64,
+          "output_channels": 64,
+          "kernel": 3,
+          "output_length": 120,
+          "weight_params": 12288,
+          "bias_params": 64,
+          "parameters": 12352,
+          "macs": 1474560,
+          "relu_elements": 7680,
+          "receptive_field": 9
+        },
+        {
+          "layer": "GAP",
+          "output_channels": 64,
+          "output_length": 1,
+          "parameters": 0,
+          "additions": 7616,
+          "scales": 64
+        },
+        {
+          "layer": "affine_head_K12",
+          "input_channels": 64,
+          "output_channels": 12,
+          "weight_params": 768,
+          "bias_params": 12,
+          "parameters": 780,
+          "macs": 768
+        }
+      ],
+      "parameters_total": 20332,
+      "conv_and_head_macs": 2343936,
+      "approx_conv_and_head_flops_at_2_per_mac": 4687872,
+      "flop_note": "Excludes bias addition, ReLU comparisons, GAP operations, indexing and memory traffic.",
+      "relu_elements": 19456,
+      "final_receptive_field": 9,
+      "final_positions": 120,
+      "shared_final_positions_one_shift": 56,
+      "shared_final_fraction_one_shift": {
+        "numerator": 56,
+        "denominator": 120,
+        "fraction_reduced": "7/15",
+        "value": 0.4666666666666667
+      },
+      "tail_input_samples_per_channel": 72,
+      "final_shared_by_q": [
+        {
+          "q": 0,
+          "positions": 120
+        },
+        {
+          "q": 1,
+          "positions": 56
+        },
+        {
+          "q": 2,
+          "positions": 0
+        },
+        {
+          "q": 3,
+          "positions": 0
+        },
+        {
+          "q": 4,
+          "positions": 0
+        }
+      ]
+    },
+    "break_even": {
+      "equation": "r*t_f > t_v+t_m+b*t_b",
+      "if_build_each_miss": "b=1-r, r>(t_v+t_m+t_b)/(t_f+t_b)",
+      "illustrative_only": {
+        "tf_ms": 4.0,
+        "tv_ms": 0.06,
+        "tm_ms": 0.02,
+        "build_each_miss": [
+          {
+            "build_ms": 1.5,
+            "strict_hit_rate_threshold": 0.2872727272727273,
+            "strict_all_hits_amortization_L_threshold": 0.3826530612244898,
+            "minimum_integer_all_hits": 1,
+            "rows": [
+              {
+                "hit_rate": 0.5,
+                "builds_per_query": 0.5,
+                "mean_cost_ms": 2.83,
+                "speed_ratio": 1.4134275618374559
+              },
+              {
+                "hit_rate": 0.8,
+                "builds_per_query": 0.19999999999999996,
+                "mean_cost_ms": 1.1799999999999997,
+                "speed_ratio": 3.389830508474577
+              },
+              {
+                "hit_rate": 0.95,
+                "builds_per_query": 0.050000000000000044,
+                "mean_cost_ms": 0.35500000000000026,
+                "speed_ratio": 11.267605633802809
+              }
+            ]
+          },
+          {
+            "build_ms": 8.0,
+            "strict_hit_rate_threshold": 0.6733333333333333,
+            "strict_all_hits_amortization_L_threshold": 2.0408163265306123,
+            "minimum_integer_all_hits": 3,
+            "rows": [
+              {
+                "hit_rate": 0.5,
+                "builds_per_query": 0.5,
+                "mean_cost_ms": 6.08,
+                "speed_ratio": 0.6578947368421053
+              },
+              {
+                "hit_rate": 0.8,
+                "builds_per_query": 0.19999999999999996,
+                "mean_cost_ms": 2.4799999999999995,
+                "speed_ratio": 1.612903225806452
+              },
+              {
+                "hit_rate": 0.95,
+                "builds_per_query": 0.050000000000000044,
+                "mean_cost_ms": 0.6800000000000006,
+                "speed_ratio": 5.882352941176466
+              }
+            ]
+          }
+        ]
+      },
+      "legacy_timing_sensitivity_only": {
+        "archived_tf_us": 251.1,
+        "assumed_hit_rate": 0.5,
+        "strict_overhead_budget_us": 125.55,
+        "warning": "A recorded forward latency of a different K6 model is used only as a scalar example; no new runtime or K12 baseline claim."
+      }
+    },
+    "structured_margin_example": {
+      "margin": "1+x1-x2",
+      "center": [
+        0,
+        0
+      ],
+      "direction": [
+        1,
+        -1
+      ],
+      "square": {
+        "definition": "|x_i|<=0.8",
+        "infimum": -0.6,
+        "witness": [
+          -0.8,
+          0.8
+        ]
+      },
+      "line": {
+        "definition": "x=(t,t), |t|<=0.8",
+        "infimum": 1.0
+      },
+      "tube": {
+        "definition": "x=(t,t)+v, |t|<=0.8, |v_i|<=0.1",
+        "infimum": 0.8,
+        "witness": [
+          -0.1,
+          0.1
+        ]
+      },
+      "scope": "Different sets are compared; no matched-volume, matched-coverage or HAPT performance claim."
+    },
+    "tail_interval_example": {
+      "n": 10,
+      "old_margin": 0.4,
+      "q": [
+        2,
+        -1
+      ],
+      "D_drop": [
+        1,
+        2
+      ],
+      "D_new_lower": [
+        0,
+        1
+      ],
+      "D_new_upper": [
+        2,
+        3
+      ],
+      "q_dot_D_drop": 0,
+      "q_dot_D_new_min": -3,
+      "valid_margin_lower_fraction": "1/10",
+      "valid_margin_lower": 0.1,
+      "incorrect_use_lower_for_negative_coefficient": 0.3,
+      "counterexample_D_new": [
+        0,
+        3
+      ],
+      "requirement": "For K classes, every one of the K-1 target-competitor margins must be certified."
+    }
+  },
+  "current_data_audit": {
+    "status": "Fresh read-only audit of existing NPZ and Parquet; no data regenerated.",
+    "array_shape": [
+      17453,
+      6,
+      128
+    ],
+    "array_dtype": "float32",
+    "scalar_values_total": 13403904,
+    "finite_scalar_values": 13403904,
+    "nonfinite_scalar_values": 0,
+    "windows": 17453,
+    "recordings": 61,
+    "subjects": 30,
+    "unique_exp_win_idx": true,
+    "policy_counts": {
+      "pure": 10361,
+      "unlabeled": 3587,
+      "majority": 1917,
+      "ambiguous": 1588
+    },
+    "split_window_counts": {
+      "train": 9978,
+      "val": 2422,
+      "test": 5053
+    },
+    "subject_counts": {
+      "train": 17,
+      "val": 4,
+      "test": 9
+    },
+    "class_pure_counts": [
+      {
+        "class_id": 1,
+        "name": "WALKING",
+        "train": 965,
+        "val": 221,
+        "test": 474,
+        "total": 1660
+      },
+      {
+        "class_id": 2,
+        "name": "WALKING_UPSTAIRS",
+        "train": 814,
+        "val": 205,
+        "test": 449,
+        "total": 1468
+      },
+      {
+        "class_id": 3,
+        "name": "WALKING_DOWNSTAIRS",
+        "train": 734,
+        "val": 189,
+        "test": 394,
+        "total": 1317
+      },
+      {
+        "class_id": 4,
+        "name": "SITTING",
+        "train": 991,
+        "val": 261,
+        "test": 484,
+        "total": 1736
+      },
+      {
+        "class_id": 5,
+        "name": "STANDING",
+        "train": 1099,
+        "val": 286,
+        "test": 541,
+        "total": 1926
+      },
+      {
+        "class_id": 6,
+        "name": "LAYING",
+        "train": 1090,
+        "val": 288,
+        "test": 532,
+        "total": 1910
+      },
+      {
+        "class_id": 7,
+        "name": "STAND_TO_SIT",
+        "train": 19,
+        "val": 5,
+        "test": 15,
+        "total": 39
+      },
+      {
+        "class_id": 8,
+        "name": "SIT_TO_STAND",
+        "train": 5,
+        "val": 1,
+        "test": 6,
+        "total": 12
+      },
+      {
+        "class_id": 9,
+        "name": "SIT_TO_LIE",
+        "train": 36,
+        "val": 16,
+        "test": 25,
+        "total": 77
+      },
+      {
+        "class_id": 10,
+        "name": "LIE_TO_SIT",
+        "train": 30,
+        "val": 6,
+        "test": 18,
+        "total": 54
+      },
+      {
+        "class_id": 11,
+        "name": "STAND_TO_LIE",
+        "train": 65,
+        "val": 7,
+        "test": 40,
+        "total": 112
+      },
+      {
+        "class_id": 12,
+        "name": "LIE_TO_STAND",
+        "train": 30,
+        "val": 5,
+        "test": 15,
+        "total": 50
+      }
+    ],
+    "pure12_split_counts": {
+      "train": 5878,
+      "val": 1490,
+      "test": 2993
+    },
+    "pure6_split_counts": {
+      "train": 5693,
+      "val": 1450,
+      "test": 2874
+    },
+    "pure12_total": 10361,
+    "pure6_total": 10017,
+    "transition_pure_total": 344,
+    "transition_fraction_of_pure12": {
+      "numerator": 344,
+      "denominator": 10361,
+      "fraction_reduced": "344/10361",
+      "value": 0.03320142843354888
+    },
+    "pure6_fraction_of_all_stream": {
+      "numerator": 10017,
+      "denominator": 17453,
+      "fraction_reduced": "10017/17453",
+      "value": 0.5739414427319085
+    },
+    "adjacent_pair_counts": {
+      "train": 9944,
+      "val": 2414,
+      "test": 5034
+    },
+    "same_activity_pure_pairs": 9278,
+    "label_change_pairs": 1651,
+    "exact_raw_overlap": {
+      "tested_pairs": 17392,
+      "pairs_exactly_equal": 17392,
+      "failed_pairs": 0,
+      "coordinates_compared_per_pair": 384,
+      "coordinates_compared_total": 6678528,
+      "max_absolute_difference": 0.0,
+      "start_delta64_pairs": 17392,
+      "comparison": "X_t[:,64:128] == X_(t+1)[:,0:64], componentwise exact float32 equality, only same-recording consecutive win_idx pairs",
+      "scope_limit": "This verifies stored raw overlap and the index bridge. It does not prove same-coordinate closeness, feature reuse, labels, certificate validity or runtime savings."
+    },
+    "diagonal_box_audit": {
+      "status": "Fresh arithmetic from existing raw arrays, same train-fit definition as scripts/05; no verifier or neural model used.",
+      "dimension": 768,
+      "train_same_fit_pairs": 5269,
+      "coverage_counts": {
+        "stable": {
+          "per_dimension_train_same_quantile": 0.5,
+          "train": {
+            "covered": 21,
+            "denominator": 9944,
+            "coverage": 0.0021118262268704745
+          },
+          "val": {
+            "covered": 10,
+            "denominator": 2414,
+            "coverage": 0.004142502071251036
+          },
+          "test": {
+            "covered": 7,
+            "denominator": 5034,
+            "coverage": 0.0013905442987683751
+          },
+          "test_same": {
+            "covered": 7,
+            "denominator": 2661,
+            "coverage": 0.0026305900037579856
+          },
+          "test_change": {
+            "covered": 0,
+            "denominator": 486,
+            "coverage": 0.0
+          },
+          "changed_labels_among_covered_all_splits": {
+            "count": 0,
+            "denominator": 38
+          }
+        },
+        "moderate": {
+          "per_dimension_train_same_quantile": 0.75,
+          "train": {
+            "covered": 2784,
+            "denominator": 9944,
+            "coverage": 0.27996781979082863
+          },
+          "val": {
+            "covered": 728,
+            "denominator": 2414,
+            "coverage": 0.3015741507870754
+          },
+          "test": {
+            "covered": 1285,
+            "denominator": 5034,
+            "coverage": 0.255264203416766
+          },
+          "test_same": {
+            "covered": 1219,
+            "denominator": 2661,
+            "coverage": 0.45809845922585496
+          },
+          "test_change": {
+            "covered": 1,
+            "denominator": 486,
+            "coverage": 0.00205761316872428
+          },
+          "changed_labels_among_covered_all_splits": {
+            "count": 2,
+            "denominator": 4797
+          }
+        },
+        "wide": {
+          "per_dimension_train_same_quantile": 0.9,
+          "train": {
+            "covered": 3278,
+            "denominator": 9944,
+            "coverage": 0.32964601769911506
+          },
+          "val": {
+            "covered": 851,
+            "denominator": 2414,
+            "coverage": 0.35252692626346316
+          },
+          "test": {
+            "covered": 1608,
+            "denominator": 5034,
+            "coverage": 0.31942789034564956
+          },
+          "test_same": {
+            "covered": 1398,
+            "denominator": 2661,
+            "coverage": 0.5253664036076663
+          },
+          "test_change": {
+            "covered": 11,
+            "denominator": 486,
+            "coverage": 0.02263374485596708
+          },
+          "changed_labels_among_covered_all_splits": {
+            "count": 28,
+            "denominator": 5737
+          }
+        }
+      },
+      "scope_limit": "Empirical geometry coverage is neither model certifiability nor certified cache hit rate. Raw mixed-unit coordinates are not directly comparable to normalized P0 radii."
+    },
+    "annotation_limit": "Reuses the stored policy labels. Does not independently settle the original annotation indexing convention or relabel raw samples.",
+    "raw_units_local_source": {
+      "acceleration": "g (README: 1 g = 9.80665 m/s^2)",
+      "angular_velocity": "rad/s",
+      "source": "data/hapt/README.txt, Notes"
+    }
+  },
+  "legacy_appendix": {
+    "status": "Archived K6 observations; only arithmetic on stored artifacts is recomputed now. No fresh training, inference, verification or latency measurement.",
+    "metrics_from_integer_confusions": [
+      {
+        "seed": 42,
+        "best_epoch": 4,
+        "val": {
+          "n": 1450,
+          "correct": 1361,
+          "errors": 89,
+          "accuracy": {
+            "numerator": 1361,
+            "denominator": 1450,
+            "fraction_reduced": "1361/1450",
+            "value": 0.9386206896551724
+          },
+          "macro_f1": {
+            "fraction_reduced": "359024995729/379764043155",
+            "value": 0.9453896497053688
+          },
+          "stored_rounded_accuracy": 0.9386,
+          "stored_rounded_macro_f1": 0.9454,
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              220,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              205,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              189,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              224,
+              37,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              50,
+              235,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              288
+            ]
+          ],
+          "per_class": [
+            {
+              "name": "WALKING",
+              "tp": 220,
+              "support": 221,
+              "predicted_count": 220,
+              "precision": {
+                "numerator": 220,
+                "denominator": 220,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 220,
+                "denominator": 221,
+                "fraction_reduced": "220/221",
+                "value": 0.995475113122172
+              },
+              "f1": {
+                "fraction_reduced": "440/441",
+                "value": 0.9977324263038548
+              }
+            },
+            {
+              "name": "WALKING_UPSTAIRS",
+              "tp": 205,
+              "support": 205,
+              "predicted_count": 206,
+              "precision": {
+                "numerator": 205,
+                "denominator": 206,
+                "fraction_reduced": "205/206",
+                "value": 0.9951456310679612
+              },
+              "recall": {
+                "numerator": 205,
+                "denominator": 205,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "410/411",
+                "value": 0.9975669099756691
+              }
+            },
+            {
+              "name": "WALKING_DOWNSTAIRS",
+              "tp": 189,
+              "support": 189,
+              "predicted_count": 190,
+              "precision": {
+                "numerator": 189,
+                "denominator": 190,
+                "fraction_reduced": "189/190",
+                "value": 0.9947368421052631
+              },
+              "recall": {
+                "numerator": 189,
+                "denominator": 189,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "378/379",
+                "value": 0.9973614775725593
+              }
+            },
+            {
+              "name": "SITTING",
+              "tp": 224,
+              "support": 261,
+              "predicted_count": 274,
+              "precision": {
+                "numerator": 224,
+                "denominator": 274,
+                "fraction_reduced": "112/137",
+                "value": 0.8175182481751825
+              },
+              "recall": {
+                "numerator": 224,
+                "denominator": 261,
+                "fraction_reduced": "224/261",
+                "value": 0.8582375478927203
+              },
+              "f1": {
+                "fraction_reduced": "448/535",
+                "value": 0.8373831775700935
+              }
+            },
+            {
+              "name": "STANDING",
+              "tp": 235,
+              "support": 286,
+              "predicted_count": 272,
+              "precision": {
+                "numerator": 235,
+                "denominator": 272,
+                "fraction_reduced": "235/272",
+                "value": 0.8639705882352942
+              },
+              "recall": {
+                "numerator": 235,
+                "denominator": 286,
+                "fraction_reduced": "235/286",
+                "value": 0.8216783216783217
+              },
+              "f1": {
+                "fraction_reduced": "235/279",
+                "value": 0.8422939068100358
+              }
+            },
+            {
+              "name": "LAYING",
+              "tp": 288,
+              "support": 288,
+              "predicted_count": 288,
+              "precision": {
+                "numerator": 288,
+                "denominator": 288,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 288,
+                "denominator": 288,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "1",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "test": {
+          "n": 2874,
+          "correct": 2611,
+          "errors": 263,
+          "accuracy": {
+            "numerator": 2611,
+            "denominator": 2874,
+            "fraction_reduced": "2611/2874",
+            "value": 0.9084899095337509
+          },
+          "macro_f1": {
+            "fraction_reduced": "529084328276002/581089890756195",
+            "value": 0.9105034121097578
+          },
+          "stored_rounded_accuracy": 0.9085,
+          "stored_rounded_macro_f1": 0.9105,
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              432,
+              35,
+              7,
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              440,
+              7,
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              4,
+              380,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              24,
+              0,
+              408,
+              52,
+              0
+            ],
+            [
+              1,
+              12,
+              0,
+              80,
+              448,
+              0
+            ],
+            [
+              0,
+              29,
+              0,
+              0,
+              0,
+              503
+            ]
+          ],
+          "per_class": [
+            {
+              "name": "WALKING",
+              "tp": 432,
+              "support": 474,
+              "predicted_count": 445,
+              "precision": {
+                "numerator": 432,
+                "denominator": 445,
+                "fraction_reduced": "432/445",
+                "value": 0.9707865168539326
+              },
+              "recall": {
+                "numerator": 432,
+                "denominator": 474,
+                "fraction_reduced": "72/79",
+                "value": 0.9113924050632911
+              },
+              "f1": {
+                "fraction_reduced": "864/919",
+                "value": 0.940152339499456
+              }
+            },
+            {
+              "name": "WALKING_UPSTAIRS",
+              "tp": 440,
+              "support": 449,
+              "predicted_count": 544,
+              "precision": {
+                "numerator": 440,
+                "denominator": 544,
+                "fraction_reduced": "55/68",
+                "value": 0.8088235294117647
+              },
+              "recall": {
+                "numerator": 440,
+                "denominator": 449,
+                "fraction_reduced": "440/449",
+                "value": 0.9799554565701559
+              },
+              "f1": {
+                "fraction_reduced": "880/993",
+                "value": 0.8862034239677744
+              }
+            },
+            {
+              "name": "WALKING_DOWNSTAIRS",
+              "tp": 380,
+              "support": 394,
+              "predicted_count": 394,
+              "precision": {
+                "numerator": 380,
+                "denominator": 394,
+                "fraction_reduced": "190/197",
+                "value": 0.9644670050761421
+              },
+              "recall": {
+                "numerator": 380,
+                "denominator": 394,
+                "fraction_reduced": "190/197",
+                "value": 0.9644670050761421
+              },
+              "f1": {
+                "fraction_reduced": "190/197",
+                "value": 0.9644670050761421
+              }
+            },
+            {
+              "name": "SITTING",
+              "tp": 408,
+              "support": 484,
+              "predicted_count": 488,
+              "precision": {
+                "numerator": 408,
+                "denominator": 488,
+                "fraction_reduced": "51/61",
+                "value": 0.8360655737704918
+              },
+              "recall": {
+                "numerator": 408,
+                "denominator": 484,
+                "fraction_reduced": "102/121",
+                "value": 0.8429752066115702
+              },
+              "f1": {
+                "fraction_reduced": "68/81",
+                "value": 0.8395061728395061
+              }
+            },
+            {
+              "name": "STANDING",
+              "tp": 448,
+              "support": 541,
+              "predicted_count": 500,
+              "precision": {
+                "numerator": 448,
+                "denominator": 500,
+                "fraction_reduced": "112/125",
+                "value": 0.896
+              },
+              "recall": {
+                "numerator": 448,
+                "denominator": 541,
+                "fraction_reduced": "448/541",
+                "value": 0.8280961182994455
+              },
+              "f1": {
+                "fraction_reduced": "896/1041",
+                "value": 0.8607108549471661
+              }
+            },
+            {
+              "name": "LAYING",
+              "tp": 503,
+              "support": 532,
+              "predicted_count": 503,
+              "precision": {
+                "numerator": 503,
+                "denominator": 503,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 503,
+                "denominator": 532,
+                "fraction_reduced": "503/532",
+                "value": 0.9454887218045113
+              },
+              "f1": {
+                "fraction_reduced": "1006/1035",
+                "value": 0.9719806763285024
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 43,
+        "best_epoch": 3,
+        "val": {
+          "n": 1450,
+          "correct": 1356,
+          "errors": 94,
+          "accuracy": {
+            "numerator": 1356,
+            "denominator": 1450,
+            "fraction_reduced": "678/725",
+            "value": 0.9351724137931035
+          },
+          "macro_f1": {
+            "fraction_reduced": "6426074907499/6823228594500",
+            "value": 0.9417938763884983
+          },
+          "stored_rounded_accuracy": 0.9352,
+          "stored_rounded_macro_f1": 0.9418,
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              221,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              204,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              186,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              224,
+              37,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              52,
+              233,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              288
+            ]
+          ],
+          "per_class": [
+            {
+              "name": "WALKING",
+              "tp": 221,
+              "support": 221,
+              "predicted_count": 226,
+              "precision": {
+                "numerator": 221,
+                "denominator": 226,
+                "fraction_reduced": "221/226",
+                "value": 0.9778761061946902
+              },
+              "recall": {
+                "numerator": 221,
+                "denominator": 221,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "442/447",
+                "value": 0.9888143176733781
+              }
+            },
+            {
+              "name": "WALKING_UPSTAIRS",
+              "tp": 204,
+              "support": 205,
+              "predicted_count": 204,
+              "precision": {
+                "numerator": 204,
+                "denominator": 204,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 204,
+                "denominator": 205,
+                "fraction_reduced": "204/205",
+                "value": 0.9951219512195122
+              },
+              "f1": {
+                "fraction_reduced": "408/409",
+                "value": 0.9975550122249389
+              }
+            },
+            {
+              "name": "WALKING_DOWNSTAIRS",
+              "tp": 186,
+              "support": 189,
+              "predicted_count": 186,
+              "precision": {
+                "numerator": 186,
+                "denominator": 186,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 186,
+                "denominator": 189,
+                "fraction_reduced": "62/63",
+                "value": 0.9841269841269841
+              },
+              "f1": {
+                "fraction_reduced": "124/125",
+                "value": 0.992
+              }
+            },
+            {
+              "name": "SITTING",
+              "tp": 224,
+              "support": 261,
+              "predicted_count": 276,
+              "precision": {
+                "numerator": 224,
+                "denominator": 276,
+                "fraction_reduced": "56/69",
+                "value": 0.8115942028985508
+              },
+              "recall": {
+                "numerator": 224,
+                "denominator": 261,
+                "fraction_reduced": "224/261",
+                "value": 0.8582375478927203
+              },
+              "f1": {
+                "fraction_reduced": "448/537",
+                "value": 0.8342644320297952
+              }
+            },
+            {
+              "name": "STANDING",
+              "tp": 233,
+              "support": 286,
+              "predicted_count": 270,
+              "precision": {
+                "numerator": 233,
+                "denominator": 270,
+                "fraction_reduced": "233/270",
+                "value": 0.8629629629629629
+              },
+              "recall": {
+                "numerator": 233,
+                "denominator": 286,
+                "fraction_reduced": "233/286",
+                "value": 0.8146853146853147
+              },
+              "f1": {
+                "fraction_reduced": "233/278",
+                "value": 0.8381294964028777
+              }
+            },
+            {
+              "name": "LAYING",
+              "tp": 288,
+              "support": 288,
+              "predicted_count": 288,
+              "precision": {
+                "numerator": 288,
+                "denominator": 288,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 288,
+                "denominator": 288,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "1",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "test": {
+          "n": 2874,
+          "correct": 2557,
+          "errors": 317,
+          "accuracy": {
+            "numerator": 2557,
+            "denominator": 2874,
+            "fraction_reduced": "2557/2874",
+            "value": 0.8897007654836465
+          },
+          "macro_f1": {
+            "fraction_reduced": "822814589486293/923903936172360",
+            "value": 0.8905845697498921
+          },
+          "stored_rounded_accuracy": 0.8897,
+          "stored_rounded_macro_f1": 0.8906,
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              471,
+              2,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              36,
+              413,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              57,
+              1,
+              336,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              24,
+              0,
+              395,
+              65,
+              0
+            ],
+            [
+              2,
+              3,
+              0,
+              97,
+              439,
+              0
+            ],
+            [
+              0,
+              29,
+              0,
+              0,
+              0,
+              503
+            ]
+          ],
+          "per_class": [
+            {
+              "name": "WALKING",
+              "tp": 471,
+              "support": 474,
+              "predicted_count": 566,
+              "precision": {
+                "numerator": 471,
+                "denominator": 566,
+                "fraction_reduced": "471/566",
+                "value": 0.8321554770318021
+              },
+              "recall": {
+                "numerator": 471,
+                "denominator": 474,
+                "fraction_reduced": "157/158",
+                "value": 0.9936708860759493
+              },
+              "f1": {
+                "fraction_reduced": "471/520",
+                "value": 0.9057692307692308
+              }
+            },
+            {
+              "name": "WALKING_UPSTAIRS",
+              "tp": 413,
+              "support": 449,
+              "predicted_count": 472,
+              "precision": {
+                "numerator": 413,
+                "denominator": 472,
+                "fraction_reduced": "7/8",
+                "value": 0.875
+              },
+              "recall": {
+                "numerator": 413,
+                "denominator": 449,
+                "fraction_reduced": "413/449",
+                "value": 0.9198218262806236
+              },
+              "f1": {
+                "fraction_reduced": "826/921",
+                "value": 0.8968512486427795
+              }
+            },
+            {
+              "name": "WALKING_DOWNSTAIRS",
+              "tp": 336,
+              "support": 394,
+              "predicted_count": 337,
+              "precision": {
+                "numerator": 336,
+                "denominator": 337,
+                "fraction_reduced": "336/337",
+                "value": 0.9970326409495549
+              },
+              "recall": {
+                "numerator": 336,
+                "denominator": 394,
+                "fraction_reduced": "168/197",
+                "value": 0.8527918781725888
+              },
+              "f1": {
+                "fraction_reduced": "672/731",
+                "value": 0.9192886456908345
+              }
+            },
+            {
+              "name": "SITTING",
+              "tp": 395,
+              "support": 484,
+              "predicted_count": 492,
+              "precision": {
+                "numerator": 395,
+                "denominator": 492,
+                "fraction_reduced": "395/492",
+                "value": 0.8028455284552846
+              },
+              "recall": {
+                "numerator": 395,
+                "denominator": 484,
+                "fraction_reduced": "395/484",
+                "value": 0.8161157024793388
+              },
+              "f1": {
+                "fraction_reduced": "395/488",
+                "value": 0.8094262295081968
+              }
+            },
+            {
+              "name": "STANDING",
+              "tp": 439,
+              "support": 541,
+              "predicted_count": 504,
+              "precision": {
+                "numerator": 439,
+                "denominator": 504,
+                "fraction_reduced": "439/504",
+                "value": 0.871031746031746
+              },
+              "recall": {
+                "numerator": 439,
+                "denominator": 541,
+                "fraction_reduced": "439/541",
+                "value": 0.8114602587800369
+              },
+              "f1": {
+                "fraction_reduced": "878/1045",
+                "value": 0.8401913875598086
+              }
+            },
+            {
+              "name": "LAYING",
+              "tp": 503,
+              "support": 532,
+              "predicted_count": 503,
+              "precision": {
+                "numerator": 503,
+                "denominator": 503,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 503,
+                "denominator": 532,
+                "fraction_reduced": "503/532",
+                "value": 0.9454887218045113
+              },
+              "f1": {
+                "fraction_reduced": "1006/1035",
+                "value": 0.9719806763285024
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 44,
+        "best_epoch": 25,
+        "val": {
+          "n": 1450,
+          "correct": 1369,
+          "errors": 81,
+          "accuracy": {
+            "numerator": 1369,
+            "denominator": 1450,
+            "fraction_reduced": "1369/1450",
+            "value": 0.9441379310344827
+          },
+          "macro_f1": {
+            "fraction_reduced": "1989398/2093217",
+            "value": 0.9504021799937608
+          },
+          "stored_rounded_accuracy": 0.9441,
+          "stored_rounded_macro_f1": 0.9504,
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              221,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              205,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              189,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              223,
+              38,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              42,
+              243,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              288
+            ]
+          ],
+          "per_class": [
+            {
+              "name": "WALKING",
+              "tp": 221,
+              "support": 221,
+              "predicted_count": 221,
+              "precision": {
+                "numerator": 221,
+                "denominator": 221,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 221,
+                "denominator": 221,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "1",
+                "value": 1.0
+              }
+            },
+            {
+              "name": "WALKING_UPSTAIRS",
+              "tp": 205,
+              "support": 205,
+              "predicted_count": 205,
+              "precision": {
+                "numerator": 205,
+                "denominator": 205,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 205,
+                "denominator": 205,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "1",
+                "value": 1.0
+              }
+            },
+            {
+              "name": "WALKING_DOWNSTAIRS",
+              "tp": 189,
+              "support": 189,
+              "predicted_count": 190,
+              "precision": {
+                "numerator": 189,
+                "denominator": 190,
+                "fraction_reduced": "189/190",
+                "value": 0.9947368421052631
+              },
+              "recall": {
+                "numerator": 189,
+                "denominator": 189,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "378/379",
+                "value": 0.9973614775725593
+              }
+            },
+            {
+              "name": "SITTING",
+              "tp": 223,
+              "support": 261,
+              "predicted_count": 265,
+              "precision": {
+                "numerator": 223,
+                "denominator": 265,
+                "fraction_reduced": "223/265",
+                "value": 0.8415094339622642
+              },
+              "recall": {
+                "numerator": 223,
+                "denominator": 261,
+                "fraction_reduced": "223/261",
+                "value": 0.8544061302681992
+              },
+              "f1": {
+                "fraction_reduced": "223/263",
+                "value": 0.8479087452471483
+              }
+            },
+            {
+              "name": "STANDING",
+              "tp": 243,
+              "support": 286,
+              "predicted_count": 281,
+              "precision": {
+                "numerator": 243,
+                "denominator": 281,
+                "fraction_reduced": "243/281",
+                "value": 0.8647686832740213
+              },
+              "recall": {
+                "numerator": 243,
+                "denominator": 286,
+                "fraction_reduced": "243/286",
+                "value": 0.8496503496503497
+              },
+              "f1": {
+                "fraction_reduced": "6/7",
+                "value": 0.8571428571428571
+              }
+            },
+            {
+              "name": "LAYING",
+              "tp": 288,
+              "support": 288,
+              "predicted_count": 288,
+              "precision": {
+                "numerator": 288,
+                "denominator": 288,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 288,
+                "denominator": 288,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "1",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "test": {
+          "n": 2874,
+          "correct": 2687,
+          "errors": 187,
+          "accuracy": {
+            "numerator": 2687,
+            "denominator": 2874,
+            "fraction_reduced": "2687/2874",
+            "value": 0.9349338900487126
+          },
+          "macro_f1": {
+            "fraction_reduced": "631626906094/675234058653",
+            "value": 0.9354192046444009
+          },
+          "stored_rounded_accuracy": 0.9349,
+          "stored_rounded_macro_f1": 0.9354,
+          "confusion_matrix_true_rows_predicted_columns": [
+            [
+              470,
+              0,
+              4,
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              428,
+              17,
+              0,
+              0,
+              0
+            ],
+            [
+              9,
+              1,
+              384,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              24,
+              0,
+              413,
+              47,
+              0
+            ],
+            [
+              0,
+              15,
+              0,
+              66,
+              460,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              532
+            ]
+          ],
+          "per_class": [
+            {
+              "name": "WALKING",
+              "tp": 470,
+              "support": 474,
+              "predicted_count": 483,
+              "precision": {
+                "numerator": 470,
+                "denominator": 483,
+                "fraction_reduced": "470/483",
+                "value": 0.9730848861283644
+              },
+              "recall": {
+                "numerator": 470,
+                "denominator": 474,
+                "fraction_reduced": "235/237",
+                "value": 0.9915611814345991
+              },
+              "f1": {
+                "fraction_reduced": "940/957",
+                "value": 0.9822361546499477
+              }
+            },
+            {
+              "name": "WALKING_UPSTAIRS",
+              "tp": 428,
+              "support": 449,
+              "predicted_count": 468,
+              "precision": {
+                "numerator": 428,
+                "denominator": 468,
+                "fraction_reduced": "107/117",
+                "value": 0.9145299145299145
+              },
+              "recall": {
+                "numerator": 428,
+                "denominator": 449,
+                "fraction_reduced": "428/449",
+                "value": 0.9532293986636972
+              },
+              "f1": {
+                "fraction_reduced": "856/917",
+                "value": 0.9334787350054525
+              }
+            },
+            {
+              "name": "WALKING_DOWNSTAIRS",
+              "tp": 384,
+              "support": 394,
+              "predicted_count": 405,
+              "precision": {
+                "numerator": 384,
+                "denominator": 405,
+                "fraction_reduced": "128/135",
+                "value": 0.9481481481481482
+              },
+              "recall": {
+                "numerator": 384,
+                "denominator": 394,
+                "fraction_reduced": "192/197",
+                "value": 0.9746192893401016
+              },
+              "f1": {
+                "fraction_reduced": "768/799",
+                "value": 0.9612015018773467
+              }
+            },
+            {
+              "name": "SITTING",
+              "tp": 413,
+              "support": 484,
+              "predicted_count": 479,
+              "precision": {
+                "numerator": 413,
+                "denominator": 479,
+                "fraction_reduced": "413/479",
+                "value": 0.8622129436325678
+              },
+              "recall": {
+                "numerator": 413,
+                "denominator": 484,
+                "fraction_reduced": "413/484",
+                "value": 0.8533057851239669
+              },
+              "f1": {
+                "fraction_reduced": "826/963",
+                "value": 0.857736240913811
+              }
+            },
+            {
+              "name": "STANDING",
+              "tp": 460,
+              "support": 541,
+              "predicted_count": 507,
+              "precision": {
+                "numerator": 460,
+                "denominator": 507,
+                "fraction_reduced": "460/507",
+                "value": 0.9072978303747534
+              },
+              "recall": {
+                "numerator": 460,
+                "denominator": 541,
+                "fraction_reduced": "460/541",
+                "value": 0.8502772643253235
+              },
+              "f1": {
+                "fraction_reduced": "115/131",
+                "value": 0.8778625954198473
+              }
+            },
+            {
+              "name": "LAYING",
+              "tp": 532,
+              "support": 532,
+              "predicted_count": 532,
+              "precision": {
+                "numerator": 532,
+                "denominator": 532,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "recall": {
+                "numerator": 532,
+                "denominator": 532,
+                "fraction_reduced": "1",
+                "value": 1.0
+              },
+              "f1": {
+                "fraction_reduced": "1",
+                "value": 1.0
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "three_seed_summary": {
+      "macro_f1_recomputed_from_confusion": {
+        "values": [
+          0.9105034121097578,
+          0.8905845697498921,
+          0.9354192046444009
+        ],
+        "n": 3,
+        "mean": 0.912169062168017,
+        "population_std_ddof0": 0.01834151782375003,
+        "sample_std_ddof1": 0.02246367988817527
+      },
+      "accuracy_recomputed_from_confusion": {
+        "values": [
+          0.9084899095337509,
+          0.8897007654836465,
+          0.9349338900487126
+        ],
+        "n": 3,
+        "mean": 0.9110415216887033,
+        "population_std_ddof0": 0.018554279522914614,
+        "sample_std_ddof1": 0.022724258688055655
+      },
+      "macro_f1_using_archived_4decimal_inputs": {
+        "values": [
+          0.9105,
+          0.8906,
+          0.9354
+        ],
+        "n": 3,
+        "mean": 0.9121666666666667,
+        "population_std_ddof0": 0.01832745360260275,
+        "sample_std_ddof1": 0.02244645480545502
+      },
+      "accuracy_using_archived_4decimal_inputs": {
+        "values": [
+          0.9085,
+          0.8897,
+          0.9349
+        ],
+        "n": 3,
+        "mean": 0.9110333333333334,
+        "population_std_ddof0": 0.01853956729688032,
+        "sample_std_ddof1": 0.022706239964673396
+      },
+      "rounding_note": "scripts/09 aggregates per-seed metrics already rounded to four decimals, with NumPy std ddof=0. The exact-confusion arithmetic and sample std ddof=1 are separately identified."
+    },
+    "P0": {
+      "archived_probe": [
+        {
+          "normalized_radius_k": 0.0001,
+          "anchors_sampled": 100,
+          "ibp_certified": 95,
+          "crown_certified": 100,
+          "archived_crown_build_p50_ms": 38.950602999648254,
+          "archived_crown_build_p95_ms": 54.64298720125953,
+          "build_p50_div_archived_forward_mean_only": 155.11988450676327
+        },
+        {
+          "normalized_radius_k": 0.0005,
+          "anchors_sampled": 100,
+          "ibp_certified": 47,
+          "crown_certified": 99,
+          "archived_crown_build_p50_ms": 51.118265500917914,
+          "archived_crown_build_p95_ms": 67.63708140033485,
+          "build_p50_div_archived_forward_mean_only": 203.57732178780532
+        },
+        {
+          "normalized_radius_k": 0.001,
+          "anchors_sampled": 100,
+          "ibp_certified": 22,
+          "crown_certified": 95,
+          "archived_crown_build_p50_ms": 63.83269550042314,
+          "archived_crown_build_p95_ms": 102.87992134908562,
+          "build_p50_div_archived_forward_mean_only": 254.21224811000855
+        },
+        {
+          "normalized_radius_k": 0.002,
+          "anchors_sampled": 100,
+          "ibp_certified": 16,
+          "crown_certified": 92,
+          "archived_crown_build_p50_ms": 82.08939800078952,
+          "archived_crown_build_p95_ms": 131.81921925061033,
+          "build_p50_div_archived_forward_mean_only": 326.9191477530447
+        },
+        {
+          "normalized_radius_k": 0.005,
+          "anchors_sampled": 100,
+          "ibp_certified": 0,
+          "crown_certified": 66,
+          "archived_crown_build_p50_ms": 125.59185750069446,
+          "archived_crown_build_p95_ms": 151.31259574973228,
+          "build_p50_div_archived_forward_mean_only": 500.1666965380106
+        },
+        {
+          "normalized_radius_k": 0.01,
+          "anchors_sampled": 100,
+          "ibp_certified": 0,
+          "crown_certified": 38,
+          "archived_crown_build_p50_ms": 117.371454500244,
+          "archived_crown_build_p95_ms": 145.68394500056456,
+          "build_p50_div_archived_forward_mean_only": 467.42912982972524
+        },
+        {
+          "normalized_radius_k": 0.05,
+          "anchors_sampled": 100,
+          "ibp_certified": 0,
+          "crown_certified": 0,
+          "archived_crown_build_p50_ms": 134.18475300022692,
+          "archived_crown_build_p95_ms": 225.64793044939503,
+          "build_p50_div_archived_forward_mean_only": 534.3877060940937
+        }
+      ],
+      "archived_raw_membership_replay": {
+        "0.0001": {
+          "k": 0.0001,
+          "raw_box_hit_rate": 0.0,
+          "total_windows": 1450,
+          "anchor_builds": 1450,
+          "hits": 0,
+          "avg_hits_per_anchor": 0.0,
+          "max_hits_per_anchor": 0
+        },
+        "0.001": {
+          "k": 0.001,
+          "raw_box_hit_rate": 0.0,
+          "total_windows": 1450,
+          "anchor_builds": 1450,
+          "hits": 0,
+          "avg_hits_per_anchor": 0.0,
+          "max_hits_per_anchor": 0
+        },
+        "0.005": {
+          "k": 0.005,
+          "raw_box_hit_rate": 0.0,
+          "total_windows": 1450,
+          "anchor_builds": 1450,
+          "hits": 0,
+          "avg_hits_per_anchor": 0.0,
+          "max_hits_per_anchor": 0
+        },
+        "0.01": {
+          "k": 0.01,
+          "raw_box_hit_rate": 0.0,
+          "total_windows": 1450,
+          "anchor_builds": 1450,
+          "hits": 0,
+          "avg_hits_per_anchor": 0.0,
+          "max_hits_per_anchor": 0
+        },
+        "0.05": {
+          "k": 0.05,
+          "raw_box_hit_rate": 0.0,
+          "total_windows": 1450,
+          "anchor_builds": 1450,
+          "hits": 0,
+          "avg_hits_per_anchor": 0.0,
+          "max_hits_per_anchor": 0
+        },
+        "0.1": {
+          "k": 0.1,
+          "raw_box_hit_rate": 0.11172413793103449,
+          "total_windows": 1450,
+          "anchor_builds": 1288,
+          "hits": 162,
+          "avg_hits_per_anchor": 0.12577639751552794,
+          "max_hits_per_anchor": 16
+        },
+        "0.28": {
+          "k": 0.28,
+          "raw_box_hit_rate": 0.3393103448275862,
+          "total_windows": 1450,
+          "anchor_builds": 958,
+          "hits": 492,
+          "avg_hits_per_anchor": 0.5135699373695198,
+          "max_hits_per_anchor": 21
+        }
+      },
+      "sample_policy": "np.random.seed(42); uniform sample without replacement of 100 correctly predicted validation pure-K6 windows. Source comment says stratified but no stratification is implemented.",
+      "sample_fraction_of_correct_val": {
+        "numerator": 100,
+        "denominator": 1369,
+        "fraction_reduced": "100/1369",
+        "value": 0.07304601899196493
+      },
+      "sample_fraction_of_all_val": {
+        "numerator": 100,
+        "denominator": 1450,
+        "fraction_reduced": "2/29",
+        "value": 0.06896551724137931
+      },
+      "equivalence_check": "Stored eq_err=0 on only 10 random (6,128) tensors; not an exhaustive floating-point equivalence proof.",
+      "replay_policy": "1-entry anchor; validation pure-K6 windows sorted by exp/win_idx; reset across recordings. Filtered windows may have gaps because win_idx adjacency is not enforced after filtering.",
+      "not_end_to_end_reasons": [
+        "Replay never calls the verifier and does not gate hits on certified status.",
+        "Replay and certifiability sample use different anchor populations; product p_c*r is not measured joint certified-hit probability.",
+        "Radius grids are different; no certifiability observation exists for replay k=0.1 or k=0.28.",
+        "Only membership hits are counted; no ECDR fallback/lookup/state/energy/end-to-end timing is measured.",
+        "The sample excludes incorrectly predicted anchors; sampled p_c is conditional, not a full validation certified fraction.",
+        "Radii are normalized coordinates and cannot be equated to raw-coordinate event-box budgets."
+      ]
+    }
+  },
+  "source_sha256": {
+    "data/windows.npz": "1646061afa74266ac0fdd03b6f68af63327c7ab2f2a93db1f672e6177eb17900",
+    "data/window_manifest.parquet": "82f9a2875fa0b00b315b36d81f07ab1bc436ea078a2f8c491ec4206baf75413b",
+    "data/windows_with_split.parquet": "767dbe36f8a5a2b0b81cd2a5dd6873ab944a4460908f9052cd418b77799909f4",
+    "data/g2_class_support.json": "ce57b50d542e73b14db21308706271c57c7f8e29e4187280b74cf5c6c55ed4c2",
+    "data/g2_metrics.json": "a186934c4990f49e6ee956bf0f79e2f89ede61c795509745808b9e1d8fd12f29",
+    "data/g2_training.json": "e8ffbeed5790a0ce985936597158395e6bdbc7294de822dc1a67c809522133ac",
+    "data/g2_cpu_latency.json": "9242098c3942e1de3d79fdc1e033a774f17b67c912cf6e34be432ea9d1f09665",
+    "data/p0_verifier_probe.json": "992254aba3b2c3f92168b93167165994d4a65c3922927d12aa7f4ac6708b0520",
+    "data/event_audit.json": "a2197ad4e537c1296150cee33e8cb01a1db4babc49197f0c70cfe79552490681",
+    "data/corr_semantics.json": "a7b46a768d2fe9790618e46b9c50c53a8aa78bff1b1a8f0fc3438085ac135343",
+    "data/hapt/README.txt": "76c9005ce568e84f5a12b3cda29a1d54846af41ab2c96d64999daae220963160",
+    "scripts/03_build_windows.py": "a99f857a194b54410d5b99a628352f4163306780d66e1fc4f4d07643019f072f",
+    "scripts/05_audit_temporal_events.py": "3d7f38177c19184b7c6c0e074cd166cda7615a8fe23f72be80a60eaa3066d0d2",
+    "scripts/11_gate_a_prototype.py": "c307e43ba8a56dbc62aa9cc6790cc568e2c6adc9527182908968606be8399b1b",
+    "scripts/backbone.py": "0f26f8fe731de32a67eecef5eedbfbe88f13698d104454c41ef3bd5d7b4d5037",
+    "configs/backbone.yaml": "9f8582608dda9ad3cacaa34b837ceb508cdcf3a52780c78943906e94152756ce"
+  }
+}

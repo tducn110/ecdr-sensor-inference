@@ -1,0 +1,237 @@
+{
+  "scope": "Companion arithmetic + LaTeX/PDF QA; no ECDR training, verifier or benchmark.",
+  "source_sha256": "111c0243001a1ad279708276025d46359ac962da728237d21ee9464f99af0fee",
+  "pdf_sha256": "333aa8a5654fd475e3bc03caf8d75ba8edd9c16fbfd043bcb79a4f3b3e2320e7",
+  "pdf_pages": 29,
+  "main_sections": 24,
+  "coverage_groups": 29,
+  "hypothesis_explanations": 24,
+  "citations_resolved": 11,
+  "cross_references_resolved": 6,
+  "previous_report_sources_and_pdfs_unchanged": true,
+  "examples": {
+    "toy_cnn": {
+      "old_features": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "1"
+        ],
+        [
+          "2",
+          "1"
+        ],
+        [
+          "3",
+          "1"
+        ]
+      ],
+      "new_features": [
+        [
+          "2",
+          "1"
+        ],
+        [
+          "3",
+          "1"
+        ],
+        [
+          "4",
+          "1"
+        ],
+        [
+          "5",
+          "1"
+        ]
+      ],
+      "old_logits": [
+        "9/2",
+        "-1/2",
+        "1"
+      ],
+      "new_logits": [
+        "13/2",
+        "-5/2",
+        "5"
+      ],
+      "old_margins": [
+        "5",
+        "7/2"
+      ],
+      "new_margins": [
+        "9",
+        "3/2"
+      ],
+      "wave_box_corners": [
+        {
+          "u": "13/2",
+          "v": "15/2",
+          "margins": [
+            "9",
+            "11/8"
+          ]
+        },
+        {
+          "u": "13/2",
+          "v": "17/2",
+          "margins": [
+            "37/4",
+            "11/8"
+          ]
+        },
+        {
+          "u": "15/2",
+          "v": "15/2",
+          "margins": [
+            "35/4",
+            "13/8"
+          ]
+        },
+        {
+          "u": "15/2",
+          "v": "17/2",
+          "margins": [
+            "9",
+            "13/8"
+          ]
+        }
+      ],
+      "affine_exact_minima": [
+        "35/4",
+        "11/8"
+      ],
+      "affine_exact_maxima": [
+        "37/4",
+        "13/8"
+      ],
+      "position_interval_lower_margins": [
+        "8",
+        "7/8"
+      ],
+      "sum_coordinate_interval_lower_margins": [
+        "17/2",
+        "9/8"
+      ],
+      "stale_certificate_second_step_features": [
+        [
+          "4",
+          "1"
+        ],
+        [
+          "5",
+          "1"
+        ],
+        [
+          "4",
+          "0"
+        ],
+        [
+          "7",
+          "0"
+        ]
+      ],
+      "stale_certificate_second_step_logits": [
+        "17/2",
+        "-4",
+        "9"
+      ],
+      "scope": "Corner enumeration confirms affine-example arithmetic, after proving all relevant ReLUs stable on this box. It is not a generic neural-network verifier."
+    },
+    "affine_interval": {
+      "min": -6,
+      "max": 8
+    },
+    "crown": {
+      "exact_min": "1/2",
+      "independent_ibp_lower": "-1/2",
+      "alpha_optimal": "1/2",
+      "optimized_affine_lower": "1/2",
+      "sampled_arithmetic_points": 81,
+      "scope": "Analytic proof, not sampling, establishes the whole-domain bound."
+    },
+    "metrics": {
+      "accuracy": "17/20",
+      "macro_f1": "113/133",
+      "macro_f1_decimal": 0.849624060150376,
+      "population_sd_2_4_6": 1.632993161855452,
+      "sample_sd_2_4_6": 2
+    },
+    "window_count": {
+      "T1000_W128_s64": 14,
+      "span_100_400_starts": [
+        128,
+        192,
+        256
+      ],
+      "majority_count_threshold": 77,
+      "dx": 768,
+      "overlap_coordinates": 384,
+      "time_span_s": 2.56,
+      "first_to_last_s": 2.54,
+      "stride_time_s": 1.28
+    },
+    "geometry": {
+      "L2_Linf_L1_lower_for_a3m4_beta2_eps01": [
+        1.5,
+        1.3,
+        1.6
+      ],
+      "square_line_tube_minima": [
+        "-3/5",
+        "1",
+        "4/5"
+      ],
+      "pca_orthogonal_residual_lower": 0.8585786437626904,
+      "pca_query_score": 0.1414213562373095,
+      "pca_query_residual_norm": 0.14142135623730953,
+      "normalized_example": 0.20000000000000018,
+      "raw_affine_example": 1.6000000000000014
+    },
+    "probability": [
+      {
+        "q": 0.9,
+        "q_pow_768_if_independent": 7.215181317747974e-36,
+        "q_pow_384_if_independent": 2.686108954928667e-18
+      },
+      {
+        "q": 0.99,
+        "q_pow_768_if_independent": 0.00044445669337294416,
+        "q_pow_384_if_independent": 0.02108214157463478
+      },
+      {
+        "q": 0.999,
+        "q_pow_768_if_independent": 0.46376178351239383,
+        "q_pow_384_if_independent": 0.6810005752658318
+      }
+    ],
+    "cnn_complexity": {
+      "params": 20332,
+      "mac": 2343936,
+      "approx_flop": 4687872,
+      "R": 9,
+      "n": 120,
+      "shared_after_shift64": 56,
+      "tail_input_samples": 72
+    },
+    "cost": {
+      "full_N100": "400",
+      "ecdr_H80_B20": "118",
+      "speed_ratio": "200/59",
+      "build1p5_threshold": "79/275",
+      "build8_threshold": "101/150",
+      "amortization_L_threshold": "100/49",
+      "min_integer_all_hit_count": 3,
+      "heterogeneous_forward_full": 20,
+      "heterogeneous_forward_ecdr": 22
+    },
+    "numerical": {
+      "example_safe_lower": 0.013000000000000001,
+      "example_inconclusive_lower": -0.002,
+      "scope": "The error budgets are hypothetical proven bounds in the explanation, not measured numerical error limits."
+    }
+  },
+  "visual_review": "Separate agent inspection of rendered contact sheets is required."
+}

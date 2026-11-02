@@ -1,0 +1,1204 @@
+% English mathematical concept atlas: foundational concepts F01--F34.
+% Included by the root document; the root defines \concept and math macros.
+
+\concept{F01}{Propositions and quantifiers}{None}
+\paragraph{Foundation and definition.}
+A proposition is a statement with a truth value after its terms have been
+specified. A predicate is a statement that still depends on a variable.
+The universal quantifier $\forall$ means ``for every''; the existential
+quantifier $\exists$ means ``there is at least one.'' These are logical
+definitions, rather than empirical claims about sensor data.
+\paragraph{Symbols and meaning.}
+Let $\mathcal S$ be a set of permitted input windows, let $x$ denote one
+window in that set, let $h:\mathcal S\to\{1,\ldots,K\}$ be a deterministic
+classifier, let the integer $K\ge2$ count classes, and let $c$ be one fixed
+class. The predicate $P(x)$ is the statement $h(x)=c$. A window can be
+represented by $768$ real coordinates, but the logical statement does not
+depend on that particular dimension.
+\paragraph{Derivation or example.}
+The statements
+\[
+ \forall x\in\mathcal S\;P(x),\qquad
+ \exists x\in\mathcal S\;P(x)
+\]
+have very different strengths. For $\mathcal S=\{u,v\}$, with
+$h(u)=c$ and $h(v)\ne c$, the existential statement is true and the
+universal statement is false. Negation changes the quantifier:
+\[
+ \neg(\forall x\in\mathcal S\;P(x))
+ \ \Longleftrightarrow\ 
+ \exists x\in\mathcal S\;\neg P(x).
+\]
+Thus a single counterexample defeats a universal claim. Testing a finite
+selection from an infinite region does not establish that claim.
+\paragraph{Why ECDR needs it.}
+A regional certificate asserts that every input admitted by its domain
+has the certified decision. Observing that several neighboring windows
+share a prediction supplies examples, not the missing universal argument.
+\paragraph{Conditions and connections.}
+Quantifier order matters: ``for every input there exists a safe radius''
+does not specify one radius that works for every input. Universal
+statements over the empty set are vacuously true; a useful reuse domain
+must also be nonempty. F02 explains the logical role of a certificate.
+
+\concept{F02}{Implication, necessity, sufficiency, and equivalence}{F01}
+\paragraph{Foundation and definition.}
+An implication $A\Rightarrow B$ says that whenever proposition $A$ holds,
+proposition $B$ holds. Then $A$ is sufficient for $B$, and $B$ is necessary
+for $A$. Equivalence $A\Leftrightarrow B$ requires both implications.
+These relationships describe logical strength; they do not assert that
+either proposition is actually true in a particular run.
+\paragraph{Symbols and meaning.}
+Let $A$ mean ``a sound verifier returns a strictly positive lower bound,''
+and let $B$ mean ``the chosen class wins throughout the specified input
+region.'' The word sound means that the verifier's claimed inequality is
+mathematically valid under its stated model and arithmetic assumptions.
+Neither letter is a numerical variable or a dataset label.
+\paragraph{Derivation or example.}
+For a scalar variable $x\in\R$, take the margin $m(x)=2-x$ on the
+interval $\mathcal S=[0,1]$. Its exact minimum is $1$. A valid but loose
+lower bound can be $-3$, because $-3\le m(x)$ for every permitted $x$.
+Therefore a positive returned bound proves safety, but a nonpositive
+returned bound need not prove unsafety:
+\[
+ \text{positive sound lower bound}\Rightarrow\text{safety},
+ \qquad
+ \text{no positive bound}\not\Rightarrow\text{unsafety}.
+\]
+The contrapositive $\neg B\Rightarrow\neg A$ follows from
+$A\Rightarrow B$. The converse $B\Rightarrow A$ does not follow.
+\paragraph{Why ECDR needs it.}
+An unsuccessful certificate attempt should trigger the defined fallback.
+It must not be reported as a discovered decision error. Conversely, a
+successful attempt is useful only if its soundness conditions hold.
+\paragraph{Conditions and connections.}
+A conditional theorem proves its conclusion from hypotheses. An
+unconditional claim has no remaining hypotheses within its declared
+framework; it still uses the framework's axioms and definitions. Saying
+``unconditional guarantee'' cannot remove model identity, input-domain,
+or numerical assumptions. F28 gives a concrete conditional theorem.
+
+\concept{F03}{Sets, membership, and inclusion}{F01}
+\paragraph{Foundation and definition.}
+A set specifies which objects belong to a collection. Membership
+$x\in\mathcal S$ is a yes-or-no relation. Inclusion
+$\mathcal A\subseteq\mathcal B$ means every member of $\mathcal A$ is
+also a member of $\mathcal B$. A set is different from its size, its
+bounding box, and a list of sampled members.
+\paragraph{Symbols and meaning.}
+Here $x$ is an input vector; $\mathcal S$, $\mathcal A$, and
+$\mathcal B$ are sets of input vectors in the same coordinate system.
+The empty set $\varnothing$ has no members. The union
+$\mathcal A\cup\mathcal B$ admits a member of either set; the
+intersection $\mathcal A\cap\mathcal B$ admits only shared members.
+The difference $\mathcal B\setminus\mathcal A$ contains members of
+$\mathcal B$ outside $\mathcal A$.
+\paragraph{Derivation or example.}
+Let $\mathcal A=[-1,1]$ and $\mathcal B=[-2,2]$, subsets of $\R$.
+Then $0.5\in\mathcal A\subseteq\mathcal B$, whereas
+$1.5\in\mathcal B\setminus\mathcal A$. If a classifier $h$ satisfies
+$h(x)=c$ for all $x\in\mathcal B$, it also satisfies this identity on
+$\mathcal A$. Proof: choose any member $x$ of $\mathcal A$; inclusion
+puts the same $x$ in $\mathcal B$, where the identity is known.
+The reverse transfer is invalid without more information.
+\paragraph{Why ECDR needs it.}
+Membership is the online gate that connects a particular query to a
+previously proved regional statement. A conservative inner gate can
+reduce reuse coverage while preserving safety. Enlarging the gate beyond
+the certified set can invalidate safety.
+\paragraph{Conditions and connections.}
+An inequality can define a set without proving that observed data usually
+falls inside it. All comparisons require identical normalization and
+indexing. F24 constructs boxes; F34 explains why individually chosen
+coordinate quantiles do not automatically determine joint coverage.
+
+\concept{F04}{Functions, domains, images, and preimages}{F03}
+\paragraph{Foundation and definition.}
+A function assigns exactly one output to every input in its domain.
+Writing $f:\mathcal X\to\mathcal Y$ names the domain $\mathcal X$
+and codomain $\mathcal Y$. The image is the set of outputs actually
+attained. A preimage collects inputs whose outputs belong to a specified
+output set; it does not require an inverse function.
+\paragraph{Symbols and meaning.}
+The variable $x\in\mathcal X$ is one input and $f(x)\in\mathcal Y$
+is its output. For subsets $\mathcal A\subseteq\mathcal X$ and
+$\mathcal B\subseteq\mathcal Y$, define
+\[
+ f(\mathcal A)=\{f(x):x\in\mathcal A\},\qquad
+ f^{-1}(\mathcal B)=\{x\in\mathcal X:f(x)\in\mathcal B\}.
+\]
+The superscript $-1$ here denotes a preimage operation, not division.
+\paragraph{Derivation or example.}
+For $f:\R\to\R$ given by $f(x)=x^2$, the codomain is $\R$ but
+the image is $[0,\infty)$. The preimage of $[1,4]$ is
+$[-2,-1]\cup[1,2]$. No single-valued inverse on the full image can
+recover whether the original input was positive or negative.
+For a classifier $h:\R^{d}\to\{1,\ldots,K\}$, the decision region
+of class $c$ is $h^{-1}(\{c\})$. Here integers $d\ge1$ and $K\ge2$
+count input coordinates and classes.
+\paragraph{Why ECDR needs it.}
+Certification seeks a practical input set contained in one decision
+region. Feature compression can map different inputs to the same feature
+vector, so invertibility is unnecessary for classification or reuse.
+\paragraph{Conditions and connections.}
+The actual reference must be deterministic under its inference state;
+random layers require a separately stated treatment. F17 explains how
+preprocessing, a CNN, and a decision rule form a composed function.
+
+\concept{F05}{Real-number field axioms and algebra}{F02}
+\paragraph{Foundation and definition.}
+The field axioms are assumptions about addition and multiplication on
+$\R$. Each operation is closed. Both are associative and commutative.
+There are identities $0$ and $1$ with $0\ne1$. Every element has an
+additive inverse, every nonzero element has a multiplicative inverse, and
+multiplication distributes over addition. These axioms are not proved
+by collecting sensor measurements.
+\paragraph{Symbols and meaning.}
+For arbitrary real numbers $a,b,c$, associativity includes
+$(a+b)+c=a+(b+c)$; distributivity is $a(b+c)=ab+ac$. The symbols
+$-a$ and $a^{-1}$ mean the respective inverses, with $a^{-1}$ defined
+only for $a\ne0$. Define $a-b=a+(-b)$ and $a/b=a b^{-1}$ for $b\ne0$.
+\paragraph{Derivation or example.}
+Cancellation follows from the axioms rather than being another empirical
+observation. If $a+c=b+c$, adding $-c$ to both sides and reassociating
+gives $a=b$. Also,
+\[
+ a\cdot0=a(0+0)=a\cdot0+a\cdot0
+ \quad\Rightarrow\quad a\cdot0=0.
+\]
+This proves why division by zero cannot be defined as a multiplicative
+inverse: an inverse would imply $1=0$. For a logit pair $u,v\in\R$,
+the margin $u-v$ is simply addition with the additive inverse of $v$.
+\paragraph{Why ECDR needs it.}
+Rearranging margin expressions, canceling shared bias terms, and
+distributing sums over a linear head all rely on these algebraic laws.
+Stating the foundation makes clear which manipulations are legitimate.
+\paragraph{Conditions and connections.}
+Floating-point arithmetic only approximates this field: addition can
+fail associativity after rounding. Real-number proofs therefore need an
+additional error argument before becoming machine-level certificates.
+Order and completeness require further axioms, developed in F06--F07.
+
+\concept{F06}{Ordered-field axioms and inequalities}{F05}
+\paragraph{Foundation and definition.}
+An ordered field adds a total order compatible with field operations.
+For any two real numbers exactly one of $a<b$, $a=b$, or $b<a$ holds.
+Order is transitive; adding the same number preserves order; and the
+product of positive numbers is positive. These are axioms of the real
+number system, not assumptions about the classifier.
+\paragraph{Symbols and meaning.}
+The symbols $a,b,c\in\R$ denote arbitrary scalars. Write $a\le b$
+when $a<b$ or $a=b$. A positive scalar satisfies $c>0$; a negative scalar
+satisfies $c<0$. The notation $[a,b]$ later denotes all scalars between
+the endpoints when $a\le b$.
+\paragraph{Derivation or example.}
+If $a\le b$ and $c>0$, then $ac\le bc$: from $b-a\ge0$, product
+compatibility gives $c(b-a)\ge0$, and distributivity finishes the proof.
+For $c<0$, multiplying reverses the direction. For example,
+\[
+ -2\le3\quad\Rightarrow\quad 4\le-6
+ \quad\text{is false},\qquad -2\le3\Rightarrow4\ge-6.
+\]
+If a margin satisfies $m\ge\ell$ and a proved bound gives $\ell>0$,
+transitivity yields $m>0$. If only $\ell\le0$ is known, neither the
+sign of $m$ nor a decision error follows.
+\paragraph{Why ECDR needs it.}
+The direction of a bound determines its usefulness. A lower margin bound
+supports a safety claim; an upper bound with the same numerical value
+generally does not. Negative coefficients also determine which interval
+endpoint minimizes an affine expression.
+\paragraph{Conditions and connections.}
+Order is not a floating-point tolerance policy. Replacing $m>0$ by
+$m\ge-10^{-6}$ changes the mathematical acceptance condition and needs
+its own justification. F25 distinguishes bounding values from attained
+minima; F28 uses strict positivity.
+
+\concept{F07}{Completeness and the least-upper-bound axiom}{F03, F06}
+\paragraph{Foundation and definition.}
+Completeness distinguishes the real numbers from an arbitrary ordered
+field. Its least-upper-bound formulation states: every nonempty subset
+of $\R$ that is bounded above has a least upper bound in $\R$. This is
+an axiom characterizing the real-number setting. It does not say that
+every set contains its upper bound.
+\paragraph{Symbols and meaning.}
+Let $\mathcal A\subseteq\R$ be nonempty. A number $u\in\R$ is an
+upper bound when $a\le u$ for every $a\in\mathcal A$. Its supremum
+$s=\sup\mathcal A$ is an upper bound satisfying $s\le u$ for every
+upper bound $u$. Bounded above means that at least one such finite $u$
+exists.
+\paragraph{Derivation or example.}
+For $\mathcal A=(0,1)$, the supremum is $1$, although
+$1\notin\mathcal A$. Every number below $1$ fails to be an upper bound,
+because there is a larger member still below $1$.
+Completeness also gives an infimum for a nonempty set bounded below:
+\[
+ \inf\mathcal A=-\sup(-\mathcal A),\qquad
+ -\mathcal A=\{-a:a\in\mathcal A\}.
+\]
+The ordered rational field lacks this completeness: the positive
+rational numbers with square below $2$ have no rational least upper
+bound. A real square root supplies the missing bound.
+\paragraph{Why ECDR needs it.}
+Worst-case optimization uses infima over infinitely many possible inputs.
+Completeness supports the real-valued limits and extrema theory behind
+certification, even when a practical verifier returns only an enclosure.
+\paragraph{Conditions and connections.}
+Completeness does not supply an algorithm or guarantee finite computation.
+An unbounded margin set may have extended-real infimum $-\infty$ instead
+of a finite real bound. F25 explains infimum versus minimum, and
+F27--F28 add hypotheses that make an extremum attainable.
+
+\concept{F08}{Integer indexing, floor, and ceiling}{F05, F06}
+\paragraph{Foundation and definition.}
+An index identifies a discrete position. For a real scalar $u$,
+$\lfloor u\rfloor$ is the greatest integer not exceeding $u$, and
+$\lceil u\rceil$ is the least integer not smaller than $u$. These
+definitions convert continuous counts or thresholds into valid discrete
+positions; choosing zero-based indexing is a convention, not a theorem.
+\paragraph{Symbols and meaning.}
+Let the integers $T\ge1$, $W\ge1$, and $s\ge1$ count recording samples,
+window samples, and stride samples. Let $i$ be a zero-based window index.
+Window $i$ starts at sample $is$ and contains indices
+$is,is+1,\ldots,is+W-1$. A sampling frequency $f_s>0$, measured in
+samples per second, converts index differences to seconds.
+\paragraph{Derivation or example.}
+A full window exists exactly when $is+W\le T$. Hence its count is
+\[
+ N=\max\!\left(0,1+\left\lfloor\frac{T-W}{s}\right\rfloor\right).
+\]
+For $T=1000$, $W=128$, and $s=64$, there are $N=14$ windows, with
+final start $13\cdot64=832$ and final included sample $959$.
+The remaining $40$ samples are outside this grid's windows. If a class
+must occupy at least fraction $\tau=0.6$ of a $128$-sample window,
+the required integer count is $\lceil\tau W\rceil=77$.
+\paragraph{Why ECDR needs it.}
+The overlap structure, valid CNN output length, and available transition
+examples all depend on exact indexing. A one-position convention change
+can change labels or invalidate an equality used to reuse activations.
+\paragraph{Conditions and connections.}
+An inclusive annotation interval $[a,b]$ contains $b-a+1$ integer
+positions; a half-open slice $[a,b)$ contains $b-a$. Neither convention
+should be inferred from notation alone. The index extent $W/f_s$ and
+first-to-last timestamp gap $(W-1)/f_s$ are distinct time quantities.
+
+\concept{F09}{Finite sums and reindexing}{F05, F08}
+\paragraph{Foundation and definition.}
+A finite sum repeatedly adds terms over a declared finite index set.
+Associativity and commutativity of real addition justify regrouping and
+reordering. Reindexing is valid when the new indices describe exactly the
+same terms once each, or when explicitly stated terms are added or removed.
+\paragraph{Symbols and meaning.}
+Let $n\ge1$ be an integer, let $a_0,\ldots,a_{n-1}\in\R$ be scalars,
+and let $i$ be a summation index. Then $\sum_{i=0}^{n-1}a_i$ adds those
+$n$ terms. For vector terms the same notation means coordinatewise
+addition. A sum over an empty index set is defined as the additive
+identity, either zero or the zero vector as appropriate.
+\paragraph{Derivation or example.}
+Let $H_0,\ldots,H_{n+s-1}\in\R^d$ be feature vectors, with integers
+$1\le s\le n$ and $d\ge1$. Reindexing gives
+\[
+ \sum_{i=0}^{n-1}H_{i+s}-\sum_{i=0}^{n-1}H_i
+ =\sum_{i=n}^{n+s-1}H_i-\sum_{i=0}^{s-1}H_i.
+\]
+Both left-hand sums contain the positions $s,\ldots,n-1$, whose terms
+cancel. For $n=4,s=2$, this is
+$(H_2+H_3+H_4+H_5)-(H_0+H_1+H_2+H_3)
+=H_4+H_5-H_0-H_1$. Dividing by $n$ yields a difference of averages.
+\paragraph{Why ECDR needs it.}
+This cancellation explains why a global-average-pooled feature can change
+through entering and leaving feature positions when alignment is exact.
+It is an algebraic consequence, not an empirical statement that all
+nearby windows have small differences.
+\paragraph{Conditions and connections.}
+The shared symbols must represent equal features, established by a
+separate receptive-field and shift argument. Equal input-window lengths
+alone do not establish that equality. In floating-point arithmetic,
+different summation orders can produce different rounded outputs.
+
+\concept{F10}{Vector spaces and their axioms}{F05}
+\paragraph{Foundation and definition.}
+A real vector space is a set $V$ equipped with vector addition and real
+scalar multiplication. Addition is associative and commutative, has a
+zero vector, and supplies an additive inverse for every vector. Scalar
+multiplication satisfies identity, compatibility, and both distributive
+laws. Closure requires the resulting objects to remain in $V$.
+\paragraph{Symbols and meaning.}
+Let $u,v,w\in V$ be vectors and $a,b\in\R$ be scalars. The remaining
+laws are $1v=v$, $(ab)v=a(bv)$,
+$a(u+v)=au+av$, and $(a+b)v=av+bv$. In the concrete space $\R^d$,
+the positive integer $d$ counts coordinates, and these operations act
+coordinatewise. The zero vector is written $0_V$ when confusion with
+the real scalar zero is possible.
+\paragraph{Derivation or example.}
+For $u=(1,2)$ and $v=(3,-1)$ in $\R^2$,
+$2u-v=(-1,5)$. Addition is legitimate because corresponding entries use
+the same coordinate meanings. A set of physically realizable sensor
+windows need not itself be a vector space: adding two realizable windows
+or multiplying one by a negative number may leave the physical set.
+The ambient coordinate space can still be a vector space containing it.
+\paragraph{Why ECDR needs it.}
+Differences between windows, linear heads, and perturbation directions
+are vectors in an ambient space. This makes linear algebra available
+without assuming that every resulting vector is a plausible activity.
+\paragraph{Conditions and connections.}
+Coordinate scaling must be fixed when physical channels have different
+units. An acceleration coordinate in $g$ and an angular-velocity coordinate
+in rad/s are distinct types of measurements. Normalized coordinates
+support a declared dimensionless geometry. F11--F14 develop combinations,
+span, independence, and coordinates from these axioms.
+
+\concept{F11}{Linear combinations}{F09, F10}
+\paragraph{Foundation and definition.}
+A linear combination forms a new vector by scaling finitely many vectors
+and adding the results. It is a definition built from the vector-space
+operations. Negative coefficients and coefficients whose sum differs
+from one are allowed; convex and affine combinations impose additional
+constraints and are different concepts.
+\paragraph{Symbols and meaning.}
+Let the integers $d\ge1$ and $r\ge1$ count coordinates and supplied
+directions. Let $v_1,\ldots,v_r\in\R^d$ be direction vectors and let
+$\alpha_1,\ldots,\alpha_r\in\R$ be scalar coefficients. Their linear
+combination is
+\[
+ v=\sum_{j=1}^{r}\alpha_j v_j.
+\]
+Here $j$ is an index, and $v\in\R^d$ is the resulting vector.
+If the directions are dimensionless and the coefficients are
+dimensionless, so is the combination.
+\paragraph{Derivation or example.}
+Take $v_1=(1,1)$ and $v_2=(1,-1)$. The coefficients
+$\alpha_1=2$ and $\alpha_2=1$ give $v=(3,1)$.
+Collecting the directions as columns of
+$B=\begin{pmatrix}1&1\\1&-1\end{pmatrix}$ and coefficients as
+$\alpha=(2,1)^\top$ expresses the same operation as $v=B\alpha$.
+Restricting coefficients to $|\alpha_1|\le2$ and $|\alpha_2|\le1$
+selects a bounded parallelogram from all possible combinations.
+\paragraph{Why ECDR needs it.}
+A structured perturbation model can represent correlated changes using
+several directions instead of an independent allowance at every input
+coordinate. The coefficient bounds specify how much motion along each
+direction is admitted.
+\paragraph{Conditions and connections.}
+Representability does not establish that a direction is physically
+meaningful, statistically likely, or safe for the classifier. Those are
+separate modeling, empirical, and verification questions. F12 allows all
+coefficients to define a span; a bounded coefficient box gives only a
+subset of that span, which must not be confused with the whole subspace.
+
+\concept{F12}{Linear span: all combinations and the smallest subspace}{F10, F11}
+\paragraph{Foundation and definition.}
+The linear span of vectors is the set of every vector obtainable as a
+linear combination. For directions $v_1,\ldots,v_r\in\R^d$, define
+\[
+ \operatorname{span}\{v_1,\ldots,v_r\}
+ =\left\{\sum_{j=1}^{r}\alpha_jv_j:
+                   \alpha_1,\ldots,\alpha_r\in\R\right\}.
+\]
+The positive integers $r$ and $d$ count supplied directions and ambient
+coordinates. All coefficients $\alpha_j$ are unrestricted real numbers.
+This linear-algebra term differs from a temporal annotation span.
+\paragraph{Symbols and meaning.}
+A subspace is a subset containing the zero vector and closed under
+addition and real scaling. Here $j$ indexes directions; a member of the
+span is a possible direction combination. The word ``linear'' implies
+that the resulting set passes through the origin.
+\paragraph{Derivation or example.}
+For $v_1=(1,2)$, its span is the line
+$\{(a,2a):a\in\R\}$. Adding $v_2=(0,1)$ produces the entire plane:
+an arbitrary $(x,y)\in\R^2$ equals $xv_1+(y-2x)v_2$.
+The span is the \emph{smallest} subspace containing the supplied vectors.
+Proof: zero coefficients give zero; adding combinations adds their
+coefficients; scaling scales the coefficients, so the span is a subspace.
+Any subspace containing the supplied vectors must contain every scaled
+vector and every finite sum of them, hence contains the span.
+\paragraph{Why ECDR needs it.}
+If a matrix $B$ contains learned perturbation directions as columns,
+$B\alpha$ stays in their span. A residual term is needed to represent
+changes outside that subspace; discarding it without evidence can exclude
+real queries from the modeled region.
+\paragraph{Conditions and connections.}
+Dependent directions do not increase span dimension. Bounding
+coefficients changes an unbounded subspace into a restricted region.
+Translating by an anchor creates an affine set. F13--F16 explain these
+distinctions; F19 explains orthogonal residuals.
+
+\concept{F13}{Linear independence and redundant directions}{F11, F12}
+\paragraph{Foundation and definition.}
+Vectors are linearly independent when the only linear combination equal
+to zero uses zero for every coefficient. Otherwise they are dependent.
+Independence is an algebraic property. It does not mean probabilistic
+independence, uncorrelated measurements, or distinct class labels.
+\paragraph{Symbols and meaning.}
+For vectors $v_1,\ldots,v_r\in\R^d$, with integers $r,d\ge1$, and
+coefficients $\alpha_1,\ldots,\alpha_r\in\R$, independence means
+\[
+ \sum_{j=1}^{r}\alpha_jv_j=0
+ \quad\Rightarrow\quad
+ \alpha_1=\cdots=\alpha_r=0.
+\]
+Here $0$ on the left is the $d$-dimensional zero vector, and $j$ indexes
+directions. A nonzero coefficient vector producing zero demonstrates
+redundancy among the directions.
+\paragraph{Derivation or example.}
+The vectors $v_1=(1,2)$ and $v_2=(2,4)$ are dependent because
+$2v_1-v_2=0$. Their span remains one line despite two supplied columns.
+In contrast, $u_1=(1,0)$ and $u_2=(1,1)$ are independent: if
+$a u_1+b u_2=(a+b,b)=(0,0)$, then $b=0$ and $a=0$.
+Independent directions also give unique coefficients for any vector in
+their span. If two coefficient lists represent the same vector,
+subtracting them gives a zero combination; independence forces each
+coefficient difference to vanish.
+\paragraph{Why ECDR needs it.}
+An independent basis prevents ambiguity when coefficients describe a
+structured perturbation. With redundant columns, the same perturbation
+can have several coefficient vectors, so testing one arbitrary encoding
+against coefficient bounds may not settle set membership.
+\paragraph{Conditions and connections.}
+Near-dependence is a numerical conditioning issue even when exact
+independence holds. A tolerance-based rank estimate should therefore be
+reported as a numerical decision. No more than $d$ vectors can be
+independent in $\R^d$. F14 uses independence together with spanning to
+define a basis.
+
+\concept{F14}{Bases, coordinates, and dimension}{F12, F13}
+\paragraph{Foundation and definition.}
+A basis of a vector space is a linearly independent set that spans the
+space. Every vector then has a unique linear-combination representation.
+For a finite-dimensional space, its dimension is the number of elements
+in any basis; equality of basis sizes is a theorem, not the definition
+of independence.
+\paragraph{Symbols and meaning.}
+Let $V\subseteq\R^d$ be a subspace of dimension $r$, where integers
+$1\le r\le d$. Let $b_1,\ldots,b_r\in\R^d$ be a basis and
+$B\in\R^{d\times r}$ the matrix with these vectors as columns.
+The coordinate vector $\alpha\in\R^r$ of $v\in V$ satisfies
+$v=B\alpha$. The ambient dimension $d$ and subspace dimension $r$ have
+different meanings.
+\paragraph{Derivation or example.}
+Take $b_1=(1,1)$ and $b_2=(1,-1)$ as a basis of $\R^2$.
+For $v=(3,1)$, solving
+$\alpha_1+\alpha_2=3$ and $\alpha_1-\alpha_2=1$ gives the unique
+coordinates $\alpha=(2,1)^\top$. Changing the basis changes these
+coordinates without changing $v$. For example, standard-coordinate
+axes represent the same vector by $(3,1)^\top$.
+\paragraph{Why ECDR needs it.}
+A low-dimensional model describes perturbations using $r$ coefficients
+instead of $d$ ambient coordinates. This can express measured structure,
+but dimensionality alone does not establish classifier invariance or
+an efficient online membership algorithm.
+\paragraph{Conditions and connections.}
+A truncated direction matrix spans a subspace rather than the whole
+input space. A residual must account for omitted directions when they
+are allowed. For orthonormal columns, coordinates are $B^\top v$;
+for a general independent basis they are
+$(B^\top B)^{-1}B^\top v$. Using the first formula without
+orthonormality generally gives incorrect coordinates.
+
+\concept{F15}{Matrices as linear maps}{F09, F10, F14}
+\paragraph{Foundation and definition.}
+A map is linear if it preserves vector addition and scalar
+multiplication. A real matrix represents a linear map after input and
+output bases are chosen. Conversely, each linear map between
+finite-dimensional coordinate spaces has a matrix representation.
+\paragraph{Symbols and meaning.}
+Let $A\in\R^{m\times d}$ be a matrix, $x\in\R^d$ an input, and
+$y=Ax\in\R^m$ an output. Positive integers $d$ and $m$ count input
+and output coordinates. Entry $A_{ji}$ multiplies input coordinate
+$x_i$ when forming output coordinate $y_j$:
+\[
+ y_j=\sum_{i=1}^{d}A_{ji}x_i,
+ \qquad j=1,\ldots,m.
+\]
+The transpose $A^\top\in\R^{d\times m}$ exchanges row and column
+indices; it is not generally an inverse.
+\paragraph{Derivation or example.}
+For
+$A=\begin{pmatrix}2&-1\\0&3\end{pmatrix}$ and $x=(1,2)^\top$,
+the output is $(0,6)^\top$. Distributivity proves
+$A(x+z)=Ax+Az$ for any $z\in\R^d$: each row distributes over the
+corresponding scalar sum. Similarly, $A(a x)=a(Ax)$ for any scalar
+$a\in\R$. A map containing a fixed nonzero bias generally fails
+linearity because its output at zero is not zero.
+\paragraph{Why ECDR needs it.}
+A convolution with fixed weights and no bias can be represented as a
+sparse matrix. A final linear head is a small dense matrix. This shared
+language allows coordinate differences and norm bounds to propagate
+through both kinds of layers.
+\paragraph{Conditions and connections.}
+Shape compatibility is necessary for composition and multiplication.
+Different flattening orders require corresponding matrix-column orders.
+Physical units must also match: a coefficient transforms input units
+into output units. F16 adds biases; F21 measures worst-case amplification.
+
+\concept{F16}{Affine maps and translated structure}{F11, F15}
+\paragraph{Foundation and definition.}
+An affine map has the form of a linear map plus a constant vector.
+It preserves affine combinations, whose scalar coefficients sum to one.
+It need not preserve the origin. A translated subspace is an affine set,
+which should not be called a linear subspace unless it contains zero.
+\paragraph{Symbols and meaning.}
+Let $A\in\R^{m\times d}$ be fixed weights,
+$b\in\R^m$ a fixed bias, and $x\in\R^d$ an input. Integers
+$m,d\ge1$ count output and input coordinates. Define
+$f(x)=Ax+b$. For an anchor $x_0\in\R^d$ and perturbation
+$\delta\in\R^d$, the new input is $x_0+\delta$.
+\paragraph{Derivation or example.}
+The difference identity is exact over real numbers:
+\[
+ f(x_0+\delta)-f(x_0)
+ =A(x_0+\delta)+b-(Ax_0+b)=A\delta.
+\]
+Thus a fixed bias affects absolute outputs but cancels from their
+differences. In one dimension, $f(x)=2x+3$ gives
+$f(4)-f(1)=11-5=6=2(4-1)$.
+If $u,v\in\R^d$ and $\lambda\in\R$, then
+$f(\lambda u+(1-\lambda)v)=\lambda f(u)+(1-\lambda)f(v)$,
+because the two coefficients of $b$ sum to one.
+\paragraph{Why ECDR needs it.}
+Class logits and fixed normalization are affine operations. Their
+differences can often be analyzed more tightly than separate absolute
+output intervals. Translating a perturbation domain by an anchor also
+explains precisely where a local certificate applies.
+\paragraph{Conditions and connections.}
+The same $A$ and $b$ must be used at both inputs. Updating running
+normalization statistics or model weights breaks that cancellation.
+ReLU layers make a network piecewise affine; one affine formula applies
+only when its activation conditions are established.
+
+\concept{F17}{Composition and the complete reference function}{F04, F15, F16}
+\paragraph{Foundation and definition.}
+Composition applies one function after another. If the first function's
+outputs lie within the second function's domain, the composition is
+well defined. Writing a pipeline as a composition exposes which changes
+alter the mathematical reference being certified.
+\paragraph{Symbols and meaning.}
+Let $P:\R^{d}\to\R^{d}$ be preprocessing,
+$G:\R^{d}\to\R^{r}$ the feature extractor,
+$L:\R^{r}\to\R^{K}$ the logit head, and
+$D:\R^{K}\to\{1,\ldots,K\}$ the decision rule. The positive
+integers $d,r,K$ count input coordinates, features, and classes.
+Define $h=D\circ L\circ G\circ P$, so
+$h(x)=D(L(G(P(x))))$ for input $x\in\R^d$.
+\paragraph{Derivation or example.}
+In a scalar example, let $P(x)=(x-2)/4$ and $G(u)=\max(0,u)$.
+Then $(G\circ P)(6)=1$, while $(G\circ P)(0)=0$.
+Reversing the order gives $(P\circ G)(0)=-0.5$, which differs from
+zero. Composition is therefore generally noncommutative. It is
+associative when all involved domains fit: grouping stages does not
+change the order of evaluation.
+\paragraph{Why ECDR needs it.}
+A certificate for logits under one channel ordering or normalization is
+not automatically a certificate for a changed pipeline. The reference
+includes preprocessing, inference state, weights, and deterministic tie
+handling, even if only the CNN weights are stored in a checkpoint.
+\paragraph{Conditions and connections.}
+Every stage must receive the shape, units, and coordinate conventions it
+expects. A certificate built in normalized coordinates needs the query
+mapped by the same fixed $P$. F21 shows how amplification bounds
+multiply through composition; nonlinear stages require their own bounds.
+
+\concept{F18}{Inner products and dot products}{F09, F10}
+\paragraph{Foundation and definition.}
+A real inner product is a symmetric bilinear operation producing a
+scalar and satisfying positive definiteness: a vector's product with
+itself is nonnegative and vanishes only at zero. The standard dot
+product on $\R^d$ is one particular inner product.
+\paragraph{Symbols and meaning.}
+For vectors $u,v\in\R^d$, where integer $d\ge1$ counts coordinates,
+write
+\[
+ \langle u,v\rangle=u^\top v=\sum_{i=1}^{d}u_i v_i.
+\]
+The index $i$ selects a coordinate. Symmetry means
+$\langle u,v\rangle=\langle v,u\rangle$; bilinearity means linearity
+in either argument when the other is fixed. A weighted product
+$u^\top Mv$ is an inner product when the matrix
+$M\in\R^{d\times d}$ is symmetric positive definite.
+\paragraph{Derivation or example.}
+With $u=(1,2)$ and $v=(3,-1)$, their dot product is $3-2=1$.
+Also $u^\top u=5$. For a head row difference $q=(2,-1)$ and feature
+change $\delta=(0.1,0.3)$, the scalar change is
+$q^\top\delta=0.2-0.3=-0.1$. Opposing coordinate contributions can
+partly cancel; their separate absolute magnitudes would sum to $0.5$.
+\paragraph{Why ECDR needs it.}
+A class-pair margin is a directional measurement of a feature vector.
+Keeping that direction can preserve cancellations that separate logit
+bounds lose. Inner products also define orthogonality, projections, and
+the usual geometry of learned directions.
+\paragraph{Conditions and connections.}
+The standard dot product implicitly chooses a coordinate scale. Adding
+products of physically different units needs a declared normalization
+or weighting interpretation. F19 develops orthogonality; F22 derives the
+dual-norm inequality that bounds a directional change by its magnitude.
+
+\concept{F19}{Orthogonality and residual decomposition}{F18}
+\paragraph{Foundation and definition.}
+Two vectors are orthogonal when their inner product is zero. This
+algebraic relation means a right angle for nonzero vectors under the
+chosen geometry. Orthonormal vectors are pairwise orthogonal and each
+has unit Euclidean length. Neither condition is equivalent to
+probabilistic independence.
+\paragraph{Symbols and meaning.}
+Let $U\in\R^{d\times r}$ have orthonormal columns, with integers
+$1\le r\le d$. Thus $U^\top U=I_r$, where $I_r$ is the
+$r\times r$ identity matrix. For a vector $\delta\in\R^d$, define
+its coefficient vector $\alpha=U^\top\delta\in\R^r$ and residual
+$e=\delta-U\alpha\in\R^d$.
+\paragraph{Derivation or example.}
+Multiplying the residual by $U^\top$ gives
+\[
+ U^\top e=U^\top\delta-U^\top U\alpha
+ =\alpha-\alpha=0.
+\]
+The residual is therefore orthogonal to every supplied direction, and
+$\delta=U\alpha+e$. For $U=(1,0)^\top$ and $\delta=(3,4)^\top$,
+the projected part is $(3,0)^\top$ and the residual is $(0,4)^\top$.
+Expanding the dot product gives Pythagoras:
+$\norm{\delta}_2^2=\norm{U\alpha}_2^2+\norm{e}_2^2=9+16=25$,
+because the cross term vanishes.
+\paragraph{Why ECDR needs it.}
+A direction-based domain can distinguish explained motion from
+unexplained residual motion. Bounding the residual prevents a
+low-dimensional approximation from silently asserting that all real
+changes lie exactly in the learned subspace.
+\paragraph{Conditions and connections.}
+Column scaling generally destroys orthonormality, so $U^\top\delta$
+cannot then be reused as a coefficient formula. Orthogonality is relative
+to an inner product, which must match normalization and membership
+calculations. C11 explains projection; C12 explains how PCA estimates
+directions from finite data.
+
+\concept{F20}{Norms and the meanings of vector size}{F10, F18}
+\paragraph{Foundation and definition.}
+A norm assigns a nonnegative size to each vector. Its axioms are
+definiteness, absolute homogeneity, and the triangle inequality:
+$\norm{v}=0$ exactly at $v=0$,
+$\norm{a v}=|a|\norm{v}$, and
+$\norm{u+v}\le\norm{u}+\norm{v}$.
+Here $u,v$ are vectors in one real vector space and $a\in\R$ is a scalar.
+\paragraph{Symbols and meaning.}
+For $v\in\R^d$, with integer $d\ge1$ and coordinate index
+$i\in\{1,\ldots,d\}$, common choices are
+\[
+ \norm{v}_1=\sum_{i=1}^d|v_i|,\qquad
+ \norm{v}_2=\sqrt{\sum_{i=1}^d v_i^2},\qquad
+ \norm{v}_\infty=\max_{1\le i\le d}|v_i|.
+\]
+The subscripts specify different notions of size; $\infty$ names the
+maximum-coordinate norm, not an infinite vector size.
+\paragraph{Derivation or example.}
+For $v=(3,-4)$, these sizes are $7$, $5$, and $4$. More generally,
+\[
+ \norm{v}_\infty\le\norm{v}_2\le\norm{v}_1,
+ \qquad \norm{v}_2\le\sqrt d\,\norm{v}_\infty.
+\]
+For example, the last inequality follows by bounding each of the $d$
+squared coordinates by $\norm{v}_\infty^2$ and taking square roots.
+Thus changing the norm while keeping the same numerical radius changes
+the admitted perturbations.
+\paragraph{Why ECDR needs it.}
+Norms define perturbation budgets, Lipschitz changes, and residual size.
+A maximum-coordinate budget constrains every coordinate, whereas an
+Euclidean budget constrains total squared change.
+\paragraph{Conditions and connections.}
+Norm values depend on coordinate scaling. Raw acceleration and angular
+velocity should not be treated as physically commensurate just because
+their numerical entries share an array. F22 pairs norms with their duals;
+F23 turns a norm into a distance and a ball.
+
+\concept{F21}{Induced operator norms and composition bounds}{F15, F20}
+\paragraph{Foundation and definition.}
+An induced operator norm measures the largest amplification of vector
+size by a linear map. For compatible input and output norms, define
+\[
+ \norm{A}_{p\to q}
+ =\sup_{v\ne0}\frac{\norm{Av}_q}{\norm{v}_p}.
+\]
+Here $A\in\R^{m\times d}$, $v\in\R^d$, integers $m,d\ge1$
+count coordinates, and subscripts $p,q$ name the chosen norms.
+\paragraph{Symbols and meaning.}
+The supremum is the least upper bound over all nonzero input directions.
+The notation $\norm{A}_2$ usually means $\norm{A}_{2\to2}$, not
+the square root of the sum of every squared matrix entry. The latter is
+the Frobenius norm and is a different quantity.
+\paragraph{Derivation or example.}
+The definition gives $\norm{Av}_q\le\norm{A}_{p\to q}\norm{v}_p$.
+For another matrix $B\in\R^{d\times r}$, with integer $r\ge1$ and
+input norm indexed by $t$, applying this inequality twice yields
+\[
+ \norm{AB}_{t\to q}
+ \le\norm{A}_{p\to q}\norm{B}_{t\to p}.
+\]
+This is submultiplicativity. For
+$A=\operatorname{diag}(2,-3)$, the Euclidean induced norm is $3$:
+each squared output is bounded by $9$ times the squared input, and
+input $(0,1)$ attains equality. Under maximum-coordinate norms,
+$\norm{A}_{\infty\to\infty}=\max_j\sum_i|A_{ji}|$.
+\paragraph{Why ECDR needs it.}
+Layerwise amplification bounds can be multiplied to obtain a network
+bound. This is simple and sound when every layer constant is valid,
+although successive worst-case directions may not be jointly achievable.
+\paragraph{Conditions and connections.}
+The intermediate norms and dimensions must match. A computed spectral
+estimate can underestimate the true norm unless certified with an error
+bound. Biases cancel from affine differences; nonlinear stages need
+separate Lipschitz arguments.
+
+\concept{F22}{H\"older's inequality and dual norms}{F18, F20}
+\paragraph{Foundation and definition.}
+The dual norm measures the largest dot product a direction can produce
+against a unit-norm vector. For a norm $\norm{\cdot}$ on $\R^d$,
+define $\norm{q}_*=\sup_{\norm{v}\le1}|q^\top v|$.
+Here integer $d\ge1$ counts coordinates, while $q,v\in\R^d$ are
+a direction and a test vector. The star names the dual norm.
+\paragraph{Symbols and meaning.}
+For $L_p$ norms with $1\le p\le\infty$, the dual is $L_{p^*}$,
+where $1/p+1/p^*=1$ and $1/\infty=0$. Thus $L_1$ pairs with
+$L_\infty$, $L_2$ pairs with itself, and $L_\infty$ pairs with $L_1$.
+The vector $\delta\in\R^d$ below denotes a perturbation.
+\paragraph{Derivation or example.}
+If $\delta\ne0$, then $v=\delta/\norm{\delta}$ is a unit vector.
+Substitution into the dual-norm definition gives
+\[
+ |q^\top\delta|\le\norm{q}_*\norm{\delta}.
+\]
+At $\delta=0$ the result follows directly. This is H\"older's
+inequality in dual-norm form. If $q=(2,-1)$ and
+$\norm{\delta}_\infty\le0.1$, the largest absolute directional
+change is $(|2|+|-1|)0.1=0.3$, attained at
+$\delta=(0.1,-0.1)$ or its negative. Using $\norm{q}_\infty$
+instead would incorrectly claim the upper bound $0.2$.
+\paragraph{Why ECDR needs it.}
+A margin direction and a perturbation budget become a scalar bound on
+possible margin loss. The dual pairing determines the correct constant;
+choosing two matching-looking subscripts can be unsound.
+\paragraph{Conditions and connections.}
+Equality is possible for the complete norm ball. Additional structural
+constraints can reduce the attainable loss, so the same inequality may
+be conservative. Nonuniform coordinate budgets lead to a weighted
+absolute-value sum rather than one common radius.
+
+\concept{F23}{Metrics, balls, and neighborhoods}{F03, F20}
+\paragraph{Foundation and definition.}
+A metric is a distance function that is nonnegative, vanishes exactly
+when its two arguments agree, is symmetric, and satisfies the triangle
+inequality. Every norm supplies a metric by taking the norm of a
+difference. A ball is the set of points within a specified distance
+from one center.
+\paragraph{Symbols and meaning.}
+Let $x,y,z\in\R^d$, with integer $d\ge1$ counting coordinates.
+Write $d_p(x,y)=\norm{x-y}_p$ for distance under norm $L_p$.
+For center $x_0\in\R^d$ and radius $\varepsilon>0$, define
+\[
+ B_p(x_0,\varepsilon)=\{x:d_p(x,x_0)<\varepsilon\},\qquad
+ \overline B_p(x_0,\varepsilon)=\{x:d_p(x,x_0)\le\varepsilon\}.
+\]
+The first is open and the second is closed. A neighborhood of $x_0$
+contains some open ball around $x_0$.
+\paragraph{Derivation or example.}
+For $x_0=(0,0)$ and $\varepsilon=1$, the Euclidean ball is a disk;
+the maximum-coordinate ball is a square. The point $(1,0)$ is in both
+closed balls but neither open ball. The triangle inequality gives
+$d_p(x,z)\le d_p(x,y)+d_p(y,z)$, so every point within radius
+$r$ of $y$ lies within radius $r+d_p(y,x_0)$ of anchor $x_0$.
+Here $r\ge0$ is another radius, measured in the same coordinate units.
+\paragraph{Why ECDR needs it.}
+Local certification needs an exact meaning of ``near the anchor.''
+Triangle inequalities can transfer distance allowances, but the enlarged
+set must still fit inside a region with a valid decision proof.
+\paragraph{Conditions and connections.}
+Proximity alone does not imply equal class labels. A decision boundary
+can pass arbitrarily close to an input. The norm, normalization, and
+boundary convention belong to the certificate's contract. F26 formalizes
+local change; F28 connects continuity with positive margin.
+
+\concept{F24}{Intervals, Cartesian products, and boxes}{F03, F06}
+\paragraph{Foundation and definition.}
+A closed real interval includes every scalar between its two endpoints,
+including the endpoints. A Cartesian product collects tuples whose
+coordinates belong to specified sets. A box is the Cartesian product
+of coordinate intervals. It explicitly permits every listed coordinate
+combination, whether or not those combinations appeared in a dataset.
+\paragraph{Symbols and meaning.}
+Let $d\ge1$ be an integer and $\ell,u\in\R^d$ be finite lower and
+upper endpoints satisfying $\ell_i\le u_i$ for indices
+$i=1,\ldots,d$. The box is
+\[
+ [\ell,u]=\prod_{i=1}^{d}[\ell_i,u_i]
+ =\{x\in\R^d:\ell_i\le x_i\le u_i\text{ for every }i\}.
+\]
+An equivalent anchor representation is $x=x_0+\delta$ with
+$|\delta_i|\le b_i$, where $x_0=(\ell+u)/2$ and
+$b=(u-\ell)/2\in\R^d$ has nonnegative entries.
+\paragraph{Derivation or example.}
+The intervals $[-1,1]$ and $[2,4]$ form a rectangular box in $\R^2$.
+For $f(x)=3x_1-2x_2$, minimizing each independent coordinate term
+gives $\min f=3(-1)-2(4)=-11$, attained at $(-1,4)$.
+The negative coefficient chooses the upper endpoint, illustrating why
+order reversal matters in an affine lower bound.
+\paragraph{Why ECDR needs it.}
+Boxes support simple coordinatewise membership and efficient interval
+propagation. They can overapproximate correlated perturbations by
+admitting combinations the data seldom produces; verification must
+still cover all admitted combinations.
+\paragraph{Conditions and connections.}
+Zero-width intervals are legitimate and fix coordinates. Positive widths
+are needed when a later argument assumes independent variability in
+every coordinate. A box is nonempty under the endpoint inequalities;
+reversing an endpoint pair makes its product empty.
+
+\concept{F25}{Infimum and supremum versus minimum and maximum}{F06, F07}
+\paragraph{Foundation and definition.}
+The infimum is the greatest lower bound of a real-valued set, while the
+supremum is its least upper bound. A minimum or maximum additionally
+must be attained by a member. These definitions separate a best bound
+from an actual optimizing input.
+\paragraph{Symbols and meaning.}
+Let $f:\mathcal S\to\R$ be a scalar function on a nonempty set
+$\mathcal S$. Write
+$\inf_{x\in\mathcal S}f(x)$ for the infimum of its output set.
+A point $x_*\in\mathcal S$ is a minimizer when
+$f(x_*)\le f(x)$ for all $x\in\mathcal S$; its value is
+$\min_{x\in\mathcal S}f(x)$. The star identifies a candidate
+optimizer and does not denote multiplication.
+\paragraph{Derivation or example.}
+For $f(x)=x$ on $\mathcal S=(0,1)$, the infimum is $0$ but no
+minimum exists. Every permitted input has a positive output, yet no
+single positive lower bound works throughout the interval. On
+$[0,1]$, the minimum exists and equals zero at $x_*=0$.
+For a valid enclosure $L\le f(x)$ for every permitted $x$, one has
+\[
+ L\le\inf_{x\in\mathcal S}f(x).
+\]
+Here $L\in\R$ is the verifier's lower bound, not necessarily the
+exact infimum and not necessarily an attained value.
+\paragraph{Why ECDR needs it.}
+A positive sound lower bound proves all margins are positive. A loose
+nonpositive bound does not identify a violating input. Separating the
+bound, true infimum, and optimizer prevents that logical mistake.
+\paragraph{Conditions and connections.}
+For unbounded-below output sets the infimum may be $-\infty$ in the
+extended reals. Empty domains need a separately declared convention and
+are excluded here. F27--F28 give sufficient conditions for finite,
+attained extrema.
+
+\concept{F26}{Continuity and the epsilon--delta definition}{F23}
+\paragraph{Foundation and definition.}
+Continuity means that a sufficiently small input change produces any
+prescribed small output change. It is a local property of a function,
+defined through distances. It does not mean that the function is
+constant nearby or that one global rate of change has been proved.
+\paragraph{Symbols and meaning.}
+Let $f:\mathcal S\subseteq\R^d\to\R^m$ be a function, and let
+$x_0\in\mathcal S$. Positive integers $d,m$ count input and output
+coordinates. Continuity at $x_0$ means
+\[
+ \forall\varepsilon>0\;\exists\delta>0\;\forall x\in\mathcal S:
+ \norm{x-x_0}_2<\delta
+ \Rightarrow\norm{f(x)-f(x_0)}_2<\varepsilon.
+\]
+The positive scalar $\varepsilon$ is an output tolerance and $\delta$
+is an input tolerance, each in its respective coordinate units.
+\paragraph{Derivation or example.}
+For the scalar function $f(x)=2x+1$, choose
+$\delta=\varepsilon/2$. Then
+$|f(x)-f(x_0)|=2|x-x_0|<\varepsilon$ whenever
+$|x-x_0|<\delta$. If a continuous scalar margin
+$g:\mathcal S\to\R$ satisfies $g(x_0)>0$, continuity with output
+tolerance $g(x_0)/2$ supplies some neighborhood where
+$g(x)>g(x_0)/2>0$. This proves local existence of
+a safe neighborhood, without computing a usable radius.
+\paragraph{Why ECDR needs it.}
+Affine layers and ReLU are continuous; finite compositions therefore
+produce continuous logits. A strictly positive winning margin at an
+anchor supports a local invariance argument. Quantitative bounds are
+needed to turn that existence statement into an executable gate.
+\paragraph{Conditions and connections.}
+The discrete class decision can be discontinuous at ties even when
+logits are continuous. Continuity on a noncompact region does not alone
+give a uniform positive margin. F28 adds the relevant compactness and
+strict-positivity conditions.
+
+\concept{F27}{Compactness in finite-dimensional Euclidean spaces}{F23, F24, F26}
+\paragraph{Foundation and definition.}
+A set is compact if every collection of open sets covering it has a
+finite subcollection that still covers it. In finite-dimensional
+Euclidean space, the Heine--Borel theorem says compactness is equivalent
+to being closed and bounded. This equivalence is a theorem specific to
+the setting, rather than a universal definition for arbitrary spaces.
+\paragraph{Symbols and meaning.}
+Let $\mathcal S\subseteq\R^d$, where integer $d\ge1$ counts
+coordinates. Boundedness means there is a finite scalar $R\ge0$ with
+$\norm{x}_2\le R$ for every $x\in\mathcal S$. Closedness means
+that limits of convergent sequences of members remain in $\mathcal S$.
+An open cover is a family of open sets whose union contains $\mathcal S$.
+\paragraph{Derivation or example.}
+A finite-endpoint box $[\ell,u]$ is closed and bounded, hence compact.
+For $\ell,u\in\R^d$ with $\ell_i\le u_i$, boundedness follows from
+$|x_i|\le\max(|\ell_i|,|u_i|)$ for every coordinate $i$.
+The interval $(0,1)$ is bounded but not closed: the sequence
+$x_n=1/(n+1)$, for positive integers $n$, lies in $(0,1)$ and converges to zero, outside the
+interval. The line $\R$ is closed but unbounded. Neither set is compact.
+\paragraph{Why ECDR needs it.}
+Bounded closed perturbation domains make worst-case margin optimization
+well behaved when margins are continuous. Compactness is the bridge
+from infinitely many inputs to existence of an attained worst case;
+it does not replace the computation of that worst case.
+\paragraph{Conditions and connections.}
+The empty set is compact, but useful margin statements should separately
+require a nonempty domain. Closed and bounded is insufficient in
+general infinite-dimensional normed spaces. ECDR's finite tensor inputs
+fit the finite-dimensional hypothesis. F28 states the resulting extrema
+and uniform-positivity theorem precisely.
+
+\concept{F28}{Attained extrema and a uniform positive margin}{F01, F25, F26, F27}
+\paragraph{Foundation and definition.}
+The extreme-value theorem states that a continuous real-valued function
+on a nonempty compact set attains a finite minimum and maximum. A useful
+consequence is that a continuous function which is strictly positive
+everywhere on such a set has one uniform positive lower bound.
+\paragraph{Symbols and meaning.}
+Let $\mathcal S\subseteq\R^d$ be nonempty and compact. Let
+$z_j:\mathcal S\to\R$ be continuous logit functions for class
+indices $j=1,\ldots,K$, with integers $d\ge1$ and $K\ge2$.
+Fix class $c$ and define each competing margin
+$m_{cj}(x)=z_c(x)-z_j(x)$ for $j\ne c$.
+\paragraph{Derivation or example.}
+Assume $m_{cj}(x)>0$ for every $x\in\mathcal S$ and competitor
+$j\ne c$. Each margin attains its minimum at some
+$x_j\in\mathcal S$, so $\eta_j=m_{cj}(x_j)>0$. There are only
+$K-1$ competitors; therefore
+\[
+ \eta=\min_{j\ne c}\eta_j>0,
+ \qquad m_{cj}(x)\ge\eta
+ \quad\text{for every }x\in\mathcal S, j\ne c.
+\]
+For $m(x)=2-x$ on $[0,1]$, the minimum is $1$. Dropping closedness
+can destroy the conclusion: $m(x)=x$ is positive on $(0,1)$ but has
+infimum zero.
+\paragraph{Why ECDR needs it.}
+This conditional theorem explains why strict decision dominance on a
+closed bounded region has a positive clearance. A verifier attempts to
+compute a sound usable lower bound; the existence theorem alone does
+not give that numerical result or an efficient algorithm.
+\paragraph{Conditions and connections.}
+Tie-consistent decision constancy is weaker than strict dominance: a
+chosen class may win ties while its margin equals zero. Neither
+empirical agreement nor an unproved continuity assumption can replace
+the theorem's hypotheses. A valid finite-precision certificate needs
+additional arithmetic-error control.
+
+\concept{F29}{Probability spaces and probability axioms}{F03, F09}
+\paragraph{Foundation and definition.}
+A probability model consists of a sample space, a collection of
+measurable events, and a probability measure. The probability axioms
+are nonnegativity, normalization of the whole space to one, and
+countable additivity for pairwise disjoint events. They describe a
+mathematical model; they do not assert that observed windows are
+independent draws from that model.
+\paragraph{Symbols and meaning.}
+Write $(\Omega,\mathcal F,P)$ for the model: $\Omega$ contains
+possible outcomes, $\mathcal F$ is a sigma-algebra of events closed
+under complements and countable unions, and $P:\mathcal F\to[0,1]$
+assigns probabilities. For pairwise disjoint events
+$A_1,A_2,\ldots\in\mathcal F$,
+\[
+ P(\Omega)=1,\qquad
+ P\!\left(\bigcup_{i=1}^{\infty}A_i\right)
+ =\sum_{i=1}^{\infty}P(A_i).
+\]
+The integer $i$ indexes events, not time samples unless defined so.
+\paragraph{Derivation or example.}
+An event $A$ and its complement $A^c=\Omega\setminus A$ partition
+the sample space. Additivity gives $P(A^c)=1-P(A)$.
+For a uniformly selected member of a finite dataset of $N\ge1$
+windows, each dataset index has probability $1/N$. If $M$ indices pass
+a gate, its probability under this particular empirical model is $M/N$.
+This construction says nothing by itself about future recordings.
+\paragraph{Why ECDR needs it.}
+Expected cost and reuse rates refer to a distribution of queries.
+Different choices, such as uniform windows or uniform subjects, define
+different probability models and can produce different reported rates.
+\paragraph{Conditions and connections.}
+Distributional coverage is not a universal safety certificate.
+Probability one may still allow a nonempty zero-probability exception
+set. F30 explains conditioning and independence; F31 defines expected
+cost after a probability model has been specified.
+
+\concept{F30}{Conditional probability and independence}{F29}
+\paragraph{Foundation and definition.}
+Conditioning restricts a probability calculation to an event that has
+occurred. For events $A$ and $B$ with $P(B)>0$, define
+$P(A\mid B)=P(A\cap B)/P(B)$. Events are independent when
+$P(A\cap B)=P(A)P(B)$. Independence is an additional property of
+the model; overlapping windows do not acquire it by being placed in
+different rows of an array.
+\paragraph{Symbols and meaning.}
+Let $A$ be the event ``a query lies in an admitted domain'' and $B$ the
+event ``the current anchor has a successful valid certificate.''
+The operator $P$ is the chosen query-distribution probability, and
+$A\cap B$ means both events occur. These events describe distinct
+gates and can be strongly dependent.
+\paragraph{Derivation or example.}
+If $P(B)=0.4$ and $P(A\mid B)=0.6$, then
+\[
+ P(A\cap B)=P(A\mid B)P(B)=0.24.
+\]
+Substituting an unconditional estimate $P(A)=0.7$ would give $0.28$,
+which is unjustified unless independence or another valid argument is
+available. For a finite sample, a conditional rate uses only the
+eligible denominator: $60$ accepted queries among $100$ queries with
+certified anchors gives $0.6$, even if $250$ total queries were seen.
+\paragraph{Why ECDR needs it.}
+Certified reuse requires all applicable gates together. Multiplying
+independently reported coverage and certification percentages can give
+the wrong total reuse rate when their denominators or conditions differ.
+\paragraph{Conditions and connections.}
+The elementary conditional formula is undefined when $P(B)=0$.
+More advanced conditional distributions require additional machinery
+and are not supplied by writing a ratio with zero denominator.
+Statistical independence differs from orthogonality and zero
+correlation. F32--F33 explain empirical weights and covariance.
+
+\concept{F31}{Expectation and the linearity of expected cost}{F09, F29}
+\paragraph{Foundation and definition.}
+A random variable is a measurable numerical function of an outcome.
+Its expectation is a probability-weighted average, formalized as an
+integral. For a finite discrete model, this reduces to a weighted sum.
+Linearity of expectation does not require independent variables, but
+finite ordinary values require suitable integrability.
+\paragraph{Symbols and meaning.}
+Let $C:\Omega\to\R$ be a random cost measured in microseconds.
+For possible costs $c_i$ and probabilities $p_i\ge0$, indexed by
+$i=1,\ldots,n$, with integer $n\ge1$ and $\sum_i p_i=1$, define
+$\E[C]=\sum_i p_i c_i$. Integrability means
+$\E[|C|]<\infty$. The symbol $\E$ refers to the declared probability
+model, not an automatic average over an unspecified benchmark.
+\paragraph{Derivation or example.}
+Let $I$ indicate reuse, so $I=1$ on reuse and $I=0$ otherwise, with
+$P(I=1)=r$. Suppose every query pays fixed gate cost $g$ and a miss
+pays fixed forward cost $f$, both in microseconds. Then
+\[
+ C=g+(1-I)f,\qquad \E[C]=g+(1-r)f.
+\]
+For $g=10$, $f=100$, and $r=0.7$, expected query cost is $40$.
+If per-query build cost $B$ is random and integrable, the expectation
+becomes $40+\E[B]$. These are hypothetical numbers, not measurements.
+\paragraph{Why ECDR needs it.}
+Saving forward calls does not establish positive net savings. Gate,
+build, failure, and fallback costs must appear in the same expected
+cost calculation, with their actual conditional behavior when variable.
+\paragraph{Conditions and connections.}
+Medians and high quantiles cannot generally replace expectations in
+this identity. Unbounded nonintegrable variables require extended-real
+care. Correlation between costs does not break finite-sum linearity;
+it does affect variance and uncertainty estimates.
+
+\concept{F32}{Empirical means, variances, and weighting}{F09, F31}
+\paragraph{Foundation and definition.}
+An empirical mean summarizes observed numbers using declared weights.
+An empirical population variance measures average squared deviation
+under those same weights. These are descriptive definitions. Calling a
+variance estimator unbiased requires a sampling model and additional
+assumptions, commonly independent identically distributed observations.
+\paragraph{Symbols and meaning.}
+Let $x_1,\ldots,x_n\in\R$ be measurements, with integer $n\ge1$,
+and let $w_i\ge0$ satisfy $\sum_{i=1}^{n}w_i=1$. Define
+\[
+ \bar x=\sum_{i=1}^{n}w_i x_i,
+ \qquad v=\sum_{i=1}^{n}w_i(x_i-\bar x)^2.
+\]
+The mean $\bar x$ has the measurements' units; variance $v$ has squared
+units. Equal weighting uses $w_i=1/n$. Standard deviation is $\sqrt v$.
+\paragraph{Derivation or example.}
+For equal-weight values $(1,3)$, the mean is $2$ and population
+variance is $1$. A recording with one value $0$ and another recording
+with nine values $10$ have pooled-sample mean $9$, but an equal-recording
+mean of their means is $5$. Both are correct for different weights.
+For equal-weight data with $n>1$, the statistic
+$s^2=\sum_i(x_i-\bar x)^2/(n-1)$ is a different quantity from $v$.
+Under the usual independent identical finite-variance sampling model,
+$s^2$ estimates population variance without bias.
+\paragraph{Why ECDR needs it.}
+Pooling windows weights long recordings more heavily, and overlapping
+windows count some raw samples repeatedly. Training normalization and
+reported averages must state whether they weight samples, windows,
+recordings, or subjects.
+\paragraph{Conditions and connections.}
+Descriptive means remain defined for dependent windows; ordinary
+independent-sample uncertainty formulas may fail. F33 requires a
+consistent weighting convention when reporting covariance or correlation.
+
+\concept{F33}{Covariance and Pearson correlation}{F18, F30, F32}
+\paragraph{Foundation and definition.}
+Covariance measures whether paired variables deviate in the same
+direction from their means. Pearson correlation divides covariance by
+both standard deviations to obtain a dimensionless measure of linear
+association. It is undefined when either variance is zero; assigning
+zero in that case is a software policy, not the mathematical definition.
+\paragraph{Symbols and meaning.}
+Let $(x_i,y_i)$, for $i=1,\ldots,n$, be paired real measurements with
+integer $n\ge1$ and normalized nonnegative weights $w_i$. Let
+$\bar x,\bar y$ be their weighted means, and let $v_x,v_y$ be their
+weighted population variances. Define
+\[
+ c_{xy}=\sum_i w_i(x_i-\bar x)(y_i-\bar y),
+ \qquad \rho=\frac{c_{xy}}{\sqrt{v_xv_y}}
+ \quad\text{when }v_xv_y>0.
+\]
+Covariance has the product of the two measurement units; correlation
+$\rho$ has no units.
+\paragraph{Derivation or example.}
+For equally weighted pairs $(1,2)$ and $(3,6)$,
+$\bar x=2$, $\bar y=4$, $v_x=1$, $v_y=4$, and $c_{xy}=2$,
+so $\rho=1$. Nonetheless, the vectors $(1,3)$ and $(2,6)$ are
+different. Zero covariance need not imply independence: for a uniformly
+distributed scalar $X$ on $[-1,1]$, $Y=X^2$ is determined by $X$,
+yet symmetry gives zero covariance.
+\paragraph{Why ECDR needs it.}
+Lag-one raw correlation, lag-64 correlation, within-window shape
+correlation, and correlation of window means concern different paired
+objects. Their values answer different questions and cannot substitute
+for a perturbation norm or decision certificate.
+\paragraph{Conditions and connections.}
+Specify pair construction, lag, weighting, and treatment of constant or
+invalid segments. High correlation can coexist with large absolute
+differences because scaling and offsets affect distance differently.
+
+\concept{F34}{Quantiles and empirical distribution functions}{F06, F29, F32}
+\paragraph{Foundation and definition.}
+A quantile locates a probability threshold in an ordered distribution.
+For a finite dataset, the empirical cumulative distribution function
+counts how many values lie at or below each threshold. Several
+interpolation conventions exist; choosing one is part of a reproducible
+analysis and should not be confused with a theorem about future data.
+\paragraph{Symbols and meaning.}
+For real observations $a_1,\ldots,a_n$ with integer $n\ge1$, define
+\[
+ F_n(t)=\frac1n\sum_{i=1}^{n}\mathbf1\{a_i\le t\},
+ \qquad q_p=\inf\{t\in\R:F_n(t)\ge p\},\quad 0<p\le1.
+\]
+The scalar $t$ is a threshold; $p$ is a probability level; the indicator
+$\mathbf1$ equals one when its condition holds and zero otherwise.
+The quantile $q_p$ uses the inverse empirical-CDF convention.
+\paragraph{Derivation or example.}
+For sorted observations $(1,2,4,8)$, this convention gives
+$q_{0.75}=4$. A coordinate budget can use
+$a_i=|\delta_{ij}|$, where $\delta_{ij}$ is coordinate $j$ of
+observed perturbation $i$. Even if every coordinate has $90\%$
+marginal coverage, their joint box coverage need not be $90\%$.
+For two coordinates, if their $10\%$ failure events are disjoint,
+joint success is $80\%$; if independent, it is $81\%$.
+\paragraph{Why ECDR needs it.}
+Quantiles provide empirically motivated domain budgets. Actual joint
+membership must be measured or bounded separately, and decision safety
+still requires a whole-domain proof. A large observed coverage value
+does not supply that proof.
+\paragraph{Conditions and connections.}
+Budgets fitted on training data need a stated fitting population and
+evaluation split. Dependence, finite-sample uncertainty, distribution
+shift, and quantile interpolation affect interpretation. Quantiles of
+raw and normalized coordinates are not interchangeable.
+
+
+

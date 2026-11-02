@@ -1,0 +1,1388 @@
+PHÂN TÍCH MÔ HÌNH VÀ ĐIỀU KIỆN CHỨNG MINH
+
+
+Bóc tách mô hình CNN
+trong nghiên cứu ECDR
+
+Từ chuỗi cảm biến, convolution và receptive field
+đến decision margin, reuse và whole-domain certificate
+
+
+Đối tượng chính CNN lý thuyết Conv1D valid–ReLU–GAP–affine; classifier K lớp, ví dụ
+                HAPT đầy đủ dùng K = 12.
+Ví dụ kiến trúc Input 6 × 128, channels 6 → 32 → 64 → 64, kernels 5, 3, 3, stride 1, dilation
+                1, có bias.
+Đầu ra tài liệu Định nghĩa từng phép toán, tính shape/parameters/MAC/memory, chứng
+                minh shift và margin identities, ví dụ số và giới hạn.
+Tình trạng bằng Kiến trúc phân tích được chỉ định; số học là phép tính lý thuyết. Không
+chứng           gán accuracy hay latency đã đo cho CNN K = 12.
+Nguồn liên kết  ECDR_Weeks_1_2_3_Theory.tex và ECDR_Mathematics_Explained.tex trong cùng
+                thư mục.
+
+
+
+
+Câu hỏi xuyên suốt. CNN nhìn thấy gì trong cửa sổ cảm biến, thay đổi đầu vào đi qua từng
+layer ra sao, và cần điều kiện nào để thay một lần forward bằng quyết định đã được chứng
+nhận? Tài liệu diễn giải các phép toán nền tảng và suy ra hệ quả cho ECDR; không tuyên bố
+convolution, GAP hay neural verification là các phát minh mới của nghiên cứu này.
+ECDR | Bóc tách mô hình CNN                                                     Tài liệu đồng hành Week 1–3
+
+
+Phạm vi và cách đọc
+
+Đọc CNN theo năm lớp ý nghĩa: dữ liệu vật lý, tensor, phép biến đổi, quyết định, và bằng chứng
+reuse. Một tensor đúng shape chưa chắc có đúng ngữ nghĩa; một logit lớn chưa phải bảo đảm
+độ chính xác; một activation dùng lại được chưa đủ để quyết định giữ nguyên. Mỗi kết luận
+dưới đây được gắn với đúng tầng đó.
+Mô hình trung tâm là đối tượng lý thuyết mới đã dùng trong báo cáo Week 1–3. Checkpoint
+SmallCNN1D lịch sử có BatchNorm, MaxPool và Flatten–MLP được đối chiếu riêng ở Phụ lục A.
+Phân biệt này cần thiết vì công thức exact GAP delta phụ thuộc trực tiếp kiến trúc.
+Các chứng minh mặc định trên số thực với weights cố định và input hữu hạn. Kết luận về
+float32, runtime, coverage hoặc accuracy đòi các điều kiện bổ sung được nêu riêng. Ký hiệu
+s chỉ window shift; aℓ chỉ convolution stride, để không trộn hai đại lượng.
+
+
+Mục lục
+Phạm vi và cách đọc                                                                                            1
+
+1 CNN là gì và vì sao phù hợp để đặt bài toán cảm biến?                                                        3
+  1.1 Đối tượng học là quy luật trên các đoạn thời gian . . . . . . . . . . . . . . . . . . . . . . .          3
+  1.2 Ba khái niệm không thể gộp thành một . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         3
+
+2 Input contract: từ sáu tín hiệu đến tensor                                                                   3
+  2.1 Sample, window và batch có vai trò riêng . . . . . . . . . . . . . . . . . . . . . . . . . . . .         3
+  2.2 Raw input và normalized input là hai hệ tọa độ . . . . . . . . . . . . . . . . . . . . . . . . .         4
+  2.3 Khi nào preprocessing giữ quan hệ overlap? . . . . . . . . . . . . . . . . . . . . . . . . . .           4
+
+3 Bóc tách một Conv1D bằng công thức đầy đủ                                                                    4
+  3.1 Cross-correlation và shape tổng quát . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       4
+  3.2 Stride, dilation và groups thay cái gì? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    5
+  3.3 Tính một output và hiểu weight sharing . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         5
+
+4 ReLU và cấu trúc affine từng miền                                                                            5
+  4.1 Phép phi tuyến pointwise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     5
+  4.2 ReLU không mở rộng khoảng cách theo từng norm chuẩn . . . . . . . . . . . . . . . . . .                  6
+
+5 GAP, affine head và ý nghĩa quyết định                                                                       6
+  5.1 GAP giảm trục thời gian, giữ trục features . . . . . . . . . . . . . . . . . . . . . . . . . . . .       6
+  5.2 Affine logits và pairwise margin . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     7
+  5.3 Softmax không thay argmax trong số thực . . . . . . . . . . . . . . . . . . . . . . . . . . . .          7
+
+6 Kiến trúc chính: inventory từng layer                                                                        7
+  6.1 Cấu hình chuyên biệt được phân tích . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        7
+  6.2 Tính output length theo từng bước . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      8
+
+7 Tính parameters, MAC, FLOP và các phép toán ngoài MAC                                                        8
+  7.1 Parameters là số cần học và lưu . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      8
+  7.2 MAC đếm số tích cần tích lũy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     9
+  7.3 Những phép toán không nằm trong tổng MAC . . . . . . . . . . . . . . . . . . . . . . . . . .             9
+
+8 Receptive field, jump và thời gian vật lý                                                                    9
+  8.1 Công thức truy hồi tổng quát . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     9
+  8.2 Boundary và prediction timestamp . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        10
+
+9 Weights, activations và memory: đếm đúng đối tượng                                                          10
+  9.1 Dung lượng các tensor trong giả thiết float32 . . . . . . . . . . . . . . . . . . . . . . . . . .       10
+  9.2 Tại sao training và streaming cache có memory khác? . . . . . . . . . . . . . . . . . . . .             11
+
+
+
+
+28/10/2026                                                                                                    1
+ECDR | Bóc tách mô hình CNN                                                      Tài liệu đồng hành Week 1–3
+
+
+10 Exact shift: phần nào của feature thực sự bằng nhau?                                                         11
+   10.1 Giả thiết đủ cho định lý chuyên biệt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    11
+   10.2 Tính tỷ lệ overlap ở từng layer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   11
+
+11 GAP delta và pairwise-margin delta                                                                           12
+   11.1 Phép triệt tiêu phần feature chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    12
+   11.2 Identity chưa phải một certificate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    12
+
+12 Từ miền input đến whole-domain certificate                                                                   13
+   12.1 Định nghĩa miền đúng với transition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       13
+   12.2 Interval rule cho tail sum có hệ số âm . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    13
+   12.3 IBP, ReLU relaxation và dependency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      13
+
+13 Ví dụ xuyên suốt: tính CNN nhỏ từ đầu đến certificate                                                        14
+   13.1 Input, kernel và head đã chỉ định . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     14
+   13.2 Tính từng convolution và ReLU . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     14
+   13.3 Tính GAP, logits và từng competitor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     14
+   13.4 Chứng nhận cả một miền wave liên tục . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        15
+   13.5 Tính exact minima và so với các lower bounds . . . . . . . . . . . . . . . . . . . . . . . . .          15
+
+14 Computational reuse và decision reuse có output khác nhau                                                    16
+   14.1 Computational reuse vẫn tính quyết định hiện tại . . . . . . . . . . . . . . . . . . . . . . .          16
+   14.2 Decision reuse bỏ việc tính giá trị hiện tại khi có proof . . . . . . . . . . . . . . . . . . . .       16
+
+15 Lifecycle: certificate gắn với model và miền nào?                                                            17
+   15.1 Một certificate là một gói contract . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   17
+   15.2 Phản ví dụ stale certificate bằng chính CNN nhỏ . . . . . . . . . . . . . . . . . . . . . . . .         17
+   15.3 Finite horizon đóng gap bằng miền reachable . . . . . . . . . . . . . . . . . . . . . . . . . .         17
+
+16 Numerical semantics: từ định lý số thực đến chương trình                                                     18
+   16.1 Thứ tự cộng có thể đổi kết quả float32 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    18
+   16.2 Gate có numerical margin . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    18
+
+17 Training, loss và evaluation nằm ở đâu trong lập luận?                                                       18
+   17.1 Tại sao cần giải thích training nhưng chưa cần chạy training? . . . . . . . . . . . . . . . .           18
+   17.2 Accuracy, agreement và cost có denominators khác nhau . . . . . . . . . . . . . . . . . .               19
+
+18 Bảng nghĩa vụ chứng minh theo operator                                                                       19
+
+19 Các câu hỏi nghiên cứu rút ra từ việc bóc tách CNN                                                           20
+
+A Đối chiếu ngắn với SmallCNN1D lịch sử                                                                         21
+  A.1 Source đã đọc và lý do chỉ đặt ở phụ lục . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        21
+  A.2 Tính lại parameter count lịch sử . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      21
+  A.3 Latency đã lưu có scope giới hạn . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      22
+
+B Bảng ký hiệu và checklist đọc lại phép tính                                                                   22
+
+C Provenance và ranh giới của kết quả                                                                           23
+
+
+
+
+28/10/2026                                                                                                      2
+ECDR | Bóc tách mô hình CNN                                                    Tài liệu đồng hành Week 1–3
+
+
+
+1     CNN là gì và vì sao phù hợp để đặt bài toán cảm biến?
+
+1.1   Đối tượng học là quy luật trên các đoạn thời gian
+
+Convolutional neural network (CNN) là một họ hàm có các phép tích chập dùng chung kernel
+theo vị trí, xen kẽ phép phi tuyến và một đầu ra phục vụ nhiệm vụ. Với chuỗi thời gian,
+Conv1D quét theo trục sample. Nó không quét theo chỉ số người dùng, activity hay batch. Ba
+trục acceleration và ba trục angular velocity đi vào như sáu channels có thứ tự xác định.
+Một kernel ngắn có thể kết hợp các biến thiên cục bộ: chênh lệch trong thời gian, tương tác
+giữa các trục, hoặc các tổ hợp mà training chọn ra. Ví dụ kernel (1, −1) tính một dạng chênh
+lệch hai sample; kernel (1, 1, 1)/3 tính trung bình ba sample. Kernel học được không bắt buộc
+mang một tên vật lý đơn giản. Muốn gọi một filter là “bộ phát hiện bước chân” phải có phân
+tích activation hoặc thí nghiệm riêng; nhìn weights chưa đủ.
+Giả thiết inductive bias của CNN ở đây là một mẫu cục bộ có thể hữu ích ở nhiều vị trí trong
+cửa sổ. Weight sharing làm số weights của một filter không tăng theo số vị trí quét. Receptive
+field của các layer sau kết hợp nhiều mẫu cục bộ thành biểu diễn dài hơn. Các tính chất đó
+giải thích vì sao CNN là một reference hợp lý để nghiên cứu; chúng không chứng minh nó là
+classifier tốt nhất trên HAPT.
+
+
+1.2   Ba khái niệm không thể gộp thành một
+
+
+         Bảng 1: Cùng nói “CNN ổn định” nhưng đối tượng có thể hoàn toàn khác.
+Khái niệm          Mệnh đề chính xác                               Cần kiểm tra
+
+Shift equivariance Dịch input làm feature dịch theo, ở các         Padding, stride, receptive field và
+                   chỉ số hợp lệ và căn chỉnh                      preprocessing
+Prediction         h(X ′ ) = h(X)                                  Các pairwise margin trên input/miền
+invariance                                                         đang xét
+Ground-truth       h(X) = y(X)                                     Annotation, split, metrics và
+correctness                                                        generalization
+
+
+Kernel dùng chung chỉ giúp lập một quan hệ về feature sau căn chỉnh. Nếu cửa sổ trượt
+làm mất một đoạn và thêm một đoạn khác, feature sum có thể đổi và classifier có thể đổi
+lớp. Ngay cả khi classifier giữ lớp, nhãn thật vẫn có thể chuyển. ECDR chứng nhận sự tương
+đương với reference đã chọn; nó không sửa các lỗi nhận dạng vốn có của reference.
+
+
+2     Input contract: từ sáu tín hiệu đến tensor
+
+2.1   Sample, window và batch có vai trò riêng
+
+Trong nhánh raw inertial HAPT, một sample là vector
+
+                       v[n] = (ax [n], ay [n], az [n], ωx [n], ωy [n], ωz [n])⊤ ∈ R6 .                 (1)
+
+Nguồn dữ liệu mô tả sampling rate 50 Hz; acceleration dùng g, angular velocity dùng rad/s
+[1]. Đặt W = 128, một window có X ∈ RC×W với C = 6. Một query tương ứng 768 số; đó không
+phải 768 sensors độc lập. Window lấy 128 sample theo cùng sampling grid, có span first-to-
+last timestamp là 127/50 = 2.54 s; quy ước duration theo 128 sample intervals là 128/50 = 2.56
+s.
+
+28/10/2026                                                                                               3
+ECDR | Bóc tách mô hình CNN                                           Tài liệu đồng hành Week 1–3
+
+
+Trong ký hiệu batch, X batch ∈ RB×C×W . B là số cửa sổ được xử lý cùng lần gọi, không phải
+một chiều thời gian mới. Với mạng không dùng phép toán phụ thuộc batch trong chế độ suy
+luận, mỗi phần tử batch định nghĩa cùng một hàm window. Việc batch lớn hơn có thể thay
+đổi throughput nhưng không làm tăng số parameters.
+Mỗi class index của output phải có ánh xạ cố định sang class schema. Trong phần tổng quát,
+K tùy nhiệm vụ; khi phân tích schema HAPT đầy đủ ta chọn K = 12. Kết luận về shape 12
+logits không xác nhận checkpoint 12 lớp đã được train, cũng không xác nhận mọi lớp có đủ
+support trong một subset hoặc label policy cụ thể.
+
+
+2.2   Raw input và normalized input là hai hệ tọa độ
+
+Với mean µc và scale σc > 0 cố định theo channel, đặt
+                                                      Xc,i − µc
+                                   Zc,i = P(X)c,i =             .                               (2)
+                                                         σc
+Đây là affine map, áp cùng một công thức ở mọi vị trí thời gian của channel c. Trong một quy
+trình học hợp lệ, các thống kê normalization được fit trên training data theo policy đã chốt,
+sau đó đóng băng khi đánh giá và chứng nhận. Phải ghi có clamp σc hay không và clamp bao
+nhiêu; biểu thức toán học dùng chính scale sau clamp nếu có.
+Mean/std fit trên tập windows có overlap cân trọng số theo số lần mỗi sample xuất hiện
+trong windows. Nó không tự bằng mean/std fit trên mọi raw sample duy nhất. Đây là lựa
+chọn thống kê cần được ghi trong input contract, vì đổi cách fit làm đổi reference pipeline
+F = fθ ◦ P. Ở đây fθ nhận normalized tensor Z; F nhận raw tensor X. Hai hàm không được
+normalize đầu vào lần hai.
+Đơn vị của Z là không thứ nguyên theo scale đã chọn. Normalization không tự loại gravity,
+không hiệu chuẩn lại sensor và không bảo đảm các channels có vai trò ngang nhau đối với
+classifier. Nếu raw coordinate thay đổi δXc,i thì
+                                         δZc,i = δXc,i /σc .                                    (3)
+Một raw box radius bc,i thành normalized radius bc,i /σc . Không thể dùng nguyên một bán
+kính số trong hai hệ tọa độ mà vẫn gọi đó là cùng miền vật lý.
+
+
+2.3   Khi nào preprocessing giữ quan hệ overlap?
+
+Nếu Xc,i
+       ′ = X
+              c,i+s và dùng cùng µc , σc , thế (2) trực tiếp cho Zc,i = Zc,i+s . Ngược lại, nếu mỗi
+                                                                  ′
+
+window tự trừ mean riêng, dù raw samples ở overlap giống nhau thì mean của hai windows
+có thể khác. Vì vậy normalized overlap không còn exact. Tương tự, một bộ lọc stateful có
+reset tại mỗi window đòi phân tích boundary state; không được ngầm coi là affine pointwise.
+Input contract tối thiểu gồm: channel order, units, sample grid, window length/shift, anno-
+tation policy, finite-value policy, normalization identity và class schema. CNN weights chỉ là
+một phần của reference.
+
+
+3     Bóc tách một Conv1D bằng công thức đầy đủ
+
+3.1   Cross-correlation và shape tổng quát
+
+Deep-learning libraries thường gọi phép sau là convolution; quy ước Conv1d của PyTorch
+dùng cross-correlation, tức không lật thứ tự kernel [2]. Dưới đây là định nghĩa tường minh
+dùng throughout tài liệu, từ đó tự suy ra shape và counts.
+
+28/10/2026                                                                                       4
+ECDR | Bóc tách mô hình CNN                                            Tài liệu đồng hành Week 1–3
+
+
+Cho input H ∈ RCin ×T ; kernel W ∈ RCout ×Cin ×k ; bias b ∈ RCout . Với stride a, dilation d, symmet-
+ric zero padding p, định nghĩa input mở rộng H      e bằng 0 ngoài 0, . . . , T − 1. Khi groups bằng
+1,
+                                         Cin −1 k−1
+                                          X X
+                             Vo,i = bo +                   e c, ia−p+rd .
+                                                    Wo,c,r H                                      (4)
+                                           c=0 r=0
+
+Chỉ số o chọn output channel, i chọn output time position, c chọn input channel, r chọn một
+tap của kernel. Ví dụ k = 3, d = 2 đọc offsets 0, 2, 4, nên span của một kernel là d(k − 1) + 1 = 5
+sample, không phải 3.
+Muốn kernel hoàn toàn nằm trong input đã padding, index lớn nhất phải thỏa ia + d(k − 1) ≤
+T + 2p − 1. Do đó số vị trí là
+                                                             
+                                        T + 2p − d(k − 1) − 1
+                               Tout =                           + 1,                   (5)
+                                                  a
+
+với giả thiết có ít nhất một vị trí hợp lệ. Dùng asymmetric padding pL , pR thì thay 2p bằng
+pL + pR và dùng pL trong chỉ số của (4). “Valid” trong mô hình chính nghĩa là pL = pR = 0.
+
+
+3.2   Stride, dilation và groups thay cái gì?
+
+Stride a > 1 giảm số output positions và đổi alignment với raw samples. Dilation d > 1 mở
+span kernel mà vẫn dùng k taps. Hai phép đó không tương đương: một phép đổi bước quét,
+một phép đổi khoảng cách taps. Padding thêm điều kiện biên; padding “same” giữ chiều dài
+trong một số cấu hình nhưng không làm biên trở thành dữ liệu thật.
+Nếu có G groups, cả Cin và Cout phải chia hết cho G theo contract. Mỗi output chỉ nhận từ
+Cin /G channels trong group tương ứng; weight shape là Cout × (Cin /G) × k. Mô hình chính
+dùng G = 1, nên mọi output filter có thể phối hợp cả sáu channels ở layer đầu. Depthwise
+là trường hợp group đặc biệt, không phải mô tả kiến trúc đang phân tích. Khi thay groups
+phải tính lại parameters, MAC và lớp hàm.
+
+
+3.3   Tính một output và hiểu weight sharing
+
+Cho hai input channels (1, 2, 3, 4) và (2, 0, 1, −1); một output filter có weights (1, −1) trên chan-
+nel 1, (2, 1) trên channel 2, bias 0.5, valid stride 1. Ba output là
+
+                                 V0 = 1 − 2 + 2(2) + 0 + 0.5 = 3.5,                               (6)
+                                 V1 = 2 − 3 + 2(0) + 1 + 0.5 = 0.5,                               (7)
+                                 V2 = 3 − 4 + 2(1) − 1 + 0.5 = 0.5.                               (8)
+
+Cùng bốn weights và một bias được dùng ở cả ba vị trí. Do đó filter có 5 parameters, không
+phải 3 × 5 = 15. Tăng input length làm tăng số lần sử dụng weights và lượng tính toán, trong
+khi số weights giữ nguyên. Bias là một số cho mỗi output channel, được cộng ở mỗi vị trí; số
+lần cộng bias khác số bias parameters.
+
+
+4     ReLU và cấu trúc affine từng miền
+
+4.1   Phép phi tuyến pointwise
+
+Sau Conv, áp
+                                 Ho,i = ReLU(Vo,i ) = max(0, Vo,i ).                              (9)
+
+28/10/2026                                                                                         5
+ECDR | Bóc tách mô hình CNN                                          Tài liệu đồng hành Week 1–3
+
+
+ReLU không thay shape, không có trainable parameters và tác động riêng từng scalar. Ví
+dụ (−2, 0, 3) thành (0, 0, 3). ReLU giữ mọi output không âm nhưng không bảo đảm pooled
+features hoặc margins tăng khi input tăng: trước nó có weights âm và sau nó còn head có
+weights âm.
+Nếu bỏ mọi nonlinearities, chuỗi Conv và affine head chỉ là một affine map tổng hợp, dù có
+nhiều layer. Với ReLU, các miền input khác nhau có thể kích hoạt các tập neuron khác nhau,
+tạo nhiều affine pieces [7]. Điều này giải thích cả khả năng biểu diễn và khó khăn khi chứng
+nhận một miền đi qua các ReLU boundaries.
+
+Mệnh đề 4.1 (Affine map khi activation pattern cố định). Xét mạng chỉ gồm affine maps và
+ReLU. Trên một miền mà dấu của mọi preactivation đã được xác định ổn định, output là một
+affine function theo input. Các neuron bằng 0 trên toàn miền có thể được biểu diễn bằng nhánh
+0 mà không làm đổi kết quả.
+
+Chứng minh. Với neuron chắc chắn nonnegative, ReLU là identity; với neuron chắc chắn
+nonpositive, ReLU là 0. Mỗi layer trở thành affine map với một diagonal gate cố định. Com-
+position của các affine maps vẫn affine.
+
+Giả thiết trên nói về toàn miền; đọc activation pattern tại anchor chỉ cho một điểm. Một
+preactivation có giá trị 0.1 ở anchor có thể âm ở chỗ khác trong miền. Nếu chỉ tuyến tính
+hóa theo anchor rồi dùng trên cả miền, bound có thể mất soundness.
+
+
+4.2   ReLU không mở rộng khoảng cách theo từng norm chuẩn
+
+Với hai scalar u, v, xét các trường hợp cùng âm, cùng dương và khác dấu cho | max(0, u) −
+max(0, v)| ≤ |u − v|. Áp từng coordinate và tổng hoặc lấy maximum suy ra
+
+                    ∥ReLU(x) − ReLU(y)∥p ≤ ∥x − y∥p ,       p ∈ {1, 2, ∞}.                  (10)
+
+Đây là một bound toán học, không nói toàn CNN có Lipschitz constant 1; linear layers có
+thể khuếch đại khoảng cách. Một product bound còn có thể rất lỏng vì bỏ các triệt tiêu giữa
+layers.
+
+
+5     GAP, affine head và ý nghĩa quyết định
+
+5.1   GAP giảm trục thời gian, giữ trục features
+
+Cho final feature map H ∈ Rdh ×n , global average pooling (GAP) là
+
+                                       1X
+                                        n−1
+                            ma (Z) =      Ha,i (Z),   m(Z) ∈ Rdh .                          (11)
+                                       n
+                                        i=0
+
+Average pooling toàn chiều thời gian tương ứng output length 1 trong operator thích hợp
+[3]. Không có learnable weights trong phép trung bình này. GAP giữ trung bình từng feature
+channel, bỏ thứ tự tường minh giữa positions ở tầng head. CNN trước đó vẫn dùng thứ tự
+thời gian trong mỗi receptive field.
+Hai feature sequences có cùng per-channel sum cho cùng GAP dù thứ tự feature positions
+khác. Tuy nhiên hoán vị raw samples tùy ý thường làm local convolutions đổi, nên không
+thể suy classifier bất biến với mọi hoán vị của raw time series. Invariance của head trên
+feature maps khác invariance của toàn mạng trên raw data.
+
+
+28/10/2026                                                                                    6
+ECDR | Bóc tách mô hình CNN                                               Tài liệu đồng hành Week 1–3
+
+
+5.2   Affine logits và pairwise margin
+
+Affine head có matrix A ∈ RK×dh , bias β ∈ RK . Đặt Aj = (Aj,: )⊤ ∈ Rdh là hàng thứ j viết thành
+vector cột; mọi qj = Ac − Aj bên dưới cũng là vector cột:
+
+                           fθ,j (Z) = A⊤
+                                       j m(Z) + βj ,      Fj (X) = fθ,j (P(X)).                  (12)
+
+Fj là logit, một score chưa chuẩn hóa; nó không mang đơn vị vật lý của sensor. Classifier là
+h(X) = argmaxj Fj (X) với tie rule xác định. Để xét target c, định nghĩa
+
+                       gcj (X) = Fc (X) − Fj (X) = (Ac − Aj )⊤ m(P(X)) + βc − βj .               (13)
+
+Với K = 12, một target có 11 competitors. Bound một competitor chưa đủ; mọi competitor
+cần qua gate. Chỉ cần một j có Fj > Fc thì target mất.
+Nếu gcj (X) > 0 với mọi j ̸= c, target là unique argmax. Khi margin bằng 0, class phụ thuộc
+tie rule. Dùng strict positivity là một điều kiện đủ gọn, tránh dựa vào ties; nó không là điều
+kiện cần cho mọi deterministic classifier vì một tie vẫn có thể được resolve về c.
+
+
+5.3   Softmax không thay argmax trong số thực
+
+Softmax với temperature τ > 0 là
+
+                                                exp(Fj (X)/τ )
+                                     pj (X) = PK                   .                             (14)
+                                               r=1 exp(F r (X)/τ )
+
+Do exponential tăng nghiêm ngặt và denominator chung dương, Fc > Fj ⇔ pc > pj . Vì
+vậy chứng nhận argmax có thể làm trên logits, không cần thêm softmax. Temperature thay
+numerical probabilities nhưng giữ ordering ở số thực.
+Ví dụ logits (2, 1, 0) cho probabilities xấp xỉ (0.66524, 0.24473, 0.09003). Trừ cùng 2 trước ex-
+ponentiation cho cùng kết quả và tránh exponent lớn. Giá trị 0.66524 không tự nghĩa là
+“xác suất đúng 66.524%” trên quần thể; calibration là câu hỏi thực nghiệm riêng. Với finite
+precision, overflow/underflow và tie behavior phải được xử lý trong implementation của
+reference.
+
+
+6     Kiến trúc chính: inventory từng layer
+
+6.1   Cấu hình chuyên biệt được phân tích
+
+Chọn input Z ∈ R6×128 sau preprocessing cố định. Backbone:
+               k=5        ReLU      k=3     ReLU       k=3     ReLU      GAP      A,β
+             6 −−−→ 32 −−−→ 32 −−−→ 64 −−−→ 64 −−−→ 64 −−−→ 64 −−→ R64 −−→ RK .                  (15)
+               valid               valid               valid
+
+Mỗi Conv có stride 1, dilation 1, groups 1 và bias; không BN, pooling, dropout, positional
+encoding hoặc hidden recurrent state. Cấu hình này là giả thiết phân tích, không phải kiến
+trúc đã được chứng minh tối ưu.
+RF là receptive field span trên input grid. Final local feature có RF 9, nhưng GAP tổng hợp cả
+120 positions: union các RF phủ toàn 128 samples. Vì vậy logit có thể phụ thuộc toàn window
+dù một feature chỉ nhìn 9 samples. Cột MAC bằng 0 ở ReLU/GAP nghĩa là không tính trong
+convention MAC của Conv/affine; các phép toán đó vẫn có cost.
+
+
+
+28/10/2026                                                                                         7
+ECDR | Bóc tách mô hình CNN                                              Tài liệu đồng hành Week 1–3
+
+
+
+        Bảng 2: Kiểm kê shape, local dependency và số học; batch dimension được ẩn.
+Layer                                                           Output     RF Parameters       MAC
+
+Input                                                           6 × 128   1              0       0
+Conv1 k = 5                                                    32 × 124   5            992 119040
+ReLU1                                                          32 × 124   5              0       0
+Conv2 k = 3                                                    64 × 122   7           6208 749568
+ReLU2                                                          64 × 122   7              0       0
+Conv3 k = 3                                                    64 × 120   9          12352 1474560
+ReLU3                                                          64 × 120   9              0       0
+GAP                                                                  64 128              0       0
+Affine, K = 12                                                       12 128            780     768
+
+Tổng Conv + affine                                                                   20332 2343936
+
+
+Với K tổng quát, Conv có tổng 19552 parameters, head có 65K, nên
+                       P (K) = 19552 + 65K,       M (K) = 2343168 + 64K.                        (16)
+Thay K = 12 cho 20332 và 2343936. Công thức không tự biến checkpoint K = 6 lịch sử thành
+mô hình valid–GAP; đó là một kiến trúc khác.
+
+
+6.2     Tính output length theo từng bước
+
+Từ (5), valid/stride 1/dilation 1 cho Tℓ = Tℓ−1 − kℓ + 1. Vì thế
+                                     T1 = 128 − 5 + 1 = 124,                                    (17)
+                                     T2 = 124 − 3 + 1 = 122,                                    (18)
+                                     T3 = 122 − 3 + 1 = 120.                                    (19)
+
+Có 32 output channels ở Conv1, nhưng mỗi channel vẫn dài 124; không chia 124 cho 32.
+Shape của Conv2 weights là 64 × 32 × 3 vì nó nhận 32 feature channels, không phải lại nhận
+6 sensor channels.
+
+
+7     Tính parameters, MAC, FLOP và các phép toán ngoài MAC
+
+7.1     Parameters là số cần học và lưu
+
+Với groups 1 và bias, một Conv có
+                             P = Cout Cin k + Cout = Cout (Cin k + 1).                          (20)
+Thay số đầy đủ:
+                              P1 = 32(6 × 5 + 1) = 32 × 31 = 992,                               (21)
+                              P2 = 64(32 × 3 + 1) = 64 × 97 = 6208,                             (22)
+                              P3 = 64(64 × 3 + 1) = 64 × 193 = 12352,                           (23)
+                           Phead = 12(64 + 1) = 780.                                            (24)
+Tổng 992+6208+12352+780 = 20332. Trong đó kernel/head weights là 960+6144+12288+768 =
+20160; biases là 32 + 64 + 64 + 12 = 172. Nếu bỏ bias phải trừ đúng 172, thay vì trừ một bias
+cho cả mạng.
+
+28/10/2026                                                                                        8
+ECDR | Bóc tách mô hình CNN                                         Tài liệu đồng hành Week 1–3
+
+
+7.2     MAC đếm số tích cần tích lũy
+
+Quy ước một MAC là một phép nhân với một phép cộng tích lũy. Mỗi output Conv dùng Cin k
+tích, do đó
+                                 M = Tout Cout Cin k.                             (25)
+Ta có
+
+                               M1 = 124 × 32 × 6 × 5 = 119040,                             (26)
+                               M2 = 122 × 64 × 32 × 3 = 749568,                            (27)
+                               M3 = 120 × 64 × 64 × 3 = 1474560,                           (28)
+                            Mhead = 12 × 64 = 768.                                         (29)
+
+Tổng 2343936 MAC/window; Conv3 chiếm phần lớn vì một output của nó dùng 192 kernel
+products và có 7680 output scalars. Số MAC của batch B là B lần số này trong phép đếm trực
+tiếp, còn wall-clock không bắt buộc tăng tuyến tính do parallelism và kernel scheduling.
+Quy đổi xấp xỉ 2 FLOP/MAC cho phần này cho 4687872 FLOP. Đây là quy ước báo cáo, không
+phải exact instruction count: một dot product có m products chỉ cần m − 1 additions nếu
+không khởi tạo accumulator bằng 0; FMA cũng có cách đếm phần cứng khác. Cần ghi con-
+vention để các bảng không so số theo hai định nghĩa khác nhau.
+
+
+7.3     Những phép toán không nằm trong tổng MAC
+
+Conv/head có 3968 + 7808 + 7680 + 12 = 19468 output scalars, tương ứng số lần cộng bias
+nếu bias được tách riêng. Ba ReLU xử lý 3968 + 7808 + 7680 = 19456 scalars bằng max với
+0. GAP cộng 120 số cho mỗi kênh, cần 64 × 119 = 7616 additions và 64 phép scale bởi 1/120.
+Normalization có 768 phép trừ và 768 phép chia theo cách tính trực tiếp, hoặc 768 phép
+nhân reciprocal sau khi precompute scale.
+Các counts trên chưa gồm memory traffic, tensor allocation, layout conversion, runtime dis-
+patch, membership hay certificate build. Chúng làm rõ cấu trúc tính toán; không cho phép
+đổi 2343936 MAC thành một con số microsecond nếu chưa đo đúng môi trường.
+
+
+8     Receptive field, jump và thời gian vật lý
+
+8.1     Công thức truy hồi tổng quát
+
+Đặt R0 = 1 là RF span và J0 = 1 là khoảng cách hai feature positions kề nhau tính trên raw
+grid. Với layer có kernel kℓ , dilation dℓ , stride aℓ ,
+
+                         Rℓ = Rℓ−1 + (kℓ − 1)dℓ Jℓ−1 ,   Jℓ = aℓ Jℓ−1 .                    (30)
+
+Chứng minh. Một output đọc kℓ input features cách nhau dℓ positions. Khoảng từ feature đầu
+đến cuối trên raw grid là (kℓ − 1)dℓ Jℓ−1 . Thêm RF span của mỗi feature được Rℓ . Hai output
+kế nhau dịch aℓ input positions, nên jump nhân với aℓ .
+
+Với dilation lớn hoặc kernels thưa, R là span, không nhất thiết mọi raw position trong span
+đều có đường kết nối. Cấu hình chính liên tục và stride 1 nên RF là toàn đoạn dài R.
+Hai cột thời gian dùng hai quy ước khác nhau: first–last có R − 1 khoảng sample; R/fs gán
+duration bằng số sample intervals. Ghi cả hai tránh gọi RF 9 là 9 giây hoặc nhầm với duration
+toàn window.
+
+28/10/2026                                                                                   9
+ECDR | Bóc tách mô hình CNN                                              Tài liệu đồng hành Week 1–3
+
+
+
+                  Bảng 3: RF và jump của backbone chính, input rate 50 Hz.
+Layer                                                           R J Span first–last Quy ước R/fs
+
+Input                                                           1   1              0s          0.02 s
+Conv1                                                           5   1           0.08 s         0.10 s
+Conv2                                                           7   1           0.12 s         0.14 s
+Conv3                                                           9   1           0.16 s         0.18 s
+GAP/head                                                      128   –           2.54 s         2.56 s
+
+
+8.2     Boundary và prediction timestamp
+
+Final feature position i phụ thuộc input indices i, . . . , i + 8. Muốn tạo feature cuối tại i = 119,
+cần sample 127. Do đó một full-window prediction chỉ sẵn khi đã nhận đủ window. Mô hình
+không nhìn raw sample sau window, nhưng một nhãn gán cho giữa window sẽ có look-ahead
+so với timestamp giữa đó. Streaming latency, window acquisition delay và model compute
+time là ba đại lượng khác nhau.
+Zero padding làm output tại biên nhìn thấy giá trị giả định bên ngoài window. Window trượt
+có thể thay một chỗ padded bằng một raw sample thật; same weights không làm hai outputs
+ấy bằng nhau. Exact interior shift có thể vẫn chứng minh được, nhưng cần chỉ rõ chỉ số nào
+có RF nằm trọn phần raw overlap.
+
+
+9     Weights, activations và memory: đếm đúng đối tượng
+
+9.1     Dung lượng các tensor trong giả thiết float32
+
+Nếu mỗi scalar là 4 bytes, weights và biases cần
+                            20332 × 4 = 81328 bytes = 79.421875 KiB,                            (31)
+với 1 KiB = 1024 bytes. Đây là tensor payload, không phải kích thước file checkpoint: meta-
+data, serialization và alignment có thể làm file khác con số này.
+
+Bảng 4: Activation payload cho một window; ReLU giả sử dùng chung tensor khi phù hợp.
+Không phải phép đo RAM peak của một framework.
+Tensor                                                              Scalars Bytes float32        KiB
+
+Input                                                                    768        3072 3.000000
+Conv1/ReLU1 output                                                      3968       15872 15.500000
+Conv2/ReLU2 output                                                      7808       31232 30.500000
+Conv3/ReLU3 output                                                      7680       30720 30.000000
+GAP output                                                                64         256 0.250000
+Logits                                                                    12          48 0.046875
+
+Tổng nếu giữ mọi tensor trên                                         20300         81200 79.296875
+
+Nếu một evaluation schedule chỉ giữ input và output của layer hiện tại, cặp Conv2-
+output/Conv3-output lớn nhất ở bảng cần (7808 + 7680) × 4 = 61952 bytes = 60.5 KiB. Cộng
+weight payload là 143280 bytes = 139.921875 KiB. Đây là một accounting scenario có điều
+kiện: không có duplicate buffers, kernel workspace, allocator overhead, saved tensors,
+runtime metadata hoặc cache reuse. Nó không là bảo đảm memory peak cho PyTorch hay
+một edge device.
+
+28/10/2026                                                                                        10
+ECDR | Bóc tách mô hình CNN                                                Tài liệu đồng hành Week 1–3
+
+
+9.2    Tại sao training và streaming cache có memory khác?
+
+Backpropagation có thể cần lưu intermediate activations, gradient parameters và optimizer
+state. Ví dụ optimizer có hai moment tensors sẽ thêm hai lần parameter payload khi cùng
+dtype, ngoài gradients và weights; cách lưu thật phụ thuộc optimizer và mixed precision.
+Các số inference ở bảng không được dùng làm training-memory estimate.
+Computational reuse có thể cần giữ feature buffers giữa các windows. Decision reuse lại cần
+certificate/domain/state và có thể giữ ít hoặc nhiều feature tùy thiết kế. Một hệ thống vừa
+giữ full feature cache vừa giữ nhiều certificates có thể tăng memory dù giảm số forward.
+“Nhẹ” cần ghi là ít parameters, ít MAC, ít peak RAM, ít certificate state hay ít file bytes; các
+đại lượng không thay nhau được.
+
+
+10     Exact shift: phần nào của feature thực sự bằng nhau?
+
+10.1    Giả thiết đủ cho định lý chuyên biệt
+
+Giả sử: cửa sổ cùng sample grid; shift–append 1 ≤ s ≤ W ; cùng frozen preprocessing point-
+wise affine per-channel; mọi Conv valid, stride 1, dilation 1; các pointwise maps giống nhau
+ở mọi vị trí; không pooling, positional weights hoặc hidden state. Đặt Z là normalized input
+đã thỏa overlap; Z ′ là window mới:
+
+                              Z ′ [:, i] = Z[:, i + s],
+                                             0 ≤ i < W − s.                         (32)
+                                                           P
+Tail s columns được cấp bởi new wave U ∈ RC×s . Với R = 1 + ℓ (kℓ − 1) và n = W − R + 1,
+giả sử thêm s ≤ n.
+
+Định lý 10.1 (Exact aligned feature equality). Final features của backbone thỏa
+
+                              Hi (Z ′ ) = Hi+s (Z),       0 ≤ i < n − s.                          (33)
+
+Ở đây Hi là vector toàn bộ final feature channels tại position i.
+
+Chứng minh. Feature Hi chỉ dùng input indices i, . . . , i + R − 1. Nếu i < n − s, thì i + R − 1 ≤
+W − s − 1, nên toàn bộ RF nằm trong overlap của window mới. Theo (32), các input này bằng
+raw-grid-aligned inputs i + s, . . . , i + s + R − 1 ở window cũ. Mỗi layer dùng cùng kernel/bias
+và pointwise map, nên induction qua layers cho cùng vector output.
+
+Đẳng thức không nói Hi (Z ′ ) = Hi (Z). Nó đòi dịch chỉ số s; bỏ phép căn chỉnh làm sai mệnh
+đề ngay cả với Conv đơn giản.
+
+
+10.2    Tính tỷ lệ overlap ở từng layer
+
+Với s = 64, ta có: Final features có 56 positions chung, không phải 60 hoặc 64. Đuôi 64 final
+positions của window mới cần raw indices 56 đến 127, tức 64 + (9 − 1) = 72 raw sample
+columns: 8 columns halo từ overlap và 64 columns mới. Vì vậy “chỉ có 64 samples mới”
+không cho phép chạy một full 3-layer valid backbone chỉ trên 64 samples rồi thu đủ 64 final
+outputs.
+Sau q shifts, số final positions chia sẻ trực tiếp với original anchor là max(n − qs, 0) nếu xét
+đúng aligned intervals. Với n = 120, s = 64, bước hai cho 0. Điều này mô tả direct overlap với
+anchor; nó không bác mọi thuật toán incremental có cập nhật cache qua từng bước.
+
+
+28/10/2026                                                                                         11
+ECDR | Bóc tách mô hình CNN                                                           Tài liệu đồng hành Week 1–3
+
+
+
+        Bảng 5: Shared feature positions sau căn chỉnh, dưới đúng giả thiết định lý.
+Tầng                                                                      Length Shared New Shared/length
+
+Raw/normalized input                                                         128               64   64   50.0000%
+Conv1/ReLU1                                                                  124               60   64   48.3871%
+Conv2/ReLU2                                                                  122               58   64   47.5410%
+Conv3/ReLU3                                                                  120               56   64   46.6667%
+
+
+11     GAP delta và pairwise-margin delta
+
+11.1   Phép triệt tiêu phần feature chung
+
+Với giả thiết của mục trước, định nghĩa
+
+                                   X
+                                   s−1                                     X
+                                                                           n−1
+                        Ddrop =          Hi (Z),           Dnew (U ) =            Hi (Z ′ ).                 (34)
+                                   i=0                                    i=n−s
+
+Cả hai là vector Rdh , không phải scalar activity label. Theo (33),
+
+                                         X
+                                         n−1                  X
+                                                              n−1
+                                                       ′
+                                                  Hi (Z ) =         Hi (Z) + Dnew (U ),                      (35)
+                                            i=0               i=s
+                        X
+                        n−1                  X
+                                             n−1
+                              Hi (Z ′ ) −          Hi (Z) = Dnew (U ) − Ddrop .                              (36)
+                        i=0                 i=0
+
+Chia cho n suy ra exact identity
+
+                                                           Dnew (U ) − Ddrop
+                                m(Z ′ ) − m(Z) =                             .                               (37)
+                                                                   n
+Trong normalized coordinates, đặt γcj (Z) = fθ,c (Z) − fθ,j (Z); raw margin thỏa gcj (X) =
+γcj (P(X)). Từ affine head và qj = Ac − Aj , có
+
+                                                       1 ⊤                   
+                          γcj (Z ′ ) = γcj (Z) +         qj Dnew (U ) − Ddrop .                              (38)
+                                                       n
+Head bias triệt tiêu trong delta; nó vẫn nằm trong old margin. Không được bỏ bias khi tính
+margin tại anchor.
+
+
+11.2   Identity chưa phải một certificate
+
+Nếu đã tính Dnew (U ) của observed query, công thức cho exact new margins trong số thực.
+Để bỏ việc tính CNN cho query, cần có bound trước trên cả miền new waves. Hai nhiệm vụ
+khác nhau: identity nói hai biểu thức bằng nhau; certificate nói mọi input trong một tập đều
+giữ decision.
+Tăng một pooled feature có thể giúp target trước competitor này và hại target trước com-
+petitor khác vì các qj khác nhau. Vì thế không có quy tắc chung “feature energy tăng thì
+confidence tăng”. Pairwise margin trực tiếp gắn biến thiên features với bài toán decision.
+
+
+
+
+28/10/2026                                                                                                    12
+ECDR | Bóc tách mô hình CNN                                               Tài liệu đồng hành Week 1–3
+
+
+
+12     Từ miền input đến whole-domain certificate
+
+12.1   Định nghĩa miền đúng với transition
+
+Fix anchor Z và wave-domain U ⊆ RC×s . Miền full windows được xét là
+
+                                S(Z, U ) = {Ts (Z, U ) : U ∈ U },                                (39)
+
+trong đó Ts bỏ s columns đầu và append U . Miền này giữ overlap cố định. Nó có Cs biến wave
+tự do, không phải CW biến tự do, trừ khi còn đưa uncertainty vào overlap. Nếu runtime
+query có overlap khác, chỉ kiểm U ∈ U chưa chứng minh query thuộc S.
+Định lý 12.1 (Positive valid lower margins đủ để giữ target). Cho reference deterministic F ,
+target c, và miền S. Nếu với mọi j ̸= c tồn tại ℓcj thỏa
+
+                                ℓcj ≤ inf gcj (X),          ℓcj > 0,                             (40)
+                                       X∈S
+
+thì mọi X ∈ S có unique argmax là c.
+
+Chứng minh. Với mọi X ∈ S và j ̸= c, Fc (X) − Fj (X) = gcj (X) ≥ ℓcj > 0. Do đó Fc lớn hơn mọi
+logit khác tại chính input đó, suy ra kết luận trên toàn miền.
+
+Theorem viết cho raw pipeline F . Với miền normalized S(Z, U ) ở trên, áp dụng cùng lập luận
+cho fθ và margins γcj ; miền raw tương ứng là P −1 (S) với normalization cố định. Theorem
+không đòi CNN cụ thể hay probability distribution. Một miền có certified decision có thể
+không chứa query tương lai nào; usefulness và coverage là câu hỏi khác. Fail của một lower
+bound cũng không chứng minh có counterexample: cận có thể chỉ quá lỏng.
+
+
+12.2   Interval rule cho tail sum có hệ số âm
+
+Giả sử có vector enclosure hợp lệ D ≤ Dnew (U ) ≤ D với mọi U ∈ U . Đặt qj+ = max(qj , 0) và
+qj− = min(qj , 0) theo coordinate. Từ (38),
+
+                                           (qj+ )⊤ D + (qj− )⊤ D − qj⊤ Ddrop
+                         ℓcj = γcj (Z) +                                                         (41)
+                                                            n
+là lower margin hợp lệ. Với hệ số dương, lower feature cho lower objective; với hệ số âm,
+phải dùng upper feature. Chọn lower cho mọi coordinate làm sai chiều bất đẳng thức ở các
+hệ số âm.
+Bound của feature sum có thể được tạo bằng interval propagation, affine relaxations, exact
+verification hoặc một phương pháp đã chứng minh soundness trên toàn wave-domain. Tập
+observed samples hoặc empirical min/max không thay được enclosure trên mọi điểm trong
+continuous box.
+
+
+12.3   IBP, ReLU relaxation và dependency
+
+Một affine map v = W x + b với input interval l ≤ x ≤ u có enclosure
+
+                                     lv = W + l + W − u + b,                                     (42)
+                                                        −
+                                               +
+                                    uv = W u + W l + b,                                          (43)
+
+với W + = max(W, 0), W − = min(W, 0). Conv là affine map thưa có weight sharing, nên cùng
+quy tắc áp trên đúng indices. ReLU chuyển interval thành [max(0, lv ), max(0, uv )].
+
+28/10/2026                                                                                        13
+ECDR | Bóc tách mô hình CNN                                                   Tài liệu đồng hành Week 1–3
+
+
+IBP dùng các enclosures từng layer [8]; CROWN/LiRPA giữ và lan truyền affine bounds để bảo
+tồn nhiều dependency hơn [9, 10]. Với unstable ReLU l < 0 < u, secant ReLU(v) ≤ u−l  u
+                                                                                       (v − l)
+là upper bound; các lines 0 hoặc v là lower bounds. Chọn upper/lower khi backward qua
+coefficients âm phải theo đúng dấu của objective. Không có một line “xấp xỉ tốt” có thể dùng
+tùy ý cho cả lower và upper proof.
+Ví dụ D1 = 1 + v và D2 = u + v − 13 có chung v. Bound độc lập hai coordinates làm mất
+cancellation trong −D1 + D2 = u − 14. Tính margin expression trước khi bound có thể chặt
+hơn bound từng logit hoặc từng activation độc lập. Mục sau lượng hóa chính xác hiện tượng
+này.
+
+
+13     Ví dụ xuyên suốt: tính CNN nhỏ từ đầu đến certificate
+
+13.1   Input, kernel và head đã chỉ định
+
+Để tính tay đủ mọi phép, chọn C = 1, W = 6, s = 2, input X = (1, 2, 3, 4, 5, 6), new wave
+U = (7, 8) và X ′ = (3, 4, 5, 6, 7, 8). Preprocessing là identity. Một Conv valid k = 3 có hai output
+filters:
+                  w(1) = (1, −1, 1), b(1) = −2;         w(2) = (−1, 0, 1), b(2) = −1.            (44)
+Sau ReLU và GAP, affine head ba lớp có
+                                                               
+                                    1 −1                          4
+                                                               
+                             A = −1 0  ,                  β =  1 .                               (45)
+                                    2 −2                          0
+
+Mạng này là ví dụ đại số của tài liệu toán đồng hành, không phải model HAPT. Có 8 Conv
+parameters và 9 head parameters, tổng 17; mỗi forward có 4 × 2 × 3 + 3 × 2 = 30 MAC theo
+convention đã định.
+
+
+13.2   Tính từng convolution và ReLU
+
+Filter 1 tại old position 0 cho 1 − 2 + 3 − 2 = 0; các positions sau cho 1, 2, 3. Filter 2 cho
+−1 + 3 − 1 = 1 và tiếp tục bằng 1 ở ba positions sau. Mọi giá trị không âm nên ReLU giữ
+nguyên. Viết vector theo position:
+                                H(X) = ((0, 1), (1, 1), (2, 1), (3, 1)).                             (46)
+Tương tự,
+                                H(X ′ ) = ((2, 1), (3, 1), (4, 1), (5, 1)).                          (47)
+R = 3, n = 4 nên n − s = 2 aligned shared positions. New positions 0,1 bằng old positions 2,3;
+đó là kiểm chứng số của (33).
+
+
+13.3   Tính GAP, logits và từng competitor
+
+                     m(X) = ((0 + 1 + 2 + 3)/4, (1 + 1 + 1 + 1)/4) = (3/2, 1),                       (48)
+                          ′
+                     m(X ) = ((2 + 3 + 4 + 5)/4, 1) = (7/2, 1).                                      (49)
+Head cho
+                                       F (X) = (9/2, −1/2, 1),                                       (50)
+                                            ′
+                                      F (X ) = (13/2, −5/2, 5).                                      (51)
+
+
+28/10/2026                                                                                            14
+ECDR | Bóc tách mô hình CNN                                              Tài liệu đồng hành Week 1–3
+
+
+Target ở cả hai là lớp 1. Old margins là g12 = 5 và g13 = 7/2; new margins là 9 và 3/2. Mặc dù
+target logit tăng từ 4.5 lên 6.5, margin trước lớp 3 giảm từ 3.5 xuống 1.5 vì logit lớp 3 tăng
+nhanh hơn.
+Tính theo delta: Ddrop = (1, 2), Dnew = (9, 2), nên ∆m = (2, 0). Với q2 = (2, −1), margin tăng 4;
+với q3 = (−1, 1), margin giảm 2. Kết quả khớp cách forward trực tiếp và kiểm được dấu của
+từng hệ số.
+
+
+13.4    Chứng nhận cả một miền wave liên tục
+
+Thay observed wave bằng U = (u, v) trong box
+
+                                      U = [6.5, 7.5] × [7.5, 8.5].                              (52)
+
+New window là (3, 4, 5, 6, u, v). Shared features giữ (2, 1), (3, 1). Hai tail feature vectors trước
+ReLU là
+                        H2 = (u − 3, u − 6),     H3 = (4 − u + v, v − 7).                        (53)
+Lower preactivations lần lượt là 3.5, 0.5, 4, 0.5; tất cả dương trên box, nên ReLU là identity
+trên toàn miền này. Bound từng position rồi cộng cho
+
+                                  D = (7.5, 1),         D = (10.5, 3).                          (54)
+
+Từ (41),
+                                      2(7.5) − 3 − (2 × 1 − 2)
+                              ℓ12 = 5 +                        = 8,                             (55)
+                                                  4
+                                   7 −10.5 + 1 − (−1 + 2)       7
+                              ℓ13 = +                        = .                                (56)
+                                   2             4              8
+Cả hai dương, nên mọi wave trong box giữ unique argmax lớp 1. Đây là universal proof trên
+một continuous region; không cần giả thiết uniform distribution hay independent coordi-
+nates để có soundness.
+
+
+13.5    Tính exact minima và so với các lower bounds
+
+Cộng tail expressions trước khi bound cho
+
+                                 D1 = 1 + v,       D2 = u + v − 13.                             (57)
+
+Do đó
+                                                     15 + v − u
+                                     g12 (X ′ ) = 5 +           ,                               (58)
+                                                         4
+                                                  u−1
+                                     g13 (X ′ ) =     .                                         (59)
+                                                   4
+Trong box, v − u nhỏ nhất bằng 0 tại u = v = 7.5, nên min g12 = 35/4 = 8.75. Margin thứ hai
+nhỏ nhất ở u = 6.5, cho min g13 = 11/8 = 1.375.
+Hàng hai dùng D1 ∈ [8.5, 9.5], D2 ∈ [1, 3]; hàng ba giữ chung u, v tới objective. Các lower
+bounds đều chứng nhận được box, nhưng độ chặt khác nhau. Không thể từ toy này kết luận
+phương pháp chặt hơn có total cost thấp hơn hoặc có useful coverage trên HAPT.
+
+
+
+
+28/10/2026                                                                                        15
+ECDR | Bóc tách mô hình CNN                                            Tài liệu đồng hành Week 1–3
+
+
+
+             Bảng 6: Cùng box và cùng model: bound có thể sound mà chưa exact.
+Phương pháp tính                                                              Lower g12 Lower g13
+
+Bound từng tail position rồi cộng                                                        8     0.875
+Cộng trước, bound độc lập D1 , D2                                                      8.5     1.125
+Giữ dependency, tối ưu margin affine                                                  8.75     1.375
+
+
+14     Computational reuse và decision reuse có output khác nhau
+
+14.1   Computational reuse vẫn tính quyết định hiện tại
+
+Computational reuse giữ/cập nhật intermediate values để giảm phép tính khi tạo exact cur-
+rent features hoặc logits. Các nghiên cứu streaming CNN khai thác overlap nhưng phải xử
+lý kiến trúc và biên [11]. Trong cấu hình chính, một accounting lý tưởng với cache đầy đủ,
+đúng alignment và chỉ tính 64 new positions ở mỗi Conv có:
+
+                                M1,new = 64 × 32 × 30 = 61440,                                  (60)
+                                M2,new = 64 × 64 × 96 = 393216,                                 (61)
+                                M3,new = 64 × 64 × 192 = 786432.                                (62)
+
+Cộng head 768 cho 1241856 Conv/head MAC, giảm 2343936 − 1241856 = 1102080 MAC, tương
+ứng khoảng 47.0183% số MAC gốc. Con số này là phép đếm có điều kiện, chưa gồm cache
+copy, GAP update, memory và scheduling. Nó không phải measured speedup 47.0183%.
+Nếu không lưu cache ở các layers, chỉ lưu final feature rồi recompute đuôi từ raw halo có thể
+có count khác vì cần tạo lại intermediate halo. Muốn báo MAC incremental phải ghi chính
+xác state nào đã được lưu. Không có một số “streaming MAC” duy nhất độc lập với cache
+policy.
+
+
+14.2   Decision reuse bỏ việc tính giá trị hiện tại khi có proof
+
+Decision reuse chỉ cần trả c khi chứng minh mọi query được accept cho cùng class như
+reference. Nó có thể không tạo exact logits hoặc feature map cho query đó. Nếu downstream
+cần probability vector hoặc embedding hiện tại, một class-only certificate chưa đáp ứng
+output contract ấy.
+
+
+             Bảng 7: Hai loại reuse có thể phối hợp nhưng không được đổi claim.
+Thuộc tính       Computational reuse                       Certified decision reuse
+
+Đầu ra cần giữ   Current features/logits theo reference    Class agreement trên accepted queries
+Căn cứ           Exact algebra và hợp lệ cache             Whole-domain margin proof +
+                                                           membership
+State thường     Activations, alignment, stream position   Domain, target, proof identity, lifecycle
+cần
+Chi phí chính    New feature computation, buffers          Build, selection, membership, fallback
+Lỗi điển hình    Sai biên hoặc sai phase                   Accept sai miền hoặc certificate hết hiệu
+                                                           lực
+
+
+Sau một decision-reuse hit, class có thể đã biết đúng nhưng exact feature state hiện tại vẫn
+chưa biết. Dùng hit làm anchor có đầy đủ features là một bước suy luận thiếu. Muốn cập
+
+
+28/10/2026                                                                                        16
+ECDR | Bóc tách mô hình CNN                                                  Tài liệu đồng hành Week 1–3
+
+
+nhật certificate theo query mới cần một reference forward, một exact incremental update,
+hoặc transfer proof được thiết kế và chứng minh riêng.
+
+
+15     Lifecycle: certificate gắn với model và miền nào?
+
+15.1     Một certificate là một gói contract
+
+Về toán, certificate bao gồm ít nhất reference identity, preprocessing identity, target c, miền
+S, lower-margin evidence và numerical assumptions. Với wave-domain, overlap/state iden-
+tity cũng thuộc contract. Tên event như “stable activity” có thể chọn một miền; nó không
+thay membership và margin proof của miền đó.
+
+
+                     Bảng 8: Điều kiện ở mỗi giai đoạn của decision reuse.
+Giai đoạn           Đại lượng phải có                              Điều kiện chuyển tiếp
+
+Anchor              Current input, reference logits/class và       Reference/preprocess identities xác
+                    state cần thiết                                định
+Build               Miền, target, valid lower margins              Mọi competitor qua strict positive gate
+Query               Input/stream state hữu hạn                     Đúng miền và cùng identities
+Hit                 Certified target class                         Không tự suy ra current exact features
+Miss/invalidation   Query cần đánh giá reference                   Forward hoặc một phương pháp exact
+                                                                   hợp lệ
+Refresh             New anchor và proof mới hoặc                   Không tái sử dụng evidence của miền
+                    transfer proof                                 khác
+
+
+Các thay đổi weights, normalization stats, channel order, quantization, class schema hoặc
+preprocessing có thể đổi reference. Đổi tên file checkpoint không tự vô hiệu hàm nếu nội
+dung y hệt; ngược lại cùng tên file nhưng weights đổi không bảo đảm còn cùng model. Iden-
+tity phải dựa trên nội dung/contract được quản lý, không dựa vào tên tiện dụng.
+
+
+15.2     Phản ví dụ stale certificate bằng chính CNN nhỏ
+
+Giữ box U ở ví dụ trước và append (7, 8) lần hai. Sau một hit, window kế là X ′′ = (5, 6, 7, 8, 7, 8).
+Tính trực tiếp cho
+
+                    H(X ′′ ) = ((4, 1), (5, 1), (4, 0), (7, 0)),   m(X ′′ ) = (5, 1/2).               (63)
+
+Head cho F (X ′′ ) = (17/2, −4, 9); winner là lớp 3. Wave lần hai vẫn thuộc box, nhưng overlap
+không còn (3, 4, 5, 6) của certificate bước một. Vì vậy chỉ check cùng wave box rồi tiếp tục trả
+lớp 1 sẽ sai.
+Phản ví dụ không bác certificate bước một. Nó chỉ ra certificate đó chứng minh một miền gắn
+với anchor, không chứng minh mọi lần append wave trong box từ bất cứ state nào. Fixed-
+anchor membership trên full windows hoặc finite-horizon reachable-domain proof là hai
+cách thiết kế khác, cần phát biểu điều kiện riêng.
+
+
+15.3     Finite horizon đóng gap bằng miền reachable
+
+Với anchor X0 và domains U1 , . . . , UQ , định nghĩa
+
+                      R0 = {X0 },          Rq = {Ts (X, U ) : X ∈ Rq−1 , U ∈ Uq }.                    (64)
+
+28/10/2026                                                                                             17
+ECDR | Bóc tách mô hình CNN                                          Tài liệu đồng hành Week 1–3
+
+
+Nếu từng Rq có valid positive lower margins cho cùng c, thì mọi chuỗi waves thuộc đúng
+domains giữ class ở từng bước. Proof bằng induction: state ở bước trước thuộc reachable
+set; transition hợp lệ đưa vào set sau; margin theorem áp cho set sau. Điều kiện này có thể
+mạnh và đắt hơn one-step proof vì overlap tương lai cũng biến thiên. Chưa có kết luận rằng
+horizon dài luôn hữu ích hoặc amortize được cost.
+
+
+16     Numerical semantics: từ định lý số thực đến chương trình
+
+16.1   Thứ tự cộng có thể đổi kết quả float32
+
+Công thức GAP update cộng old sum rồi trừ dropped sum rồi thêm new sum có thể khác
+bitwise với full recomputation dù bằng nhau trên số thực. Phép cộng floating-point không
+associative; kernel/backend/dtype cũng ảnh hưởng accumulation. Tài liệu PyTorch nêu các
+giới hạn numerical accuracy và việc kết quả có thể khác theo thứ tự và nền tảng [6]. Vì thế
+exact algebra không tự là bitwise identity.
+Nếu cần agreement với một reference chương trình, phải định nghĩa reference dtype, mode,
+operator semantics và tie policy. Một proof trên hàm số thực có thể được chuyển thành bảo
+đảm chương trình khi đã có sound error bounds. NaN/Inf không thuộc giả thiết số thực hữu
+hạn và cần một policy rõ ràng trước membership/argmax.
+
+
+16.2   Gate có numerical margin
+
+Giả sử ideal pairwise margin gcj và reference-program margin gecj thỏa |e
+                                                                        gcj (X)−gcj (X)| ≤ ηcj
+trên miền. Giả sử lower bound tính được ℓcj có sai số khiến bound thật ít nhất ℓbcj − δcj . Khi
+                                          b
+
+                                ℓbcj > δcj + ηcj   với mọi j ̸= c,                          (65)
+
+thì reference-program margin dương. Proof chỉ ghép ge ≥ g − η ≥ ℓb − δ − η > 0.
+δ và η phải là bounds đã được thiết lập cho đúng computation; chọn một hằng epsilon nhỏ
+không tự chứng minh chúng. Với domain membership ở biên, một conservative checker
+có thể false reject nhưng phải tránh false accept do rounding. Numerical soundness còn là
+nghĩa vụ riêng nếu triển khai verifier; tài liệu này không báo đã giải quyết nó bằng một
+runtime cụ thể.
+
+
+17     Training, loss và evaluation nằm ở đâu trong lập luận?
+
+17.1   Tại sao cần giải thích training nhưng chưa cần chạy training?
+
+Architecture chỉ định một họ hàm Fθ ; parameters θ mới xác định một member cụ thể. Train-
+ing chọn θ từ data và loss; verification sau đó phân tích model đã frozen. Một architectural
+proof như shift equality đúng với mọi weights phù hợp giả thiết. Một positive decision mar-
+gin lại phụ thuộc weights cụ thể, anchor và miền cụ thể.
+Trong mục training này lấy temperature τ = 1, nên pj là softmax chuẩn của logits; không
+dùng temperature tổng quát của mục trước. Với label y ∈ {1, . . . , K}, unweighted cross-
+entropy một sample là
+                                                         X
+                   L(θ; X, y) = − log py = −Fy (X) + log   exp Fj (X).               (66)
+                                                               j
+
+
+
+28/10/2026                                                                                   18
+ECDR | Bóc tách mô hình CNN                                             Tài liệu đồng hành Week 1–3
+
+
+Với hard class targets, loss implementation thích hợp nhận logits và gộp log-softmax/NLL
+theo contract [4]. Trong số thực, ∂L/∂Fj = pj − 1[j = y]; chain rule truyền gradient qua
+affine head, GAP, ReLU và Conv để cập nhật weights. Gradient descent dùng θ ← θ − α∇θ L;
+các optimizer khác thêm state/quy tắc riêng.
+GAP phân phối gradient theo time bằng hệ số 1/n. Weight sharing làm gradient một kernel
+weight là tổng đóng góp qua mọi positions nó được dùng. ReLU có derivative 0 hoặc 1 ngoài
+điểm 0; tại 0 phải có convention subgradient. Các giải thích này xác định vai trò các thành
+phần, không báo model mới đã được train hoặc đạt một metric nào.
+
+
+17.2    Accuracy, agreement và cost có denominators khác nhau
+                                                     P
+Với N windows có ground truth, accuracy là N −1 t 1[h(Xt ) = yt ]. ECDR agreement trên ac-
+                   −1 P         b
+cepted queries là Nhit  t∈hit 1[h(Xt ) = h(Xt )] khi Nhit > 0. Soundness theorem nhằm agree-
+ment universal trên accepted domain; empirical agreement chỉ kiểm trace đã quan sát.
+Đối với 12 classes, macro-F1 trung bình F1 từng class giúp lộ các lớp support nhỏ, nhưng
+phụ thuộc annotation/window policy, split và zero- denominator convention. Vì overlapping
+windows không độc lập, split ngẫu nhiên theo window có thể chia near-duplicate temporal
+content vào train/test; research protocol phải kiểm subject/recording boundaries. Chứng
+nhận reuse không thay kiểm định generalization của classifier.
+Về cost, nếu full forward tốn tf , hit fraction r, checker/selection trung bình tm + tv mỗi query
+và build frequency b với cost tb , một accounting đơn giản cho
+
+                              E[TECDR ] = (1 − r)tf + tm + tv + btb .                          (67)
+
+Net saving cần tm + tv + btb < rtf . Chi phí build thất bại và initial build phải nằm trong
+accounting. Hit cao vẫn có thể chậm hơn nếu overhead lớn; MAC saving cũng không thay
+wall-clock measurement.
+
+
+18     Bảng nghĩa vụ chứng minh theo operator
+
+                   Bảng 9: Operator và giả thiết phải giữ khi chuyển từ mô
+                   hình sang reuse. Các hàng là điều kiện phân tích, không
+                   phải kết quả runtime đã đo.
+
+     Thành phần       Có thể chứng minh gì?                Điều kiện hoặc điểm có thể làm
+                                                           sai
+
+     Raw builder      Shared sample values bằng            Cùng recording, grid, channel
+                      nhau sau shift                       order và sample identity; không
+                                                           chỉ cùng nhãn
+     Normalization    Shared normalized values             Frozen pointwise affine theo
+                      bằng nhau                            channel; per-window mean có
+                                                           thể phá equality
+     Valid Conv       Shared RF tạo shared output          Kernel/bias cố định, RF nằm
+                                                           trong overlap,
+                                                           stride/dilation/alignment đúng
+     ReLU             Giữ equality; interval map           Muốn affine piece exact cần
+                      monotone                             pattern ổn định trên toàn miền
+
+
+28/10/2026                                                                                      19
+ECDR | Bóc tách mô hình CNN                                       Tài liệu đồng hành Week 1–3
+
+
+
+     Thành phần       Có thể chứng minh gì?            Điều kiện hoặc điểm có thể làm
+                                                       sai
+
+     Padding          Có thể proof interior hoặc  Biên mới có thể đổi real sample
+                      boundary contract riêng     thành padding hoặc ngược lại
+     Strided Conv     Có aligned equality trong cấu
+                                                  Shift phải khớp effective phase;
+                      hình phù hợp                không dùng công thức i + s máy
+                                                  móc
+     MaxPool        Bounds theo max; equality khi Window/stride alignment; điểm
+                    pooled RF khớp                argmax có thể đổi
+     GAP            New-minus-dropped identity    Cùng số positions n, đúng shared
+                                                  map và sums; floating update có
+                                                  rounding khác
+     Affine head    Exact pairwise-margin         Đúng class schema,
+                    expression                    weights/biases; mọi competitor
+                                                  đều cần kiểm
+     BatchNorm eval Có thể thành fixed channel    Running statistics phải thật sự
+                    affine                        frozen; không mặc định nếu cấu
+                                                  hình khác
+     BatchNorm      Output có thể phụ thuộc batch Single-window reference độc lập
+     train          statistics                    batch cần định nghĩa lại
+     Dropout        Eval có thể không dùng        Training mode không đáp
+                    stochastic mask               deterministic reference nếu
+                                                  mask thay đổi
+     Flatten–MLP    Có thể bound bằng verifier    Positional weights không cho
+                    phù hợp                       GAP cancellation tổng quát
+     Quantization   Có thể phân tích mạng rời rạc Scale/zero-point, rounding,
+                    cụ thể                        clipping và accumulator là
+                                                  contract mới
+     Membership     Accepted query thật sự thuộc  Coordinate system, overlap, finite
+                    certified set                 values và boundary policy phải
+                                                  khớp
+     Certificate    Accepted target bằng          Bound sound toàn miền, positive
+                    reference                     gate, identity và lifecycle hợp lệ
+
+
+
+19     Các câu hỏi nghiên cứu rút ra từ việc bóc tách CNN
+
+Phân tích trên xác lập các identity và sufficient conditions. Phần còn mở là tìm một operating
+regime đồng thời sound, useful và giảm tổng cost. Các câu hỏi sau phải được kiểm trên
+reference/data cụ thể, không được coi là đã có đáp án từ kiến trúc.
+1. Representation. RF 9 và GAP có giữ đủ thông tin nhận dạng 12 classes, nhất là transi-
+   tions? Cần đánh giá held-out accuracy/macro-F1 và class support; RF nhỏ không tự chứng
+   minh thiếu hay đủ.
+2. Geometry. Wave-domain có cấu trúc theo sensor/time có cho tighter useful margins hơn
+   diagonal box ở điều kiện coverage/cost được matching? Toy cancellation chỉ cho khả năng
+   xảy ra.
+3. Bounds. Giữ dependency ở feature sum hoặc trực tiếp margin có đáng build cost so với
+   IBP rẻ hơn? Phải tính cả failed builds.
+
+
+28/10/2026                                                                                 20
+ECDR | Bóc tách mô hình CNN                                                        Tài liệu đồng hành Week 1–3
+
+
+4. Lifecycle. One-step, fixed-anchor full-domain hay reachable horizon phù hợp temporal
+   trace? Mỗi lựa chọn có state và invalidation semantics khác nhau.
+5. Systems. Computational reuse và decision reuse riêng rẽ hoặc kết hợp có total la-
+   tency/memory tốt hơn full forward trên target device? Cần cùng output semantics,
+   batch, threads và measurement scope.
+6. Numerics. Biên sai số để bảo đảm agreement với reference float/quantized có làm gate
+   quá chặt? Cần sound bounds trên phép tính thật và kiểm các inputs gần decision bound-
+   ary.
+Các identity RF, shift và GAP là nền tảng lý thuyết đã chứng minh dưới giả thiết; các câu
+hỏi về coverage, model quality và net saving vẫn là giả thuyết nghiên cứu. Việc giữ riêng
+hai mức kết luận giúp proposal không dùng một phép tính architecture để thay cho kết quả
+thực nghiệm.
+
+
+A Đối chiếu ngắn với SmallCNN1D lịch sử
+
+A.1    Source đã đọc và lý do chỉ đặt ở phụ lục
+
+Source s c r i p t s / b a c k b o n e . p y và cấu hình c o n f i g s / b a c k b o n e . y a m l của workspace định
+nghĩa model cũ với K = 6, normalization per-channel fit trên training windows của
+policy pure-only labels 1–6. Đường đi là same-padded Conv1D–BN–ReLU, MaxPool1D(2),
+same-padded Conv1D–BN–ReLU, MaxPool1D(2), same-padded Conv1D–BN–ReLU, Flatten,
+Linear(2048,128)–ReLU và Linear(128,6). Đây là source evidence lịch sử tại thời điểm đọc,
+không phải schema đầy đủ của nghiên cứu lý thuyết mới.
+
+
+      Bảng 10: Hai kiến trúc có cùng conv channels/kernels nhưng khác hàm và proof.
+Thuộc tính             CNN lý thuyết chính                             SmallCNN1D lịch sử
+
+Classes                K tổng quát, ví dụ 12                           6 theo frozen config
+Conv length            124,122,120                                     128,64,32 trước/sau pools theo flow
+Padding                Valid                                           Same padding, kernels lẻ
+Intermediate           Không                                           MaxPool sau Conv1/Conv2
+pool
+BatchNorm              Không                                           Sau mỗi Conv
+Final map              64 × 120                                        64 × 32
+Head                   GAP + affine 64 → K                             Flatten 2048 → 128 → 6
+Parameters             20332 khi K = 12                                282918
+GAP delta              Áp dưới assumptions đã nêu                      Không áp nguyên công thức
+theorem
+New                    Chưa có claim đo trong tài liệu                 Chỉ có provenance đã lưu
+accuracy/latency
+
+
+Conv lengths của model cũ cần đọc theo flow đầy đủ: input 128; Conv1 giữ 128 rồi pool thành
+64; Conv2 giữ 64 rồi pool thành 32; Conv3 giữ 32. Flatten có 64 × 32 = 2048 scalars. MLP head
+mang positional weights, nên cùng local feature xuất hiện ở vị trí khác có thể đóng góp khác.
+
+
+A.2    Tính lại parameter count lịch sử
+
+Ba Conv có cùng số parameters 19552 vì padding không thay kernel count. BN affine param-
+eters là 2(32+64+64) = 320; running means/variances là buffers, không nằm trong trainable
+
+
+28/10/2026                                                                                                       21
+ECDR | Bóc tách mô hình CNN                                               Tài liệu đồng hành Week 1–3
+
+
+count. Hai Linear có
+                              2048 × 128 + 128 = 262272,     128 × 6 + 6 = 774.                    (68)
+Tổng 19552 + 320 + 262272 + 774 = 282918. Số lớn hơn chủ yếu do dense head, không chứng
+minh accuracy cao hơn hoặc latency tỷ lệ cùng mức.
+BatchNorm dùng statistics khác nhau tùy train/eval và cấu hình theo API contract [5]. Trong
+eval với running statistics cố định, BN một channel là một affine map; có thể gộp vào Conv để
+phân tích phù hợp. Trong training hoặc khi không dùng running statistics như assumption
+đó, không được tự dùng cùng single-window fixed-affine proof.
+
+
+A.3   Latency đã lưu có scope giới hạn
+
+data/g2_cpu_latency.json ghi checkpoint K=6 cũ, torch_version:2.14.1+cpu, CPU, 6 threads,
+200 warmups, 1000 batch-1 runs. Batch-1 mean 0.2511 ms, p50 0.2357 ms và p95 0.3313 ms;
+tương ứng mean 251.1 µs. File ghi scope full backbone forward, không reuse, không certifi-
+cate. Tài liệu này đọc lại metadata; không chạy lại benchmark và không dùng số đó làm
+measured baseline cho CNN valid–GAP K=12 mới.
+
+
+B     Bảng ký hiệu và checklist đọc lại phép tính
+
+       Ký hiệu                Ý nghĩa trong tài liệu
+
+       C, W, B                Sensor channels, sample columns mỗi window, batch size
+       fs , s                 Sampling rate (sample/s), window shift (sample)
+       X, Z, P                Raw input, normalized input, preprocessing map
+       µc , σ c               Frozen mean và positive scale theo sensor channel
+       kℓ , a ℓ , d ℓ , p ℓ   Kernel taps, convolution stride, dilation, symmetric padding
+                              của layer ℓ
+       G                      Số convolution groups; mô hình chính dùng 1
+       Tℓ , C ℓ               Output length và output channels của layer
+       Rℓ , J ℓ               RF span và jump trên input sample grid
+       P, M                   Parameter count và MAC count theo convention đã định
+       Hi , d h , n           Final feature vector tại position i, số feature channels, số final
+                              time positions
+       m(Z)                   GAP vector trên normalized input, khác normalization mean
+                              µc
+       A, β, fθ , F, h        Head weights/bias, normalized CNN, raw pipeline logits, class
+       c, j, qj , gcj , γcj   Target, competitor, head-row difference, raw-pipeline và
+                              normalized-network pairwise margins
+       U, U , S               Một new wave, tập new waves, tập full windows
+       Ddrop , Dnew           Tổng feature vectors bị bỏ và thêm khi shift
+       ℓcj                    Sound lower bound của margin trên toàn certified domain
+       δcj , ηcj              Bound numerical error của verifier và reference
+       r, b, tf , tb          Hit fraction, build/query frequency, full-forward và build cost
+
+
+Để tự tái kiểm một cấu hình khác, làm theo thứ tự: xác định input/units; viết operator for-
+mula; tính từng output length; suy RF/jump; đếm weights và bias; đếm MAC cùng non-MAC
+
+28/10/2026                                                                                          22
+ECDR | Bóc tách mô hình CNN                                          Tài liệu đồng hành Week 1–3
+
+
+operations; ghi dtype và memory schedule; chứng minh overlap/alignment; suy head de-
+pendency; tạo whole-domain bound; kiểm membership/identity/lifecycle; sau cùng mới đo
+accuracy, coverage và total runtime. Đổi một operator có thể buộc suy lại nhiều bước phía
+sau.
+
+
+C Provenance và ranh giới của kết quả
+
+Nguồn nội bộ dùng để giữ nhất quán là hai LaTeX đồng hành đã ghi ở trang đầu, scripts/ba
+ckbone.py, configs/backbone.yaml và data/g2_cpu_latency.json. Các counts, shape, RF, memory
+payload và ví dụ toy là phép tính trực tiếp từ cấu hình/formula trong chính tài liệu. Chứng
+minh whole-domain đã chỉ rõ giả thiết; sampling corners có thể kiểm số học affine nhưng
+không thay bằng chứng universal.
+PyTorch documentation được dẫn bằng URLs phiên bản 2.14 để giữ rõ operator contract
+đã đối chiếu, không dựa vào link stable có thể đổi phiên bản. Tài liệu không sửa source,
+train model mới, chạy neural verifier cho HAPT hoặc đo thiết bị. Accuracy K=12, numerical
+soundness của một implementation mới và net saving trên workload thực vẫn cần nghiên
+cứu/kiểm chứng tiếp theo.
+
+
+Tài liệu
+
+ [1] J. Reyes-Ortiz et al. Smartphone-Based Recognition of Human Activities and Postural
+     Transitions. UCI, 2015. https://doi.org/10.24432/C54G7M.
+ [2] PyTorch. Conv1d — PyTorch 2.14 documentation. https://docs.pytorch.org/docs/2.14/g
+     enerated/torch.nn.Conv1d.html.
+ [3] PyTorch. AdaptiveAvgPool1d — PyTorch 2.14 documentation. https://docs.pytorch.org/d
+     ocs/2.14/generated/torch.nn.AdaptiveAvgPool1d.html.
+ [4] PyTorch. CrossEntropyLoss — PyTorch 2.14 documentation. https://docs.pytorch.org/d
+     ocs/2.14/generated/torch.nn.CrossEntropyLoss.html.
+ [5] PyTorch. BatchNorm1d — PyTorch 2.14 documentation. https://docs.pytorch.org/docs/
+     2.14/generated/torch.nn.BatchNorm1d.html.
+ [6] PyTorch. Numerical accuracy — PyTorch 2.14 documentation. https://docs.pytorch.org
+     /docs/2.14/notes/numerical_accuracy.html.
+ [7] G. Montúfar et al. On the Number of Linear Regions of Deep Neural Networks. NeurIPS,
+     2014. https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a9
+     2d96e74617c3d2a-Abstract.html.
+ [8] S. Gowal et al. On the Effectiveness of Interval Bound Propagation for Training Verifiably
+     Robust Models. 2018. https://arxiv.org/abs/1810.12715.
+ [9] H. Zhang et al. Efficient Neural Network Robustness Certification with General Activation
+     Functions. NeurIPS, 2018. https://arxiv.org/abs/1811.00866.
+[10] K. Xu et al. Automatic Perturbation Analysis for Scalable Certified Robustness and Be-
+     yond. NeurIPS, 2020. https://arxiv.org/abs/2002.12920.
+[11] C. Kechris et al. Don’t Think It Twice: Exploit Shift Invariance for Efficient Online Stream-
+     ing Inference of CNNs. 2024. https://arxiv.org/abs/2408.03223.
+
+
+28/10/2026                                                                                     23
+

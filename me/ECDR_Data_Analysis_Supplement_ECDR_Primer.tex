@@ -1,0 +1,404 @@
+% ============================================================
+%  SUPPLEMENT 01 — ECDR PRIMER
+%  What ECDR Is, How It Works, and Why It Is Sound
+%  Companion to: ECDR_Data_Analysis.tex
+%  Do NOT modify ECDR_Data_Analysis.tex — add only here.
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+% ---------- fonts & encoding ----------
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+% ---------- language ----------
+\usepackage[english]{babel}
+
+% ---------- math ----------
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+
+% ---------- layout ----------
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array, longtable}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+% ---------- color scheme (matches main doc) ----------
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+\definecolor{lightgray}{RGB}{240,240,240}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+% ---------- theorem environments ----------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+% ---------- macros ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Se}{\mathcal{S}_e}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% ---------- section formatting ----------
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+% ============================================================
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} ECDR Primer}\\[0.5em]
+  {\large\color{muted} What ECDR Is, How It Works, and Why It Requires Formal Certification}\\[1.2em]
+  {\normalsize Supplement~01 to \textit{ECDR Data Analysis} \textbar{} ECDR Research Workspace, October~2026}\\[0.3em]
+  {\small\color{muted}
+    This document is a supplementary explanation only. \\
+    The main data analysis document (\code{ECDR\_Data\_Analysis.tex}) is not modified.}
+\end{center}
+
+\vspace{1em}
+\hrule
+\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{Motivation: Why Reuse Decisions at All?}
+
+Neural networks deployed on edge devices (smartphones, wearables, embedded sensors)
+face two contradictory requirements:
+
+\begin{enumerate}
+  \item \textbf{Accuracy}: The activity recognition model must classify each incoming
+        sensor window correctly, which demands running the full neural network inference
+        pipeline on every query.
+  \item \textbf{Efficiency}: Edge hardware has severe power and latency budgets.
+        Running a full CNN forward pass at 50\,Hz drains battery and heats the device.
+\end{enumerate}
+
+The key insight behind ECDR is empirical: \emph{when a person walks steadily, consecutive
+1.28\,s windows look almost identical to the network.} The network would produce the same
+logits, and therefore the same top-1 decision, on many consecutive queries. If we can
+\emph{prove} that the decision cannot change within a neighborhood, we can safely skip the
+forward pass for any query that falls inside that neighborhood.
+
+\begin{remark}[ECDR Is Not a Cache]
+  A software cache stores results keyed by exact input hashes: only when
+  $X_t = X^r$ byte-for-byte does a cache hit occur. ECDR is a \emph{certified
+  neighborhood reuse} system: it guarantees that the classification
+  decision is constant over a \emph{continuous, infinite-dimensional neighborhood}
+  around $X^r$. This covers infinitely many possible sensor readings, not just
+  one exact recording.
+\end{remark}
+
+% ============================================================
+\section{The Core Invariance Argument}
+
+\subsection{Setup and Notation}
+
+Let the sensor stream produce a sequence of windows
+$X_1, X_2, \ldots \in \R^{6 \times 128}$, where each window contains 128 time
+steps of 6-channel IMU data (3-axis accelerometer and 3-axis gyroscope).
+
+The full inference pipeline consists of two stages:
+\begin{enumerate}
+  \item \textbf{Normalization}: $N: \R^{6\times128} \to \R^{6\times128}$ is a
+        fixed, affine channel-wise standardization (subtract mean, divide by
+        standard deviation). It is determined once from training data and frozen.
+  \item \textbf{Neural network}: $f_\theta: \R^{6\times128} \to \R^K$ maps a
+        normalized window to raw logits over $K$ activity classes.
+\end{enumerate}
+
+The composed classifier is $F \coloneqq f_\theta \circ N$. The top-1 decision is
+$c(X) \coloneqq \arg\max_{j \in \{1,\ldots,K\}} F_j(X)$.
+
+\subsection{What Is an ``Anchor''?}
+
+An \textbf{anchor} is a specific window $X^r$ that has been fully evaluated by the
+reference classifier $F$, yielding top-1 decision $c = c(X^r)$ and the full logit
+vector $F(X^r) \in \R^K$.
+
+During streaming, every subsequent window $X_t$ for $t > r$ is a \textbf{query}.
+Rather than running $F$ on $X_t$, ECDR checks: \emph{can we prove that
+$c(X_t) = c$?} If yes, reuse the decision. If not (or if the certificate expires),
+evaluate $F(X_t)$ directly and potentially set a new anchor.
+
+\subsection{The Certified Reuse Condition}
+
+\begin{definition}[Perturbation Domain]
+  A perturbation domain $\Se(X^r)$ is a measurable subset of $\R^{6\times128}$
+  centered at the anchor $X^r$, designed to contain plausible streaming queries
+  that are ``close'' to $X^r$ in a physically meaningful sense.
+\end{definition}
+
+\begin{definition}[Logit Margin Lower Bound]
+  For a given domain $\mathcal{S}$ and class pair $(c, j)$ with $j \ne c$, define
+  the \textbf{certified margin}:
+  \begin{equation}
+    \underline{m}_{cj}(\mathcal{S})
+    \;\le\; \inf_{X \in \mathcal{S}} \bigl[F_c(X) - F_j(X)\bigr].
+  \end{equation}
+  The quantity $\underline{m}_{cj}$ is a \emph{sound lower bound}: it is guaranteed
+  to be at most the true minimum logit gap between class $c$ and class $j$ over the
+  entire domain. If $\underline{m}_{cj} > 0$, then $F_c(X) > F_j(X)$ for every
+  $X \in \mathcal{S}$, meaning class $c$ always wins over class $j$ inside $\mathcal{S}$.
+\end{definition}
+
+\begin{theorem}[Sound Decision Reuse]
+  If\,
+  $X_t \in \Se(X^r)$
+  \;\textbf{and}\;
+  $\underline{m}_{cj}\bigl(\Se(X^r)\bigr) > 0$ for all $j \ne c$,
+  \;then $c(X_t) = c$.
+\end{theorem}
+
+\begin{proof}
+  For any $X_t \in \Se(X^r)$ and any competing class $j \ne c$:
+  \[
+    F_c(X_t) - F_j(X_t)
+    \;\ge\; \inf_{X \in \Se(X^r)}\bigl[F_c(X) - F_j(X)\bigr]
+    \;\ge\; \underline{m}_{cj} > 0.
+  \]
+  Therefore $F_c(X_t) > F_j(X_t)$ for all $j \ne c$, so $\arg\max_j F_j(X_t) = c$.
+\end{proof}
+
+\begin{remark}[Both Conditions Are Necessary]
+  \begin{itemize}[leftmargin=1.5em]
+    \item $X_t \in \Se(X^r)$ alone: we know $X_t$ is nearby, but the network may
+          still flip its decision inside $\Se$ — no safety guarantee.
+    \item $\underline{m}_{cj} > 0$ alone: the margin is certified over the domain,
+          but we have not verified that the specific query $X_t$ falls inside — no
+          applicability guarantee.
+    \item \textbf{Both together}: $X_t$ is inside the certified region, and the
+          decision is proven constant throughout that region. Safe reuse.
+  \end{itemize}
+\end{remark}
+
+% ============================================================
+\section{ECDR vs.\ Simple Caching: A Precise Comparison}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lYY@{}}
+\toprule
+Property & Hash Cache & ECDR Certified Reuse \\
+\midrule
+Hit condition & $X_t = X^r$ (exact bitwise match) & $X_t \in \Se(X^r)$ (continuous neighborhood) \\
+Hit probability & Near zero for continuous sensors & Tunable via domain size \\
+Safety guarantee & Trivially exact & Formally proven by verifier \\
+Domain shape & Point (no neighborhood) & Hyperrectangle, $L_2$ ball, wave-domain, etc. \\
+Requires verifier? & No & Yes (IBP/CROWN/LiRPA) \\
+Effective reuse & Negligible in streaming & Potentially $>90\%$ for static postures \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Anchor Lifecycle: States and Transitions}
+
+An anchor does not live forever. As time progresses, the streaming query $X_t$ may
+drift away from $X^r$, eventually leaving $\Se(X^r)$. The system must track the
+status of each anchor and know when to retire it.
+
+\subsection{State Machine}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+State & Meaning & Allowed Actions \\
+\midrule
+\textbf{FRESH} & Certificate just constructed on $X^r$; margin verified. & Reuse if $X_t \in \Se$. \\
+\textbf{ACTIVE} & Anchor is in use; successive queries accepted. & Reuse if $X_t \in \Se$. \\
+\textbf{STALE} & Anchor has been active for too long, or drift is detected. & Do not reuse. Must refresh. \\
+\textbf{REFRESH} & Running full $F(X_t)$ and re-certifying. & Blocking computation step. \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Transitions:} FRESH $\to$ ACTIVE (first reuse), ACTIVE $\to$ STALE (timeout / domain exit),} \\
+\multicolumn{3}{@{}l}{\phantom{\textit{Transitions:}} STALE $\to$ REFRESH $\to$ FRESH (new anchor)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Why Recentering Is Forbidden Without Re-Verification}
+
+An important failure mode: \emph{slide the anchor center to $X_t$ after each accepted
+query.}
+
+Suppose $X_t$ was accepted inside $\Se(X^r)$. Now redefine $X^r \leftarrow X_t$
+and build a new domain $\Se(X_t)$ \emph{without re-running the verifier}. This new
+domain extends in directions outside the original $\Se(X^r)$. The logit margin over
+those new regions has never been certified. A competing class might cross above $F_c$
+just outside $\Se(X^r)$ but inside $\Se(X_t)$.
+
+\begin{remark}[Formal Statement]
+  $\Se(X_t)$ need not be a subset of $\Se(X^r)$ even when $X_t \in \Se(X^r)$.
+  Certification of $\Se(X^r)$ implies nothing about $\Se(X_t)$.
+  Re-verification is a non-negotiable requirement.
+\end{remark}
+
+\subsection{Drift and the Triangle Inequality}
+
+For a sequence of queries $X_{r}, X_{r+1}, \ldots, X_{r+h}$ (horizon $h$ steps),
+the accumulated drift satisfies:
+\begin{equation}
+  \|X_{r+h} - X^r\|
+  \;\le\; \sum_{k=0}^{h-1} \|X_{r+k+1} - X_{r+k}\|.
+\end{equation}
+Each one-step $L_2$ distance is bounded empirically (median $\approx 4.9$ normalized
+for same-activity pairs; median $\approx 36.6$ for locomotion classes). For static
+postures the drift is negligible; for walking, $h = 5$ steps can accumulate
+$\approx 5 \times 4.9 = 24.5$ normalized units of displacement — enough to exit
+typical certification radii.
+
+This means \textbf{anchor lifetime depends strongly on activity class}, a key
+empirical finding of the data analysis.
+
+% ============================================================
+\section{The Two Branches of the HAPT Feature Space}
+
+The HAPT dataset is processed in two distinct formats within the ECDR workspace:
+
+\subsection{Raw 6-Channel Windows (This Document)}
+\begin{itemize}[leftmargin=1.5em]
+  \item Shape: $6 \times 128$ tensor (6 IMU channels, 128 time steps at 50\,Hz).
+  \item The perturbation domain $\Se$ lives in $\R^{768}$.
+  \item ECDR certification operates directly on continuous sensor space.
+  \item Primary focus of \code{ECDR\_Data\_Analysis.tex}.
+\end{itemize}
+
+\subsection{561-Feature Engineered Branch}
+\begin{itemize}[leftmargin=1.5em]
+  \item The original HAPT data release also provides a 561-dimensional feature
+        vector per window, computed by the dataset authors via fixed-window FFT,
+        energy bands, gravity component separation, Jerk signals, and other
+        hand-crafted transformations.
+  \item A classifier operating on 561-features occupies $\R^{561}$ — a completely
+        different space with different geometry, different norm relationships,
+        and different certification requirements.
+  \item The two branches are \textbf{not interchangeable}: empirical distances
+        measured in $\R^{768}$ raw space do not translate to $\R^{561}$ feature
+        space, and vice versa.
+  \item ECDR certification in the 561-feature branch requires a separate
+        normalization pipeline, separate verifier invocation, and separate
+        domain construction.
+\end{itemize}
+
+% ============================================================
+\section{What Makes Certification ``Sound''?}
+
+The word \emph{sound} has a precise technical meaning in formal verification:
+
+\begin{definition}[Soundness]
+  A procedure for computing $\underline{m}_{cj}(\mathcal{S})$ is \textbf{sound}
+  if the computed value is guaranteed to be a lower bound on the true infimum:
+  \[
+    \underline{m}_{cj}(\mathcal{S}) \;\le\; \inf_{X \in \mathcal{S}} \bigl[F_c(X) - F_j(X)\bigr].
+  \]
+  A sound procedure may under-estimate the margin (producing a smaller value than
+  the truth) but will never over-estimate it (claiming the margin is larger than
+  it actually is).
+\end{definition}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Why this matters:} If a verifier accidentally reports
+        $\underline{m}_{cj} > 0$ when the true infimum is $\le 0$, the system
+        would reuse a decision that is actually wrong on some $X \in \mathcal{S}$.
+        That is a \emph{safety failure}.
+  \item \textbf{Tightness is efficiency:} A sound verifier that always outputs
+        $\underline{m}_{cj} = -\infty$ is trivially sound but useless — it
+        certifies nothing. Good verifiers (CROWN, LiRPA) produce tight lower
+        bounds, certifying large domains.
+  \item \textbf{Completeness is different:} A \emph{complete} verifier returns
+        $\underline{m}_{cj} > 0$ if and only if the true margin is positive.
+        Neural network verification is in general NP-hard, so practical tools
+        sacrifice completeness for tractability while preserving soundness.
+\end{itemize}
+
+\subsection{Cryptographic Hash Checks Are Not Certification}
+
+The data audit uses SHA-256 hashes to verify that tensor files have not been
+accidentally corrupted. This is a \emph{data integrity} check, not a
+\emph{semantic correctness} guarantee. A SHA-256 match confirms that two files
+are bitwise identical; it says nothing about:
+\begin{itemize}[leftmargin=1.5em]
+  \item Whether the annotation indexing scheme (0-based vs.\ 1-based) is correct.
+  \item Whether the normalization parameters are appropriate.
+  \item Whether the classifier's margins are certified over $\Se$.
+\end{itemize}
+Cryptographic verification and formal neural network certification are
+complementary but entirely distinct mechanisms.
+
+% ============================================================
+\section{The ECDR Safety Argument: End-to-End Summary}
+
+The full safety argument for a single reuse event is:
+
+\begin{center}
+\small
+\begin{tabular}{@{}clll@{}}
+\toprule
+Step & Who Performs It & What Is Established & Evidence Type \\
+\midrule
+1 & Data pipeline & $X_t$ correctly extracted from raw IMU & SHA-256 + float32 cast check \\
+2 & Normalization $N$ & $Z_t = N(X_t)$ correctly computed & Arithmetic: affine, closed-form \\
+3 & Membership test & $X_t \in \Se(X^r)$ checked & Runtime coordinate comparison \\
+4 & Formal verifier & $\underline{m}_{cj}(\Se) > 0$ for all $j \ne c$ & Sound IBP/CROWN bound \\
+5 & System logic & Reuse $c$ as output & Follows from Theorem~1 \\
+\midrule
+\multicolumn{4}{@{}l}{If any step fails: fall back to full inference $F(X_t)$.} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Breaking any one step invalidates the guarantee. The data audit
+(\code{ECDR\_Data\_Analysis.tex}) provides empirical support for Steps~1 and~3.
+Steps~4 and~5 require separate verifier implementation and are currently at
+\textbf{HYPOTHESIS} epistemic status (D07, D08 in the Evidence Ledger).
+
+% ============================================================
+\section{Open Problems as of This Document}
+
+\begin{longtable}{@{}llp{7cm}@{}}
+\toprule
+Ref & Status & Description \\
+\midrule
+D06 & OPEN & Annotation indexing (0-based vs. 1-based): upstream intent unresolved. \\
+D07 & HYPOTHESIS & Structured domains yield practical certified coverage for a 12-class CNN. \\
+D08 & HYPOTHESIS & ECDR delivers net savings on edge hardware ($T_e + T_m + qT_b < rT_f$). \\
+D09 & OPEN & Reference CNN maintains high accuracy across all 12 classes on HAPT. \\
+\bottomrule
+\end{longtable}
+
+\noindent Until D07 and D08 are tested with an actual trained network and profiled
+on target hardware, ECDR should be characterized as a \emph{theoretically sound,
+empirically unvalidated} system for the 12-class setting.
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\bibitem{weeks}
+  ECDR Research Workspace. \textit{ECDR Weeks~1--3 Theory Brief}.
+  \code{ECDR\_Weeks\_1\_2\_3\_Theory.tex}, October~2026.
+\bibitem{math}
+  ECDR Research Workspace. \textit{ECDR Mathematics Concepts}.
+  \code{ECDR\_Mathematics\_Concepts\_EN.tex}, October~2026.
+\end{thebibliography}
+
+\end{document}

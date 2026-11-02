@@ -1,0 +1,324 @@
+% ============================================================
+%  SUPPLEMENT 07 — STATISTICAL DEPENDENCE AND INFERENCE
+%  Overlapping Windows, Block Bootstrap, Effective N, and Clustered SE
+%  Companion to: ECDR_Data_Analysis.tex
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array, longtable}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\corr}{\operatorname{corr}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} Statistical Dependence and Rigorous Inference}\\[0.5em]
+  {\large\color{muted} Overlapping Windows, Block Bootstrap, Effective $N$, and Clustered Standard Errors}\\[1.2em]
+  {\normalsize Supplement~07 to \textit{ECDR Data Analysis} \textbar{} October~2026}\\[0.3em]
+  {\small\color{muted} This document is supplementary only. The main document is not modified.}
+\end{center}
+
+\vspace{1em}\hrule\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{The i.i.d. Assumption and Why It Fails Here}
+
+Classical statistical inference (confidence intervals, hypothesis tests,
+standard errors) assumes that observations $Z_1, Z_2, \ldots, Z_N$ are
+\textbf{independent and identically distributed (i.i.d.)}: each observation is
+drawn independently from the same distribution.
+
+In the HAPT sliding-window dataset, this assumption fails at \emph{two levels}:
+
+\subsection{Level 1: Window Overlap}
+
+Adjacent windows share 50\% of their raw coordinates. Specifically, window $k$
+contains raw samples at positions $[kS, kS + 128)$ and window $k+1$ at
+$[(k+1)S, (k+1)S + 128)$. With stride $S = 64$, the overlap is:
+\[
+  \text{Overlap} = [kS + 64, kS + 128) = [(k+1)S, (k+1)S + 64).
+\]
+This is $128 - 64 = 64$ samples per channel, $64 \times 6 = 384$ values in total.
+Out of 768 coordinates in each window, 384 are shared between consecutive windows.
+
+\textbf{Consequence:} Any random variable $Z$ computed per-window (e.g., the $L_2$
+distance from the mean, or the model logit output) has strong covariance between
+adjacent windows, because they share half their input data.
+
+\subsection{Level 2: Intra-Subject Clustering}
+
+Multiple sessions from the same participant share that person's gait dynamics,
+body mass, phone attachment angle, and movement style. A classifier that happens
+to perform well on a particular subject's unique gait style will show inflated
+accuracy within that subject's windows — not because of general robustness but
+because of subject-specific memorization.
+
+The 4 validation subjects (27--30) and 9 test subjects (2, 4, 9, 10, 12, 13,
+18, 20, 24) provide subject-level independence by design. However, within each
+subject, sessions share the subject's characteristics.
+
+% ============================================================
+\section{The True Variance of a Sample Mean}
+
+\subsection{General Formula}
+
+For a scalar summary statistic $Z_i$ computed per window $i$, the sample mean is:
+\[
+  \bar{Z} = \frac{1}{N} \sum_{i=1}^N Z_i.
+\]
+The true sampling variance (the variance of $\bar{Z}$ over hypothetical reruns
+of the data collection experiment) is:
+\begin{equation}\label{eq:true_var}
+  \Var(\bar{Z})
+  = \frac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N \Cov(Z_i, Z_j)
+  = \frac{\sigma^2}{N} + \frac{1}{N^2} \sum_{i \ne j} \Cov(Z_i, Z_j),
+\end{equation}
+where $\sigma^2 = \Var(Z_i)$ (assuming equal marginal variances).
+
+The naive i.i.d. standard error formula $\hat{\sigma}/\sqrt{N}$ assumes that
+the double sum reduces to $N\sigma^2$ (all off-diagonal covariances are zero).
+When covariances are \emph{positive} (adjacent windows are similar), the double sum
+exceeds $N\sigma^2$, and the true standard error is \emph{larger} than $\hat{\sigma}/\sqrt{N}$.
+
+\subsection{Quantifying the Inflation}
+
+For a simple AR(1) (first-order autoregressive) model with lag-1 autocorrelation $\rho_1$:
+\[
+  \Cov(Z_i, Z_{i+k}) = \sigma^2 \rho_1^k.
+\]
+The variance of $\bar{Z}$ for a single session of length $T$ windows is:
+\begin{align}
+  \Var(\bar{Z}) &= \frac{\sigma^2}{T} \cdot \frac{1 + \rho_1}{1 - \rho_1}
+  + O(T^{-2}) \quad \text{as } T \to \infty.
+\end{align}
+The inflation factor is $(1 + \rho_1)/(1 - \rho_1)$.
+
+\begin{example}[AR(1) Inflation for Window Channel Mean]
+  The channel-mean autocorrelation (Metric 4 in the data analysis) is approximately
+  $\rho_1 \approx 0.97$ for \code{acc\_x}. The inflation factor:
+  \[
+    \frac{1 + 0.97}{1 - 0.97} = \frac{1.97}{0.03} \approx 65.7.
+  \]
+  The true standard error of the sample mean is $\sqrt{65.7} \approx 8.1$ times
+  larger than the naive i.i.d. formula suggests. Reporting a 95\% confidence
+  interval using the naive formula would be drastically overconfident.
+\end{example}
+
+% ============================================================
+\section{Effective Sample Size: A Useful but Limited Concept}
+
+\subsection{Definition}
+
+The \textbf{effective sample size} $N_{\text{eff}}$ is defined as the number of
+hypothetical i.i.d. observations that would give the same variance as the actual
+$N$ correlated observations:
+\begin{equation}
+  N_{\text{eff}} = \frac{\sigma^2}{\Var(\bar{Z})} \cdot N
+  \;=\; \frac{N}{1 + 2 \sum_{k=1}^{\infty} \rho_k},
+\end{equation}
+where $\rho_k = \Cov(Z_i, Z_{i+k})/\sigma^2$ is the autocorrelation at lag $k$.
+For the AR(1) case: $N_{\text{eff}} = N(1 - \rho_1)/(1 + \rho_1)$.
+
+\subsection{Why $N_{\text{eff}}$ Cannot Be Computed from Geometric Overlap}
+
+A tempting shortcut: since windows overlap by 50\%, declare $N_{\text{eff}} = N/2$.
+This is wrong for two reasons:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{$N_{\text{eff}}$ depends on the statistic, not just the overlap.}
+        For a statistic $Z_i$ that depends mostly on the first 64 samples (the
+        non-overlapping part), adjacent windows are nearly independent and
+        $N_{\text{eff}} \approx N$. For a statistic that depends on all 128 samples,
+        the overlap inflates correlation. The 50\% geometric overlap does not
+        mechanically translate to $N_{\text{eff}} = N/2$.
+  \item \textbf{Non-linear classifier outputs break the formula.}
+        The autocorrelation formula above is derived for linear statistics.
+        Neural network predictions $\arg\max F_j(Z_i)$ are discrete, non-linear,
+        and can exhibit clustering effects (the same label over many consecutive
+        windows) that are not captured by second-order autocorrelation. The
+        formula for $N_{\text{eff}}$ via $\sum \rho_k$ requires a stationary,
+        weakly-dependent process — not guaranteed for a non-linear classifier on
+        a non-stationary activity stream.
+  \item \textbf{Subject clustering is separate from window overlap.}
+        Even correcting for window overlap, windows from the same subject are
+        correlated at a higher level. $N_{\text{eff}}$ for within-subject
+        statistics is much smaller than $N_{\text{eff}}$ for cross-subject statistics.
+\end{enumerate}
+
+% ============================================================
+\section{Block Bootstrap: The Right Tool for Dependent Data}
+
+\subsection{Motivation}
+
+The standard (i.i.d.) bootstrap resamples individual observations with replacement.
+For time series data, this destroys the temporal dependence structure: resampled
+sequences are not valid time series.
+
+The \textbf{block bootstrap} resamples contiguous blocks of observations, preserving
+local temporal dependence within each block.
+
+\subsection{Subject-Level Block Bootstrap}
+
+For the HAPT dataset, the appropriate block structure is \textbf{subject-level}:
+each subject's collection of windows is treated as one block.
+
+\textbf{Procedure for a single bootstrap replicate of test accuracy:}
+\begin{enumerate}[leftmargin=1.5em]
+  \item Let there be $S = 9$ test subjects.
+  \item Sample $S$ subjects with replacement from the $S$ test subjects: some
+        subjects appear multiple times, some not at all.
+  \item Pool all windows from the sampled subjects.
+  \item Compute the desired statistic (e.g., classification accuracy) on the pooled windows.
+  \item Repeat steps 1--4 $B = 10{,}000$ times to obtain a bootstrap distribution.
+  \item Report the 2.5th and 97.5th percentiles as a 95\% confidence interval.
+\end{enumerate}
+
+\subsection{Within-Subject Block Bootstrap}
+
+If within-subject statistics are needed (e.g., session-level accuracy), a finer
+block bootstrap can resample sessions (each session is a contiguous block) with
+replacement within a subject. Within each session, windows are kept in order to
+preserve temporal dependence.
+
+\subsection{Practical Limitation: 4 Validation Subjects}
+
+The validation split contains only $S_{\text{val}} = 4$ subjects (27, 28, 29, 30).
+The subject-level block bootstrap has $4^4 = 256$ distinct bootstrap resamples
+(compared to $9^9 = 387,420,489$ for the test set). Confidence intervals derived from
+only 4 subjects are extremely wide and should not be interpreted as precise estimates.
+This is a fundamental limitation of the split design, not a computational artifact.
+
+% ============================================================
+\section{Clustered Standard Errors}
+
+\subsection{Definition}
+
+Clustered standard errors are a regression-based alternative to block bootstrap.
+For a statistic $Z_i$ from cluster (subject) $s(i)$, the \textbf{cluster-robust
+variance estimator} is:
+\begin{equation}
+  \hat{V}_{\text{cluster}} = \frac{1}{N^2} \sum_{s=1}^{S} \left(\sum_{i: s(i) = s} (Z_i - \bar{Z})\right)^2.
+\end{equation}
+This is equivalent to summing the \emph{squared cluster totals} of residuals.
+It allows arbitrary within-cluster dependence (not just AR(1)) and is consistent
+as $S \to \infty$.
+
+\subsection{Limitations}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item Consistency requires $S \to \infty$. With 4 validation subjects, the
+        asymptotic approximation is poor. Use bootstrap instead.
+  \item Clustered SEs assume clusters are independent. Test subjects are
+        independent across subjects (by split design), so this holds.
+  \item For binary statistics (correct/incorrect per window), use clustered logistic
+        regression or the bootstrap — not ordinary least squares clustered SEs.
+\end{itemize}
+
+% ============================================================
+\section{What Evaluation Reports Must State}
+
+Based on the statistical analysis, any evaluation of the ECDR system or the
+reference classifier on HAPT data must explicitly state:
+
+\begin{longtable}{@{}lp{9cm}@{}}
+\toprule
+Requirement & Explanation \\
+\midrule
+Population denominator & Number of subjects (not windows) contributing to the estimate. \\
+Overlap handling & Whether results are reported on all windows or on independent
+                    (non-overlapping) subsets. \\
+Uncertainty quantification & Bootstrap CI or clustered SE; not naive $\pm 1.96\hat{\sigma}/\sqrt{N}$. \\
+Activity-stratified results & Accuracy broken down by class, especially for postural transitions
+                               with $< 100$ windows. \\
+Split used & Train/val/test clearly identified; no mixing. \\
+Evaluation mode & Pure windows only, all windows, or mixed stream — with explicit rationale. \\
+\bottomrule
+\caption{Required disclosures for statistically valid ECDR evaluation reports.}
+\end{longtable}
+
+% ============================================================
+\section{The Normalization Population Bias}
+
+The channel-wise standardization parameters $\mu_c, \sigma_c$ are fitted on the
+5,693 pure 6-class training windows. These windows were constructed from overlapping
+sliding windows of the training subjects' raw recordings.
+
+\textbf{Bias mechanism:} Each raw sample $r[n]$ within a training recording appears
+in multiple windows (up to $\lceil W/S \rceil = 2$ overlapping windows). Fitting
+the mean $\mu_c$ as an average over all window samples implicitly weights each
+raw sample by the number of windows it appears in. Samples near the middle of a
+long continuous annotation (appearing in 2 windows) are weighted twice as heavily
+as samples near annotation boundaries (appearing in 1 window).
+
+\textbf{Magnitude of bias:} For the training set, the multiplicity distribution
+(verified in the data analysis) shows that most samples appear in exactly 2 windows.
+The induced bias in $\mu_c$ is:
+\[
+  \hat{\mu}_c^{\text{overlap}} - \mu_c^{\text{unique}} = \frac{\sum_n m_n r[n,c] / \sum_n m_n - \sum_n r[n,c] / T}{}
+  \approx \frac{\text{boundary effect}}{T},
+\]
+where $m_n \in \{1, 2\}$ is the per-sample multiplicity. Because $\sum_n m_n / T \approx 2$
+for most samples, the bias is small (a second-order effect at annotation boundaries).
+However, if future work uses a different stride $S$, the multiplicity changes and
+the bias should be re-evaluated.
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\bibitem{politis1994}
+  D.N. Politis, J.P. Romano.
+  \textit{The Stationary Bootstrap}.
+  Journal of the American Statistical Association, 89(428):1303--1313, 1994.
+\bibitem{cameron2011}
+  A.C. Cameron, D.L. Miller.
+  \textit{Robust Inference with Clustered Data}.
+  In B.H. Baltagi (ed.), Econometrics of Panel Data. Springer, 2011.
+\bibitem{efron1994}
+  B. Efron, R.J. Tibshirani.
+  \textit{An Introduction to the Bootstrap}. Chapman \& Hall, 1994.
+\end{thebibliography}
+
+\end{document}

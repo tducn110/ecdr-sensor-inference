@@ -1,0 +1,311 @@
+{
+  "cases": 36,
+  "passed": 36,
+  "failed": 0,
+  "elapsed_seconds": 1.5933044040002642,
+  "source_snapshot_stable": true,
+  "source_hashes": {
+    "bounds.py": "8c0f112de65f15e4c4e6d94dd679a74bc6b8ebb0e2f9dd6053009936817fcce4",
+    "__init__.py": "a6070ce3a3af30b1f15ba49f06af7c717472c78acd5ab4a1ef7c07944fcc3fcc",
+    "incremental.py": "43bb0288e7214fe9529c9a4395ba0b1894f4e07e42fd89f955bb4934b634f70f",
+    "membership.py": "bfd2522c14e2bc112f421aadf5afdd20c10d57f536cb6245282c6e2616d859c3",
+    "schema.py": "f92510227ceb3a5adc764fd78d5e2f86c2b5938af9dfa0afd0152776c680a756",
+    "preprocessing.py": "891e6b695057be3b219a27c2fcc3746748d7c0d33f8fed793e08f42c6f898d2e",
+    "data.py": "b3e004259517be0410f3bb03af7dd490bf2b738d12940cb14e760c345fccb278",
+    "intervals.py": "3fe6e20a5c32d66e0fdd916120e1b33cb6d558fb179fdf2a39d2de5b214f9621",
+    "instrumentation.py": "c00253c76ff0f30fd6b84917dab4efc2ece2e679167e373007ceb0605cf3d87e",
+    "replay.py": "de364bfe3a7362d2601ff5ea4394185e16eee5e371e9905fc03bdfa17601c7d3",
+    "certificate.py": "cb074516f07991ababcdd6b22b425748161e9387212cd5168457ab79ffd92428",
+    "model.py": "829e7e40a1c50776dba6e0421316c02b5d508f36431e1e40140398f3c3912bfd"
+  },
+  "source_hashes_after": {
+    "bounds.py": "8c0f112de65f15e4c4e6d94dd679a74bc6b8ebb0e2f9dd6053009936817fcce4",
+    "__init__.py": "a6070ce3a3af30b1f15ba49f06af7c717472c78acd5ab4a1ef7c07944fcc3fcc",
+    "incremental.py": "43bb0288e7214fe9529c9a4395ba0b1894f4e07e42fd89f955bb4934b634f70f",
+    "membership.py": "bfd2522c14e2bc112f421aadf5afdd20c10d57f536cb6245282c6e2616d859c3",
+    "schema.py": "f92510227ceb3a5adc764fd78d5e2f86c2b5938af9dfa0afd0152776c680a756",
+    "preprocessing.py": "891e6b695057be3b219a27c2fcc3746748d7c0d33f8fed793e08f42c6f898d2e",
+    "data.py": "b3e004259517be0410f3bb03af7dd490bf2b738d12940cb14e760c345fccb278",
+    "intervals.py": "3fe6e20a5c32d66e0fdd916120e1b33cb6d558fb179fdf2a39d2de5b214f9621",
+    "instrumentation.py": "c00253c76ff0f30fd6b84917dab4efc2ece2e679167e373007ceb0605cf3d87e",
+    "replay.py": "de364bfe3a7362d2601ff5ea4394185e16eee5e371e9905fc03bdfa17601c7d3",
+    "certificate.py": "cb074516f07991ababcdd6b22b425748161e9387212cd5168457ab79ffd92428",
+    "model.py": "829e7e40a1c50776dba6e0421316c02b5d508f36431e1e40140398f3c3912bfd"
+  },
+  "results": [
+    {
+      "name": "exact_fraction_conv_box_11",
+      "status": "PASS",
+      "detail": {
+        "exact_endpoint_inequalities": 72
+      }
+    },
+    {
+      "name": "point_operational_enclosure_11",
+      "status": "PASS",
+      "detail": {
+        "logits_checked": 12
+      }
+    },
+    {
+      "name": "diagonal_sampled_margins_11",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "wave_sampled_margins_11",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "exact_fraction_conv_box_22",
+      "status": "PASS",
+      "detail": {
+        "exact_endpoint_inequalities": 72
+      }
+    },
+    {
+      "name": "point_operational_enclosure_22",
+      "status": "PASS",
+      "detail": {
+        "logits_checked": 12
+      }
+    },
+    {
+      "name": "diagonal_sampled_margins_22",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "wave_sampled_margins_22",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "exact_fraction_conv_box_33",
+      "status": "PASS",
+      "detail": {
+        "exact_endpoint_inequalities": 72
+      }
+    },
+    {
+      "name": "point_operational_enclosure_33",
+      "status": "PASS",
+      "detail": {
+        "logits_checked": 12
+      }
+    },
+    {
+      "name": "diagonal_sampled_margins_33",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "wave_sampled_margins_33",
+      "status": "PASS",
+      "detail": {
+        "queries": 4,
+        "margin_comparisons": 44
+      }
+    },
+    {
+      "name": "bitwise_multishift_1",
+      "status": "PASS",
+      "detail": {
+        "steps": 4,
+        "array_elements_compared": 78128
+      }
+    },
+    {
+      "name": "bitwise_multishift_64",
+      "status": "PASS",
+      "detail": {
+        "steps": 4,
+        "array_elements_compared": 78128
+      }
+    },
+    {
+      "name": "bitwise_multishift_120",
+      "status": "PASS",
+      "detail": {
+        "steps": 4,
+        "array_elements_compared": 78128
+      }
+    },
+    {
+      "name": "tiny_overlap_fallback",
+      "status": "PASS",
+      "detail": {
+        "perturbation": 5e-13
+      }
+    },
+    {
+      "name": "reference_reject_nan",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "incremental_reject_nan",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reference_reject_inf",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "incremental_reject_inf",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reference_reject_finite_overflow",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reference_reject_negative_pre_relu_overflow",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "incremental_reject_finite_overflow",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "reject_malformed_model_kernel",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "diagonal_endpoint_rounding_membership",
+      "status": "PASS",
+      "detail": {
+        "actual_class": 1,
+        "certified_target": 0,
+        "query_coordinate": 1e-100,
+        "certified_upper": 5e-324
+      }
+    },
+    {
+      "name": "diagonal_endpoint_rounding_integration",
+      "status": "PASS",
+      "detail": {
+        "returned_class": 1,
+        "reference_class": 1,
+        "was_reused": false
+      }
+    },
+    {
+      "name": "stale_wave_anchor_rebind_integration",
+      "status": "PASS",
+      "detail": {
+        "valid_original_certificate": true,
+        "rebind_rejected": true,
+        "returned_class": 1,
+        "reference_class": 1,
+        "was_reused": false
+      }
+    },
+    {
+      "name": "interval_reject_inverted",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "interval_reject_nonfinite",
+      "status": "PASS",
+      "detail": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "negative_threshold_diagonal",
+      "status": "PASS",
+      "detail": {
+        "rejected": true,
+        "method": "diagonal_box_ibp_invalid_threshold"
+      }
+    },
+    {
+      "name": "negative_threshold_wave",
+      "status": "PASS",
+      "detail": {
+        "rejected": true,
+        "method": "wave_domain_invalid_threshold"
+      }
+    },
+    {
+      "name": "tie_not_certified",
+      "status": "PASS",
+      "detail": {
+        "rejected": true,
+        "method": "diagonal_box_ibp"
+      }
+    },
+    {
+      "name": "frozen_interval_base_alias",
+      "status": "PASS",
+      "detail": {
+        "detached_or_immutable": true
+      }
+    },
+    {
+      "name": "frozen_model_parameter_alias",
+      "status": "PASS",
+      "detail": {
+        "detached_and_readonly": true
+      }
+    },
+    {
+      "name": "model_change_invalidates_cache",
+      "status": "PASS",
+      "detail": {
+        "old_id": "76e3860ae6ac08b6",
+        "new_id": "729883f949a527b3"
+      }
+    },
+    {
+      "name": "returned_result_cache_alias",
+      "status": "PASS",
+      "detail": {
+        "cache_isolated_from_returned_results": true
+      }
+    }
+  ]
+}

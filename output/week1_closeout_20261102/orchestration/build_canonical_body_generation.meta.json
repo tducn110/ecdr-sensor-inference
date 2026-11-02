@@ -1,0 +1,26 @@
+{
+  "worker": "build_canonical_body_generation",
+  "model": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "start_unix": 1793629813.8656602,
+  "timeout_seconds": 360,
+  "prompt_path": "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/build_canonical_body_generation.prompt.txt",
+  "argv_without_prompt": [
+    "agy",
+    "--conversation",
+    "76f78ecc-e73f-421d-8c7f-e0f7de00f2a4",
+    "--model",
+    "gemini-3.8-flash-medium",
+    "--effort",
+    "medium",
+    "--output-format",
+    "stream-json",
+    "--print-timeout",
+    "300s",
+    "--log-file",
+    "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/build_canonical_body_generation.agy.log"
+  ],
+  "pid": 32992,
+  "returncode": 0,
+  "end_unix": 1793630001.318929
+}

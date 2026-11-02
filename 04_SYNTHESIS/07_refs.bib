@@ -1,0 +1,111 @@
+@misc{xiang2026lipcache,
+  title        = {LipCache: A Local Inference Proxy with Certified Caching for Edge Image Classification Service},
+  author       = {Xiang, Zhengzhe and Chen, Yinlin and Ying, Fuli and Zhou, Binbin and Zhao, Hailiang and Dustdar, Schahram},
+  year         = {2026},
+  eprint       = {2608.13144},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.DC},
+  url          = {https://arxiv.org/abs/2608.13144},
+  note         = {Verified from full PDF arXiv:2608.13144v1 (21 pages, fetched 2026-10-15). Remark 5.2: certificate is GuardNet-side only, MainNet-side guarantee explicitly excluded -- quote: theoretical certificate of LipCache is on the GuardNet side, not on the MainNet side. Sec 7.1: all experiments on i.i.d. test sets; temporal redundancy, concept drift, consecutive-frame reuse in streaming left as future work. Speedup up to 1.65x on CIFAR/Tiny-ImageNet/SVHN; radii r_i conservative and r*_i per-pair (Remark 5.1)}
+}
+
+@misc{varghese2026stbp,
+  title        = {Hybrid Robustness Verification for Spatio-Temporal Neural Networks},
+  author       = {Varghese, Sherwin and Wicker, Matthew and Lomuscio, Alessio},
+  year         = {2026},
+  eprint       = {2606.09746},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.CV},
+  url          = {https://arxiv.org/abs/2606.09746},
+  note         = {arXiv metadata reopened 2026-10-22: submitted 8 June 2026, accepted SAIV 2026. Local PDF title page also inspected. Prior full-PDF v1 source check recorded 2026-10-15: structured first-layer bounds and ST-Bench; reported improvement concerns certified robust accuracy, not inference speed. STBP-LJ empirical-estimator caveat is recorded in the earlier full-text check. Local file checksum identifies that local artifact only; equality with the current remote PDF has not been re-established. Symposium ordinal differs between sources; no ordinal is relied on in the current report}
+}
+
+@inproceedings{parger2022deltacnn,
+  title     = {DeltaCNN: End-to-End CNN Inference of Sparse Frame Differences in Videos},
+  author    = {Parger, Mathias and Tang, Chengcheng and Twigg, Christopher D. and Keskin, Cem and Wang, Robert and Steinberger, Markus},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {12497--12506},
+  month     = {June},
+  year      = {2022},
+  url       = {https://openaccess.thecvf.com/content/CVPR2022/html/Parger_DeltaCNN_End-to-End_CNN_Inference_of_Sparse_Frame_Differences_in_Videos_CVPR_2022_paper.html},
+  note      = {Verified from CVPR Open Access 2026-10-15. Sparse end-to-end, no retraining, outperforms cuDNN dense ref, speedup up to 7x with marginal accuracy diff. No certificate -- empirical reuse only}
+}
+
+@inproceedings{franco2024conformalized,
+  title     = {Guaranteeing Robustness Against Real-World Perturbations In Time Series Classification Using Conformalized Randomized Smoothing},
+  author    = {Franco, Nicola and Spiegelberg, Jakob and Lorenz, Jeanette Miriam and G{\"u}nnemann, Stephan},
+  booktitle = {Proceedings of the Fortieth Conference on Uncertainty in Artificial Intelligence},
+  editor    = {Kiyavash, Negar and Mooij, Joris M.},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {244},
+  pages     = {1371--1388},
+  month     = {15--19 Jul},
+  year      = {2024},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v244/franco24a.html},
+  note      = {Verified from PMLR 2026-10-15. Randomized smoothing generalized to arbitrary transformations + conformal prediction, automotive time-series use case. Prior art for time-series cert, not decision-reuse bounds}
+}
+
+@misc{reyesortiz2015hapt,
+  title        = {Smartphone-Based Recognition of Human Activities and Postural Transitions},
+  author       = {Reyes-Ortiz, Jorge and Anguita, Davide and Oneto, Luca and Parra, Xavier},
+  year         = {2015},
+  month        = {July 28},
+  publisher    = {UCI Machine Learning Repository},
+  doi          = {10.24432/C54G7M},
+  url          = {https://archive.ics.uci.edu/dataset/341/smartphone+based+recognition+of+human+activities+and+postural+transitions},
+  note         = {Verified from UCI page 2026-10-15. 30 subjects age 19-48, 6 basic + 6 transitions, acc+gyro 50Hz waist-mounted, window 2.56s 50pct overlap 128 readings, raw signals for online tests, 10929 instances, CC BY 4.0}
+}
+
+@misc{wei2021online,
+  title        = {Online Verification of Deep Neural Networks under Domain Shift or Network Updates},
+  author       = {Wei, Tianhao and Liu, Changliu},
+  year         = {2021},
+  month        = {June},
+  eprint       = {2106.12732},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.LG},
+  url          = {https://arxiv.org/abs/2106.12732},
+  note         = {Metadata refreshed from arXiv submission history 2026-10-21: v1 submitted 24 June 2021; latest-listed version v2 revised 3 February 2023. Citation year retained for first preprint; current title is from the v2 record. Earlier source check 2026-10-15: Branch Management + Perturbation Tolerance + Incremental Computation reuse for online verification under changing specs/networks; up to 100x acceleration OF VERIFICATION ITSELF, not of inference. Prior art for temporal reuse of verification results -- must cite to avoid claiming first temporal-reuse-of-certificates. Distinct from our goal (skip backbone inference via decision cert)}
+}
+
+@article{kang2017noscope,
+  title        = {NoScope: Optimizing Neural Network Queries over Video at Scale},
+  author       = {Kang, Daniel and Emmons, John and Abuzaid, Firas and Bailis, Peter and Zaharia, Matei},
+  journal      = {Proceedings of the VLDB Endowment},
+  volume       = {10},
+  number       = {11},
+  pages        = {1586--1597},
+  year         = {2017},
+  doi          = {10.14778/3137628.3137664},
+  url          = {https://www.vldb.org/pvldb/vol10/p1586-kang.pdf},
+  note         = {Metadata checked against Stanford DAWN record 2026-10-21. Scoped source check: Figure 1 p.1586; Sections 3, 5, 6.3 and 7. Short evidence excerpts and interpretation are in notes/P04_NoScope.md. No benchmark reproduced; no speedup claim imported}
+}
+
+@misc{autolirpa2020,
+  title = {auto_LiRPA: Library for Automatic Linear Relaxation based Perturbation Analysis},
+  author = {{auto-LiRPA authors}},
+  url   = {https://auto-lirpa.readthedocs.io/en/latest/},
+  urldate = {2026-10-22},
+  note  = {Technical documentation, distinct from the NeurIPS 2020 paper xu2020automatic. API reopened 2026-10-22: compute_bounds supports C mapping model logits to classification margins and IBP/CROWN methods. This verifies available machinery, not compatibility, numerical soundness or performance of the current ECDR CNN/domain. Correlated-set support still needs a project prototype}
+}
+
+@inproceedings{zhang2018crown,
+  title     = {Efficient Neural Network Robustness Certification with General Activation Functions},
+  author    = {Zhang, Huan and Weng, Tsui-Wei and Chen, Pin-Yu and Hsieh, Cho-Jui and Daniel, Luca},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {31},
+  year      = {2018},
+  url       = {https://proceedings.neurips.cc/paper/2018/hash/d04863f100d59b3eb688a11f95b0ae60-Abstract.html},
+  note      = {Official proceedings metadata reopened 2026-10-22. Targeted PDF reading in the 2026-10-21 search: Section 3.1, footnote 2, PDF p.5 discusses class-pair output differences. Full derivation/reproduction note P08 remains pending; no ECDR runtime-saving claim follows}
+}
+
+@inproceedings{xu2020automatic,
+  title     = {Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond},
+  author    = {Xu, Kaidi and Shi, Zhouxing and Zhang, Huan and Wang, Yihan and Chang, Kai-Wei and Huang, Minlie and Kailkhura, Bhavya and Lin, Xue and Hsieh, Cho-Jui},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {33},
+  year      = {2020},
+  url       = {https://papers.nips.cc/paper/2020/hash/0cbc5671ae26f67871cb914d81ef8fc1-Abstract.html},
+  note      = {Official proceedings metadata and abstract opened 2026-10-22: automatic LiRPA on computational graphs. This paper citation is separate from the API reference autolirpa2020; deep reading and current-model integration are pending}
+}

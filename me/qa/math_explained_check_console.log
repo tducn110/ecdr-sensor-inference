@@ -1,0 +1,9 @@
+{
+  "pdf_pages": 29,
+  "main_sections": 24,
+  "coverage_groups": 29,
+  "hypothesis_explanations": 24,
+  "numeric_examples": "PASS",
+  "PDF_checks": "PASS; visual review separate",
+  "old_reports_unchanged": true
+}

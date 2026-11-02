@@ -1,0 +1,1161 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,tabularx,array}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
+\geometry{margin=2.2cm,headheight=15pt}
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\hypersetup{colorlinks=true,linkcolor=ink,citecolor=teal,urlcolor=teal,
+pdftitle={ECDR: CNN Concepts, Derivations, and Certification},pdfauthor={ECDR Research}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.14}
+\setlist{nosep,leftmargin=1.5em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\R}{\mathbb R}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\conceptid}{Reading guide}
+\newcommand{\concept}[2]{\clearpage\gdef\conceptid{#1}\section*{#1\quad #2}\addcontentsline{toc}{section}{#1: #2}\label{concept:#1}\typeout{ECDR-CONCEPT-START #1 PAGE=\thepage}}
+\newcommand{\term}[1]{\par\textbf{#1}\quad}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{ECDR | CNN concepts and proofs}}
+\fancyhead[R]{\small\conceptid}
+\fancyfoot[L]{\small 28 October 2026 | English edition}
+\fancyfoot[R]{\thepage}
+\raggedbottom
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\vspace*{1.1cm}
+{\Large\color{teal} CONCEPT-BY-CONCEPT RESEARCH COMPANION\par}
+\vspace{0.7cm}
+{\huge\bfseries\color{ink} Understanding the CNN\\[0.2cm]from first principles\par}
+\vspace{0.7cm}
+{\Large Definitions, derivations, variables, assumptions,\\and their role in certified decision reuse\par}
+\vspace{1cm}
+\begin{tabularx}{\linewidth}{@{}P{3.2cm}Y@{}}\toprule
+Reading unit & One identified concept per page; 8 prerequisite pages and 56 CNN concept pages, with prerequisites and explicit local definitions.\\
+Main model & A theoretical Conv1D--ReLU backbone with valid convolutions, global average pooling, and an affine classifier.\\
+Worked architecture & Input $6\times128$; feature widths $32,64,64$; kernel lengths $5,3,3$; 12 classes in the numerical inventory.\\
+Main question & Which properties follow from the architecture, which require a whole-domain proof, and which require experiments?\\
+Evidence boundary & Real-arithmetic derivations and direct architecture counts. No newly trained 12-class checkpoint, measured accuracy, or measured speedup is asserted.\\
+Related reading & The mathematics companion explains underlying axioms and structures; the separate data analysis supplies HAPT provenance and descriptive evidence.\\\bottomrule
+\end{tabularx}
+\vfill
+\textbf{Scope.} This English edition replaces the working CNN explanation in the open source file. The preceding Vietnamese edition is preserved separately. The dataset and historical implementation are not modified. Familiar neural-network operations are explained as established mathematics and operator contracts, not claimed as new inventions of ECDR.
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+\section*{Reading contract and dependency map}
+\addcontentsline{toc}{section}{Reading contract and dependency map}
+A \emph{concept} is a precise object or rule that the next argument depends on. Each identified page explains its definition, variables, reason for use, a derivation or example, and its conditions. The identifier is stable even if the physical page number changes. Repeated local definitions are intentional: an equation should remain interpretable when its page is read on its own.
+
+The prerequisite sequence P01--P08 explains the real-number, vector, map and differential foundations. The dependency order is C01--C18 for functions, tensors and local operators; C19--C34 for aggregation, decisions, resources and the complete reference; C35--C44 for streaming identities and certification; C45--C48 for a complete numerical example; and C49--C56 for reuse, lifecycle, numerical and experimental limits. Cross-references indicate logical prerequisites, not permission to omit assumptions.
+
+All proofs use finite real-valued inputs and fixed parameters unless a page explicitly discusses training or floating-point arithmetic. Indices start at zero for time and channels; class indices start at one. A shape $C\times T$ means $C$ channels and $T$ time positions. A sample count is dimensionless; multiplying sample intervals by the reciprocal sampling rate gives seconds. A logit is a learned score, not a physical measurement.
+
+The main architecture has three valid convolutions, stride one, dilation one, one group and a bias in each convolution; ReLU follows each layer. Global average pooling precedes an affine head. No BatchNorm, intermediate pooling, positional weights or hidden stream state occurs in this theoretical model. Those alternatives are explained separately because they change the function or its proof obligations.
+
+\textbf{Three evidence levels.} A definition specifies an object. A conditional theorem proves a statement whenever its listed assumptions hold. A measurement describes an observed model, dataset and environment. An algebraic reduction in MAC cannot establish a latency reduction; a certified class agreement cannot establish ground-truth correctness; a failed lower bound cannot establish a counterexample.
+
+\textbf{Sources.} HAPT metadata are documented by UCI \cite{hapt}. Operator contracts are cross-checked against versioned PyTorch documentation \cite{torchconv,torchgap,torchce,torchbn,torchnumerical}. The equations here also define the independent mathematical reference, so their meaning does not depend on undocumented implementation behavior.
+\clearpage
+\gdef\conceptid{Contents}
+\begingroup\small\setlength{\parskip}{0pt}\tableofcontents\endgroup
+
+
+\concept{P01}{Real-number laws support the algebra and inequalities}
+\term{Underlying system.} The real numbers $\R$ form a complete ordered field. For any $a,b,c\in\R$, addition and multiplication stay in $\R$, are associative and commutative, and obey distributivity $a(b+c)=ab+ac$. The distinct numbers $0\ne1$ are their identities; every $a$ has an additive inverse $-a$, and every nonzero $a$ has a multiplicative inverse $a^{-1}$. These laws justify regrouping exact real expressions and canceling equal terms.
+\term{Order.} Every pair of real numbers is comparable, ordering is transitive, adding the same number preserves order, and multiplying by a positive number preserves order. Multiplication by a negative number reverses order. For example, if $l\le x\le u$ and $q<0$, then $qu\le qx\le ql$. The symbols $l,u$ are endpoints, $x$ is any enclosed number and $q$ is a coefficient. This reversal is the reason upper feature bounds appear with negative head weights.
+\term{Completeness.} Every nonempty set of real numbers bounded above has a least upper bound. Equivalently, a nonempty set bounded below has a greatest lower bound, its infimum. For a margin function on an input set, this permits discussion of the infimum even when no input attains a minimum. Infinity can denote an extended bound; it is not an ordinary finite real input to the CNN.
+\term{Why start here?} Cancellation in GAP, division by its positive length, interval sign rules and strict-margin implications all use these elementary laws. A formula is meaningful only when its operations are defined: normalization needs nonzero scales and an average needs a positive count.
+\term{Boundary.} Floating-point machine values do not satisfy every field law exactly; addition is generally nonassociative because of rounding. The algebraic derivations therefore begin over $\R$, and P06 explains limits over that same continuum. C53 states the additional numerical conditions needed to make a claim about an actual finite-precision program.
+
+\par\label{endconcept:P01}
+\typeout{ECDR-CONCEPT-END P01 PAGE=\thepage}
+
+\concept{P02}{Vectors package coordinates with linear-combination laws}
+\term{Definition.} A vector $x\in\R^m$ is an ordered list $(x_1,\ldots,x_m)^\top$ of $m$ real coordinates; $m\ge1$ is its dimension and $\top$ means transpose into a column. Addition and real scalar multiplication are coordinatewise: $(x+y)_a=x_a+y_a$ and $(\alpha x)_a=\alpha x_a$ for coordinate $a$, vector $y\in\R^m$ and scalar $\alpha\in\R$. Shapes must match for addition.
+\term{Vector-space foundation.} These operations inherit associativity and commutativity of addition, a zero vector, additive inverses, distributivity and $1x=x$ from the real-number laws. A set with such operations satisfying those laws is a real vector space. A linear combination of supplied vectors $b_1,\ldots,b_r\in\R^m$ is $\sum_{a=1}^{r}\alpha_ab_a$, where $\alpha_a\in\R$ are coefficients. Their complete set of combinations is the linear span analyzed in C17.
+\term{Example.} With $b_1=(1,0)^\top$, $b_2=(0,1)^\top$, coefficients $\alpha_1=2$ and $\alpha_2=-3$ produce $(2,-3)^\top$. Changing the order of coordinates changes the vector's interpreted meaning. A two-sensor vector ordered as acceleration then angular velocity is not interchangeable with the opposite ordering.
+\term{Why vectors appear in a CNN.} A kernel patch, pooled feature vector and logit vector are all finite collections of coordinates. Tensor axes retain the structured channel/time organization; fixed vectorization exposes the same values to vector-space notation. The zero vector and subtraction let us express perturbations $\Delta x=x'-x$ without pretending that observations are statistically independent.
+\term{Units and conditions.} A raw sensor vector can contain coordinates with different units, so a numerical Euclidean length requires a specified scaling convention before physical interpretation. After fixed channel normalization, input coordinates are dimensionless. Vector-space laws express permitted algebra; they do not establish that every algebraically possible vector is a physically realizable sensor record or belongs to a certified domain.
+
+\par\label{endconcept:P02}
+\typeout{ECDR-CONCEPT-END P02 PAGE=\thepage}
+
+\concept{P03}{The inner product defines a local weighted sum}
+\term{Definition.} For equal-dimensional vectors $w,x\in\R^m$, their Euclidean inner product, also called the dot product, is
+\[
+ \langle w,x\rangle=w^\top x=\sum_{a=1}^{m}w_ax_a.
+\]
+The integer $m$ is coordinate count and $a$ selects a coordinate. The result is a scalar. This operation is symmetric, linear in each argument separately, and positive definite: $x^\top x\ge0$, with equality exactly at the zero vector.
+\term{Derived length.} The Euclidean norm is $\|x\|_2=\sqrt{x^\top x}$. The distance between two vectors is $\|x-y\|_2$. Other norms used in bounds include $\|x\|_1=\sum_a|x_a|$ and $\|x\|_\infty=\max_a|x_a|$. Each norm is nonnegative, scales as $\|\alpha x\|=|\alpha|\|x\|$ for scalar $\alpha$, and satisfies the triangle inequality. These lengths describe coordinate geometry, not an automatic similarity of activities.
+\term{Example.} For $w=(1,-1,2)^\top$ and $x=(3,4,5)^\top$, the dot product is $3-4+10=9$. If $x$ changes by $\Delta x$, bilinearity gives $w^\top(x+\Delta x)-w^\top x=w^\top\Delta x$ for fixed $w$. Negative weights can make an increased coordinate reduce the response.
+\term{Why it matters.} A convolution output is a dot product between a local multichannel patch and a filter, followed by bias. An affine head repeats this for each class. A pairwise margin subtracts two head rows and takes their dot product with pooled features. These are the same elementary operation acting on different coordinate collections.
+\term{Conditions and connection.} Both operands require the same coordinate ordering and compatible units or normalization. A dot product is not matrix multiplication between arbitrary shapes and is not Pearson correlation. Its sign-aware interval bound follows directly by bounding each scalar product, as C42 and C44 show. Norm bounds can summarize possible changes, but require proven constants for the actual linear maps involved.
+
+\par\label{endconcept:P03}
+\typeout{ECDR-CONCEPT-END P03 PAGE=\thepage}
+
+\concept{P04}{A matrix represents a linear map}
+\term{Definition.} A map $L:\R^m\to\R^r$ is linear if $L(\alpha x+\beta y)=\alpha L(x)+\beta L(y)$ for all vectors $x,y\in\R^m$ and real scalars $\alpha,\beta$. A matrix $W\in\R^{r\times m}$ contains $r$ rows and $m$ columns and represents $L(x)=Wx$, with
+\[
+ (Wx)_o=\sum_{a=1}^{m}W_{o,a}x_a,\qquad o=1,\ldots,r.
+\]
+Each output coordinate is an inner product of one row with the input. The integers $m,r$ are input and output dimensions; $o,a$ select output and input coordinates.
+\term{Example.} For $W=\left(\begin{smallmatrix}1&-1\\2&0\end{smallmatrix}\right)$ and $x=(3,1)^\top$, $Wx=(2,6)^\top$. Linearity gives $W0=0$ and $W(x'-x)=Wx'-Wx$. This difference identity is what later propagates an input or pooled-feature change through a fixed linear map.
+\term{Composition.} If $V\in\R^{q\times r}$ is another matrix, then $V(Wx)=(VW)x$. The matrix product $VW\in\R^{q\times m}$ summarizes applying $W$ first and $V$ second. Order matters: matrix multiplication is not generally commutative, and incompatible dimensions cannot be multiplied.
+\term{CNN connection.} A finite convolution without bias can be represented by a sparse matrix on the vectorized input. Locality determines where entries are zero, and sharing makes several entries equal to the same kernel parameter. This representation explains why convolution is linear in its input for fixed weights, even though the full ReLU CNN is nonlinear. Correct notation is $\operatorname{vec}(V)=W_{\rm conv}\operatorname{vec}(H)$; the vectorized output, not a two-axis tensor left unnamed, matches the matrix product's shape.
+\term{Why define it?} Later resource counts distinguish the compact independent kernel coefficients from a much larger conceptual matrix with repeated entries. The matrix is useful for reasoning; forming it explicitly is not required for an efficient implementation or proof.
+
+\par\label{endconcept:P04}
+\typeout{ECDR-CONCEPT-END P04 PAGE=\thepage}
+
+\concept{P05}{An affine map is linear structure plus translation}
+\term{Definition.} An affine map from $\R^m$ to $\R^r$ has the form $f(x)=Wx+b$, with matrix $W\in\R^{r\times m}$, input vector $x\in\R^m$ and fixed offset $b\in\R^r$. It is linear exactly when its effective offset is zero. The term ``affine'' distinguishes an allowed translation from a map required to preserve the origin.
+\term{Difference identity.} For inputs $x,x'\in\R^m$, direct subtraction gives
+\[
+ f(x')-f(x)=W(x'-x).
+\]
+The bias disappears from the change while still affecting each value. For example, $f(x)=2x-3$ maps $0$ to $-3$, so it is not linear, but a change of $0.5$ in $x$ always changes the output by one.
+\term{Combination property.} For scalar $t\in\R$, an affine map satisfies
+\[
+ f(tx+(1-t)y)=tf(x)+(1-t)f(y).
+\]
+The coefficients sum to one, so the single bias on the left equals the combined biases on the right. For $0\le t\le1$, this means segments map to segments, possibly collapsing them. A general linear combination whose coefficients do not sum to one need not be preserved.
+\term{Composition.} If $g(v)=Av+d$ with $A\in\R^{q\times r}$ and $d\in\R^q$, then $g(f(x))=(AW)x+(Ab+d)$ remains affine. Repeated affine layers alone therefore collapse to one affine transformation. ReLU prevents a global collapse by selecting different branches in different regions; within a stable activation region, the affine structure returns.
+\term{Why it matters.} Fixed channel normalization, biased convolution and the classifier head are affine operations. Their translations influence activation boundaries and initial margins. Calling them ``linear'' informally can hide a bias omitted from a proof. C08 analyzes shared bias specifically; C15 identifies when the entire ReLU network can legitimately use one affine expression on a whole domain.
+
+\par\label{endconcept:P05}
+\typeout{ECDR-CONCEPT-END P05 PAGE=\thepage}
+
+\concept{P06}{A derivative is a limit of local change ratios}
+\term{Definition.} For scalar function $f:\R\to\R$, the derivative at $x$ is
+\[
+ f'(x)=\lim_{h\to0}\frac{f(x+h)-f(x)}{h},
+\]
+if that finite limit exists. Here $h\ne0$ is an input increment. A limit $q(h)\to a$ means that for every tolerance $\varepsilon>0$, some radius $\delta>0$ ensures $|q(h)-a|<\varepsilon$ whenever $0<|h|<\delta$. The variables $\varepsilon,\delta$ define closeness, not numerical rounding bounds.
+\term{Example and approximation.} For $f(x)=x^2$, the ratio is $2x+h$, hence $f'(x)=2x$. For small $h$, $f(x+h)=f(x)+f'(x)h+o(|h|)$, where the remainder notation $o(|h|)$ means its magnitude divided by $|h|$ tends to zero. A derivative is thus a first-order local rate, not a guarantee that the linear approximation remains exact on a finite interval.
+\term{ReLU example.} For $f(x)=\max(0,x)$, the derivative is zero at $x<0$ and one at $x>0$. At $x=0$, left and right ratios differ, so the ordinary derivative does not exist. A training system can choose a convention at this point; a universal verification argument must still cover the actual function on both sides.
+\term{Why introduce it?} Training uses derivatives to find parameter changes that locally reduce loss. Kernel coefficients, biases and activations can all be differentiated as coordinates in a computation graph. Derivative units are output units divided by input units; gradients with respect to normalized variables therefore differ from gradients in physical coordinates.
+\term{Connection and limit.} Local slopes motivate optimization and some bounds, but a slope at one anchor is not a Lipschitz constant over a region. A region crossing activation boundaries can have several affine slopes. The proof in C41 requires values or sound lower bounds everywhere in the domain, rather than a first-order approximation alone.
+
+\par\label{endconcept:P06}
+\typeout{ECDR-CONCEPT-END P06 PAGE=\thepage}
+
+\concept{P07}{A gradient collects partial derivatives}
+\term{Definition.} For scalar objective $L:\R^m\to\R$ and parameter vector $\theta=(\theta_1,\ldots,\theta_m)^\top$, the partial derivative $\partial L/\partial\theta_a$ changes coordinate $a$ while holding all other coordinates fixed. When $L$ is differentiable, its gradient is
+\[
+ \nabla_\theta L=
+ \left(\frac{\partial L}{\partial\theta_1},\ldots,
+ \frac{\partial L}{\partial\theta_m}\right)^\top.
+\]
+Here $m$ is the number of coordinates, $a$ selects one parameter and $\nabla$ denotes this vector of local rates. Existence of separate partial derivatives alone does not always imply full differentiability.
+\term{Directional meaning.} For small vector change $d\in\R^m$, differentiability gives $L(\theta+d)=L(\theta)+\nabla_\theta L^\top d+o(\|d\|_2)$. If the gradient is nonzero, direction $d=-\alpha\nabla_\theta L$ with $\alpha>0$ has negative first-order change $-\alpha\|\nabla_\theta L\|_2^2$. This explains a gradient-descent update; a finite step still needs an appropriate learning-rate choice.
+\term{Example.} For $L(\theta_1,\theta_2)=(\theta_1-1)^2+2\theta_2^2$, the gradient is $(2(\theta_1-1),4\theta_2)^\top$. At $(2,1)$ it is $(2,4)^\top$, so the local decreasing direction points toward negative changes in both coordinates.
+\term{Why the distinction matters in CNNs.} A parameter gradient asks how training loss changes with weights. An input gradient asks how a score or loss changes with sensor coordinates while weights stay fixed. They have different dimensions and uses. A head matrix gradient has the same shape as that matrix; a pooled-feature gradient has feature-vector shape.
+\term{Connection and limit.} Backpropagation computes these derivatives efficiently using the chain rule in P08. It does not by itself optimize an exact finite perturbation domain or prove that a reused class remains unchanged. A gradient-based candidate counterexample is evidence only if the resulting input is actually valid and its evaluated output violates the claimed property.
+
+\par\label{endconcept:P07}
+\typeout{ECDR-CONCEPT-END P07 PAGE=\thepage}
+
+\concept{P08}{The chain rule explains backpropagation}
+\term{Definition.} If $f:\R^m\to\R^r$ is differentiable at $x$ and $g:\R^r\to\R$ is differentiable at $f(x)$, their composition obeys
+\[
+ \nabla_x(g\circ f)=J_f(x)^\top\nabla_y g\big|_{y=f(x)}.
+\]
+The matrix $J_f(x)\in\R^{r\times m}$ is the Jacobian, with entry $\partial f_o/\partial x_a$ for output coordinate $o$ and input coordinate $a$. The vector $y=f(x)$ names the intermediate representation.
+\term{Why the rule holds.} Differentiability supplies $f(x+d)=f(x)+J_f(x)d+o(\|d\|_2)$ for a small input change $d$. The first-order change of $g$ at its intermediate input is its gradient dotted with that change. Substitution gives $\nabla_y g^\top J_f(x)d$, whose coefficient vector in $d$ is $J_f(x)^\top\nabla_y g$. The remainder is of smaller order; this reasoning is local.
+\term{Scalar example.} Let $f(x)=2x-1$ and $g(y)=y^2$. Then $(g\circ f)(x)=(2x-1)^2$ and its derivative is $(2(2x-1))\cdot2=4(2x-1)$. The first factor differentiates the outer operation at the current intermediate value; the second differentiates the inner operation. Reversing the evaluation order would differentiate a different function.
+\term{Why backpropagation is efficient.} A network is a composition graph. Starting from a scalar loss, its gradient is propagated backward through each local operation using this rule and summed when a value influences several paths. A shared kernel coefficient receives contributions from all its uses. One need not construct the full input-to-output Jacobian to compute the required vector--Jacobian products.
+\term{Conditions and connection.} Ordinary derivatives require differentiability; ReLU boundaries use a declared training convention. C30 applies the rule to head, GAP and shared convolution. Verification instead needs valid inequalities on an entire domain, so an efficiently computed local gradient remains an optimization tool rather than an unconditional class certificate.
+
+\par\label{endconcept:P08}
+\typeout{ECDR-CONCEPT-END P08 PAGE=\thepage}
+
+\concept{C01}{A neural model is a parameterized function}
+\term{Definition and objects.} A function assigns exactly one output to each permitted input. Let $\mathcal X\subseteq\R^{C\times W}$ be the input set, where $C$ is the number of channels and $W$ is the number of samples per window. A neural architecture specifies a family
+\[
+ f_\theta:\mathcal X\longrightarrow\R^K,\qquad \theta\in\Theta.
+\]
+Here $K$ is the number of classes, $\Theta$ is the permitted parameter set, $\theta$ collects every weight and bias, and $f_\theta(X)$ is the vector of scores for window $X$. Fixing $\theta$ selects one function from the family. Training is a procedure for selecting parameters; it is not part of an ordinary deterministic forward evaluation.
+\term{Composition.} If $L$ is the number of layers, $H^{(0)}=X$, and $\phi_\ell$ is layer $\ell$, then $H^{(\ell)}=\phi_\ell(H^{(\ell-1)})$ and $f_\theta=\phi_L\circ\cdots\circ\phi_1$. The symbol $\circ$ denotes composition: the rightmost function acts first. Compatible domains and output shapes are necessary for the composition to exist.
+\term{Why this definition matters.} ECDR compares a reused answer with a \emph{particular reference function}. A class count or architecture name cannot identify that function: changing weights, normalization or class order can change its answer. A stochastic mask or an unspecified batch statistic would also prevent the same window alone from defining a unique answer.
+\term{Example and boundary.} The scalar map $x\mapsto\max(0,wx+b)$ is a one-neuron family with parameters $(w,b)$. Setting $(w,b)=(2,-1)$ gives output $3$ at $x=2$; setting $(1,-1)$ gives $1$. The architecture is unchanged while the function changes. Consequently, a structural theorem about all valid convolutions may hold for every $\theta$, whereas a positive decision margin must be established for the fixed parameters and region actually certified.
+
+\par\label{endconcept:C01}
+\typeout{ECDR-CONCEPT-END C01 PAGE=\thepage}
+
+\concept{C02}{Tensors, axes and index meanings}
+\term{Definition.} A tensor here is a finite array with named axes. A single window $X\in\R^{C\times W}$ has entries $X_{c,i}$, where $c\in\{0,\ldots,C-1\}$ selects a channel and $i\in\{0,\ldots,W-1\}$ selects time. A batch is $X^{\mathrm{batch}}\in\R^{B\times C\times W}$, where $B$ counts separately supplied windows. The batch axis is not another time axis.
+\term{Shape versus semantics.} For $C=6$ and $W=128$, a window contains $CW=768$ scalar entries. This does not mean there are 768 sensors or independent observations. A reshape that preserves all values can still destroy the intended axis interpretation. An operator expecting channels before time must receive that order, even if an alternative layout has the same total number of entries.
+\term{Vectorization.} A fixed bijection $\pi$ from pairs $(c,i)$ to $\{0,\ldots,CW-1\}$ defines $x_{\pi(c,i)}=X_{c,i}$ and $x\in\R^{CW}$. The vector $x$ and tensor $X$ encode the same values only when the ordering $\pi$ is fixed. Convolution uses temporal neighborhoods in the tensor representation; an arbitrary permutation of vector coordinates changes those neighborhoods.
+\term{Example.} With two channels and three samples,
+\[
+ X=\begin{pmatrix}1&2&3\\10&20&30\end{pmatrix},
+ \qquad \operatorname{vec}(X)=(1,2,3,10,20,30)^\top
+\]
+under channel-major vectorization. A length-two temporal kernel reads $(1,2)$ and $(10,20)$ at position zero; it does not read $(3,10)$ across the channel boundary.
+\term{Connection to the proof.} A temporal shift changes $i$ while preserving $c$. Membership, normalization and cached feature alignment must use this same contract. Shape checks detect incompatible dimensions; they cannot prove correct channel order, physical units or sample identity.
+
+\par\label{endconcept:C02}
+\typeout{ECDR-CONCEPT-END C02 PAGE=\thepage}
+
+\concept{C03}{Physical channels and learned feature channels}
+\term{Physical observation.} One raw HAPT sample is
+\[
+ v[i]=(a_x[i],a_y[i],a_z[i],\omega_x[i],\omega_y[i],\omega_z[i])^\top\in\R^6.
+\]
+The integer $i$ identifies the sample; $a_x,a_y,a_z$ are accelerometer axes in $g$; $\omega_x,\omega_y,\omega_z$ are angular-velocity axes in rad/s. UCI describes a nominal sampling rate $f_s=50$ samples/s \cite{hapt}; $g$ denotes the acceleration unit, with $1g=9.80665$ m/s$^2$. These six coordinates retain a documented physical meaning.
+\term{Learned representation.} A convolution produces $H\in\R^{D\times T}$, where $D$ is the number of output feature channels and $T$ is their temporal length. Entry $H_{o,i}$ is a learned response for feature index $o$ at time position $i$. A feature map may mean one sequence $H_{o,:}$ or the complete array $H$; this document states which is intended. After normalization, learned weights generally combine dimensionless input coordinates.
+\term{Why the distinction is necessary.} The first convolution can map six physical channels to 32 learned channels. A later convolution therefore receives 32 feature channels, not another six-sensor record. The 32 channels do not imply 32 new physical sensors, and their ordering has no natural $x,y,z$ interpretation.
+\term{Example.} A filter with temporal weights $(1,-1)$ can respond to a local difference; weights $(1,1,1)/3$ can average a scalar signal. A multichannel learned filter can mix all sensor axes. Calling it a ``step detector'' requires activation or intervention evidence; the numerical weights alone do not establish that semantic label.
+\term{Limits.} The local-pattern assumption makes a convolutional reference reasonable to study: similar local structures may occur at different window positions. It does not prove that the representation is sufficient for all twelve activities, that channels are independent, or that the resulting classifier is optimal. Those are empirical or task-specific questions.
+
+\par\label{endconcept:C03}
+\typeout{ECDR-CONCEPT-END C03 PAGE=\thepage}
+
+\concept{C04}{Normalization is a change of coordinates}
+\term{Definition.} Let $X\in\R^{C\times W}$ be a raw window. For channel $c$, fix a mean $\mu_c$ and a strictly positive scale $\sigma_c$ in the same physical unit as that channel. Define $Z=\mathcal P(X)$ by
+\[
+ Z_{c,i}=\frac{X_{c,i}-\mu_c}{\sigma_c},\qquad 0\le i<W.
+\]
+Here $\mathcal P$ is the preprocessing function; $Z$ is dimensionless. If a scale is clamped, $\sigma_c$ denotes the actual positive value after clamping. A zero scale would make this formula undefined.
+\term{Derivation of perturbation scaling.} If $X'=X+\Delta X$ uses the same fixed statistics, subtraction gives $\Delta Z_{c,i}=\Delta X_{c,i}/\sigma_c$. Consequently, a raw interval $|\Delta X_{c,i}|\le b_{c,i}$ becomes $|\Delta Z_{c,i}|\le b_{c,i}/\sigma_c$, where $b_{c,i}$ is a raw radius. Reusing the same numerical radius in both systems describes different physical sets unless $\sigma_c=1$.
+\term{Why use it here?} Normalization makes the input coordinate contract explicit and can improve optimization. Its numerical scales affect both network behavior and certified-domain geometry. It does not automatically remove gravity, repair synchronization or make all channels equally influential.
+\term{Conditions and example.} If raw overlap satisfies $X'_{c,i}=X_{c,i+s}$ for shift $s$, fixed channel statistics imply $Z'_{c,i}=Z_{c,i+s}$. Per-window centering can break this equality because the two window means can differ. Fitting statistics on overlapping training windows also weights a raw sample by its window multiplicity; it need not match fitting on unique raw samples. The chosen fitting population must therefore be recorded and frozen before evaluation. For a channel scale $\sigma_c=2g$, a raw change of $0.1g$ is a normalized change of $0.05$, not $0.1$.
+
+\par\label{endconcept:C04}
+\typeout{ECDR-CONCEPT-END C04 PAGE=\thepage}
+
+\concept{C05}{A kernel is a finite local linear rule}
+\term{Definition and shape.} For a convolution with $C_{\rm in}$ input channels, $C_{\rm out}$ output channels and $k$ temporal taps, the kernel tensor is $W\in\R^{C_{\rm out}\times C_{\rm in}\times k}$ when there is one group. A filter is the slice $W_{o,:,:}$ for one output channel $o$. A tap $r\in\{0,\ldots,k-1\}$ identifies a temporal offset; $c$ identifies an input channel.
+\term{Local dot product.} At a valid unit-stride position $i$, the preactivation is
+\[
+ V_{o,i}=b_o+\sum_{c=0}^{C_{\rm in}-1}\sum_{r=0}^{k-1}W_{o,c,r}H_{c,i+r},
+\]
+where $H$ is the input feature map and $b_o$ is the filter bias. For fixed $o$ and $i$, the double sum is the dot product between $C_{\rm in}k$ kernel values and a local input patch. The bias makes the map affine rather than strictly linear.
+\term{Why a local rule?} Restricting the support limits which samples can influence one response. Sharing that rule across positions encodes the assumption that the same kind of local relation can be useful throughout a window. The kernel length controls locality; the learned values control the particular response.
+\term{Example and interpretation.} A scalar kernel $(1,-1)$ applied to $(2,5,4)$ yields $(-3,1)$ before a bias or nonlinearity. It detects signed local differences under this ordering. Reversing the kernel changes the sign. A kernel $(1,1)/2$ instead averages adjacent samples. Training may discover less interpretable mixtures across sensors; ``learned'' describes how coefficients are selected, not a different mathematical operator.
+\term{Connection.} The finite support leads to receptive-field calculations in C16--C18. The same coefficient appears at many positions, so the parameter count depends on $k$ and channel widths, whereas arithmetic also depends on the number of output positions. These counts are separated in C25 and C26.
+
+\par\label{endconcept:C05}
+\typeout{ECDR-CONCEPT-END C05 PAGE=\thepage}
+
+\concept{C06}{Cross-correlation versus mathematical convolution}
+\term{Conventions.} For a scalar sequence $h$ and finite kernel $w$ of length $k$, a deep-learning cross-correlation at valid position $i$ is $v_i=\sum_{r=0}^{k-1}w_rh_{i+r}$. Classical convolution uses a reversed shift convention, for example $(w*h)[i]=\sum_rw_rh[i-r]$. The index $r$ selects a kernel tap; $i$ selects an output position. Boundaries must be specified in either convention.
+\term{What the reference uses.} PyTorch Conv1d describes its operation as cross-correlation \cite{torchconv}. This document uses that explicit convention, with no kernel reversal. The name ``convolutional layer'' is retained because it is the standard architectural name. Every calculation depends on the written indices rather than the informal name.
+\term{Numerical example.} Let $h=(1,2,4)$ and $w=(1,-1)$, with no bias and valid unit stride. Cross-correlation gives $(1-2,2-4)=(-1,-2)$. Reversing the kernel gives $(-1+2,-2+4)=(1,2)$. The two computations differ although their output shapes match. In a learned family, reversing all kernel coordinates is a reparameterization, but a fixed checkpoint cannot be reversed without changing the function.
+\term{Why it matters for proofs.} Both conventions can support shift-equivariance arguments when boundaries and alignment are treated correctly. A numerical example or weight interpretation, however, becomes wrong if one convention is silently exchanged for the other. The same issue affects which raw indices belong to a feature's dependency interval.
+\term{Conditions and connection.} C13 derives output length from the exact receptive offsets. C36 proves equality by matching those offsets after a window shift; it does not need a probabilistic argument or a frequency-domain assumption. Cross-correlation here is also unrelated to Pearson correlation used in data analysis: the latter is a normalized statistical summary, not this learned local operator.
+
+\par\label{endconcept:C06}
+\typeout{ECDR-CONCEPT-END C06 PAGE=\thepage}
+
+\concept{C07}{Weight sharing is a parameter constraint}
+\term{Definition.} Weight sharing requires one coefficient $W_{o,c,r}$ to be reused at every permitted temporal position $i$. For a map from $C_{\rm in}\times T$ inputs to $C_{\rm out}\times T_{\rm out}$ outputs with $k$ taps, the kernel therefore has $C_{\rm out}C_{\rm in}k$ coefficients, not $T_{\rm out}$ times that number. The integers $T$ and $T_{\rm out}$ denote input and output lengths.
+\term{Example.} Consider two input channels $(1,2,3,4)$ and $(2,0,1,-1)$. One output filter uses weights $(1,-1)$ on the first channel, $(2,1)$ on the second, and bias $b=0.5$. Valid unit-stride responses are
+\[
+ \begin{aligned}
+ V_0&=1-2+2(2)+0+0.5=3.5,\\
+ V_1&=2-3+2(0)+1+0.5=0.5,\\
+ V_2&=3-4+2(1)-1+0.5=0.5.
+ \end{aligned}
+\]
+Four weights and one bias serve all three positions. There are five parameters and twelve kernel products, with three bias additions.
+\term{Why constrain the parameters?} A fully position-specific local operator could use a different filter at every time. Sharing reduces the number of independent coefficients and expresses a translation-related inductive bias: the same local pattern is evaluated by the same rule throughout the window. This can reduce estimation burden, but it does not prove generalization quality.
+\term{What sharing does not imply.} It does not make arbitrary windows produce equal features. Equality needs corresponding local inputs to be equal and the indices to align. Padding values, stride phase or a position-dependent head can still change the result. C36 uses sharing together with exact overlap and locality; none of those assumptions can be removed merely because the layer is called convolutional.
+\term{Connection to learning.} Because one weight is used repeatedly, its gradient is a sum of contributions from every use. The parameter is counted once in storage and many times in arithmetic and differentiation.
+
+\par\label{endconcept:C07}
+\typeout{ECDR-CONCEPT-END C07 PAGE=\thepage}
+
+\concept{C08}{Bias creates an affine offset}
+\term{Definition.} An affine map is a linear transformation followed by a fixed translation: $v=Wh+b$. Here $h\in\R^m$ is an input vector, $W\in\R^{r\times m}$ is a matrix, and $b,v\in\R^r$ are bias and output; positive integers $m,r$ are the input/output dimensions. A convolution uses one bias $b_o$ per output channel $o$, shared across time. A linear map must send zero to zero; an affine map need not.
+\term{Example.} Let a scalar response be $v=2x-3$. Its weight is $2$ and its bias is $-3$. At $x=0$, $v=-3$, so it is not linear. After ReLU, $\max(0,2x-3)$ becomes positive only when $x>1.5$. The bias therefore shifts the activation threshold; it does not add a new input channel or a new time position.
+\term{Counting.} If a convolution produces $C_{\rm out}$ channels of length $T_{\rm out}$, bias contributes $C_{\rm out}$ learned parameters but $C_{\rm out}T_{\rm out}$ scalar additions in an unfused implementation. The two counts describe different objects. Omitting biases from an architecture changes both its function family and its storage inventory.
+\term{Why it matters to ECDR.} For two inputs $h$ and $h'$, subtraction gives $(Wh'+b)-(Wh+b)=W(h'-h)$. Bias cancels in the \emph{change} of an affine output. It does not disappear from the output itself. Likewise, a classifier-head bias cancels in the margin delta of C39 but remains part of the old margin used there.
+\term{Conditions and connection.} This cancellation assumes the same fixed bias and the same reference function on both inputs. If a normalization statistic or training mode changes, the compared affine offsets may differ. In C15, fixed ReLU activation regions make the whole network affine on a region, with an effective bias formed by compositions of layer offsets. An affine region therefore cannot generally be treated as a homogeneous linear map.
+
+\par\label{endconcept:C08}
+\typeout{ECDR-CONCEPT-END C08 PAGE=\thepage}
+
+\concept{C09}{Stride chooses output sampling positions}
+\term{Definition.} Convolution stride $a\in\{1,2,\ldots\}$ is the distance between the starting locations of consecutive kernel applications, measured in input-feature positions. For one channel, valid padding and dilation one,
+\[
+ V_i=b+\sum_{r=0}^{k-1}w_rH_{ia+r}.
+\]
+Here $H$ is the input sequence, $k$ is kernel length, $w_r$ is tap $r$, $b$ is bias, and $i$ is the output index. Stride changes which positions are evaluated, not the spacing of taps within one kernel.
+\term{Example.} With $H=(1,2,3,4,5)$, $w=(1,1,1)$, $b=0$ and $a=2$, the valid outputs are $(6,12)$ from input indices $(0,1,2)$ and $(2,3,4)$. With $a=1$, the outputs would be $(6,9,12)$. Stride two discards the middle evaluation; it does not average the two neighboring outputs.
+\term{Why introduce it?} A larger stride reduces output length and often reduces later computation. It also introduces a sampling phase. Local patterns between the selected positions can affect the function differently, so reduced length is a representational choice rather than a free optimization.
+\term{Alignment condition.} Suppose a raw window moves by $s$ samples and all other operators permit exact alignment. After a strided layer, an integer output shift can correspond to $s$ only when the effective jump divides $s$. For a single stride-two layer, a shift of two input samples aligns one output position; a shift of one does not in general. The main model sets every stride to one so that no phase ambiguity enters its shift proof.
+\term{Connection.} C18 tracks effective jump across layers. Window shift $s$ and convolution stride $a$ are different variables: $s$ belongs to how queries are formed, while $a$ belongs to the model. Confusing them invalidates both shape arithmetic and the feature-sharing count.
+
+\par\label{endconcept:C09}
+\typeout{ECDR-CONCEPT-END C09 PAGE=\thepage}
+
+\concept{C10}{Padding specifies boundary values}
+\term{Definition.} Padding extends an input beyond its observed temporal indices. For $H\in\R^{C\times T}$, zero padding defines $\widetilde H_{c,t}=H_{c,t}$ when $0\le t<T$ and $0$ otherwise. With left padding $p_L$, right padding $p_R$, stride $a$, dilation $d$ and kernel length $k$,
+\[
+ V_{o,i}=b_o+\sum_{c,r}W_{o,c,r}\widetilde H_{c,ia-p_L+rd}.
+\]
+The sum ranges over input channels $c$ and taps $r=0,\ldots,k-1$; $o$ is the output channel. The integers $p_L,p_R$ count added positions. ``Valid'' means both are zero.
+\term{Example.} For $H=(1,2,3)$ and kernel $(1,1,1)$, valid output is $(6)$. Adding one zero on each side produces $(3,6,5)$ at unit stride. The extra outputs depend on the boundary convention. Reflection, replication and circular padding define different functions even when output lengths match.
+\term{Why it is a modeling choice.} Padding can retain a convenient temporal length, but an artificial zero is not evidence that the sensor outside the window measured zero. After normalization, numerical zero often represents the fitted channel mean rather than physical zero. The meaning of the extension must be part of the reference contract.
+\term{Effect on reuse.} After a window shift, a location previously adjacent to padding may become adjacent to a real sample. Weight sharing cannot make those outputs equal. An interior equality can still be proved when both receptive fields lie entirely in shared real data, but a global boundary-free identity cannot be assumed.
+\term{Main-model condition.} The analyzed backbone uses valid convolutions throughout. This removes artificial boundary samples from each local computation and gives the simple lengths in C24. It does not make the complete classifier invariant to shifting and appending: the removed and newly introduced feature positions still change the pooled representation.
+
+\par\label{endconcept:C10}
+\typeout{ECDR-CONCEPT-END C10 PAGE=\thepage}
+
+\concept{C11}{Dilation separates the taps of a kernel}
+\term{Definition.} Dilation $d\in\{1,2,\ldots\}$ inserts a spacing of $d$ input-feature positions between consecutive taps. With valid padding, stride one, scalar input $H$ and kernel $w$ of length $k$,
+\[
+ V_i=b+\sum_{r=0}^{k-1}w_rH_{i+rd}.
+\]
+The variables $i,r,b$ denote output position, tap index and bias. There are still $k$ learned coefficients. The first-to-last tap distance is $d(k-1)$, so the enclosing temporal span contains $d(k-1)+1$ positions.
+\term{Example.} With $k=3$ and $d=2$, one output reads offsets $0,2,4$: its span is five input positions although it uses only three. If $H=(1,2,3,4,5)$, $w=(1,1,1)$ and $b=0$, the sole valid output is $1+3+5=9$. An undilated length-five kernel could read the same enclosing span but would have five coefficients and, generally, additional dependencies.
+\term{Why use dilation?} Dilation can enlarge the temporal reach of a layer without increasing its number of taps. This changes which temporal relationships are representable and which input positions are connected. It need not sample every point in the enclosing span, and it does not automatically provide the same representation as a dense wider kernel.
+\term{Distinction from stride.} Dilation changes spacing inside each local rule; stride changes spacing between evaluations of that rule. They enter different terms in the output-length formula and receptive-field recurrence. Equating the two gives incorrect shape and alignment conclusions.
+\term{Connection and condition.} C16 calls the enclosing interval a temporal span, while C18 tracks dilation through earlier layers using their jump. The central example takes $d=1$ at every convolution, so its dependency support is contiguous. A proof for a dilated variant must use its true support or enclosing span and must recompute valid lengths; it cannot retain the numerical value $R=9$ without checking the new architecture.
+
+\par\label{endconcept:C11}
+\typeout{ECDR-CONCEPT-END C11 PAGE=\thepage}
+
+\concept{C12}{Groups restrict channel connectivity}
+\term{Definition.} A grouped convolution partitions input and output channels into $G$ groups, where $G$ is a positive integer dividing both $C_{\rm in}$ and $C_{\rm out}$. An output channel receives only the $C_{\rm in}/G$ input channels assigned to its group. The kernel shape becomes
+\[
+ W\in\R^{C_{\rm out}\times(C_{\rm in}/G)\times k},\qquad
+ P=C_{\rm out}(C_{\rm in}k/G+1)
+\]
+when bias is present. Here $k$ is temporal kernel length and $P$ counts trainable scalars. Group labels specify connectivity; they are not activity classes.
+\term{Example.} Let $C_{\rm in}=6$, $C_{\rm out}=12$ and $k=3$. With $G=1$, there are $12(18+1)=228$ parameters. With $G=3$, each output sees two input channels and the count is $12(6+1)=84$. The second architecture cannot directly form an arbitrary mixture of all six channels within that one layer.
+\term{Why this is more than a count change.} Restricting connections reduces kernel products and parameters, but also changes the function family. Later channel-mixing operations may compensate in some architectures; this is a separate design question. A smaller count does not establish equivalent accuracy, useful certified coverage or lower total runtime.
+\term{Depthwise case.} When $G=C_{\rm in}$ and $C_{\rm out}$ is an integer multiple of $C_{\rm in}$, each group receives one input channel. This is the depthwise setting under the documented Conv1d contract \cite{torchconv}. It should not be confused with a generic small kernel or with a bottleneck channel width.
+\term{Main-model condition.} Every convolution analyzed numerically here uses $G=1$. The first layer can therefore mix all three acceleration and all three angular-velocity coordinates after normalization. Changing $G$ requires updating parameter and MAC formulas, the allowed channel dependencies, and any verifier that encodes the operator. Temporal shift arguments may remain possible, but a matching operator definition is still required.
+
+\par\label{endconcept:C12}
+\typeout{ECDR-CONCEPT-END C12 PAGE=\thepage}
+
+\concept{C13}{The output-length formula follows from valid starts}
+\term{Objects.} Let input length be $T$, kernel tap count $k$, dilation $d$, stride $a$, and nonnegative left/right padding counts $p_L,p_R$. Define the padded length $T_p=T+p_L+p_R$ and effective kernel span $k_{\rm eff}=d(k-1)+1$. All quantities are integers; $a,d,k$ are positive.
+\term{Derivation.} In padded coordinates, output position $i$ starts at $ia$ and ends at $ia+d(k-1)$. Requiring this end to be at most $T_p-1$ gives
+\[
+ 0\le i\le\frac{T_p-d(k-1)-1}{a}.
+\]
+If $T_p\ge k_{\rm eff}$, the permitted nonnegative integer starts number
+\[
+ T_{\rm out}=\left\lfloor\frac{T+p_L+p_R-d(k-1)-1}{a}\right\rfloor+1.
+\]
+The floor $\lfloor x\rfloor$ is the greatest integer not exceeding the real number $x$. The added one counts the start at zero. If no valid placement exists, the architecture is invalid for this input under the intended nonempty-output contract; a negative formula value is not a usable tensor length.
+\term{Example.} Set $T=10$, $k=3$, $d=2$, $a=2$ and $p_L=p_R=0$. The last tap is four positions after the start. Starts $0,2,4$ are valid, while start $6$ ends at $10$ outside indices $0$ through $9$. Thus $T_{\rm out}=\lfloor(10-4-1)/2\rfloor+1=3$.
+\term{Why prove it?} Channel count does not enter this temporal-placement argument. Increasing output channels copies the same set of placements for more filters; it does not divide the output length. The formula supplies the lengths needed for storage, MAC counts and the number of feature positions that can remain shared after a query shift. In the main valid, unit-stride, unit-dilation case it reduces to $T_{\rm out}=T-k+1$.
+
+\par\label{endconcept:C13}
+\typeout{ECDR-CONCEPT-END C13 PAGE=\thepage}
+
+\concept{C14}{ReLU is a pointwise nonlinear gate}
+\term{Definition.} The rectified linear unit is $\rho(v)=\max(0,v)$ for a real scalar $v$. For a tensor $V$, define $H_{o,i}=\rho(V_{o,i})$ independently at each output channel $o$ and time position $i$. ReLU preserves shape, has no trainable parameters and introduces a nonlinearity. For example, $(-2,0,3)$ becomes $(0,0,3)$.
+\term{Why a nonlinearity?} A composition of affine maps is affine: $(W_2(W_1x+b_1)+b_2)=(W_2W_1)x+(W_2b_1+b_2)$. Here $x$ is an input vector and $W_1,W_2,b_1,b_2$ are fixed compatible matrices and biases. Without nonlinearities, adding affine layers does not create a general nonlinear decision function. ReLU permits different affine expressions on different input regions.
+\term{A useful inequality.} For real $u,v$,
+\[
+ |\rho(u)-\rho(v)|\le|u-v|.
+\]
+If both are nonnegative, equality holds; if both are nonpositive, the left side is zero; if $u\le0\le v$, it is $v\le v-u$. The remaining case is symmetric. Applying this coordinatewise gives $\|\rho(x)-\rho(y)\|_p\le\|x-y\|_p$ for $p=1,2,\infty$, where $x,y$ are equal-shaped vectors and $\|\cdot\|_p$ is the corresponding vector norm.
+\term{Limits and connection.} This inequality does not make the entire CNN nonexpansive: a preceding or following linear map can amplify differences. Nonnegative activations also do not imply increasing logits or margins because later weights can be negative. At $v=0$, the ordinary derivative does not exist; training uses a stated derivative/subgradient convention. Verification instead reasons about the exact piecewise-defined function and any interval crossing zero. Stable and unstable activation regions are analyzed in C15 and C43.
+
+\par\label{endconcept:C14}
+\typeout{ECDR-CONCEPT-END C14 PAGE=\thepage}
+
+\concept{C15}{An activation region makes the network affine}
+\term{Definition.} A preactivation is a scalar value immediately before ReLU. An activation pattern records whether each ReLU uses its identity branch or its zero branch. An activation region is a set of input vectors on which one such pattern is valid for every neuron. Let $x\in\R^m$ be the vectorized input and let $\mathcal D\subseteq\R^m$ be the region; $m$ is its input dimension.
+\term{Derivation.} On a fixed pattern, a ReLU layer can be written $h=D(Wx+b)$, where $W$ is its affine weight matrix, $b$ is its bias and $D$ is a fixed diagonal matrix with entries zero or one. Composing such maps gives
+\[
+ f_\theta(x)=Mx+d\qquad\text{for every }x\in\mathcal D,
+\]
+where $M$ and $d$ are the effective matrix and bias obtained by substitution. They depend on the pattern and fixed parameters $\theta$. This is the piecewise-affine structure studied for ReLU networks \cite{montufar}.
+\term{Why a whole region is needed.} Reading the activation pattern at one anchor $x_0$ establishes only a pointwise fact. A preactivation equal to $0.1$ at $x_0$ may cross zero elsewhere in $\mathcal D$. Extending that anchor's affine expression beyond its valid region can produce a false lower bound. A neuron identically zero on the region can be assigned its zero branch without changing the function.
+\term{Example.} For $f(x)=\max(0,2x-1)$, the region $x\le1/2$ has affine expression $0$, while $x\ge1/2$ has expression $2x-1$. On the interval $[0.6,0.8]$, the latter formula is exact everywhere. On $[0.4,0.8]$, no single one of these expressions equals $f$ everywhere.
+\term{Connection.} A certificate can exploit a stable pattern to optimize an affine margin exactly over a box. If patterns are unstable, the verifier needs a valid relaxation, subdivision or another sound method. Piecewise affine does not mean globally linear, and a large number of affine pieces does not by itself establish model quality or proof difficulty for a particular domain.
+
+\par\label{endconcept:C15}
+\typeout{ECDR-CONCEPT-END C15 PAGE=\thepage}
+
+\concept{C16}{Receptive field is a temporal dependency span}
+\term{Definition.} A feature's structural receptive field is the set of raw input positions with computational paths to that feature. Its temporal span is the smallest enclosing interval on the input grid. If the first and last possible indices are $i_{\min}$ and $i_{\max}$, its span length is
+\[
+ R=i_{\max}-i_{\min}+1.
+\]
+Here $R$ counts sample positions, not seconds and not the number of channels. A zero weight or cancellation can remove an actual influence, but architecture-based accounting uses possible dependencies.
+\term{Physical time.} At sampling rate $f_s$ samples/s, the first-to-last timestamp separation is $(R-1)/f_s$ seconds. The alternative interval-count duration convention is $R/f_s$. At $f_s=50$ and $R=9$, these are $0.16$ s and $0.18$ s. A complete $W=128$ sample window similarly has first-to-last separation $127/50=2.54$ s and sample-interval duration $128/50=2.56$ s.
+\term{Example.} A unit-stride valid layer with $k=3$ reads indices $i,i+1,i+2$, hence span three. A second such layer reads three neighboring features, whose raw dependency union is $i$ through $i+4$, hence span five. With dilation, the enclosing interval can include positions that have no path to the output: span and number of connected taps are not interchangeable.
+\term{Why it matters.} A shared feature after a window shift must have its entire dependency set inside the shared raw segment. Comparing only the feature's center is insufficient. The receptive field also determines how much old context, or halo, is necessary to compute a newly introduced feature.
+\term{Boundary of the claim.} A local final feature can have span nine while the classifier depends on the entire window: GAP combines every final position. ``Temporal span'' in this page denotes an interval of sample indices. It is different from the linear-algebraic span of vectors defined in C17.
+
+\par\label{endconcept:C16}
+\typeout{ECDR-CONCEPT-END C16 PAGE=\thepage}
+
+\concept{C17}{Linear span describes representable directions}
+\term{Definition from a vector space.} A real vector space supplies vector addition and scalar multiplication satisfying closure, associativity, distributivity and identity/inverse laws. For vectors $b_1,\ldots,b_r\in\R^m$, their linear span is
+\[
+ \operatorname{span}\{b_1,\ldots,b_r\}
+ =\left\{\sum_{a=1}^{r}\alpha_ab_a:\alpha_a\in\R\right\}.
+\]
+The integer $m$ is ambient dimension, $r$ is the number of supplied vectors, and $\alpha_a$ is a real coefficient. The span contains zero and is closed under addition and scalar multiplication; it is the smallest linear subspace containing the supplied vectors.
+\term{Example and dependence.} Let $b_1=(1,1)^\top$ and $b_2=(2,2)^\top$ in $\R^2$. Since $b_2=2b_1$, their span is the line $\{(t,t)^\top:t\in\R\}$ and has dimension one. Two supplied vectors therefore need not represent two independent directions. Adding $b_3=(1,-1)^\top$ produces the whole plane because the two independent directions can represent every vector in $\R^2$.
+\term{Connection to data domains.} Writing a wave perturbation as $\delta=B\alpha+e$ uses a matrix $B\in\R^{m\times r}$ whose columns are selected directions, a coefficient vector $\alpha\in\R^r$, and a residual $e\in\R^m$. The term $B\alpha$ belongs to the column span of $B$. Bounding $\alpha$ selects a bounded subset; an unrestricted span alone is unbounded. A sound domain also accounts for any permitted residual $e$.
+\term{Why explain it in a CNN report?} Low-dimensional wave geometry can reduce proof variables or membership cost, but empirical concentration near a span does not prove future inputs lie in it. This concept concerns directions in a vector space, whereas receptive-field span concerns an interval of time indices. Equal terminology does not create a mathematical equivalence. Any proposed subspace certificate must still establish full-domain margin bounds for the actual CNN and handle residual uncertainty.
+
+\par\label{endconcept:C17}
+\typeout{ECDR-CONCEPT-END C17 PAGE=\thepage}
+
+\concept{C18}{Jump and receptive field obey a recurrence}
+\term{Objects.} For layer $\ell$, let $R_\ell$ be receptive-field span in raw sample positions and $J_\ell$ be the raw-grid distance between adjacent feature positions. Set $R_0=J_0=1$ for the input. Let $k_\ell$, $d_\ell$ and $a_\ell$ be that layer's kernel length, dilation and stride. Then
+\[
+ R_\ell=R_{\ell-1}+(k_\ell-1)d_\ell J_{\ell-1},
+ \qquad J_\ell=a_\ell J_{\ell-1}.
+\]
+The quantity $J_\ell$ is often called the effective jump or sampling step. It is not a trainable weight.
+\term{Proof.} The first and last input features read by a kernel are $(k_\ell-1)d_\ell$ positions apart at the preceding layer. Each such position corresponds to a displacement of $J_{\ell-1}$ raw samples. Adding this displacement to the previous receptive-field span gives the first formula. Adjacent outputs move the kernel start by $a_\ell$ preceding positions, yielding the second formula.
+\term{Main-model calculation.} For kernels $(5,3,3)$ and all strides and dilations equal to one,
+\[
+ (R_1,R_2,R_3)=(5,7,9),\qquad (J_1,J_2,J_3)=(1,1,1).
+\]
+A final feature at position $i$ therefore depends on raw indices $i$ through $i+8$ under valid alignment. The final feature at $i=119$ requires raw sample 127. The number of feature channels does not change these temporal spans.
+\term{Why this recurrence matters.} It separates receptive extent from output phase. A large $R$ means more context is needed; a large $J$ means neighboring outputs are farther apart on the raw grid. For strided architectures, an exact feature shift needs compatible phase as well as overlapping inputs.
+\term{Time interpretation.} A full-window prediction is available after all required samples arrive. Model computation time, window acquisition duration and look-ahead relative to a chosen label timestamp are different quantities. An offline window label assigned at its center does not make the model causally available at that center.
+
+\par\label{endconcept:C18}
+\typeout{ECDR-CONCEPT-END C18 PAGE=\thepage}
+
+\concept{C19}{Global average pooling aggregates feature positions}
+\term{Definition.} Let final features be $H(Z)\in\R^{D\times n}$ for normalized input $Z$, with feature-channel count $D$ and temporal length $n>0$. Global average pooling (GAP) is
+\[
+ m_a(Z)=\frac1n\sum_{i=0}^{n-1}H_{a,i}(Z),\qquad
+ m(Z)\in\R^D.
+\]
+The index $a\in\{0,\ldots,D-1\}$ selects a feature channel; $i$ selects time. GAP has no learned parameters. Output-length-one adaptive average pooling provides the corresponding operator contract \cite{torchgap}.
+\term{Example.} For $H=\left(\begin{smallmatrix}1&3&5\\2&2&8\end{smallmatrix}\right)$, there are $D=2$ channels and $n=3$ positions, so $m=(3,4)^\top$. GAP averages along time; it does not average the two feature channels into one scalar. A head can still give those two channels different weights.
+\term{What information changes?} GAP discards explicit position labels at the head: any permutation of feature positions with the same per-channel sums gives the same $m$. It does not make the complete CNN invariant under arbitrary permutations of raw samples. Such permutations generally change the local patches and therefore change the feature values before pooling.
+\term{Why use it for this analysis?} Each feature position contributes with the same coefficient $1/n$. When a window shifts and aligned interior features remain equal, the shared sums cancel. C38 derives an exact new-minus-dropped expression. A head with arbitrary positional weights lacks that general cancellation.
+\term{Conditions and limits.} The identity assumes the compared windows have the same final length $n$. An average over a changing number of valid positions needs a different denominator calculation. GAP also makes the logit potentially depend on the union of all local receptive fields: in the main architecture, this union covers all 128 input positions despite each final local feature spanning only nine.
+
+\par\label{endconcept:C19}
+\typeout{ECDR-CONCEPT-END C19 PAGE=\thepage}
+
+\concept{C20}{An affine head converts features to class scores}
+\term{Definition and dimensions.} Given pooled features $m(Z)\in\R^D$, define a head matrix $A\in\R^{K\times D}$ and bias $\beta\in\R^K$, where $K$ is class count and $D$ is feature-channel count. The normalized-input logits are
+\[
+ f_\theta(Z)=Am(Z)+\beta,\qquad
+ f_{\theta,j}(Z)=A_j^\top m(Z)+\beta_j.
+\]
+The column vector $A_j=(A_{j,:})^\top\in\R^D$ is row $j$ of the matrix written as a column; $j\in\{1,\ldots,K\}$ is a class index. The full parameter vector $\theta$ includes the backbone and this head.
+\term{Example.} With $D=2$, $m=(3,1)^\top$, $A_1=(1,-1)^\top$ and $\beta_1=4$, the first logit is $3-1+4=6$. A negative feature coefficient is permitted. Nonnegative ReLU features therefore do not imply every logit grows when a feature grows.
+\term{Why affine rather than just linear?} Bias supplies class-specific offsets. The relative offset $\beta_c-\beta_j$ influences which class wins even at identical pooled features. The head contains $K(D+1)$ parameters with bias, independently of the number $n$ of positions pooled into $m$.
+\term{Connection to decisions.} Comparing target $c$ with competitor $j$ gives a row difference $q_j=A_c-A_j\in\R^D$. The scalar $q_j^\top m+\beta_c-\beta_j$ is the pairwise decision margin. This expression directly links feature uncertainty to the decision question, often more tightly than bounding two logits separately.
+\term{Boundary.} A shape-compatible head with twelve outputs only defines twelve scores. It does not demonstrate that twelve-class weights have been trained or that every class is recognizable. The head here is a specified theoretical component; historical six-class checkpoints use a different complete architecture and are kept distinct in C56.
+
+\par\label{endconcept:C20}
+\typeout{ECDR-CONCEPT-END C20 PAGE=\thepage}
+
+\concept{C21}{Logits, argmax and a deterministic tie rule}
+\term{Definitions.} A logit is an unnormalized real class score. For a score vector $z\in\R^K$, the set of maximizing indices is $M(z)=\{j:z_j\ge z_r\text{ for all }r\}$, where $K$ is class count and $j,r\in\{1,\ldots,K\}$. To define a single-valued classifier, choose a deterministic tie rule, for example the smallest maximizing index:
+\[
+ h(X)=\min M(F(X)).
+\]
+Here $X$ is a raw input and $F(X)\in\R^K$ is the complete reference pipeline's logit vector. Another tie rule defines another decision contract at ties.
+\term{Example.} Scores $(2,2,1)$ have maximizing set $\{1,2\}$. The displayed rule returns class 1; a rule favoring the largest index returns class 2. Scores $(2,1,0)$ have a unique maximizer, so every tie rule returns class 1. A certificate based on strict positive margins avoids needing to rely on ties.
+\term{Why scores are not probabilities.} Logits can be negative, need not sum to one and have no sensor unit. Adding the same real constant $a$ to all logits leaves $M(z)$ unchanged because $(z_c+a)-(z_j+a)=z_c-z_j$. Multiplying by a positive constant also preserves ordering. A common additive offset also leaves softmax unchanged. Positive rescaling generally changes its concentration while preserving the selected class.
+\term{Connection to ECDR.} Certified decision reuse promises the same class as the reference on accepted inputs. It need not return the reference's current logits. A downstream consumer requiring scores, probabilities or embeddings needs a stronger output contract.
+\term{Conditions.} The real-valued definition assumes all scores are finite. NaN ordering and infinities require an explicit program-level policy; they are not settled by the mathematical argmax. Near a tie, rounding can change a program's selected class, so C53 adds numerical margins rather than assuming real-arithmetic uniqueness automatically transfers to float32.
+
+\par\label{endconcept:C21}
+\typeout{ECDR-CONCEPT-END C21 PAGE=\thepage}
+
+\concept{C22}{Softmax changes score scale, not real ordering}
+\term{Definition.} For logits $z\in\R^K$ and temperature $\tau>0$, softmax assigns
+\[
+ p_j=\frac{e^{z_j/\tau}}{\sum_{r=1}^{K}e^{z_r/\tau}},\qquad j=1,\ldots,K.
+\]
+Here $p_j$ is the normalized output for class $j$, $r$ ranges over all classes, and $e^x=\exp(x)$ is the positive real exponential, characterized by $\exp(0)=1$ and derivative $\exp'(x)=\exp(x)$. The mathematics atlas F45 gives its convergent-series definition. Each $p_j>0$ and $\sum_jp_j=1$ because every numerator is positive and the denominator is their sum.
+\term{Ordering proof.} Exponential is strictly increasing, and the common denominator is positive. Hence $z_c>z_j$ if and only if $p_c>p_j$ for any classes $c,j$. Equal logits give equal softmax values. A positive temperature preserves class ordering in real arithmetic, although it changes how concentrated the vector is.
+\term{Example and stable form.} At $\tau=1$, logits $(2,1,0)$ give
+\[
+ (p_1,p_2,p_3)\approx(0.66524,0.24473,0.09003).
+\]
+For any common scalar $a$,
+\[
+ p_j=\frac{e^{(z_j-a)/\tau}}{\sum_re^{(z_r-a)/\tau}},
+\]
+since the common exponential factor cancels. Choosing $a=\max_rz_r$ avoids large positive exponents in ordinary numerical evaluation. It does not prove exact finite-precision equality for all implementations.
+\term{Why omit softmax from the certificate?} The ECDR decision question is about ordering, so logits and their pairwise differences already contain the necessary information. Adding softmax introduces nonlinear expressions without changing the ideal argmax. The classifier can therefore be certified before probability normalization.
+\term{Interpretation limit.} A value $p_1=0.66524$ is not, by definition alone, evidence that class 1 is correct on 66.524\% of comparable cases. Calibration and accuracy require a specified evaluation population. Softmax normalization is an algebraic fact; probabilistic calibration is an empirical property of the learned reference and data.
+
+\par\label{endconcept:C22}
+\typeout{ECDR-CONCEPT-END C22 PAGE=\thepage}
+
+\concept{C23}{A pairwise margin is the decision inequality}
+\term{Definition.} For a raw logit pipeline $F:\mathcal X\to\R^K$, target class $c$ and competitor $j\ne c$, define
+\[
+ g_{cj}(X)=F_c(X)-F_j(X).
+\]
+Here $X\in\mathcal X$ is an input window and $K$ is the number of classes. For affine head $F_j(X)=A_j^\top m(\mathcal P(X))+\beta_j$, let $q_j=A_c-A_j$. Then
+\[
+ g_{cj}(X)=q_j^\top m(\mathcal P(X))+\beta_c-\beta_j.
+\]
+The map $\mathcal P$ is fixed preprocessing, $m$ is pooled feature extraction, $A_j\in\R^D$ is the head row as a column, and $\beta_j$ is its bias.
+\term{Decision equivalence.} The target is the unique argmax exactly when $g_{cj}(X)>0$ for every $j\ne c$. This follows directly from $F_c>F_j$ for all competitors. With $K=12$, eleven distinct inequalities must hold. Proving only the gap to the runner-up at one anchor does not identify which competitor could become largest elsewhere.
+\term{Example.} Suppose logits change from $(4.5,-0.5,1)$ to $(6.5,-2.5,5)$. Class 1 remains the winner, but its margin to class 3 falls from $3.5$ to $1.5$ even while its own logit rises. Target score growth and decision safety are different statements.
+\term{Why this is the central quantity.} ECDR can skip evaluating the new scores if it already has sound positive lower bounds on all these differences throughout an accepted domain. Pairwise analysis preserves shared dependencies between logits; subtracting before bounding can be tighter than separately bounding target and competitor scores.
+\term{Necessary qualification.} Strict positivity is sufficient for any deterministic tie rule and necessary for a \emph{unique} maximizer. It is not necessary for class $c$ to win under every particular tie convention. The report intentionally uses strict inequalities to keep the certificate independent of favorable ties.
+
+\par\label{endconcept:C23}
+\typeout{ECDR-CONCEPT-END C23 PAGE=\thepage}
+
+\concept{C24}{The specified architecture fixes every shape}
+\term{Specification.} Let normalized input be $Z\in\R^{6\times128}$. Three Conv1D layers have channel widths $6\to32\to64\to64$, kernel lengths $5,3,3$, valid padding, stride one, dilation one, one group and bias. ReLU follows each convolution. GAP returns 64 features; an affine head returns $K$ logits. The numerical example uses $K=12$.
+\term{Shape derivation.} For valid unit-stride undilated convolution, output length is input length minus kernel length plus one. Thus
+\[
+ T_1=128-5+1=124,\quad T_2=124-3+1=122,\quad T_3=122-3+1=120.
+\]
+The symbol $T_\ell$ denotes temporal length after layer $\ell$. ReLU preserves these shapes. GAP removes the temporal axis by averaging it, not by concatenating it.
+\begin{center}\small
+\begin{tabular}{@{}lrrr@{}}\toprule
+Stage & Channels & Length & Local RF span\\\midrule
+Input &6&128&1\\
+Conv1 + ReLU &32&124&5\\
+Conv2 + ReLU &64&122&7\\
+Conv3 + ReLU &64&120&9\\
+GAP &64&1&128 (union)\\
+Affine head &12&1&128 (union)\\\bottomrule
+\end{tabular}
+\end{center}
+\term{Interpretation.} A final local feature has span nine; the union of all 120 final receptive fields covers the full 128-sample input. Therefore a logit can depend on the entire window. The 32 channels of layer one do not divide its length 124, and layer two's kernel input width is 32 rather than the original six.
+\term{Why freeze the architecture?} All later counts and cancellation identities refer to this exact object. Adding pooling, BatchNorm, padding, hidden state or a positional dense head requires revisiting the derivation. This architecture is a theoretical reference family, not a statement that a new twelve-class model has already been trained or that its accuracy is sufficient for the task.
+
+\par\label{endconcept:C24}
+\typeout{ECDR-CONCEPT-END C24 PAGE=\thepage}
+
+\concept{C25}{Parameters count independent learned scalars}
+\term{Definition.} A trainable parameter is an independently stored scalar selected by training. A groups-one convolution with input width $C_{\rm in}$, output width $C_{\rm out}$, kernel length $k$ and bias has
+\[
+ P_{\rm conv}=C_{\rm out}C_{\rm in}k+C_{\rm out}.
+\]
+The first term counts kernel entries; the second counts one bias per output channel. An affine head with $D$ features and $K$ classes has $P_{\rm head}=K(D+1)$. Temporal output length does not appear because weights are shared.
+\term{Full calculation.} For the C24 architecture,
+\[
+ \begin{aligned}
+ P_1&=32(6\cdot5+1)=992,\\
+ P_2&=64(32\cdot3+1)=6208,\\
+ P_3&=64(64\cdot3+1)=12352,\\
+ P_{\rm head}&=12(64+1)=780.
+ \end{aligned}
+\]
+Their sum is $P=20332$ parameters. Kernel/head weights total $960+6144+12288+768=20160$; biases total $32+64+64+12=172$. Removing all biases subtracts 172, not one parameter per layer or one for the entire model.
+\term{General class count.} The backbone has $19552$ parameters. Keeping its widths fixed gives $P(K)=19552+65K$, where $K$ is the head class count. This is an architecture formula; it does not describe a historical model with a different pooling and dense head merely because that model has six classes.
+\term{Why count them?} Parameters determine the scalar payload of weights and constrain the function family. They do not count repeated computations, activations, optimizer buffers or certificates. A network with few parameters can still perform many operations when a filter is evaluated at many positions.
+\term{Evidence boundary.} This count is exact for the explicitly specified bias and grouping choices. It is not an accuracy estimate, a file-size measurement or a latency benchmark. Changes in precision alter bytes per parameter while leaving this scalar count unchanged.
+
+\par\label{endconcept:C25}
+\typeout{ECDR-CONCEPT-END C25 PAGE=\thepage}
+
+\concept{C26}{MAC counts repeated dot-product work}
+\term{Convention.} One multiply--accumulate (MAC) is counted per kernel product accumulated in a dot product. A direct groups-one convolution therefore has
+\[
+ M_{\rm conv}=T_{\rm out}C_{\rm out}C_{\rm in}k.
+\]
+Here $T_{\rm out}$ is output length, $C_{\rm out}$ and $C_{\rm in}$ are channel widths, and $k$ is kernel length. A head with $D$ input features and $K$ output scores uses $KD$ such products. Bias additions and ReLU comparisons are counted separately.
+\term{Main-model arithmetic.} With the shapes of C24,
+\[
+ \begin{aligned}
+ M_1&=124\cdot32\cdot6\cdot5=119040,\\
+ M_2&=122\cdot64\cdot32\cdot3=749568,\\
+ M_3&=120\cdot64\cdot64\cdot3=1474560,\\
+ M_{\rm head}&=12\cdot64=768.
+ \end{aligned}
+\]
+The sum is $M=2343936$ MAC per window. For general head class count, $M(K)=2343168+64K$. Layer three dominates this count because each of its 7680 outputs uses 192 kernel products.
+\term{Why distinguish it from parameters?} A shared weight is stored once but multiplied at every corresponding output position. Increasing window length can increase $T_{\rm out}$ and hence computation without changing the parameter count. A batch of $B$ independent windows has $B$ times the direct MAC count, although wall-clock time need not scale linearly because hardware parallelism and scheduling can change.
+\term{Connection to reuse.} Exact cached interior features can reduce the number of positions recomputed; C49 counts this under an explicit cache assumption. Decision reuse can avoid a forward pass but introduces proof and membership work. Both need accounting beyond the full-forward MAC total.
+\term{Limit.} MAC is a transparent mathematical convention, not a count of actual machine instructions or elapsed microseconds. Fused kernels, memory access, data layout and the target backend can make equal MAC totals exhibit different runtime behavior.
+
+\par\label{endconcept:C26}
+\typeout{ECDR-CONCEPT-END C26 PAGE=\thepage}
+
+\concept{C27}{FLOP and non-MAC work need a stated convention}
+\term{Definitions.} A floating-point operation (FLOP) count reports elementary arithmetic under a chosen convention. Counting one multiplication and one accumulation as two FLOP gives approximately $2M$ for a workload with $M$ MAC. For the main model, $M=2343936$, hence $2M=4687872$ FLOP for its convolution/head products and accumulations.
+\term{Why the conversion is approximate.} A dot product of length $q$ has $q$ multiplications but only $q-1$ additions if started from its first product. An accumulator initialized to zero suggests another bookkeeping view; a hardware fused multiply-add has its own instruction semantics. The integer $q$ denotes product count, not a channel or class count. A reproducible report states its convention rather than comparing differently defined totals.
+\term{Work outside the stated MAC total.} The three convolution outputs contain $3968$, $7808$ and $7680$ scalars. Their ReLUs apply 19456 max-with-zero operations. Conv/head bias application has $3968+7808+7680+12=19468$ scalar additions if performed separately. GAP over $D=64$ channels and $n=120$ positions uses $D(n-1)=7616$ additions and $D=64$ reciprocal scalings.
+
+For $C=6$ channels and $W=128$ input samples, direct normalization adds $CW=768$ subtractions and 768 divisions; precomputing reciprocal scales can replace the divisions with multiplications. Here $C,W,D,n$ denote input channels, input length, final feature channels and final length respectively.
+\term{Why this matters.} A table showing zero MAC at ReLU or GAP does not say those operators are free. Memory traffic, tensor allocation, layout conversion, runtime dispatch, certificate construction and domain membership are also outside this MAC convention.
+\term{Connection to experiments.} Arithmetic counts explain where work could be removed and make architectural comparisons interpretable. They cannot establish wall-clock benefit without a specified device, dtype, batch, thread configuration and measurement scope. A mathematically smaller forward can remain slower once added control and memory costs are included.
+
+\par\label{endconcept:C27}
+\typeout{ECDR-CONCEPT-END C27 PAGE=\thepage}
+
+\concept{C28}{Memory is a schedule-dependent resource}
+\term{Objects and units.} Let $P=20332$ be the trainable scalar count and suppose every scalar occupies four bytes, as in an assumed float32 payload. Weight storage is $4P=81328$ bytes, or $79.421875$ KiB, with one KiB equal to 1024 bytes. This is tensor payload, not a checkpoint-file size or a measured process memory peak.
+\begin{center}\small
+\begin{tabular}{@{}lrr@{}}\toprule
+Tensor for one window & Scalars & Bytes\\\midrule
+Input &768&3072\\
+Conv1/ReLU1 output &3968&15872\\
+Conv2/ReLU2 output &7808&31232\\
+Conv3/ReLU3 output &7680&30720\\
+GAP vector &64&256\\
+Logits &12&48\\\bottomrule
+\end{tabular}
+\end{center}
+\term{Schedule example.} Retaining every listed activation requires 20300 scalars or 81200 bytes. A conditional inference schedule retaining only a current layer's input and output has a largest listed pair of $7808+7680=15488$ scalars, or 61952 bytes. Adding weights gives 143280 bytes, or $139.921875$ KiB. These numbers assume no duplicate ReLU tensors, workspaces, allocation overhead or extra cache.
+\term{Why the schedule matters.} Peak memory is the maximum simultaneous live storage, not the sum of every tensor ever created. In-place operations can alter liveness; backend workspaces can add storage. Training may retain activations for backpropagation and add gradients and optimizer state. An optimizer with two same-dtype moment tensors adds two parameter-sized payloads beyond weights and gradients, subject to its actual implementation.
+\term{Connection to streaming.} Computational reuse saves arithmetic by retaining activations across windows. Decision reuse stores domains, proof identities and lifecycle state, and may or may not keep exact features. The combined system can use more memory than plain forward evaluation. Claims of a ``small model'' must specify whether they concern parameters, checkpoint bytes, activation payload, peak RAM or retained certificates; these are different measurable quantities.
+
+\par\label{endconcept:C28}
+\typeout{ECDR-CONCEPT-END C28 PAGE=\thepage}
+
+\concept{C29}{Cross-entropy specifies a training objective}
+\term{Definition.} Let $X$ be a raw training window, $y\in\{1,\ldots,K\}$ its target class, and $F_\theta(X)\in\R^K$ the parameterized pipeline's logits. At temperature one, define $p_j=e^{F_{\theta,j}(X)}/\sum_re^{F_{\theta,r}(X)}$. The unweighted, single-example cross-entropy is
+\[
+ L(\theta;X,y)=-\log p_y
+ =-F_{\theta,y}(X)+\log\sum_{j=1}^{K}e^{F_{\theta,j}(X)}.
+\]
+Here $\theta$ contains learned parameters, $j,r$ range over classes, and $\log$ is the natural logarithm. The loss is a dimensionless optimization objective, not an accuracy percentage.
+\term{Why this form?} The expression is the negative log of the probability assigned to the supplied target under the softmax model. Assigning more mass to that target lowers its loss. A wrong annotation still directs optimization toward its supplied class; the objective cannot establish annotation truth. For hard class targets, the documented loss interface accepts logits and incorporates log-softmax with negative log-likelihood \cite{torchce}.
+\term{Example.} If $p_y=1/2$, then $L=\log2\approx0.69315$; if $p_y=1/10$, then $L=\log10\approx2.30259$. The second prediction is penalized more. Adding a common constant to all logits leaves $p_y$ and $L$ unchanged.
+\term{Dataset objective.} For $N$ chosen training windows $(X_t,y_t)$, an empirical mean is $\widehat L(\theta)=N^{-1}\sum_{t=1}^{N}L(\theta;X_t,y_t)$. The integer $t$ indexes examples. Class weighting, soft labels, label smoothing or regularization define modified objectives and must be specified separately. Overlapping windows can be dependent even though their losses are averaged in this expression.
+\term{Connection and limit.} Training seeks useful fixed weights; certification studies the function after weights are frozen. Low training loss does not prove correct predictions on new subjects, positive margins on a continuous domain, or useful reuse coverage. This document explains the objective without claiming that a new twelve-class model has been trained.
+
+The natural logarithm $\log:(0,\infty)\to\R$ is the inverse of the exponential; its derivative is $1/u$ at positive argument $u$. Atlas F46 develops this definition and its loss connection.
+\par\label{endconcept:C29}
+\typeout{ECDR-CONCEPT-END C29 PAGE=\thepage}
+
+\concept{C30}{Backpropagation is the chain rule through the graph}
+\term{Objects.} Let $L$ be a scalar loss, $z\in\R^K$ the logits, $p$ their temperature-one softmax, and $y$ the supplied class. Differentiating cross-entropy gives
+\[
+ \frac{\partial L}{\partial z_j}=-\mathbf1[j=y]+\frac{e^{z_j}}{\sum_{r=1}^{K}e^{z_r}}=p_j-\mathbf1[j=y],
+\]
+where $j$ is a class index and the indicator $\mathbf1[j=y]$ equals one when $j=y$, zero otherwise. Gradients quantify how a local parameter or activation change alters this objective.
+\term{Chain-rule example.} For head $z=Am+\beta$, let $\delta=\nabla_zL\in\R^K$. Then
+\[
+ \nabla_mL=A^\top\delta,\qquad
+ \nabla_AL=\delta m^\top,\qquad \nabla_\beta L=\delta.
+\]
+Here $m\in\R^D$ is pooled features, $A\in\R^{K\times D}$ the head matrix, and $\beta\in\R^K$ its bias. GAP with $m_a=n^{-1}\sum_iH_{a,i}$ distributes its gradient as $\partial L/\partial H_{a,i}=n^{-1}\partial L/\partial m_a$, where $n>0$ is final position count and $a$ selects a channel of the final feature tensor, of shape $D\times n$.
+\term{Shared-kernel gradient.} For convolution preactivation $V_{o,i}=b_o+\sum_{c,r}W_{o,c,r}H_{c,i+r}$, one weight has
+\[
+ \frac{\partial L}{\partial W_{o,c,r}}=\sum_i\frac{\partial L}{\partial V_{o,i}}H_{c,i+r}.
+\]
+Here $H\in\R^{C_{\rm in}\times T}$ is this convolution's input, $V\in\R^{C_{\rm out}\times T_o}$ its preactivation, $T_o=T-k+1$, and $k$ is kernel length. The indices satisfy $0\le o<C_{\rm out}$, $0\le c<C_{\rm in}$, $0\le r<k$; the sum uses $0\le i<T_o$. The sum arises because the same coefficient is used at every output position. ReLU contributes derivative one on positive preactivations and zero on negative ones; a convention is required at zero.
+\term{Why explain it here?} A gradient-descent step $\theta\leftarrow\theta-\alpha\nabla_\theta L$ uses learning rate $\alpha>0$ to change parameters. Other optimizers add their own state. After any update, a certificate for the previous parameters is not automatically a certificate for the new function. Backpropagation computes local sensitivities for optimization; it is not a universal bound on a finite input domain and must not be used as if it were one.
+
+\par\label{endconcept:C30}
+\typeout{ECDR-CONCEPT-END C30 PAGE=\thepage}
+
+\concept{C31}{Training mode and inference mode define contracts}
+\term{Definition.} Training selects parameters from an objective and data; inference evaluates a chosen reference with fixed parameters. The phrase ``fixed weights'' is necessary but not always sufficient for a single-window deterministic function. Some operators also depend on a mode, random mask, batch statistics or mutable state.
+\term{Example: dropout.} For activation $h$, a training-time dropout rule can use a random mask $M$ and retain probability $q\in(0,1]$, giving $\widetilde h=Mh/q$ elementwise. Here each mask entry is zero or one. Two evaluations of the same $h$ can differ if $M$ changes. An inference rule that omits dropout defines a different, deterministic computation. Its actual contract must be identified rather than inferred from the architecture name.
+\term{Example: batch dependence.} A BatchNorm layer using current batch moments can assign different outputs to the same window when its batch companions change. Its parameters may be unchanged. C32 explains when frozen running statistics instead make that operator a fixed channelwise affine map.
+\term{Why this matters for ECDR.} Let $F$ denote the entire inference program and $h$ its deterministic class output. A domain certificate establishes a property of that $F$ under its stated mode and input contract. Switching training mode, changing normalization or updating weights can invalidate the evidence. Merely calling a routine ``evaluation'' does not establish those semantics if a configuration still uses batch-dependent statistics.
+\term{Main-model boundary.} The central valid/ReLU/GAP family contains no BatchNorm, dropout or hidden recurrent state. Once its parameters and input preprocessing are fixed, its real-arithmetic forward is a function of one window. Training is discussed to explain how a member of the family could be selected; no optimizer run or empirical quality result is asserted here.
+\term{Connection.} Model selection, classifier generalization and certificate soundness are separate obligations. A useful research protocol must evaluate all three in compatible scopes, and must refresh proof identities whenever the reference being certified changes.
+
+\par\label{endconcept:C31}
+\typeout{ECDR-CONCEPT-END C31 PAGE=\thepage}
+
+\concept{C32}{Batch normalization can become a fixed affine map}
+\term{Definition.} For a scalar activation $v$ in one channel, BatchNorm applies
+\[
+ \operatorname{BN}(v)=\gamma\frac{v-\mu}{\sqrt{\nu+\varepsilon}}+\beta.
+\]
+Here $\gamma$ and $\beta$ are learned channelwise scale and offset; $\mu$ and $\nu$ are the channel mean and variance used by this evaluation; $\varepsilon>0$ is a numerical stabilizer. The same Greek letters elsewhere can represent different objects; on this page they refer only to BatchNorm.
+\term{Frozen-statistic derivation.} If $\mu,\nu,\gamma,\beta,\varepsilon$ are fixed and $\nu+\varepsilon>0$, define $a=\gamma/\sqrt{\nu+\varepsilon}$ and $b=\beta-a\mu$. Then $\operatorname{BN}(v)=av+b$ is affine. For preceding convolution $v=Wh+d$, where $h$ is its input, $W$ its kernel map and $d$ its bias, composition gives $(aW)h+(ad+b)$ in that output channel. Thus folding BatchNorm into a convolution is a mathematical substitution under frozen-statistic assumptions.
+\term{Why mode matters.} When moments are computed from the current batch or temporal population, $\mu$ and $\nu$ depend on other activation values. The displayed affine reduction with constant coefficients is then not a valid single-window description. PyTorch documents both running-statistic behavior and configurations without tracked running statistics \cite{torchbn}; an eval flag alone does not justify ignoring the configuration.
+\term{Parameters versus buffers.} A channel contributes two trainable affine scalars when both are enabled. Running means and variances are stored buffers, not additional trainable parameters in that count. Both still occupy memory and affect the evaluated function.
+\term{Connection and main-model boundary.} A fixed channelwise affine map can preserve aligned equality because equal inputs receive the same transformation. Batch-dependent normalization needs a different reference formulation. The new theoretical backbone omits BatchNorm to keep this assumption unnecessary. The historical six-class model includes it, so its operator and mode must be read explicitly before borrowing any equality or resource argument from the simplified reference.
+
+\par\label{endconcept:C32}
+\typeout{ECDR-CONCEPT-END C32 PAGE=\thepage}
+
+\concept{C33}{Max pooling is a local order statistic}
+\term{Definition.} For one feature channel $H$ of length $T$, valid max pooling with window length $k_p$ and stride $a_p$ is
+\[
+ Y_i=\max_{0\le r<k_p}H_{ia_p+r},
+ \qquad T_{\rm out}=\left\lfloor\frac{T-k_p}{a_p}\right\rfloor+1,
+\]
+assuming $T\ge k_p$. The integer $i$ selects an output, $r$ ranges over positions in its pool, and $Y$ is the pooled sequence. This operator acts independently per channel and has no learned kernel parameters.
+\term{Example.} For $H=(1,4,3,2)$, $k_p=a_p=2$ yields $Y=(4,3)$. A one-position shifted sequence can regroup the same local values into different pairs. Therefore a one-position input shift does not generally correspond to an integer output shift for this stride-two pool.
+\term{What it changes.} Max pooling reduces temporal length and introduces a nonlinear selection. The winning index can change as values change. It enlarges the dependency span and multiplies effective jump through its stride, just as a local receptive-field calculation predicts. It does not compute a mean, and its output cannot generally be updated by the GAP new-minus-dropped identity.
+\term{Bounding.} If every input position has interval $l_t\le H_t\le u_t$, then each pooled output lies between the maximum of the corresponding lower endpoints and the maximum of the upper endpoints. The symbols $l_t,u_t$ are valid endpoint bounds, not empirical sample extrema. This monotonicity can support a verifier, but alignment and interval soundness remain necessary.
+\term{Why discuss an absent operator?} The new reference deliberately has no intermediate pooling, so its feature shift is measured directly in raw sample positions. The historical model pools twice and has different phases and lengths. A proof for the new architecture cannot be pasted onto the historical one. Exact streaming inference can still be investigated for a pooling architecture, but its cached state, receptive fields and compatible shift phases require their own derivation.
+
+\par\label{endconcept:C33}
+\typeout{ECDR-CONCEPT-END C33 PAGE=\thepage}
+
+\concept{C34}{The complete reference includes preprocessing}
+\term{Definition.} Let raw input $X\in\R^{C\times W}$ be transformed by fixed preprocessing $\mathcal P$ into normalized input $Z=\mathcal P(X)$. Let $f_\theta$ be the frozen normalized-input CNN. Define the raw-input logit pipeline
+\[
+ F=f_\theta\circ\mathcal P,\qquad F(X)=f_\theta(Z).
+\]
+The dimensions $C,W$ denote sensor channels and samples; $\theta$ includes every learned weight and bias. The decision $h(X)$ is a deterministic argmax of $F(X)$ with a specified tie rule.
+\term{Two margin coordinate systems.} For target $c$ and competitor $j\ne c$, write
+\[
+ \gamma_{cj}(Z)=f_{\theta,c}(Z)-f_{\theta,j}(Z),\qquad
+ g_{cj}(X)=F_c(X)-F_j(X)=\gamma_{cj}(\mathcal P(X)).
+\]
+The symbols $g$ and $\gamma$ distinguish the raw-input pipeline from the normalized-input network; neither is a BatchNorm parameter here. Normalizing $Z$ again evaluates a different function.
+\term{Domain correspondence.} For a normalized set $\mathcal D_Z$, its raw counterpart is the preimage $\mathcal P^{-1}(\mathcal D_Z)=\{X:\mathcal P(X)\in\mathcal D_Z\}$. A fixed positive-scale affine normalization is invertible channelwise, but the preimage definition also explains the logical condition without relying on an informal coordinate conversion.
+\term{Why it matters.} A certificate is meaningful only for the same function used by the reference. Channel order, units, sample grid, finite-value policy, normalization constants, class order and parameter identity all contribute. A matching filename is insufficient: its contents can change. Conversely, changing a filename alone need not change the mathematical function.
+\term{Connection.} The streaming derivations use $Z$ and $\gamma$ because they analyze the CNN after preprocessing. A raw-domain statement uses $X$, $F$ and $g$. Runtime membership must transform the actual query consistently and confirm that its overlap and domain coordinates match those of the certificate. This prevents an algebraically correct bound from being applied to the wrong input set.
+
+\par\label{endconcept:C34}
+\typeout{ECDR-CONCEPT-END C34 PAGE=\thepage}
+
+\concept{C35}{A shift--append operator defines a new window}
+\term{Definition.} For normalized window $Z\in\R^{C\times W}$, choose an integer shift $s$ with $1\le s\le W$. A new wave is $U\in\R^{C\times s}$, containing the $s$ new columns. Define $Z'=\mathcal T_s(Z,U)$ by
+\[
+ Z'_{c,i}=\begin{cases}
+ Z_{c,i+s},&0\le i<W-s,\\
+ U_{c,i-(W-s)},&W-s\le i<W.
+ \end{cases}
+\]
+The channel index is $c\in\{0,\ldots,C-1\}$; $i$ is the new window's time index. The operator drops the first $s$ old columns and appends $U$ in order.
+\term{What equality actually says.} In the overlap, $Z'[:,i]=Z[:,i+s]$. This is an aligned equality. It does not say $Z'[:,i]=Z[:,i]$. Consequently, ordinary same-index distance between windows can be large despite exact raw overlap. Shared observations and similar coordinate vectors are different properties.
+\term{Example.} With $C=1$, $W=6$, $s=2$, old window $(1,2,3,4,5,6)$ and wave $(7,8)$, the new window is $(3,4,5,6,7,8)$. Four sample values are shared, but each same-index difference is two. The overlap proportion is $4/6$; the Euclidean distance is $2\sqrt6$.
+\term{Why this operator is needed.} A wave-domain certificate fixes the old overlap and varies only $U$. It therefore describes $Cs$ free wave coordinates, not $CW$ arbitrary full-window coordinates. The query must have the certified overlap; checking the tail box alone is insufficient if the anchor has changed.
+\term{Conditions and connection.} Raw shift--append becomes this normalized relation only when preprocessing preserves aligned sample equality, as fixed channelwise affine normalization does. The model's convolution stride remains a separate quantity. C36 proves which feature positions inherit the exact equality; C51 shows why repeatedly appending a permitted wave does not automatically keep a one-step certificate valid.
+
+\par\label{endconcept:C35}
+\typeout{ECDR-CONCEPT-END C35 PAGE=\thepage}
+
+\concept{C36}{Aligned feature equality follows by local substitution}
+\term{Assumptions and objects.} Let $Z'=\mathcal T_s(Z,U)$ be C35's shift--append of a $C\times W$ window by $s$ columns. The backbone uses fixed valid convolutions with stride and dilation one, and identical pointwise maps at every position. It has no pooling, positional weights or hidden state. Let final local span be $R=1+\sum_\ell(k_\ell-1)$, final length $n=W-R+1$, and assume $1\le s\le n$. Here $\ell$ indexes convolution layers and $k_\ell$ is layer $\ell$'s kernel length. Write $H_i(Z)\in\R^D$ for all $D$ final feature channels at position $i$.
+\term{Claim.} The aligned shared features satisfy
+\[
+ H_i(Z')=H_{i+s}(Z),\qquad 0\le i<n-s.
+\]
+The theorem is independent of how weights were learned; it is conditional on architecture, fixed parameters and exact input overlap.
+\term{Proof.} A feature at new position $i$ depends only on new input indices $i$ through $i+R-1$. For $i<n-s$, its last index obeys $i+R-1\le W-s-1$, so this entire receptive field lies inside the shared overlap. Every required value equals the old value at the index increased by $s$. The first convolution therefore receives matching patches under this alignment and applies the same weights and bias. Its pointwise nonlinearity preserves equality. Repeating this argument through successive layers proves the displayed vector equality.
+\term{Why it is useful.} Those interior features can be copied from a valid exact cache or canceled algebraically in GAP sums. The theorem identifies an actual equality rather than a similarity heuristic, so no probability model or activity-label assumption is needed.
+\term{Limits.} It does not give $H_i(Z')=H_i(Z)$ and does not prove equal pooled vectors or classes. If a receptive field reaches newly appended data, this proof supplies no equality for it. For padding, dilation, stride or stateful preprocessing variants, a suitably aligned interior theorem may exist, but its assumptions and indices must be rederived rather than inferred from this specialized formula.
+
+\par\label{endconcept:C36}
+\typeout{ECDR-CONCEPT-END C36 PAGE=\thepage}
+
+\concept{C37}{Shared positions and halo require layerwise accounting}
+\term{Objects.} For a valid, unit-stride, undilated backbone, let $T_\ell$ denote length at layer $\ell$ and let the query shift be $s$. Whenever $s\le T_\ell$, aligned shared positions number $T_\ell-s$, while $s$ positions are newly introduced. For the central example, $s=64$ and lengths are $128,124,122,120$ including the input.
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Stage & Length & Shared & New & Shared fraction\\\midrule
+Input &128&64&64&50.0000\%\\
+Conv1/ReLU1 &124&60&64&48.3871\%\\
+Conv2/ReLU2 &122&58&64&47.5410\%\\
+Conv3/ReLU3 &120&56&64&46.6667\%\\\bottomrule
+\end{tabular}
+\end{center}
+\term{Halo derivation.} Final length is $n=120$ and local span is $R=9$. New final positions range from $n-s=56$ through $n-1=119$. Their raw dependency union ranges from 56 through $119+R-1=127$, containing $s+R-1=72$ columns. Eight columns come from old overlap and 64 are new. The eight old context columns form the raw halo.
+\term{Why it matters.} Running the full three-layer valid backbone only on 64 new raw columns produces $64-9+1=56$ final positions, not the required 64. Either the appropriate old context must be included or intermediate exact caches must supply it. A statement of ``64 new samples'' alone cannot determine an incremental implementation's arithmetic.
+\term{Multiple shifts.} After $q$ shifts of size $s$ from one original anchor, direct aligned final overlap has count $\max(n-qs,0)$, where $q$ is a nonnegative integer. For $n=120,s=64$, it is already zero at $q=2$. This describes direct overlap with the original anchor, not the ability of an algorithm to update a cache successively.
+\term{Connection.} C49's MAC reduction assumes exact layer caches. A different cache policy can require recomputing intermediate halos and gives different counts. The logical domain identity in a certificate is likewise distinct from a cache that was updated between steps.
+
+\par\label{endconcept:C37}
+\typeout{ECDR-CONCEPT-END C37 PAGE=\thepage}
+
+\concept{C38}{The GAP delta is an exact cancellation identity}
+\term{Objects.} Under C36's valid-alignment assumptions, let final features $H_i(Z)\in\R^D$ have $n$ positions, and let $Z'=\mathcal T_s(Z,U)$ with $1\le s\le n$. Define vector sums
+\[
+ D_{\rm drop}=\sum_{i=0}^{s-1}H_i(Z),\qquad
+ D_{\rm new}(U)=\sum_{i=n-s}^{n-1}H_i(Z').
+\]
+Both lie in $\R^D$; neither is an activity label. GAP is $m(Z)=n^{-1}\sum_{i=0}^{n-1}H_i(Z)$.
+\term{Derivation.} Aligned equality gives
+\[
+ \sum_{i=0}^{n-1}H_i(Z')
+ =\sum_{i=s}^{n-1}H_i(Z)+D_{\rm new}(U).
+\]
+Subtracting the old sum cancels the shared positions exactly in real arithmetic:
+\[
+ m(Z')-m(Z)=\frac{D_{\rm new}(U)-D_{\rm drop}}{n}.
+\]
+The same length $n$ appears in both pooled vectors. The cancellation pairs new position $i$ with old position $i+s$, not with the same numerical index.
+\term{Example.} Suppose $n=4$, $s=2$ and old feature vectors are $(0,1),(1,1),(2,1),(3,1)$. New vectors are $(2,1),(3,1),(4,1),(5,1)$. Then $D_{\rm drop}=(1,2)^\top$ and $D_{\rm new}=(9,2)^\top$, so the pooled change is $(2,0)^\top$.
+\term{Why the identity matters.} The uncertain part of a transition can be isolated into newly introduced feature sums while the dropped part is known at the anchor. An affine head then converts the sum change into exact margin changes in C39.
+\term{Boundary.} An identity is not yet a certificate: computing the observed $D_{\rm new}$ may still require CNN work, while skipping that work needs a bound for every permitted wave. Updating sums in floating-point arithmetic may also differ bitwise from recomputing their full sum; C53 separates this numerical obligation from the real-arithmetic proof.
+
+\par\label{endconcept:C38}
+\typeout{ECDR-CONCEPT-END C38 PAGE=\thepage}
+
+\concept{C39}{The affine head turns GAP delta into margin delta}
+\term{Objects.} For normalized-input network $f_\theta$, let $\gamma_{cj}(Z)=f_{\theta,c}(Z)-f_{\theta,j}(Z)$ compare target $c$ with competitor $j\ne c$. The head is $f_{\theta,j}(Z)=A_j^\top m(Z)+\beta_j$, where $A_j\in\R^D$ is a head row as a column, $\beta_j$ its bias, and $m(Z)\in\R^D$ is GAP. Define $q_j=A_c-A_j$. Let $Z'$ be an aligned shift with final length $n$ and new/dropped feature sums $D_{\rm new},D_{\rm drop}\in\R^D$.
+\term{Derivation.} Subtracting the old margin from the new one cancels the fixed head biases:
+\[
+ \begin{aligned}
+ \gamma_{cj}(Z')-\gamma_{cj}(Z)
+ &=q_j^\top(m(Z')-m(Z))\\
+ &=\frac1nq_j^\top(D_{\rm new}-D_{\rm drop}).
+ \end{aligned}
+\]
+Thus
+\[
+ \gamma_{cj}(Z')=\gamma_{cj}(Z)
+ +\frac1nq_j^\top(D_{\rm new}-D_{\rm drop}).
+\]
+Bias remains in the old value $\gamma_{cj}(Z)$; it is canceled only in the difference.
+\term{Example.} If pooled change is $(2,0)^\top$, then $q_2=(2,-1)^\top$ increases its margin by four, while $q_3=(-1,1)^\top$ decreases its margin by two. The same feature change can help one class comparison and harm another. A generic ``feature energy increases'' statement therefore cannot replace all pairwise inequalities.
+\term{Why use pairwise changes?} The expression directly isolates the decision-relevant linear objective over uncertain new features. It can retain cancellations shared by target and competitor, whereas separate logit bounds can discard those dependencies.
+\term{Conditions and coordinate connection.} This formula assumes the same frozen affine head, valid shift equality and fixed pooling length. For raw pipeline $F=f_\theta\circ\mathcal P$, the corresponding raw margin is $g_{cj}(X)=\gamma_{cj}(\mathcal P(X))$. A normalized wave bound must be applied to the transformed query, not a raw wave with numerically identical coordinates. To skip the new feature computation, C44 bounds this expression throughout a defined wave domain.
+
+\par\label{endconcept:C39}
+\typeout{ECDR-CONCEPT-END C39 PAGE=\thepage}
+
+\concept{C40}{A domain is a set of admissible complete inputs}
+\term{Definition.} A domain specifies which inputs a statement quantifies over. Fix normalized anchor $Z\in\R^{C\times W}$, shift $s$, and a wave set $\mathcal U\subseteq\R^{C\times s}$. The corresponding complete-window domain is
+\[
+ \mathcal S(Z,\mathcal U)=\{\mathcal T_s(Z,U):U\in\mathcal U\}.
+\]
+Here $C$ is channel count, $W$ is window length, $U$ is one new wave, and $\mathcal T_s$ drops $s$ columns then appends that wave. The overlap is fixed by $Z$; only the wave coordinates vary.
+\term{Box example.} Vectorize the wave as $u\in\R^m$, with $m=Cs$ under a fixed ordering. A box is $\mathcal U=\{u:l_a\le u_a\le u_a^{\max},\ a=1,\ldots,m\}$, where $l_a$ and $u_a^{\max}$ are lower and upper endpoints. It is a deterministic set of all coordinate combinations satisfying these inequalities. No claim that coordinates are statistically independent or uniformly distributed is needed to define it.
+\term{Membership.} A runtime query belongs to $\mathcal S$ only when its overlap matches the certified anchor overlap and its tail belongs to $\mathcal U$. Checking the tail alone can accept a window with an uncertified prefix. Raw queries must first be mapped into the same normalized coordinate system used by the domain.
+\term{Why make the set explicit?} ``Similar activity'', ``small change'' or an empirical quantile does not uniquely specify all accepted inputs. A sound certificate needs an unambiguous mathematical set and a checker whose acceptance implies membership. Coverage, the frequency with which future inputs lie in the set, is a separate property.
+\term{Connection and limit.} A subspace-shaped or residual-bounded domain can preserve dependencies a box discards, but it requires its own membership and proof. An empty domain makes a universal statement vacuously true and operationally useless; meaningful reuse requires a nonempty domain and valid positive margin evidence. Choosing a domain from samples does not replace verification on every point it contains.
+
+\par\label{endconcept:C40}
+\typeout{ECDR-CONCEPT-END C40 PAGE=\thepage}
+
+\concept{C41}{A certificate proves every competitor loses everywhere}
+\term{Objects and hypothesis.} Let $F:\mathcal X\to\R^K$ be a fixed deterministic logit pipeline, $\mathcal S\subseteq\mathcal X$ a nonempty input domain, and $c\in\{1,\ldots,K\}$ a target class. Define $g_{cj}(X)=F_c(X)-F_j(X)$ for each competitor $j\ne c$. Suppose a verifier supplies a valid lower number $\ell_{cj}$ such that
+\[
+ \ell_{cj}\le\inf_{X\in\mathcal S}g_{cj}(X),\qquad \ell_{cj}>0,
+ \quad\text{for every }j\ne c.
+\]
+The infimum is the greatest lower bound of all margin values in the domain; it need not be attained.
+\term{Proof.} Choose any $X\in\mathcal S$ and any competitor $j\ne c$. Lower-bound validity gives $g_{cj}(X)\ge\ell_{cj}>0$, hence $F_c(X)>F_j(X)$. This holds for every competitor at the same arbitrary input. Therefore $c$ is the unique argmax at every $X\in\mathcal S$. A runtime query accepted by a sound membership checker can reuse class $c$.
+\term{Why the quantifiers matter.} The conclusion is universal over the entire domain, not merely over an observed dataset or selected corners. It requires all $K-1$ competitors. Sampling a smooth-looking neighborhood or recording 100\% agreement on a trace cannot establish the displayed inequality at unobserved inputs.
+\term{Conditional and unconditional parts.} The ordering implication follows directly from the definition of margin and needs no CNN or probability assumptions. Applying it to a proposed system is conditional on valid whole-domain lower bounds, correct membership, unchanged reference identity and applicable numerical semantics. Those conditions are the substantive proof obligations.
+\term{Failure interpretation.} If a lower bound is nonpositive, this method has failed to certify. The true margin may still be positive throughout the domain because the bound may be loose. Only an actual violating input or a suitable exact argument establishes a counterexample. Ground-truth correctness and useful coverage are also not conclusions of this class-agreement theorem.
+
+\par\label{endconcept:C41}
+\typeout{ECDR-CONCEPT-END C41 PAGE=\thepage}
+
+\concept{C42}{Interval propagation follows coefficient signs}
+\term{Definition.} For input vector $x\in\R^m$, an interval enclosure $l\le x\le u$ means coordinatewise lower and upper vectors $l,u\in\R^m$. For affine output $v=Wx+b\in\R^r$, define matrices $W^+=\max(W,0)$ and $W^-=\min(W,0)$ entrywise. Then sound output bounds are
+\[
+ l_v=W^+l+W^-u+b,\qquad
+ u_v=W^+u+W^-l+b.
+\]
+Here $W\in\R^{r\times m}$ and $b\in\R^r$ are fixed; $r$ counts output coordinates.
+\term{Proof of signs.} A nonnegative coefficient preserves the ordering $l_a\le x_a\le u_a$. A negative coefficient reverses it. Adding the corresponding per-term bounds and the exact bias proves each output inequality. For example, if $x_1\in[1,2]$, $x_2\in[3,5]$ and $v=2x_1-x_2+1$, then $v\in[2(1)-5+1,2(2)-3+1]=[-2,2]$.
+\term{Through a CNN.} A convolution is a sparse affine map with shared weights, so this same rule applies to its precise input indices. ReLU is monotone and maps endpoints to $[\max(0,l_v),\max(0,u_v)]$. Repeating such operations through layers is interval bound propagation (IBP) \cite{ibp}. A valid incoming enclosure produces a valid outgoing enclosure; induction gives sound bounds for the complete graph.
+\term{Why bounds can be loose.} Separate coordinate intervals can forget dependencies. If $x_1=t$ and $x_2=t$ for $t\in[0,1]$, then $x_1-x_2=0$ exactly, while independent intervals yield $[-1,1]$. Lost dependencies can compound across layers.
+\term{Connection.} IBP can provide the tail-feature sum enclosure used in C44, but empirical minimum and maximum values are not such an enclosure for unseen points. More expensive affine methods may preserve additional dependency. Soundness and tightness are distinct: a loose interval can remain correct while failing the positive-margin gate.
+
+\par\label{endconcept:C42}
+\typeout{ECDR-CONCEPT-END C42 PAGE=\thepage}
+
+\concept{C43}{ReLU relaxations handle an unstable activation}
+\term{Objects.} Let a scalar preactivation $v$ be known to lie in a valid interval $[l,u]$, and let $y=\rho(v)=\max(0,v)$. If $u\le0$, then $y=0$; if $l\ge0$, then $y=v$. The activation is unstable on an interval with $l<0<u$ because both branches are possible.
+\term{Upper-bound derivation.} The line through $(l,0)$ and $(u,u)$ is
+\[
+ y\le\frac{u}{u-l}(v-l),\qquad l\le v\le u.
+\]
+For $v\le0$, its right side is nonnegative. For $v\ge0$, subtracting $v$ from the right side gives $l(v-u)/(u-l)\ge0$ since $l<0$ and $v-u\le0$. Thus the line bounds both ReLU branches from above. The lines $y\ge0$ and $y\ge v$ are valid lower inequalities on the same interval.
+\term{Why direction matters.} Suppose an objective contains coefficient $a$ times $y$. If $a>0$, a lower bound on $y$ gives a lower bound on $ay$; if $a<0$, an upper bound is needed instead. A line that approximates ReLU well on average is not automatically valid for either proof direction. For example, replacing ReLU by the identity on $[-1,1]$ gives a valid lower line but fails as an upper line at $v=-1$.
+\term{Connection to affine verification.} CROWN and related linear-relaxation propagation methods combine such valid inequalities through the network to bound an objective \cite{crown,lirpa}. They can retain shared input dependencies beyond independent intervals, but must select bound directions consistently with coefficient signs.
+\term{Conditions and limits.} Endpoint values $l,u$ must themselves be sound on the entire domain. An anchor activation or an observed range cannot substitute for them. If every ReLU is stable, the exact affine-region argument of C15 can be used instead. This page defines a proof tool; it does not claim a particular verifier has been implemented or timed for the new HAPT reference.
+
+\par\label{endconcept:C43}
+\typeout{ECDR-CONCEPT-END C43 PAGE=\thepage}
+
+\concept{C44}{A tail enclosure yields a whole-domain margin bound}
+\term{Objects.} Fix normalized anchor $Z$, target $c$, competitor $j\ne c$, final feature length $n>0$, and wave domain $\mathcal U$. Let $q_j=A_c-A_j\in\R^D$ be the head-row difference, $D_{\rm drop}\in\R^D$ the known dropped-feature sum, and $D_{\rm new}(U)\in\R^D$ the new-feature sum. Suppose valid coordinatewise vectors satisfy
+\[
+ \underline D\le D_{\rm new}(U)\le\overline D\quad\text{for every }U\in\mathcal U.
+\]
+The word ``every'' is essential; $D$ is feature width, not a probability distribution.
+\term{Derivation.} Define $q_j^+=\max(q_j,0)$ and $q_j^-=\min(q_j,0)$ coordinatewise. Apply sign-aware bounds to C39's exact margin identity:
+\[
+ \boxed{\ell_{cj}=\gamma_{cj}(Z)+
+ \frac{(q_j^+)^\top\underline D+(q_j^-)^\top\overline D-q_j^\top D_{\rm drop}}{n}.}
+\]
+For a positive coefficient, use the lower feature endpoint; for a negative coefficient, use the upper endpoint. The old margin $\gamma_{cj}(Z)$ and dropped sum are exact anchor quantities. Therefore $\gamma_{cj}(\mathcal T_s(Z,U))\ge\ell_{cj}$ throughout the domain under the shift assumptions.
+\term{Why this is a certificate ingredient.} If the displayed lower value is strictly positive for every competitor, C41 proves the target is the unique winner for every permitted wave with the certified overlap. The bound can be prepared before seeing the next wave, so a membership hit need not compute its exact new features.
+\term{How the enclosure is obtained.} Valid intervals, affine relaxations, exact optimization or another proven method can supply it. Empirical extrema alone cannot cover a continuous box. Independent feature bounds may be conservative because two coordinates can depend on the same wave variables.
+\term{Limits.} A nonpositive $\ell_{cj}$ means this bound did not certify; it need not mean a class change exists. The bound also has no authority after an uncertified anchor change or reference modification. The toy example in C45--C48 calculates the enclosure, its resulting margins and the exact minima independently.
+
+\par\label{endconcept:C44}
+\typeout{ECDR-CONCEPT-END C44 PAGE=\thepage}
+
+\concept{C45}{A complete toy CNN: local features are computed explicitly}
+\term{Specified objects.} Use one channel, window length $W=6$, shift $s=2$ and identity preprocessing. The old window is $X=(1,2,3,4,5,6)$, the wave is $U=(7,8)$, and $X'=\mathcal T_2(X,U)=(3,4,5,6,7,8)$. One valid unit-stride convolution has two filters of length $k=3$:
+\[
+ w^{(1)}=(1,-1,1),\ b^{(1)}=-2;\qquad
+ w^{(2)}=(-1,0,1),\ b^{(2)}=-1.
+\]
+The superscript selects an output filter; its three weights correspond to consecutive input positions. ReLU follows. Final length is $n=W-k+1=4$ and feature width is $D=2$.
+\term{Every old output.} Filter one gives $1-2+3-2=0$, $2-3+4-2=1$, $3-4+5-2=2$, and $4-5+6-2=3$. Filter two gives $-1+3-1=1$, $-2+4-1=1$, $-3+5-1=1$, and $-4+6-1=1$. All are nonnegative, so ReLU preserves them. Listing feature vectors by time,
+\[
+ H(X)=\big((0,1),(1,1),(2,1),(3,1)\big).
+\]
+\term{New outputs.} The same calculations on $X'$ give
+\[
+ H(X')=\big((2,1),(3,1),(4,1),(5,1)\big).
+\]
+New positions zero and one equal old positions two and three: $n-s=2$ positions are shared after alignment. Same-index feature equality would be false.
+\term{Why this example is sufficient to inspect.} Every kernel product, bias and nonlinearity is visible. The model has $2(3+1)=8$ convolution parameters and $4\cdot2\cdot3=24$ convolution MAC. C46 adds a three-class affine head, completing the forward and margin calculation. This deliberately small algebraic model is not a trained HAPT checkpoint and its numerical behavior is not evidence of HAPT model quality.
+
+\par\label{endconcept:C45}
+\typeout{ECDR-CONCEPT-END C45 PAGE=\thepage}
+
+\concept{C46}{The toy head checks logits and both margin changes}
+\term{Objects.} Keep C45's old and new feature sequences with width $D=2$ and length $n=4$. GAP gives $m(X)=(3/2,1)^\top$ and $m(X')=(7/2,1)^\top$. Define three-class head
+\[
+ A=\begin{pmatrix}1&-1\\-1&0\\2&-2\end{pmatrix},\qquad
+ \beta=\begin{pmatrix}4\\1\\0\end{pmatrix},\qquad F(X)=Am(X)+\beta.
+\]
+Here $A\in\R^{3\times2}$ is head weight, $\beta\in\R^3$ is bias, and $F$ is the complete logit map because preprocessing is identity.
+\term{Direct forward.} Substitution yields
+\[
+ F(X)=(9/2,-1/2,1)^\top,\qquad
+ F(X')=(13/2,-5/2,5)^\top.
+\]
+For target $c=1$, old margins $g_{1j}=F_1-F_j$ are $g_{12}(X)=5$, $g_{13}(X)=7/2$. New margins are $9$ and $3/2$. Both windows have unique winner 1, although the second margin decreases.
+\term{Independent delta check.} The dropped sum is $D_{\rm drop}=(0,1)^\top+(1,1)^\top=(1,2)^\top$. The new sum is $D_{\rm new}=(4,1)^\top+(5,1)^\top=(9,2)^\top$. Their difference divided by $n$ is $(2,0)^\top$, matching $m(X')-m(X)$. Head-row differences are $q_2=(2,-1)^\top$ and $q_3=(-1,1)^\top$. Their dot products with the pooled change are $4$ and $-2$, so the updated margins are $5+4=9$ and $7/2-2=3/2$.
+\term{Why compute both ways?} The agreement checks orientation, signs, denominator and bias handling. A rising target logit does not establish a rising decision margin. With three classes, both competitors must pass.
+\term{Full model inventory.} The head has $3(2+1)=9$ parameters and six MAC. Together with the convolution there are 17 parameters and 30 MAC per direct forward under the stated counting convention. These exact toy counts serve the derivation, not a hardware runtime claim.
+
+\par\label{endconcept:C46}
+\typeout{ECDR-CONCEPT-END C46 PAGE=\thepage}
+
+\concept{C47}{A continuous toy wave box is certified universally}
+\term{Domain and fixed objects.} Keep the C45--C46 CNN and old anchor $X=(1,2,3,4,5,6)$, with shift $s=2$. Replace its observed wave by $U=(u,v)$ in
+\[
+ \mathcal U=[6.5,7.5]\times[7.5,8.5].
+\]
+The real scalars $u,v$ are independent coordinates of a deterministic box, not assumed independent random variables. The new complete window is $(3,4,5,6,u,v)$. Shared features are $(2,1)$ and $(3,1)$.
+\term{Tail formulas and stable ReLU.} The two new preactivation vectors are
+\[
+ V_2=(u-3,u-6)^\top,\qquad V_3=(4-u+v,v-7)^\top.
+\]
+Their coordinate lower values are $3.5,0.5,4,0.5$, respectively, so post-ReLU features satisfy $H_2=V_2,H_3=V_3$ throughout the box. Bounding each position separately then summing gives
+\[
+ \underline D=(7.5,1)^\top,\qquad \overline D=(10.5,3)^\top
+\]
+for the tail sum $D_{\rm new}=H_2+H_3$. These bounds follow from endpoint inequalities at every point, not from testing corners alone.
+\term{Margin lower bounds.} The old margins are $5$ and $7/2$, $n=4$, dropped sum is $(1,2)^\top$, and row differences are $q_2=(2,-1)^\top$, $q_3=(-1,1)^\top$. C44 gives
+\[
+ \ell_{12}=5+\frac{2(7.5)-3-(2-2)}4=8,
+ \qquad
+ \ell_{13}=\frac72+\frac{-10.5+1-(-1+2)}4=\frac78.
+\]
+Both are positive, hence every wave in this continuous box with the fixed overlap yields unique class 1.
+\term{Why this is a proof.} The pointwise interval inequalities hold for arbitrary real $u,v$ in the specified ranges, and the margin theorem quantifies over all such points. No uniform distribution, finite sample coverage or independence assumption is needed. It remains a one-step, anchor-specific certificate; C51 tests precisely that lifecycle limitation.
+
+\par\label{endconcept:C47}
+\typeout{ECDR-CONCEPT-END C47 PAGE=\thepage}
+
+\concept{C48}{Keeping dependence tightens the same valid proof}
+\term{Objects.} In C47's box, $u\in[6.5,7.5]$ and $v\in[7.5,8.5]$ form the wave; the new window is $X'=(3,4,5,6,u,v)$. Tail features sum to $D=(D_1,D_2)^\top$ with
+\[
+ D_1=(u-3)+(4-u+v)=1+v,\qquad
+ D_2=(u-6)+(v-7)=u+v-13.
+\]
+The subscripts select feature coordinates. They share the same $v$, so treating their intervals independently discards a dependency.
+\term{Exact margin expressions.} Let $g_{1j}=F_1-F_j$ compare target class 1 with competitor $j$ for logits $F$. The old margins are $5,7/2$ and head-row differences are $q_2=(2,-1)^\top$, $q_3=(-1,1)^\top$. Using dropped sum $(1,2)^\top$ and pooling length four, simplification gives
+\[
+ g_{12}(X')=5+\frac{15+v-u}{4},\qquad
+ g_{13}(X')=\frac{u-1}{4}.
+\]
+The competitor index is the second subscript; target remains class 1. The smallest $v-u$ is zero, attained at $u=v=7.5$. Thus $\min g_{12}=35/4=8.75$. The second expression increases with $u$, so $\min g_{13}=11/8=1.375$ at $u=6.5$.
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}Yrr@{}}\toprule
+Method on the same model and domain & Lower $g_{12}$ & Lower $g_{13}$\\\midrule
+Bound tail positions separately, then sum &8&0.875\\
+Sum first, bound $D_1,D_2$ independently &8.5&1.125\\
+Preserve $u,v$ through the margin &8.75&1.375\\\bottomrule
+\end{tabularx}
+\end{center}
+\term{Middle-row calculation.} Summing first yields $D_1\in[8.5,9.5]$ and $D_2\in[1,3]$. Applying the signed margin rule to these intervals gives the second row. Keeping their common $v$ until subtraction cancels that variable in $g_{13}$ and yields the exact last row.
+\term{Why it matters.} All three bounds are sound and all certify this box, but their slack differs. The example explains why an objective-aware affine analysis can help. It does not establish that the tightest method is cheapest to construct or useful on the HAPT domain; tighter bounds, acceptance coverage and total runtime require separate comparison under matched conditions.
+
+\par\label{endconcept:C48}
+\typeout{ECDR-CONCEPT-END C48 PAGE=\thepage}
+
+\concept{C49}{Computational reuse preserves current numerical outputs}
+\term{Definition.} Computational reuse saves exact intermediate values and computes the current features or logits with less repeated work. The reference output remains the current forward result. For the C24 valid/ReLU backbone, let the window shift be $s=64$, layer lengths be $124,122,120$, channel widths be $6,32,64,64$, and kernel lengths be $5,3,3$.
+\term{Conditional arithmetic.} Assume an exact, correctly aligned cache is available at every convolutional layer and the new 64 positions at each layer can use the required cached context. The newly evaluated Conv/head work is
+\[
+ \begin{aligned}
+ M_{1,\rm new}&=64\cdot32\cdot(6\cdot5)=61440,\\
+ M_{2,\rm new}&=64\cdot64\cdot(32\cdot3)=393216,\\
+ M_{3,\rm new}&=64\cdot64\cdot(64\cdot3)=786432,\\
+ M_{\rm head}&=12\cdot64=768.
+ \end{aligned}
+\]
+The sum $M_{\rm incr}=1241856$ MAC compares with full $M_{\rm full}=2343936$. The reduction is $1102080$ MAC, about $47.0183\%$ of this stated Conv/head count. The symbols $M_{\rm incr}$ and $M_{\rm full}$ are arithmetic totals, not measured time.
+\term{Why state the cache assumption?} Retaining only final features and recomputing from a raw halo can require extra intermediate work. A layer cache has different memory and copy costs. There is no unique incremental MAC count independent of what state is retained. Streaming CNN research also treats architectural alignment and boundary issues explicitly \cite{streaminnc}.
+\term{What remains to compute.} New activations, updated GAP, current logits, memory movement and bookkeeping still exist. The percentage above excludes those non-MAC costs and cannot be reported as a measured speedup. Floating-point cache updates also require the numerical contract of C53 if agreement with a particular program is claimed.
+\term{Connection to decision reuse.} Computational reuse supplies current exact state in the ideal mathematical model. Decision reuse in C50 can return only a certified class and leave current feature values unknown. The two mechanisms can be combined, but one cannot silently substitute the other's stronger output or state guarantee.
+
+\par\label{endconcept:C49}
+\typeout{ECDR-CONCEPT-END C49 PAGE=\thepage}
+
+\concept{C50}{Decision reuse preserves a class through a proof}
+\term{Definition.} Let $F$ be a fixed reference logit pipeline and $h(X)$ its deterministic class for input $X$. A certificate consists of a domain $\mathcal S$, a target $c$, valid positive pairwise margin evidence, reference identity and applicable numerical assumptions. A sound checker accepts only queries $X\in\mathcal S$. On a hit, the reused answer $\widehat h(X)=c$ then satisfies $\widehat h(X)=h(X)$.
+\term{Why it can skip work.} The proof already establishes the reference class throughout the domain. The system therefore need not compute the query's exact current logits to know its class. This differs from using an empirical similarity threshold: acceptance must imply membership in the set for which the universal proof was established.
+\term{Output and state boundary.} A class-only proof does not provide $F(X)$, the probability vector, the embedding or the feature map for the accepted query. If downstream consumers need those values, this contract is insufficient. Likewise, a hit cannot automatically become a new anchor with known features: the current exact state may never have been calculated.
+\term{Lifecycle obligations.} Membership must match preprocessing coordinates, overlap, model parameters, class schema and finite-value policies. On a miss or invalid identity, the query needs reference evaluation or a separately justified exact method. Refreshing the domain requires new evidence or a proven transfer rule. Reusing the old evidence after changing its anchor is not a refresh.
+\term{Why separate correctness levels?} The theorem promises agreement with the chosen reference. If the reference misclassifies an activity, faithfully reusing its answer preserves that error. Ground-truth correctness therefore remains a model-evaluation question. Conversely, good reference accuracy cannot make a false membership acceptance sound.
+\term{Connection.} C51 provides a concrete failure when only the new wave is checked after the anchor changes. C52 defines a stronger reachable-domain condition that can support several steps. C54 counts build, checking and fallback costs; a sound certificate can still be operationally unhelpful if it is too expensive or rarely accepts.
+
+\par\label{endconcept:C50}
+\typeout{ECDR-CONCEPT-END C50 PAGE=\thepage}
+
+\concept{C51}{A stale anchor can invalidate an otherwise valid box}
+\term{Fixed one-step certificate.} In C47, anchor $X=(1,2,3,4,5,6)$, shift $s=2$ and wave domain $\mathcal U=[6.5,7.5]\times[7.5,8.5]$ certify class 1 for windows $(3,4,5,6,u,v)$. The real coordinates $u,v$ range over this box. The overlap $(3,4,5,6)$ is part of the certified set, not a disposable implementation detail.
+\term{Second query.} Append the permitted wave $(7,8)$ once to obtain $X'=(3,4,5,6,7,8)$, then append the same wave again. The next window is $X''=(5,6,7,8,7,8)$. For the same two filters and ReLU,
+\[
+ H(X'')=\big((4,1),(5,1),(4,0),(7,0)\big),\qquad m(X'')=(5,1/2)^\top.
+\]
+Using head matrix $A=\left(\begin{smallmatrix}1&-1\\-1&0\\2&-2\end{smallmatrix}\right)$ and bias $\beta=(4,1,0)^\top$ gives
+\[
+ F(X'')=Am(X'')+\beta=(17/2,-4,9)^\top.
+\]
+The unique winner is class 3 because $9>8.5>-4$.
+\term{Why the old proof did not fail.} The second wave still belongs to $\mathcal U$, but the second complete window has overlap $(5,6,7,8)$, not the certified overlap. Hence $X''$ is outside the original one-step domain. Returning class 1 after checking only its tail would be an invalid acceptance, not a counterexample to the correctly stated first-step theorem.
+\term{General lesson.} A certificate refers to a function and a set. Changing the anchor changes a wave-domain's complete-window set even if its tail-box endpoints remain unchanged. A decision hit alone also does not supply exact feature state for rebuilding the proof.
+\term{Valid alternatives.} One can check membership in an unchanged certified full-window domain, rebuild after obtaining the required exact new anchor state, or prove a reachable domain over several steps. Each alternative has different assumptions and cost. The next page states the multi-step condition explicitly rather than assuming a successful first step propagates automatically.
+
+\par\label{endconcept:C51}
+\typeout{ECDR-CONCEPT-END C51 PAGE=\thepage}
+
+\concept{C52}{Reachable sets express a finite-horizon guarantee}
+\term{Definition.} Fix raw window $X_0\in\R^{C\times W}$, where integers $C,W\ge1$ count channels and samples, shift $1\le s\le W$, and integer horizon $Q\ge1$. For step $q\in\{1,\ldots,Q\}$, let $\mathcal U_q\subseteq\R^{C\times s}$ contain raw new waves. Define
+\[
+ \mathcal R_0=\{X_0\},\qquad
+ \mathcal R_q=\{\mathcal T_s(X,U):X\in\mathcal R_{q-1},\ U\in\mathcal U_q\}.
+\]
+The symbol $\mathcal T_s$ is shift--append. The reachable set $\mathcal R_q$ contains every window obtainable after $q$ admissible transitions, including all variable overlap values inherited from earlier waves.
+\term{Sufficient condition.} Let raw-input $F:\R^{C\times W}\to\R^K$ be a fixed logit pipeline, $K\ge2$ the class count, $c$ the target and $g_{cj}=F_c-F_j$ its margin against $j\ne c$. If valid lower bounds obey
+\[
+ \ell_{cj,q}\le\inf_{X\in\mathcal R_q}g_{cj}(X),\qquad
+ \ell_{cj,q}>0
+\]
+for every step $q=1,\ldots,Q$ and every competitor, all admissible wave sequences retain unique class $c$ at every certified step. Here $h$ denotes the deterministic reference class. If the initial class is also claimed, require $h(X_0)=c$.
+\term{Proof.} Initially the state belongs to $\mathcal R_0$ by definition. If the state at step $q-1$ belongs to $\mathcal R_{q-1}$ and the wave lies in $\mathcal U_q$, shift--append places the next state in $\mathcal R_q$. Induction gives reachable membership at every step. The positive-margin theorem then applies to each reached state.
+\term{Why it closes the stale-anchor gap.} Unlike a one-step box with fixed overlap, later reachable sets include uncertainty introduced by previous waves. Their certificate therefore covers the changing prefix rather than silently assuming it remains the original overlap.
+\term{Limits.} A longer horizon can enlarge the set and loosen bounds, increase construction cost or reduce acceptance. Nothing here proves that large $Q$ is useful or amortizes its proof cost. Approximate reachable enclosures are permitted only if they contain all actual reachable states; under-approximating from a few observed sequences would not justify this universal guarantee.
+
+\par\label{endconcept:C52}
+\typeout{ECDR-CONCEPT-END C52 PAGE=\thepage}
+
+\concept{C53}{Numerical soundness needs more than real identities}
+\term{Two semantics.} Let $g_{cj}(X)$ be the ideal real-arithmetic margin for target $c$ and competitor $j$, and let $\widetilde g_{cj}(X)$ be the corresponding margin of the specified finite-precision reference program. Floating-point addition is not associative: reordering a GAP sum or using an incremental update can change rounding. PyTorch documents such numerical limitations and platform-dependent differences \cite{torchnumerical}.
+\term{A sufficient error gate.} Suppose throughout the certified domain,
+\[
+ |\widetilde g_{cj}(X)-g_{cj}(X)|\le\eta_{cj},\qquad
+ g_{cj}(X)\ge\widehat\ell_{cj}-\delta_{cj},
+\]
+where $\eta_{cj}\ge0$ bounds reference numerical error, $\widehat\ell_{cj}$ is a computed lower estimate, and $\delta_{cj}\ge0$ bounds possible loss of lower-bound validity from verifier arithmetic. If
+\[
+ \widehat\ell_{cj}>\delta_{cj}+\eta_{cj}\quad\text{for every }j\ne c,
+\]
+then $\widetilde g_{cj}(X)\ge\widehat\ell_{cj}-\delta_{cj}-\eta_{cj}>0$. This proves the program-level winner under these error hypotheses.
+\term{Why a small epsilon is not enough.} The values $\delta_{cj}$ and $\eta_{cj}$ must be established for the actual operations, dtype, backend and domain. Picking an arbitrary small tolerance does not prove that either error lies below it. A mathematical equality of two real expressions also does not prove their implementations are bitwise identical.
+\term{Membership and exceptional values.} The checker must avoid accepting points outside the domain due to boundary rounding. Conservative rejection can reduce coverage while preserving soundness; false acceptance can invalidate the proof. NaN and infinities lie outside the finite-real assumptions and require an explicit preprocessing and fallback policy.
+\term{Connection.} The stated real proofs identify the structure to certify. A float32 or quantized implementation adds an obligation concerning rounding, accumulation, clipping and tie behavior. This document does not report that a new numerical verifier has satisfied those obligations on an edge device; its architecture counts and toy arithmetic should not be mistaken for that runtime validation.
+
+\par\label{endconcept:C53}
+\typeout{ECDR-CONCEPT-END C53 PAGE=\thepage}
+
+\concept{C54}{Total cost determines whether reuse saves work}
+\term{Accounting objects.} Assume a constant full-forward time $t_f>0$ for every query, on hits and misses alike. Let $r\in[0,1]$ the hit fraction, $t_m$ mean membership time, $t_v$ mean selection/validation and amortized state/initialization overhead per query, $t_b$ mean time per proof-build attempt, and $b\ge0$ the number of build attempts per query. All times use the same unit and measurement scope. A sequential accounting model is
+\[
+ \bar t_{\rm reuse}=(1-r)t_f+t_m+t_v+bt_b.
+\]
+Here $\bar t_{\rm reuse}$ is total trace time divided by query count. Failed and startup builds are charged in $b,t_b$. With variable forward cost $f$, miss time instead averages to $\Pr(\mathrm{miss})\mathbb E[f\mid\mathrm{miss}]$ when that conditional mean is defined; an unconditional mean cannot replace it without justification.
+\term{Break-even derivation.} Comparing with baseline $t_f$ gives a strict saving exactly when
+\[
+ t_m+t_v+bt_b<rt_f.
+\]
+For example, if $t_f=1$ ms, $r=0.6$, $t_m+t_v=0.1$ ms, $t_b=4$ ms and $b=0.1$, total mean is $0.4+0.1+0.4=0.9$ ms. Doubling build frequency to $0.2$ yields $1.3$ ms despite the same hit rate.
+\term{Checker complexity.} For a box in $m$ wave coordinates, direct exact membership uses two comparisons per coordinate and has worst-case $O(m)$ work. For coordinates projected onto $r_d$ dense directions using a matrix $B\in\R^{m\times r_d}$, a direct product $B^\top x$ costs $O(mr_d)$ arithmetic. Here $r_d$ is a direction count, not the hit fraction $r$, and $x\in\R^m$ is the candidate vector. Early rejection can change average work but not automatically this worst-case accounting.
+\term{Why it matters.} Tight domains or bounds can improve decision acceptance while increasing build and checking costs. A MAC reduction and a high hit fraction are therefore insufficient to establish net latency benefit. Measurements must use matching output semantics, batch, device, threads and preprocessing scope.
+\term{Limits.} Parallel overlap, caching and variable query costs need a refined model. This expression is a transparent conditional budget, not a reported benchmark for the new twelve-class reference.
+
+\par\label{endconcept:C54}
+\typeout{ECDR-CONCEPT-END C54 PAGE=\thepage}
+
+\concept{C55}{Accuracy, agreement and coverage have different denominators}
+\term{Classifier quality.} For $N>0$ labeled evaluation windows $(X_t,y_t)$ and reference decision $h$, accuracy is
+\[
+ \operatorname{Acc}=\frac1N\sum_{t=1}^{N}\mathbf1[h(X_t)=y_t].
+\]
+The index $t$ selects a window, $y_t$ is its supplied ground truth and the indicator is one when the equality holds. Macro-F1 averages per-class F1 values under an explicit zero-denominator convention; it is useful when twelve-class support is imbalanced but does not repair uncertain labels.
+\term{Reuse agreement.} Let $\mathcal H$ be the set of accepted query indices, with $N_{\rm hit}=|\mathcal H|>0$, and let $\widehat h$ be the reused decision. Empirical accepted agreement is
+\[
+ \operatorname{Agree}_{\rm hit}=\frac1{N_{\rm hit}}
+ \sum_{t\in\mathcal H}\mathbf1[\widehat h(X_t)=h(X_t)].
+\]
+Its denominator is accepted queries, not all labeled windows. A sound universal certificate targets agreement for every member of its accepted domain; an observed trace can test only the queries actually encountered.
+\term{Coverage and cost.} With $N_{\rm query}>0$ eligible runtime queries, operational hit fraction is $r=N_{\rm hit}/N_{\rm query}$. Dataset class support, label policy, eligible pairs, checker rejection and certificate lifecycle all affect which queries enter these counts. A domain's sampled coverage cannot be interpreted without its population and denominator.
+\term{Why the distinctions matter.} A perfect reuse agreement can faithfully reproduce a poor classifier. High reference accuracy can coexist with an unsound checker. High hit rate can coexist with negative net time saving. Each statement needs its own experiment or proof.
+\term{Data dependence.} Overlapping windows share samples; random window splitting can distribute near-duplicate temporal content across train and test. Subject/recording separation and preserved temporal order address different parts of the evaluation contract. The separate data report analyzes local support and overlap; this concept page does not assert independent observations or attach historical six-class metrics to the new architecture.
+\term{Research consequence.} The open questions are useful twelve-class representation, matched-domain bound tightness, stable lifecycle, numerical validity and measured total cost. None is resolved solely by the architecture's receptive field or parameter inventory.
+
+\par\label{endconcept:C55}
+\typeout{ECDR-CONCEPT-END C55 PAGE=\thepage}
+
+\concept{C56}{The historical model is a different reference}
+\term{Source boundary.} Local \code{scripts/backbone.py} and \code{configs/backbone.yaml} describe historical \code{SmallCNN1D}: six classes; same-padded Conv--BatchNorm--ReLU blocks; MaxPool(2) after blocks one and two; then Flatten and a $2048\to128\to6$ dense head. Its widths and kernels are $6\to32\to64\to64$ and $5,3,3$. This is source provenance, not the new valid/GAP architecture.
+\term{Shape and Flatten.} Input length 128 becomes 128 after Conv1, 64 after the first pool, 64 after Conv2, 32 after the second pool and 32 after Conv3. Flatten converts the $64\times32$ array into 2048 coordinates under a fixed ordering; it introduces no learned values. The next dense layer assigns independent positional weights. Equal feature values moved to different positions can therefore contribute differently, unlike a GAP head's uniform temporal average.
+\term{Parameter calculation.} The three convolution layers total 19552 parameters. Enabled BatchNorm affine parameters total $2(32+64+64)=320$; running statistics are buffers. The two dense layers contribute
+\[
+ 2048\cdot128+128=262272,\qquad 128\cdot6+6=774.
+\]
+Thus the historical total is $19552+320+262272+774=282918$, versus 20332 for the specified twelve-class valid/GAP example. A larger count does not prove better quality or proportional runtime.
+\term{Archived timing scope.} The existing \code{data/g2_cpu_latency.json} records an old six-class CPU run with six threads, 200 warmups and 1000 batch-one forwards. Its stored mean is $0.2511$ ms, median $0.2357$ ms and 95th percentile $0.3313$ ms. These are readback metadata, not rerun measurements and not timings for the new model or for certification.
+\term{Why preserve the distinction?} Padding, pooling phases, BatchNorm mode and positional dense weights change the function and proof obligations. The exact specialized GAP cancellation theorem cannot be transferred unchanged. Historical data may motivate experiments, but a new twelve-class pipeline requires its own training, held-out evaluation, numerical verification and complete cost measurements.
+
+\par\label{endconcept:C56}
+\typeout{ECDR-CONCEPT-END C56 PAGE=\thepage}
+
+\clearpage
+\gdef\conceptid{Sources and scope}
+\section*{Source ledger and reproducibility boundary}
+\addcontentsline{toc}{section}{Source ledger and reproducibility boundary}
+The architecture, layer shapes, parameters, MAC counts, payload memory and toy example are completely specified in the concept pages and can be recomputed without a checkpoint. Their numerical results are direct arithmetic consequences of those specifications. The conditional proofs identify all relevant architecture, coordinate, domain and lifecycle assumptions; no neural-verifier run on HAPT is claimed.
+
+Internal context consists of the existing theory and mathematics companions, the separate data report, \code{scripts/backbone.py}, \code{configs/backbone.yaml} and \code{data/g2_cpu_latency.json}. Source and archived metadata establish what was defined or previously recorded; they are not new training or benchmark results. The preserved Vietnamese edition remains a separate historical reading copy.
+
+The versioned PyTorch references document the operator contracts consulted when the preceding analysis was prepared. The mathematical formulas written in this report define the reference independently and must remain the authority for each proof. A different software version or backend requires checking its actual operator and numerical semantics.
+
+The unresolved empirical questions are the twelve-class reference's quality, useful certified coverage on future temporal queries, matched-cost advantages of different domain/bound constructions, the best lifecycle horizon, and measured total latency/memory on the intended device. The unresolved implementation obligation is a sound numerical bridge from real inequalities to the specified program. These limits are stated to prevent a structural proof or an architecture count from being presented as an experimental outcome.
+
+\begin{thebibliography}{99}
+\bibitem{hapt} J. Reyes-Ortiz et al. \emph{Smartphone-Based Recognition of Human Activities and Postural Transitions}. UCI, 2015. \url{https://doi.org/10.24432/C54G7M}.
+\bibitem{torchconv} PyTorch. \emph{Conv1d --- PyTorch 2.14 documentation}. \url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.Conv1d.html}.
+\bibitem{torchgap} PyTorch. \emph{AdaptiveAvgPool1d --- PyTorch 2.14 documentation}. \url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.AdaptiveAvgPool1d.html}.
+\bibitem{torchce} PyTorch. \emph{CrossEntropyLoss --- PyTorch 2.14 documentation}. \url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.CrossEntropyLoss.html}.
+\bibitem{torchbn} PyTorch. \emph{BatchNorm1d --- PyTorch 2.14 documentation}. \url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.BatchNorm1d.html}.
+\bibitem{torchnumerical} PyTorch. \emph{Numerical accuracy --- PyTorch 2.14 documentation}. \url{https://docs.pytorch.org/docs/2.14/notes/numerical_accuracy.html}.
+\bibitem{montufar} G. Mont\'ufar et al. \emph{On the Number of Linear Regions of Deep Neural Networks}. NeurIPS, 2014. \url{https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a92d96e74617c3d2a-Abstract.html}.
+\bibitem{ibp} S. Gowal et al. \emph{On the Effectiveness of Interval Bound Propagation for Training Verifiably Robust Models}. 2018. \url{https://arxiv.org/abs/1810.12715}.
+\bibitem{crown} H. Zhang et al. \emph{Efficient Neural Network Robustness Certification with General Activation Functions}. NeurIPS, 2018. \url{https://arxiv.org/abs/1811.00866}.
+\bibitem{lirpa} K. Xu et al. \emph{Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond}. NeurIPS, 2020. \url{https://arxiv.org/abs/2002.12920}.
+\bibitem{streaminnc} C. Kechris et al. \emph{Don't Think It Twice: Exploit Shift Invariance for Efficient Online Streaming Inference of CNNs}. 2024. \url{https://arxiv.org/abs/2408.03223}.
+\end{thebibliography}
+\end{document}

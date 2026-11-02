@@ -1,0 +1,23 @@
+{
+  "scope": "BASELINE for G5 \u2014 full backbone forward only, no reuse, no cert",
+  "device": "cpu",
+  "torch_threads": 6,
+  "torch_version": "2.14.1+cpu",
+  "checkpoint": "backbone_best.pt (seed44, selected on val macro-F1)",
+  "warmup": 200,
+  "runs_batch1": 1000,
+  "runs_batch32": 200,
+  "batch1": {
+    "mean_ms": 0.2511,
+    "p50_ms": 0.2357,
+    "p95_ms": 0.3313,
+    "min_ms": 0.2173
+  },
+  "batch32": {
+    "mean_ms": 0.9663,
+    "p50_ms": 0.9323,
+    "p95_ms": 1.17,
+    "min_ms": 0.9168
+  },
+  "batch32_throughput_ips": 34324.9
+}

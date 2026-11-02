@@ -1,0 +1,29 @@
+note: Running TeX ...
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-Italic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSans-BoldItalic.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf`; build may not be reproducible in other environments
+warning: accessing absolute path `/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf`; build may not be reproducible in other environments
+warning: 02_Week_1_Project_Brief.tex:147: Underfull \hbox (badness 2644) in paragraph at lines 143--147
+warning: 02_Week_1_Project_Brief.tex:297: Underfull \hbox (badness 1014) in paragraph at lines 293--297
+warning: 02_Week_1_Project_Brief.tex:302: Underfull \hbox (badness 10000) in paragraph at lines 298--302
+warning: 02_Week_1_Project_Brief.tex:323: Underfull \hbox (badness 10000) in paragraph at lines 314--323
+warning: 02_Week_1_Project_Brief.tex:323: Underfull \hbox (badness 10000) in paragraph at lines 314--323
+warning: 02_Week_1_Project_Brief.tex:335: Underfull \hbox (badness 5878) in paragraph at lines 324--335
+note: Rerunning TeX because "02_Week_1_Project_Brief.aux" changed ...
+warning: 02_Week_1_Project_Brief.tex:147: Underfull \hbox (badness 2644) in paragraph at lines 143--147
+warning: 02_Week_1_Project_Brief.tex:297: Underfull \hbox (badness 1014) in paragraph at lines 293--297
+warning: 02_Week_1_Project_Brief.tex:302: Underfull \hbox (badness 10000) in paragraph at lines 298--302
+warning: 02_Week_1_Project_Brief.tex:323: Underfull \hbox (badness 10000) in paragraph at lines 314--323
+warning: 02_Week_1_Project_Brief.tex:323: Underfull \hbox (badness 10000) in paragraph at lines 314--323
+warning: 02_Week_1_Project_Brief.tex:335: Underfull \hbox (badness 5878) in paragraph at lines 324--335
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Running xdvipdfmx ...
+note: Writing `/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.pdf` (92.7373046875 KiB)
+note: Writing `/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.log` (25.892578125 KiB)
+note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)

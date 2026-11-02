@@ -1,0 +1,26 @@
+{
+  "worker": "source_audit_final",
+  "model": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "start_unix": 1793619318.6199641,
+  "timeout_seconds": 360,
+  "prompt_path": "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/source_audit_final.prompt.txt",
+  "argv_without_prompt": [
+    "agy",
+    "--conversation",
+    "e49b9be0-90ab-4dc5-a39e-640369109b1f",
+    "--model",
+    "gemini-3.8-flash-medium",
+    "--effort",
+    "medium",
+    "--output-format",
+    "stream-json",
+    "--print-timeout",
+    "300s",
+    "--log-file",
+    "/home/pro/Downloads/research/output/week1_closeout_20261102/orchestration/source_audit_final.agy.log"
+  ],
+  "pid": 115345,
+  "returncode": 0,
+  "end_unix": 1793619405.0549242
+}

@@ -1,0 +1,1007 @@
+\concept{B01}{Sensor samples and a sampling clock}{F04, F08, F14}
+\paragraph{Foundation and definition.}
+A continuous physical signal and its recorded samples are different objects.
+A sampling model chooses discrete times and records a finite vector at each
+time. For the six-channel inertial input, write
+\[
+ v[n]=(a_x[n],a_y[n],a_z[n],\omega_x[n],\omega_y[n],\omega_z[n])^\top,
+ \qquad t_n=t_0+n/f_s.
+\]
+\paragraph{Symbols and meaning.}
+$n\in\{0,\ldots,T-1\}$ is a sample index, $T$ is the number of samples,
+$v[n]\in\R^6$ is one observation, $a_x,a_y,a_z$ are accelerometer axes,
+and $\omega_x,\omega_y,\omega_z$ are angular-velocity axes. $t_0$ is the
+first sample time in seconds and $f_s>0$ is samples per second. HAPT's
+nominal $f_s=50$ corresponds to $1/f_s=0.02$ seconds per sample. Its raw
+acceleration unit is g; angular velocity uses rad/s \cite{hapt}.
+\paragraph{Derivation and example.}
+For $T=128$, the first-to-last elapsed interval is
+$t_{127}-t_0=127/50=2.54$ s. The sample-count convention assigns
+$T/f_s=2.56$ s. These are different measurements, not contradictory
+estimates. Adding a sampling interval to the last timestamp is a convention,
+not another observed sample. Raw recordings without timestamps do not
+independently establish a perfectly uniform clock.
+\paragraph{Why ECDR needs it.}
+A query stride measured in samples becomes a physical query rate only after
+choosing this clock model. A receptive field of nine samples is not nine
+seconds. Equal sample identity is also the foundation of exact overlap.
+\paragraph{Conditions and connections.}
+Uniform sampling is a modeling assumption here, not a consequence of the
+field axioms. Timing jitter, gaps and asynchronous sensors require a richer
+input contract. B02 defines temporal span; B04 defines the query grid.
+
+\concept{B02}{Temporal span: what an annotated interval covers}{F08, F24, B01}
+\paragraph{Foundation and definition.}
+A temporal annotation span is an interval of sample indices assigned one
+activity. It is not the linear span of vectors in F12. With inclusive
+endpoints $a,b\in\mathbb Z$ and $a\le b$, the index set is
+\[
+ I_{a,b}=\{n\in\mathbb Z:a\le n\le b\},\qquad |I_{a,b}|=b-a+1.
+\]
+\paragraph{Symbols and meaning.}
+$a$ and $b$ denote the first and last annotated sample indices; $n$ ranges
+over samples; $I_{a,b}$ is a finite set; $|I_{a,b}|$ is its cardinality,
+not a norm. With sampling rate $f_s>0$, sample-count duration is
+$(b-a+1)/f_s$ seconds; first-to-last elapsed time is $(b-a)/f_s$ seconds.
+The half-open representation $[a,b+1)$ denotes the same integer samples.
+\paragraph{Derivation and example.}
+The span $[64,191]$ contains $191-64+1=128$ samples. At 50 Hz it has
+sample-count duration $2.56$ s and elapsed time $2.54$ s. A span $[1,128]$
+has the same length, but a window grid with starts $0,64,128,\ldots$ does
+not contain a length-128 window inside it. Duration and grid alignment
+are separate constraints, derived in B05.
+\paragraph{Why ECDR needs it.}
+Annotation support after windowing depends on which windows fit inside a
+span. Short transitions may disappear from a pure-window evaluation even
+when their annotations remain in the raw data. Understanding the unit of
+labeling prevents confusing a class transition with a mixed-label window.
+\paragraph{Conditions and connections.}
+Index origin and endpoint convention must be verified from source metadata.
+The inherited HAPT pipeline reproduces one convention; reproduction does
+not independently prove its original annotation semantics. B21 uses the
+word span for a receptive-field extent, another distinct meaning.
+
+\concept{B03}{A tensor, vectorization and a dimension check}{F14, F15, F19}
+\paragraph{Foundation and definition.}
+A time-series tensor organizes values by named axes. For one window,
+$X\in\R^{C\times W}$ has $C$ channels and $W$ sample positions. A
+channel-major vectorization is the bijection
+\[
+ x_{cW+i}=X[c,i],\qquad
+ c=0,\ldots,C-1,\quad i=0,\ldots,W-1.
+\]
+\paragraph{Symbols and meaning.}
+$X[c,i]$ is one scalar observation; $x=\operatorname{vec}(X)\in\R^d$ is
+the same collection in a vector; $d=CW$ is input dimension. $c$ indexes
+channels and $i$ indexes within-window time. A batch adds an axis:
+$X^{\mathrm{batch}}\in\R^{B\times C\times W}$ with $B$ windows. Batch
+index is not a new physical sensor or a new time sample.
+\paragraph{Derivation and example.}
+For $C=2,W=3$, rows $(1,2,3)$ and $(4,5,6)$ become
+$x=(1,2,3,4,5,6)^\top$. Another fixed layout is a permutation $Px$,
+where $P\in\R^{d\times d}$ has one 1 per row and column. Since
+$P^\top P=I_d$, $\norm{Px}_2=\norm{x}_2$. Here $I_d$ is the identity
+matrix. However, unchanged CNN weights generally do not compensate for an
+arbitrary input permutation.
+\paragraph{Why ECDR needs it.}
+The classifier, domain generator, normalization and membership checker must
+agree on the layout. For HAPT, $C=6,W=128$ gives $d=768$; the final feature
+dimension may be 64, a different object. A float32 input has
+$768\times4=3072$ payload bytes, not total runtime memory.
+\paragraph{Conditions and connections.}
+Vectorization is lossless only when its inverse and axis convention are
+fixed. Unit consistency is addressed by B07--B08; actual CNN operators
+consume the structured tensor rather than an unlabeled coordinate list.
+
+\concept{B04}{The sliding-window grid and its exact count}{F08, F09, B01}
+\paragraph{Foundation and definition.}
+A no-padding query grid takes complete windows from one recording. For
+$T$ samples, window length $W\ge1$ and stride $s\ge1$, starts are $ks$,
+where $k$ is a nonnegative integer. A valid window reads
+\[
+ X_k[:,i]=v[ks+i],\qquad i=0,\ldots,W-1,
+ \qquad ks+W\le T.
+\]
+\paragraph{Symbols and meaning.}
+$v[n]\in\R^C$ is sample $n$, $C$ is channel count, $X_k\in\R^{C\times W}$
+is query $k$, and ``:'' means every channel. $T,W,s,k,i$ count samples
+or windows, not seconds. No window crosses a recording boundary.
+\paragraph{Derivation and example.}
+The final inequality is equivalent to $k\le(T-W)/s$. When $T\ge W$,
+\[
+ N_T=1+\left\lfloor\frac{T-W}{s}\right\rfloor;
+ \qquad N_T=0\text{ if }T<W.
+\]
+There are $N_T$ integers because index 0 is included. At
+$T=1000,W=128,s=64$, $N_T=14$. The last start is $13\cdot64=832$,
+ending at exclusive index 960; the next would end at 1024 and is invalid.
+The nominal query rate is $f_s/s=50/64=0.78125$ queries/s within a long
+uniformly sampled recording, ignoring startup and termination.
+\paragraph{Why ECDR needs it.}
+Query count sets evaluation denominators and amortization frequency.
+Overlapping windows do not multiply the independent recording duration.
+For multiple recordings, sum their individual counts; there is no valid
+pair from the end of one recording to the beginning of another.
+\paragraph{Conditions and connections.}
+This count assumes fixed length, fixed stride, no padding and a recording
+grid starting at index 0. Different alignment policies require a different
+count. B05 applies the same integer reasoning to an annotation span.
+
+\concept{B05}{How many grid windows fit inside a label span?}{F08, B02, B04}
+\paragraph{Foundation and definition.}
+A pure window must fit wholly inside one consistently labeled interval.
+Use a half-open span $[a,b)$ inside a recording with indices $[0,T)$.
+The grid starts remain $ks$; they are not reset at each annotation.
+\paragraph{Symbols and meaning.}
+$a,b,T\in\mathbb Z$ are span and recording bounds, $W\ge1$ is window
+length, $s\ge1$ is stride, and $k\ge0$ is a window index. Define integer
+bounds $k_{\min}$ and $k_{\max}$ by
+\[
+ k_{\min}=\left\lceil\frac{\max(a,0)}s\right\rceil,\qquad
+ k_{\max}=\left\lfloor\frac{\min(b-W,T-W)}s\right\rfloor.
+\]
+\paragraph{Derivation and example.}
+The required inequalities are $ks\ge a$, $ks+W\le b$, $ks\ge0$ and
+$ks+W\le T$. Dividing by positive $s$, then rounding lower bounds upward
+and upper bounds downward, yields
+\[
+ N_{[a,b)}=\max(0,k_{\max}-k_{\min}+1).
+\]
+At $a=100,b=400,W=128,s=64,T\ge400$, the bounds are 2 and 4, so starts
+128,192,256 are valid. Start 320 ends at 448 and is outside the span.
+For inclusive input $[a,b_{\rm inc}]$, substitute $b=b_{\rm inc}+1$.
+\paragraph{Why ECDR needs it.}
+A span with at least $W$ samples can still produce zero pure windows if
+the fixed grid misses it. Thus pure class support is a property of both
+the annotated signal and the query policy. It does not directly estimate
+the prevalence of that activity in the raw recording or in deployment.
+\paragraph{Conditions and connections.}
+The formula treats one span and one recording. Adjacent spans with the
+same activity require an explicit merge policy before adding counts.
+Changing the index convention without validation changes the population
+being analyzed; an algebraically correct formula cannot validate that choice.
+
+\concept{B06}{A label policy is a definition of the evaluation population}{F03, F08, B05}
+\paragraph{Foundation and definition.}
+Window labels summarize many sample-level labels. For $K$ activity classes,
+let $n_j$ count samples assigned class $j\in\{1,\ldots,K\}$ and let $n_0$
+count unannotated samples. Then
+\[
+ \sum_{j=0}^{K}n_j=W,\qquad
+ p_{\max}=\max_{1\le j\le K}n_j/W.
+\]
+\paragraph{Symbols and meaning.}
+$W$ is the number of samples in the window; each $n_j$ is an integer
+between 0 and $W$. $p_{\max}$ is a whole-window proportion, not a CNN
+probability. ID0 denotes absent annotation here, not an additional
+recognized activity. An inherited policy is pure if some $n_j=W$;
+unlabeled if $n_0=W$; otherwise majority when $p_{\max}\ge0.6$, and
+ambiguous when $p_{\max}<0.6$.
+\paragraph{Derivation and example.}
+Because counts are integer, a majority threshold of 0.6 at $W=128$ needs
+$n_j\ge\lceil0.6\cdot128\rceil=77$. If 70 samples have one activity and
+58 are unannotated, the observed-label proportion is $70/70=1$, but the
+policy proportion is $70/128=0.546875$: the window is ambiguous. The
+choice of denominator changes the definition, not just its display.
+\paragraph{Why ECDR needs it.}
+Filtering to pure windows changes which transitions and mixed boundaries
+remain in a study. A reference can be trained on a subset while a runtime
+stream still contains every query. Reuse coverage needs its own explicitly
+stated population. True activity labels are available for retrospective
+analysis, not automatically to a runtime event selector.
+\paragraph{Conditions and connections.}
+Tie handling for a majority ID and annotation conventions must be fixed.
+The policy is a modeling choice; probability axioms do not prescribe it.
+B30 and C28 explain why metrics with different denominators cannot be renamed.
+
+\concept{B07}{Frozen normalization as an invertible affine map}{F15--F17, B03}
+\paragraph{Foundation and definition.}
+Normalization changes coordinates rather than changing the underlying
+recorded observation. In vector form, fixed per-coordinate centering and
+positive scaling give
+\[
+ z=\mathcal P(x)=D_\sigma^{-1}(x-\mu),\qquad
+ D_\sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_d).
+\]
+\paragraph{Symbols and meaning.}
+$x\in\R^d$ is raw input, $z\in\R^d$ is normalized input,
+$\mu\in\R^d$ contains fitted means, and every $\sigma_i>0$ is a fixed
+scale. $D_\sigma\in\R^{d\times d}$ is diagonal. For per-channel fitting,
+the same mean and scale repeat across positions of that channel.
+\paragraph{Derivation and example.}
+Invertibility follows directly: $x=D_\sigma z+\mu$. If one coordinate has
+$\mu_i=2,\sigma_i=0.5$ and raw value $x_i=2.1$, then $z_i=0.2$.
+For anchor $x^r$ and its image $z^r=\mathcal P(x^r)$,
+\[
+ z-z^r=D_\sigma^{-1}(x-x^r).
+\]
+Centering cancels in a difference, but scaling remains. Training-window
+means may weight overlapping raw samples repeatedly; they need not equal
+means computed on unique raw samples. The fit population must be recorded.
+\paragraph{Why ECDR needs it.}
+The reference is the composition of preprocessing and CNN, not the CNN
+weights alone. A certificate in normalized coordinates must be checked in
+those coordinates or transported correctly to raw space. Replacing fitted
+scales changes the function being certified.
+\paragraph{Conditions and connections.}
+Positive finite scales, finite inputs and a frozen fit are assumptions.
+Per-window centering defines a different map and can destroy exact
+normalized overlap. This operation does not remove gravity or independently
+calibrate a sensor. B08 derives the corresponding transport of bounds.
+
+\concept{B08}{Transporting a metric, a region and an affine bound}{F16, F20, B07}
+\paragraph{Foundation and definition.}
+Coordinate transport applies the same invertible map to every object used
+in a claim. With $z=D^{-1}(x-\mu)$ and fixed positive diagonal $D$,
+\[
+ \norm{z-z^r}_2^2=\sum_{i=1}^{d}\frac{(x_i-x_i^r)^2}{\sigma_i^2}.
+\]
+\paragraph{Symbols and meaning.}
+$d$ is input dimension; $\mu\in\R^d$ is the fixed fitted mean;
+$x,x^r\in\R^d$ are raw query and anchor;
+$z,z^r$ are their normalized images; $\sigma_i=D_{ii}>0$ is a scale.
+The normalized norm is dimensionless if scales carry the corresponding
+raw units. Raw channels in g and rad/s have no shared physical unit merely
+because their numeric values are added in a norm.
+\paragraph{Derivation and example.}
+A raw box with budgets $b_i^{\rm raw}\ge0$ and $|x_i-x_i^r|\le b_i^{\rm raw}$ maps to
+$|z_i-z_i^r|\le b_i^{\rm raw}/\sigma_i$. If normalized margin
+$\gamma$ has a valid bound $\gamma(z)\ge a_z^\top z+\beta_z$, substitution gives
+\[
+ a_x=D^{-\top}a_z,\qquad
+ \beta_x=\beta_z-a_z^\top D^{-1}\mu,
+ \qquad g(x)=\gamma(\mathcal P(x))\ge a_x^\top x+\beta_x.
+\]
+$a_z,a_x\in\R^d$ are bound coefficients and $\beta_z,\beta_x\in\R$ are
+intercepts. For scalars $a_z=3,\beta_z=1,\mu=2,\sigma=0.5$, obtain
+$a_x=6,\beta_x=-11$; both expressions equal 1.6 at raw $x=2.1$.
+\paragraph{Why ECDR needs it.}
+Using a normalized radius against raw distances accepts the wrong set.
+Transport is the link between a mathematical domain and the physical
+observations admitted by a checker. Changing units can change a raw
+numeric distance while representing the same physical variation.
+\paragraph{Conditions and connections.}
+The lower bound must hold on the image of the raw domain. Invertibility
+alone does not make a bound globally valid. C14 applies the same reasoning
+to projected and generator-based regions.
+
+\concept{B09}{The shift--append operation is a linear state update}{F15, F17, B03}
+\paragraph{Foundation and definition.}
+A window advances by dropping its first $s$ columns and appending a new
+wave. Define
+\[
+ \mathcal T_s(X,U)=S_sX+J_sU=[X[:,s:W],U].
+\]
+\paragraph{Symbols and meaning.}
+$X\in\R^{C\times W}$ is the old window, $U\in\R^{C\times s}$ is new
+data, and $1\le s\le W$. $S_s$ means drop-and-zero-fill:
+$S_sX=[X[:,s:W],0_{C\times s}]$.
+$J_sU=[0_{C\times(W-s)},U]$ inserts the new tail. They are linear maps
+between the stated tensor spaces; $0_{a\times b}$ is an all-zero matrix.
+The brackets concatenate columns, not add them.
+\paragraph{Derivation and example.}
+With $C=1,W=4,s=2$, vectorized matrices are
+\[
+ S_s=\begin{pmatrix}0&0&1&0\\0&0&0&1\\0&0&0&0\\0&0&0&0\end{pmatrix},
+ \qquad J_s=\begin{pmatrix}0&0\\0&0\\1&0\\0&1\end{pmatrix}.
+\]
+For $X=(a,b,c,d)^\top$ and $U=(u,v)^\top$, their sum is
+$(c,d,u,v)^\top$. $J_s$ is injective: reading its last $s$ positions
+recovers $U$, so two different tails cannot create the same full update
+when the old window is fixed.
+\paragraph{Why ECDR needs it.}
+This operation exposes exactly which variables are fixed and which are
+new. A one-step wave region can vary $Cs$ coordinates instead of all
+$CW$ coordinates. It also defines a state transition for multi-step proofs.
+\paragraph{Conditions and connections.}
+The update assumes the same recording, channel order and sample grid.
+Dropped samples are lost from this state; $S_s$ is generally not invertible.
+Reducing free input dimension does not by itself prove lower verifier cost.
+B10 identifies the equality inherited by shared samples.
+
+\concept{B10}{Aligned overlap is an identity of sample indices}{F09, B04, B09}
+\paragraph{Foundation and definition.}
+Two consecutive windows from the same fixed grid share samples. For
+recording $v[n]\in\R^C$ and $X_k[:,i]=v[ks+i]$,
+\[
+ X_{k+1}[:,i]=X_k[:,i+s],\qquad 0\le i<W-s.
+\]
+\paragraph{Symbols and meaning.}
+$k$ is window index, $i$ is a within-window sample index, $s$ is stride,
+$W$ is window length and $C$ is channel count, with $1\le s\le W$ here. The same vector appears at
+different tensor positions: new position $i$ and old position $i+s$.
+There are $C(W-s)$ shared scalar coordinates after alignment.
+\paragraph{Derivation and example.}
+Substitute the window definition:
+$X_{k+1}[:,i]=v[(k+1)s+i]=v[ks+(i+s)]$.
+The final expression is the definition of $X_k[:,i+s]$. This proof uses
+index equality, not smoothness, a common activity label or high correlation.
+For $C=6,W=128,s=64$, 384 shared values remain and 384 new values arrive.
+Time-homogeneous per-channel normalization preserves equality: the same
+channel map is applied at every temporal position. Separately fitted window means need
+not preserve it.
+\paragraph{Why ECDR needs it.}
+Exact feature sharing for a valid CNN starts from this identity. It can
+also justify checking only a new tail if the old overlap is guaranteed by
+the acquisition contract. A checker without that guarantee must verify the
+overlap too. Data similarity alone does not supply sample identity.
+\paragraph{Conditions and connections.}
+There is no such guarantee across recording boundaries, dropped samples,
+changed channel layouts or asynchronous resampling. B11 shows why this
+identity does not imply a small ordinary difference; B24 lifts it through
+appropriate convolutional layers.
+
+\concept{B11}{Same-coordinate perturbation is not aligned overlap}{F20, B09--B10}
+\paragraph{Foundation and definition.}
+An ordinary difference compares matching coordinate labels in two input
+tensors, not the matching raw samples. For old $X$ and new
+$X'=\mathcal T_s(X,U)$,
+\[
+ \Delta=X'-X=(S_s-I)X+J_sU.
+\]
+\paragraph{Symbols and meaning.}
+$X,X',\Delta\in\R^{C\times W}$; $U\in\R^{C\times s}$ is new data;
+$S_s,J_s$ are B09's linear maps; $I$ is the identity on full windows.
+The Frobenius norm $\norm{\Delta}_F$ is Euclidean norm after vectorization.
+It aggregates differences at the same channel and window position.
+\paragraph{Derivation and counterexample.}
+For one channel, $W=4,s=2$, take $X=(0,0,M,M)$ and $U=(0,0)$, where
+$M\in\R$ is arbitrary amplitude. Then $X'=(M,M,0,0)$ still satisfies exact
+50\% aligned overlap, but
+\[
+ \norm{X'-X}_2=\sqrt{M^2+M^2+M^2+M^2}=2|M|.
+\]
+No small upper bound independent of amplitude follows from overlap. If an
+additional assumption imposes $|X[c,i]|,|U[c,j]|\le A$ for finite $A\ge0$,
+each difference is at most $2A$, giving
+$\norm{\Delta}_F\le2A\sqrt{CW}$. This bound comes from amplitude control.
+\paragraph{Why ECDR needs it.}
+An ordinary norm ball may need to include changes due to moving old samples
+as well as new data. Reusing the last class merely because half the samples
+are shared is unjustified. Wave geometry can encode this structure directly.
+\paragraph{Conditions and connections.}
+The example disproves a logical implication, not an empirical claim about
+human movement. Bounds on input distance still require margin sensitivity
+to obtain a decision certificate, as in C02.
+
+\concept{B12}{Marginal coverage, joint coverage and the union bound}{F29--F34, F24}
+\paragraph{Foundation and definition.}
+A box accepts a query only when every coordinate constraint holds. Let
+$\Delta=(\Delta_1,\ldots,\Delta_d)$ be a random perturbation and define
+$E_i=\{|\Delta_i|\le b_i\}$ for fixed budgets $b_i\ge0$.
+Box membership is the joint event $\bigcap_{i=1}^dE_i$.
+\paragraph{Symbols and meaning.}
+$d\ge1$ is dimension, $i$ indexes coordinates, $\Pr$ is probability under
+a specified data-generating distribution, and $\alpha_i\in[0,1]$ is a
+valid upper bound on $\Pr(E_i^c)$. The complement $E_i^c$ is coordinate
+failure. A train-set quantile does not automatically provide this
+population probability guarantee.
+\paragraph{Derivation and example.}
+Countable subadditivity from the probability axioms gives
+\[
+ \Pr\!\left(\bigcap_iE_i\right)
+ =1-\Pr\!\left(\bigcup_iE_i^c\right)
+ \ge\max\left(0,1-\sum_i\alpha_i\right).
+\]
+No independence is used. If, additionally, the events are independent and
+each has probability $q$, their joint probability is $q^d$.
+For $q=0.9,d=768$, it is approximately $7.21518\times10^{-36}$ under
+that added assumption. This is a constructed example, not a HAPT estimate.
+With two identical events of probability 0.9, joint coverage is instead 0.9.
+\paragraph{Why ECDR needs it.}
+Per-coordinate q90 budgets do not establish q90 joint membership, much
+less q90 certified reuse. Geometry, empirical joint coverage and a
+whole-domain model property are three separate questions.
+\paragraph{Conditions and connections.}
+The distribution and fit/evaluation split must be declared before making
+statistical claims. A certificate can be distribution-free conditional on
+membership; its usefulness still depends on how often the stream enters
+the domain. C18 and C28 separate those claims.
+
+\concept{B13}{Temporal dependence and the unit of a split}{F29--F33, B10}
+\paragraph{Foundation and definition.}
+Independence means a joint probability factors appropriately; it is not a
+consequence of storing observations in different tensor rows. Overlapping
+windows contain common raw samples. Multiple recordings from one person
+can also share person-specific behavior and device placement.
+\paragraph{Symbols and meaning.}
+Let $Y_1,\ldots,Y_N$ be scalar evaluation outcomes with finite second
+moments, $N\ge1$ their count, and $\bar Y=N^{-1}\sum_iY_i$ their mean.
+$\operatorname{Cov}(Y_i,Y_j)$ is covariance. Then
+\[
+ \operatorname{Var}(\bar Y)=\frac1{N^2}
+ \sum_{i=1}^{N}\sum_{j=1}^{N}\operatorname{Cov}(Y_i,Y_j).
+\]
+\paragraph{Derivation and example.}
+Expand the centered square of the sum and use expectation linearity.
+The familiar $\sigma^2/N$ requires zero off-diagonal covariances and
+appropriate common variance $\sigma^2$. If $Y_i=Y_1$ for every $i$,
+averaging duplicate rows gives variance $\operatorname{Var}(Y_1)$, not
+$\operatorname{Var}(Y_1)/N$. This extreme example explains why row count
+alone does not measure independent information.
+\paragraph{Why ECDR needs it.}
+A random window split may put the same raw sample into training and test.
+Splitting by subject avoids that particular overlap but does not make all
+within-subject queries independent. Reuse should be replayed in recording
+order because its anchor state depends on preceding queries.
+\paragraph{Conditions and connections.}
+The statistical unit, clustering and dependence assumptions must match the
+uncertainty claim. A subject-level bootstrap is a possible design, not an
+already-performed experiment here. Describing all splits for exploration
+must not be called an untouched confirmatory test afterward.
+
+\concept{B14}{The reference classifier is a composition, not just weights}{F04, F17, B07}
+\paragraph{Foundation and definition.}
+The reference function maps a raw query into class scores through a fixed
+preprocessing map followed by a fixed network:
+\[
+ F=f_\theta\circ\mathcal P:\R^d\to\R^K,
+ \qquad F(x)=f_\theta(\mathcal P(x)).
+\]
+\paragraph{Symbols and meaning.}
+$d=CW$ is raw input dimension, $K\ge2$ is class count,
+$x\in\R^d$ is one vectorized raw window, $\mathcal P$ is preprocessing,
+and $f_\theta$ is the CNN with parameters and frozen operator state
+denoted collectively by $\theta$. Its input is normalized vector $z$;
+$F$'s input is raw vector $x$. Class ordering and tie handling belong to
+the decision contract even though neither appears as a trainable weight.
+\paragraph{Derivation and example.}
+Let scalar preprocessing be $\mathcal P(x)=2x-4$ and an illustrative
+two-score network be $f_\theta(z)=(z,-z)$. Then
+$F(x)=(2x-4,4-2x)$. The winner changes at raw value $x=2$, while the
+network boundary is normalized value $z=0$. Substituting raw $x$ directly
+into the network uses a different classifier.
+\paragraph{Why ECDR needs it.}
+A reusable certificate must match the graph, weights, preprocessing,
+class schema, deterministic mode and domain coordinates used at runtime.
+A matching filename is not evidence of matching function identity.
+Certification relative to a reference means preserving its decision,
+including occasions when that reference disagrees with ground truth.
+\paragraph{Conditions and connections.}
+Real-valued functional identity and floating-point program identity are
+distinct obligations. Updating weights or fitted normalization requires
+new evidence unless an explicit transfer result applies. C20 handles
+numerical semantics; C23 handles anchor identity through time.
+
+\concept{B15}{Logits, maximum, argmax and deterministic ties}{F06, F45, B14}
+\paragraph{Foundation and definition.}
+A logit vector is a list of real scores. For $F(x)\in\R^K$, the classifier
+returns an index with largest score:
+\[
+ h(x)=\operatorname{argmax}_{1\le j\le K}F_j(x).
+\]
+\paragraph{Symbols and meaning.}
+$x\in\R^d$ is a query, $F_j(x)\in\R$ is the score for class index $j$,
+$K\ge2$ is class count and $h(x)\in\{1,\ldots,K\}$ is the selected
+class. A deterministic tie rule makes $h$ a function rather than a
+set-valued relation. In contrast, $\max_jF_j(x)$ returns a score value,
+not the class index. Logits do not have sensor units or automatic
+probabilistic calibration.
+\paragraph{Derivation and example.}
+For scores $(2.4,1.1,2.0)$, the maximum is 2.4 and the unique argmax is
+class~1. For $(2,2,0)$, the set of maximizers is $\{1,2\}$; a
+smallest-index rule returns1. Softmax at temperature $\tau>0$ gives
+$p_j=\exp(F_j/\tau)/\sum_k\exp(F_k/\tau)$, where $k$ is the denominator
+index. Its positive common denominator and the strict monotonicity of
+exponentiation preserve score ordering in exact real arithmetic.
+\paragraph{Why ECDR needs it.}
+Class-only reuse need not recreate current logits or probabilities. A
+downstream consumer requiring an embedding or calibrated confidence asks
+for a different output contract. Margin certification can therefore work
+directly on logits without inserting softmax.
+\paragraph{Conditions and connections.}
+Strict positive pairwise margins avoid relying on ties, but are sufficient
+rather than necessary for a particular deterministic tie rule. NaN scores
+are outside the finite-real model. B16 formalizes the pairwise test;
+C20 accounts for numerical errors in actual programs.
+
+\concept{B16}{A pairwise decision margin converts argmax into inequalities}{F06, B15}
+\paragraph{Foundation and definition.}
+For a fixed target class $c$, compare its score with each competing class.
+The pairwise margin is
+\[
+ g_{cj}(x)=F_c(x)-F_j(x),\qquad j\in\{1,\ldots,K\}\setminus\{c\}.
+\]
+\paragraph{Symbols and meaning.}
+$x\in\R^d$ is raw input; $F:\R^d\to\R^K$ is the frozen reference;
+$c$ is a chosen target index and $j$ is a different competitor. Each
+$g_{cj}(x)\in\R$ is a scalar score difference. For $K=12$, there are
+11 separate comparisons. Define the smallest target margin at an anchor
+$x^r$ as $m_r=\min_{j\ne c}g_{cj}(x^r)$.
+\paragraph{Derivation and example.}
+If every $g_{cj}(x)>0$, then $F_c(x)>F_j(x)$ for every competitor, so
+$h(x)=c$ uniquely. For $(F_1,F_2,F_3)=(4.5,-0.5,1)$ and $c=1$,
+the two margins are 5 and 3.5. At another input with scores
+$(6.5,-2.5,5)$, target score increases but the smaller margin falls to
+1.5. Target confidence cannot be inferred from its own logit alone.
+\paragraph{Why ECDR needs it.}
+Reuse requires preserving ordering, not preserving every score numerically.
+Bounding a difference directly can retain cancellations between two logits
+that are lost when each logit is bounded independently. A verifier must
+check all competitors, not just the class that is second-largest at the
+anchor: a different competitor can become dangerous elsewhere in a region.
+\paragraph{Conditions and connections.}
+Strict positivity is sufficient; equality depends on the tie rule.
+A positive margin at one input is a pointwise fact, not a whole-domain
+certificate. B17 supplies a local existence theorem from continuity;
+C18 states the universal lower-bound condition used by ECDR.
+
+\concept{B17}{Local invariance from continuity and a positive anchor margin}{F26, B16}
+\paragraph{Foundation and definition.}
+A classifier can be locally constant in its decision even though its
+logits vary continuously. Suppose $F:\R^d\to\R^K$ is continuous at
+anchor $x^r$, $K$ is finite, and the chosen class $c$ has
+$g_{cj}(x^r)>0$ for every $j\ne c$.
+\paragraph{Symbols and meaning.}
+$g_{cj}=F_c-F_j$ is a pairwise margin; $d$ is input dimension;
+$\norm{\cdot}$ is a fixed norm; and $\epsilon_j>0$ will denote an
+input radius for competitor $j$. A ball of radius $\epsilon$ contains
+all $x$ satisfying $\norm{x-x^r}<\epsilon$.
+\paragraph{Derivation.}
+Each margin is continuous because it is a difference of continuous
+functions. For each $j$, continuity provides $\epsilon_j>0$ such that
+\[
+ \norm{x-x^r}<\epsilon_j
+ \ \Longrightarrow\
+ |g_{cj}(x)-g_{cj}(x^r)|<g_{cj}(x^r)/2.
+\]
+Consequently $g_{cj}(x)>g_{cj}(x^r)/2>0$. Take
+$\epsilon=\min_{j\ne c}\epsilon_j$. A minimum of finitely many positive
+numbers is positive. Thus every input in that ball has unique winner $c$.
+\paragraph{Why ECDR needs it.}
+The theorem explains why a certified invariant neighborhood is possible
+around a strictly classified input. It does not compute its useful size.
+Operational bounds such as Lipschitz or affine relaxations turn this
+existence statement into checkable sufficient conditions.
+\paragraph{Conditions and connections.}
+Finite $K$, continuity at the anchor and strict margins are necessary
+assumptions for this proof. It says neither that the radius is independent
+of the model nor that a future query enters the ball. B18 shows the former
+failure; C02 constructs a quantitative radius under sensitivity bounds.
+
+\concept{B18}{Why no positive radius can be universal over all classifiers}{F02, B16--B17}
+\paragraph{Foundation and definition.}
+To disprove a universal claim, construct one permitted counterexample for
+each proposed bound. Consider the claim that some fixed radius $r_0>0$
+preserves the decision of every continuous classifier at every strictly
+classified anchor. The claim reverses the order of quantifiers in B17.
+\paragraph{Symbols and meaning.}
+$r_0\in\R$ is a proposed positive universal radius. Define
+$\varepsilon=r_0/2$, scalar input $x\in\R$, anchor $x^r=0$, and a
+two-class reference
+\[
+ F^{(\varepsilon)}(x)=(\varepsilon-x,0).
+\]
+The superscript labels the chosen model, not exponentiation. Its target
+class is $c=1$ at the anchor.
+\paragraph{Derivation and counterexample.}
+The margin is $g_{12}(x)=\varepsilon-x$, a continuous affine function
+with Lipschitz constant~1. At the anchor its margin is $\varepsilon>0$.
+Take $x'=3r_0/4$. Then $|x'-x^r|=3r_0/4<r_0$, but
+\[
+ g_{12}(x')=r_0/2-3r_0/4=-r_0/4<0.
+\]
+Class2 wins within the proposed radius. This construction works for every
+$r_0>0$. It does not contradict a model-dependent radius smaller than
+$\varepsilon$.
+\paragraph{Why ECDR needs it.}
+Input overlap, network continuity or a domain's descriptive name cannot
+justify a fixed reusable radius for arbitrary weights and margins.
+The region must be linked to a particular reference, anchor and bound.
+\paragraph{Conditions and connections.}
+This is a distribution-free logical counterexample, not a claim that HAPT
+models behave this way. Even a known Lipschitz constant is insufficient
+without an anchor margin. C02 makes that dependence explicit.
+
+\concept{B19}{Convolution as a sparse affine map with shared coefficients}{F09, F15--F16, B03}
+\paragraph{Foundation and definition.}
+The Conv1D convention used here is cross-correlation: kernel coefficients
+are not reversed. For valid padding and stride1,
+\[
+ V[o,i]=b_o+\sum_{c=0}^{C_{\rm in}-1}\sum_{r=0}^{k-1}
+ W[o,c,r]Z[c,i+r].
+\]
+\paragraph{Symbols and meaning.}
+$Z\in\R^{C_{\rm in}\times T}$ is input, $V\in\R^{C_{\rm out}\times(T-k+1)}$
+is preactivation, $W\in\R^{C_{\rm out}\times C_{\rm in}\times k}$ is
+the kernel and $b\in\R^{C_{\rm out}}$ is bias. $o,c,r,i$ index output
+channel, input channel, kernel tap and output position. $1\le k\le T$.
+The same $W[o,c,r]$ is used at all output positions.
+\paragraph{Derivation and example.}
+For one channel with $Z=(1,2,3,4)$, kernel $(1,-1)$ and bias~0.5,
+each output is $Z[i]-Z[i+1]+0.5=-0.5$, giving three outputs. Stacking
+all output coordinates gives $\operatorname{vec}(V)=\mathsf W\operatorname{vec}(Z)+\mathsf b$.
+Writing $T_o=T-k+1$, matrix $\mathsf W$ has shape
+$(C_{\rm out}T_o)\times(C_{\rm in}T)$, and $\mathsf b\in\R^{C_{\rm out}T_o}$
+repeats channel biases. The sparse matrix's repeated entries encode weight
+sharing. This is affine, not generally linear when bias is nonzero.
+\paragraph{Why ECDR needs it.}
+The affine representation allows interval sign rules and linear
+relaxation methods to treat convolution rigorously. Local shared weights
+also support exact shifted feature equality, but only at correctly aligned
+positions whose receptive fields contain equal inputs.
+\paragraph{Conditions and connections.}
+Stride, dilation, grouping and padding change connectivity and output
+length; they must be stated rather than inferred from the word CNN.
+The main theoretical model uses valid stride~1/dilation~1 convolutions.
+The separate English CNN document gives an individual page to each
+operator parameter. B24 proves the corresponding feature identity.
+
+\concept{B20}{ReLU creates affine pieces without preserving every margin}{F16--F17, B19}
+\paragraph{Foundation and definition.}
+The rectified linear unit is the pointwise scalar function
+$\relu(v)=\max(0,v)$. Applied to tensor $V$, it gives $H[o,i]=\relu(V[o,i])$
+without changing shape or introducing trainable parameters.
+\paragraph{Symbols and meaning.}
+$v\in\R$ is one preactivation, $V$ is a preactivation tensor, $H$ is
+its activation tensor, and $o,i$ index a feature channel and position.
+For $m\ge1$ neurons, let $w\in\R^m$ be their preactivation vector.
+On a fixed activation pattern, define $D\in\R^{m\times m}$ diagonal
+with entries~0 or~1. Then $\relu(w)=Dw$. Neurons identically zero may use a zero gate.
+\paragraph{Derivation and example.}
+If every preactivation sign is fixed on an input region, replacing each
+ReLU by its fixed gate makes the full affine/ReLU network affine there:
+composition of affine maps is affine. For a scalar affine preactivation
+$v(x)=2x-1$, ReLU is~0 when $x\le1/2$ and $2x-1$ when $x\ge1/2$.
+The pieces agree at the boundary but have different slopes.
+For any scalar $a,b$, case analysis gives
+$|\relu(a)-\relu(b)|\le|a-b|$; coordinatewise aggregation yields the
+same nonexpansion for $L_1,L_2,L_\infty$ norms.
+\paragraph{Why ECDR needs it.}
+Stable activation patterns allow exact affine reasoning; unstable neurons
+require sound bounds. A pattern observed only at the anchor is not
+established over an entire candidate region. Network layers around ReLU
+may amplify differences even though ReLU alone is nonexpansive.
+\paragraph{Conditions and connections.}
+Nonnegative activations do not imply increasing class margins: head
+coefficients can be negative. C04 propagates intervals; C05 derives valid
+affine bounds for a neuron whose sign can change.
+
+\concept{B21}{Receptive-field span and jump on the input clock}{B01--B02, B19}
+\paragraph{Foundation and definition.}
+An architectural receptive field describes input positions that can affect
+one feature. Its span is the distance between extreme potentially accessed
+indices plus1. The jump is the input-grid displacement between consecutive
+feature positions. This temporal extent is not a vector-space linear span.
+\paragraph{Symbols and meaning.}
+For local layer $\ell$, let $k_\ell\ge1$ be kernel taps, $d_\ell\ge1$
+dilation and $a_\ell\ge1$ stride. Let $R_\ell$ be receptive-field span
+in samples and $J_\ell$ input-grid jump in samples. With
+$R_0=J_0=1$,
+\[
+ R_\ell=R_{\ell-1}+(k_\ell-1)d_\ell J_{\ell-1},\qquad
+ J_\ell=a_\ell J_{\ell-1}.
+\]
+\paragraph{Derivation and example.}
+The extreme input features in the next kernel are
+$(k_\ell-1)d_\ell$ positions apart. Multiply by their raw-grid spacing
+$J_{\ell-1}$ and add one preceding field's extent. Advancing the output
+by one moves $a_\ell$ preceding positions, giving the jump recurrence.
+With kernels~5,3,3 and all strides/dilations~1, spans are~5,7,9 and jumps
+remain1. At 50 Hz, RF~9 has first-to-last interval8/50=0.16 s, while
+sample-count duration is9/50=0.18 s.
+\paragraph{Why ECDR needs it.}
+Feature equality requires the whole relevant receptive field to lie in
+the shared portion. Input overlap~50\% therefore does not mean feature
+overlap~50\%. Padding and striding require extra boundary and phase reasoning.
+\paragraph{Conditions and connections.}
+With dilation, the span may contain holes; zero learned weights may reduce
+actual dependence. The recurrence describes potential connectivity, not
+empirical feature importance. B24 specializes it to a contiguous valid CNN.
+
+\concept{B22}{Global average pooling and the affine classifier head}{F09, F16, B20}
+\paragraph{Foundation and definition.}
+Global average pooling (GAP) reduces a final feature map along time while
+retaining each channel. For normalized input $Z$, define
+\[
+ m(Z)=\frac1n\sum_{i=0}^{n-1}H_i(Z),\qquad
+ f_\theta(Z)=A\,m(Z)+\beta.
+\]
+\paragraph{Symbols and meaning.}
+$H_i(Z)\in\R^{d_h}$ is the vector of final features at position $i$,
+$n\ge1$ is the number of final positions, $d_h$ is feature-channel count,
+$m(Z)\in\R^{d_h}$ is the pooled vector, $A\in\R^{K\times d_h}$ is
+the head matrix and $\beta\in\R^K$ is its bias. Raw logits are
+$F(x)=f_\theta(\mathcal P(x))$. Rows $A_{j,:}$ correspond to classes.
+\paragraph{Derivation and example.}
+For feature positions $(2,1),(3,1),(4,1),(5,1)$,
+$m=(14/4,4/4)=(3.5,1)$. Averaging is linear in the feature map, so
+equal channel sums give equal pooled vectors. It discards the explicit
+ordering of feature positions at the head. It does not make the full CNN
+invariant to arbitrary permutations of raw samples: the local features
+themselves can change under such permutations.
+\paragraph{Why ECDR needs it.}
+Feature sums allow shared contributions to cancel exactly when a window
+shifts. An affine head then turns a pooled change into a direct pairwise
+margin change. A position-weighted Flatten--MLP head does not generally
+have the same cancellation.
+\paragraph{Conditions and connections.}
+Equal position counts and the stated pooling/head operators are essential.
+A nonlinearity after pooling needs separate analysis. B25 derives the GAP
+update, and B26 connects it to decision certification rather than just
+activation reuse.
+
+\concept{B23}{Parameter count and arithmetic work are different quantities}{B19, B22}
+\paragraph{Foundation and definition.}
+Parameters count stored learnable scalars. Arithmetic work counts uses of
+those scalars while evaluating one input. For a bias-enabled, groups~1
+convolution with input channels $C_{\rm in}$, output channels $C_{\rm out}$,
+kernel length $k$ and output length $T_{\rm out}$,
+\[
+ P=C_{\rm out}(C_{\rm in}k+1),\qquad
+ M=T_{\rm out}C_{\rm out}C_{\rm in}k.
+\]
+\paragraph{Symbols and meaning.}
+$P$ is parameter count, $M$ is multiply--accumulate (MAC) count under one
+product-and-accumulation convention. The added1 in $P$ is one bias per
+output channel; it is not another kernel tap. Output length multiplies
+work because weights are reused across positions, not because new weights
+are created. A $d_h$-to-$K$ affine head has $K(d_h+1)$ parameters and
+$Kd_h$ MAC under the same convention.
+\paragraph{Derivation and example.}
+For valid kernels~5,3,3, channels $6\to32\to64\to64$ and input length~128,
+output lengths are124,122,120. The three parameter counts are~992,6208,
+12352; a 12-class head adds~780, totaling~20332. MAC counts are~119040,
+749568,1474560 and768, totaling~2343936. Reporting two FLOP/MAC gives
+4687872 FLOP for these operators only.
+\paragraph{Why ECDR needs it.}
+MAC reduction suggests computational opportunity but is not a latency
+theorem. ReLU, GAP, bias additions, normalization, memory traffic, dispatch
+and certificate work still cost time. C26--C27 account for that overhead.
+\paragraph{Conditions and connections.}
+Precision, kernel algorithms, buffer schedules and hardware affect actual
+runtime and peak memory. Float32 weight payload~20332$\times$4=81328 bytes
+is not checkpoint file size or process RAM. These are theoretical counts,
+not measured quality or speed of a new HAPT model.
+
+\concept{B24}{Exact aligned feature equality through a valid CNN}{B10, B19--B21}
+\paragraph{Foundation and definition.}
+Shared input samples induce shared features only under an operator contract.
+Assume frozen time-homogeneous per-channel preprocessing, valid stride~1/dilation~1 convolutions,
+position-independent pointwise activations, fixed weights and no pooling
+or hidden state. Let the final receptive-field span be $R$ and final
+length be $n=W-R+1$.
+\paragraph{Symbols and meaning.}
+$Z,Z'\in\R^{C\times W}$ are consecutive normalized windows shifted by
+$s$ samples, with $1\le s\le n$;
+$Z'[:,i]=Z[:,i+s]$ for $0\le i<W-s$.
+$H_i(Z)\in\R^{d_h}$ is the final feature at position $i$.
+The claim is
+\[
+ H_i(Z')=H_{i+s}(Z),\qquad 0\le i<n-s.
+\]
+\paragraph{Derivation.}
+The new feature at $i$ reads input indices $i,\ldots,i+R-1$.
+For $i\le n-s-1$, the last index is at most $W-s-1$, inside overlap.
+Each sample there equals the old sample at offset $s$. Apply equal
+kernels, biases and pointwise activations layer by layer to obtain equal
+outputs. The proof establishes shifted equality, not equality at the same
+tensor position.
+\paragraph{Why ECDR needs it.}
+For $W=128,R=9,s=64$, final length~120 leaves~56 shared positions.
+The~64 new final features depend on~72 raw columns:~64 new samples plus
+an~8-sample halo. This explains why forwarding only the~64 newly arrived
+raw columns through the entire valid backbone misses needed features.
+\paragraph{Conditions and connections.}
+Padding, striding, per-window preprocessing or position-dependent operators
+require a revised proof. Equality of features alone does not fix the
+new pooled sum or class. B25--B26 derive the remaining changes.
+
+\concept{B25}{The GAP update is a cancellation identity}{F09, B22, B24}
+\paragraph{Foundation and definition.}
+When final feature maps share a shifted interior, their sums differ only
+in dropped and added positions. Define
+\[
+ D_{\rm drop}=\sum_{i=0}^{s-1}H_i(Z),\qquad
+ D_{\rm new}(U)=\sum_{i=n-s}^{n-1}H_i(Z'),
+ \qquad Z'=\mathcal T_s(Z,U).
+\]
+\paragraph{Symbols and meaning.}
+$Z,Z'\in\R^{C\times W}$ are old/new normalized windows; $U\in\R^{C\times s}$
+is the new wave; $n$ is final feature length; $1\le s\le n$ is shift;
+$H_i\in\R^{d_h}$ is a feature vector. Both $D_{\rm drop}$ and
+$D_{\rm new}$ are $d_h$-dimensional sums. GAP is
+$m(Z)=n^{-1}\sum_iH_i(Z)$.
+\paragraph{Derivation and example.}
+By B24, the shared new sum equals $\sum_{i=s}^{n-1}H_i(Z)$. Therefore
+\[
+ \sum_iH_i(Z')-\sum_iH_i(Z)=D_{\rm new}(U)-D_{\rm drop},
+ \quad m(Z')-m(Z)=\frac{D_{\rm new}(U)-D_{\rm drop}}n.
+\]
+For old features $(0,1),(1,1),(2,1),(3,1)$ and new features
+$(2,1),(3,1),(4,1),(5,1)$, take $n=4,s=2$.
+The two sums are $(1,2)$ and $(9,2)$, giving pooled delta $(2,0)$.
+\paragraph{Why ECDR needs it.}
+Cancellation isolates the unknown future contribution. If that contribution
+can be bounded over a wave region, the classifier may be certified before
+computing exact features for an observed query. Computing its actual sum
+instead gives an incremental evaluation, a different form of reuse.
+\paragraph{Conditions and connections.}
+This is exact real algebra under B24's assumptions and equal feature
+lengths. Floating-point sum updates may not match recomputation bitwise.
+An identity provides no bound on all possible new waves by itself;
+B26 and C19 provide the margin connection.
+
+\concept{B26}{A pooled-feature change induces a pairwise-margin change}{B16, B22, B25}
+\paragraph{Foundation and definition.}
+An affine head turns a GAP change into an exact scalar margin change.
+Define the normalized-network margin
+\[
+ \gamma_{cj}(Z)=f_{\theta,c}(Z)-f_{\theta,j}(Z),\qquad
+ q_j=(A_{c,:}-A_{j,:})^\top.
+\]
+\paragraph{Symbols and meaning.}
+$A\in\R^{K\times d_h}$ and $\beta\in\R^K$ are head weights and bias;
+$c$ is target class, $j\ne c$ is a competitor, and $q_j\in\R^{d_h}$
+is a column vector. $Z$ and $Z'$ are old/new normalized inputs;
+$n$ is feature length. For raw query $x$, $g_{cj}(x)=\gamma_{cj}(\mathcal P(x))$.
+The new wave is $U\in\R^{C\times s}$, where $C$ is input-channel count and
+$1\le s\le n$ is the shift. Vectors $D_{\rm new}(U),D_{\rm drop}\in\R^{d_h}$
+sum newly added and dropped feature positions, respectively (B25).
+\paragraph{Derivation and example.}
+Using the head formula and subtracting old from new cancels its bias:
+\[
+ \gamma_{cj}(Z')=\gamma_{cj}(Z)+
+ \frac1nq_j^\top\big(D_{\rm new}(U)-D_{\rm drop}\big).
+\]
+The bias still contributes to the old margin; it must not be removed
+from that value. In B25's example, pooled delta is $(2,0)$.
+For $q_2=(2,-1)^\top$ the margin increases~4; for
+$q_3=(-1,1)^\top$ it decreases~2. The same feature change helps one
+comparison and harms another.
+\paragraph{Why ECDR needs it.}
+This formula expresses exactly what needs a bound for class preservation.
+Bounding every feature or logit independently can lose cancellation;
+bounding the pairwise scalar objective can be more informative. The
+whole-domain lower bound must remain valid for all admitted waves.
+\paragraph{Conditions and connections.}
+The identity needs the specified affine head and B25's feature update.
+It is neither an empirical stability estimate nor a certificate until
+the unknown term is enclosed. C19 chooses the correct feature-sum bounds
+according to the signs of the coefficients in $q_j$.
+
+\concept{B27}{A complete miniature CNN: forward arithmetic}{B19--B22, B26}
+\paragraph{Foundation and definition.}
+A small fully specified network makes each stage independently checkable.
+Take identity preprocessing, one channel, window length~6, shift~2, a
+valid length~3 convolution, two filters, ReLU, GAP and a three-class head.
+\paragraph{Symbols and meaning.}
+The old input is $X=(1,2,3,4,5,6)$, the appended wave is $U=(7,8)$,
+and $X'=(3,4,5,6,7,8)$. Filter weights and biases are
+\[
+ w_1=(1,-1,1),\ b_1=-2;\qquad w_2=(-1,0,1),\ b_2=-1.
+\]
+The head matrix $A\in\R^{3\times2}$ and bias $\beta\in\R^3$ are
+\[
+ A=\begin{pmatrix}1&-1\\-1&0\\2&-2\end{pmatrix},\qquad
+ \beta=(4,1,0)^\top.
+\]
+\paragraph{Derivation.}
+Filter~1 on the first old patch gives $1-2+3-2=0$; filter~2 gives
+$-1+3-1=1$. The position-wise feature vectors after ReLU are
+\[
+ H(X)=((0,1),(1,1),(2,1),(3,1)),\quad
+ H(X')=((2,1),(3,1),(4,1),(5,1)).
+\]
+Thus $m(X)=(3/2,1)$, $m(X')=(7/2,1)$ and the raw/normalized logits,
+identical here because preprocessing is identity, are
+\[
+ F(X)=(9/2,-1/2,1),\qquad F(X')=(13/2,-5/2,5).
+\]
+Both choose class~1; its margins change from $(5,7/2)$ to $(9,3/2)$.
+\paragraph{Why ECDR needs it.}
+The example verifies score ordering, feature alignment, GAP cancellation
+and opposite margin responses in a model whose every operation is visible.
+It illustrates a mechanism rather than demonstrating HAPT accuracy.
+\paragraph{Conditions and connections.}
+All values here are exact rational arithmetic. No training or data fit is
+claimed. One observed wave is not a region certificate; B28 varies it over
+a continuous box and proves the necessary signs.
+
+\concept{B28}{Certifying a continuous wave box in the miniature CNN}{B27, C03, C18--C19}
+\paragraph{Foundation and definition.}
+Replace B27's single wave by $U=(u,v)$ in the continuous region
+$\mathcal U=[6.5,7.5]\times[7.5,8.5]$. The old anchor and network remain
+fixed. Every new input is $X'=(3,4,5,6,u,v)$.
+\paragraph{Symbols and meaning.}
+$u,v\in\R$ are the two new samples; $\mathcal U$ is a set, not an
+assumed probability distribution. There are $n=4$ final positions;
+$D_{\rm new}\in\R^2$ sums the two new feature vectors.
+The two class~1 margins are $g_{12}$ and $g_{13}$, with competitors~2 and~3.
+\paragraph{Derivation.}
+The new tail preactivations are
+\[
+ V_2=(u-3,u-6),\qquad V_3=(4-u+v,v-7).
+\]
+Their coordinate lower bounds are $(3.5,0.5)$ and $(4,0.5)$, all positive.
+Thus post-ReLU features satisfy $H_2=V_2,H_3=V_3$ throughout the box,
+not just at its center.
+Summing symbolically gives
+\[
+ D_1=1+v,\quad D_2=u+v-13,\quad
+ g_{12}=5+\frac{15+v-u}{4},\quad g_{13}=\frac{u-1}{4}.
+\]
+$D_1,D_2$ are feature-sum coordinates. Optimizing these affine margins
+over the stated intervals yields $\min g_{12}=35/4$ and
+$\min g_{13}=11/8$, both positive. Every wave in the box preserves class~1.
+\paragraph{Why ECDR needs it.}
+This is an actual whole-domain argument without assuming independent or
+uniform samples. Keeping shared variables in the objective retains
+dependencies. Bounding tail positions independently gives the looser but
+still sound lower margins~8 and~7/8.
+\paragraph{Conditions and connections.}
+An affine objective's corner check can verify arithmetic only after stable
+ReLU branches and affine dependence are established. The proof is tied to
+the anchor's overlap; C24 shows why repeating the wave box at a new anchor
+without new evidence can fail.
+
+\concept{B29}{A Cartesian product region does not assert independence}{F24, F30, B12}
+\paragraph{Foundation and definition.}
+Geometry specifies permitted values; probability specifies how values are
+distributed. A finite-horizon wave region may be the Cartesian product
+\[
+ \mathcal V=\mathcal U_1\times\cdots\times\mathcal U_Q.
+\]
+\paragraph{Symbols and meaning.}
+$Q\ge1$ is the number of future steps, $\mathcal U_q\subseteq\R^{Cs}$
+is the admissible wave set at step $q$, $C$ is channels and $s$ is
+samples per wave. A member of $\mathcal V$ is a sequence
+$(U_1,\ldots,U_Q)$ with $U_q\in\mathcal U_q$. No probability measure
+is specified by this set notation.
+\paragraph{Derivation and example.}
+Let $Q=2$, $\mathcal U_1=\mathcal U_2=[-1,1]$, and random variables
+satisfy $U_2=U_1$ with $U_1$ uniform on $[-1,1]$. Their pair always
+belongs to the product square but lies only on its diagonal. The variables
+are dependent, while a proof that holds throughout the square also holds
+on that diagonal. Independence would be a factorization statement about
+joint probabilities, not a consequence of the square's shape.
+\paragraph{Why ECDR needs it.}
+Finite-horizon verification can use a product region without assuming that
+sensor waves are statistically independent. A dependent reachable set may
+be smaller and easier to certify, but its constraints need a justified
+membership or transition contract. A geometry that admits impossible
+sequences can still be sound as an overapproximation, though less useful.
+\paragraph{Conditions and connections.}
+A product domain by itself supplies no coverage probability and no
+guarantee that future waves remain inside it. Conversely, observed temporal
+correlation is not a deterministic constraint on every future wave.
+C25 combines transition geometry with induction; B12 handles joint events.
+
+\concept{B30}{Classification metrics describe a specified labeled population}{F09, F31--F32, B06, B15}
+\paragraph{Foundation and definition.}
+Prediction quality against true labels differs from reuse agreement with
+a reference. For a confusion matrix with true rows and predicted columns,
+consider
+\[
+ M=\begin{pmatrix}8&2\\1&9\end{pmatrix}.
+\]
+\paragraph{Symbols and meaning.}
+$M_{ij}$ counts examples truly in class $i$ and predicted as class $j$;
+$N=\sum_{i,j}M_{ij}=20$ is population size. For a class, TP means true
+positives, FP false positives and FN false negatives. Precision is
+$\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, recall is
+$\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, and
+\[
+ \mathrm{F1}=\frac{2\mathrm{TP}}{2\mathrm{TP}+\mathrm{FP}+\mathrm{FN}},
+ \qquad \mathrm{MacroF1}=K^{-1}\sum_{j=1}^{K}\mathrm{F1}_j.
+\]
+$K$ is the number of classes included in that average, not an adjustable
+denominator chosen after seeing results.
+\paragraph{Derivation and example.}
+Accuracy is $(8+9)/20=0.85$. Class1 has TP~8, FP~1, FN~2, so F1 is~16/19.
+Class2 has F1 $18/21=6/7$. Macro-F1 is
+$(16/19+6/7)/2=113/133\approx0.849624$, not exactly accuracy.
+Zero denominators need an explicit convention. Across seeds, mean and
+standard deviation are descriptive summaries; standard deviation alone
+is not a confidence interval or an independent test split.
+\paragraph{Why ECDR needs it.}
+A reference may misclassify a true activity while a reuse mechanism
+faithfully returns the same mistaken class. Accuracy, reference agreement,
+certified coverage and net runtime benefit therefore answer different
+questions. Filtering to pure K6 changes the labeled population relative
+to full K12 or the all-window stream.
+\paragraph{Conditions and connections.}
+Declare labels, class schema, policy, split, support and aggregation before
+interpreting a metric. Temporal dependence affects uncertainty estimates
+even when the arithmetic is correct. C28 gives separate denominators for
+certification and reuse.

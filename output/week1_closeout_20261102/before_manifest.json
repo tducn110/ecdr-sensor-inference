@@ -1,0 +1,239 @@
+{
+  "created_utc": "2026-11-02T11:31:28.925555+00:00",
+  "files": [
+    {
+      "path": "00_HOME.md",
+      "size": 7971,
+      "sha256": "c1e926a8b9e66d62f8f25c059fbe69b9b0b4d3b4e8d19a29aff8aeaff073c5d7",
+      "symlink": null
+    },
+    {
+      "path": "00_HOME_EN.md",
+      "size": 7024,
+      "sha256": "85877b32b8c732e8574b69b2b2f0756cbf288a3a96d804868926450f9256a750",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/01_PROJECT_BRIEF.md",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/02_Week_1_Project_Brief.pdf",
+      "size": 85293,
+      "sha256": "80c9ab8fe48bb7afc69acee1aaca3b695fcdd24725e54701a42fc2f4703689ec",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/02_Week_1_Project_Brief.tex",
+      "size": 18053,
+      "sha256": "3606f83133f5bc5d60e824839c2596142cfc9d2fcf9904b6f31bb89120230938",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/03_SUPP01_ECDR_Primer.pdf",
+      "size": 90821,
+      "sha256": "74d32ef1e04951cb6b829a595f9f213e4e520e925fda4e6ac4015909ea24acf4",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/03_SUPP01_ECDR_Primer.tex",
+      "size": 17371,
+      "sha256": "40fedd670034c2957150f1ba8cb14940049d3eb1d35e9dabef952aacfa839d36",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/04_00_START_HERE.md",
+      "size": 4682,
+      "sha256": "76dbd29d1697d1488c9a799cd4229c47cd3e632cac57b42bcfbc0009eb73daa8",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/05_01_RQ_GAP.md",
+      "size": 5560,
+      "sha256": "ececc5e7e8398ffdde57783fe9bcd4827ca005b72ae691e23d3b7b65d4018a7e",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/06_02_LITERATURE.md",
+      "size": 11553,
+      "sha256": "f76a30430f5cf79a1037ef93fc5f4269f6a6111bf74d1adce701a6713bd3ace9",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/07_05_READING_PLAN.md",
+      "size": 15363,
+      "sha256": "c5730c30f8710bc296b722906ed065b11902b17434fea409f39da9b785e4eeee",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/08_06_REVIEW_PROTOCOL.md",
+      "size": 10359,
+      "sha256": "74935737d65fc7ab51d4f41c9b93098776b97f43612db8819247ef0fb446ef08",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/09_TMB_BOARD.md",
+      "size": 13829,
+      "sha256": "f48b0054841a78ca904a27f944954ef03c5e15b274495709605a6d3cc55174e8",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/10_P04_NoScope_Notes.md",
+      "size": 2673,
+      "sha256": "20c150ea1c00efe4bb4d128f134fc32010e1e51f525aac870a2b48bf2e160d00",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/11_Review_Kickoff.md",
+      "size": 8329,
+      "sha256": "375cd229de5d7e2e48ade63221d8f5999e953ec7bf4cc630af79ca59fc15891b",
+      "symlink": null
+    },
+    {
+      "path": "00_OVERVIEW/README.md",
+      "size": 3044,
+      "sha256": "184b58347284e862b91309353150e269c440f5ce9d3d79e83b71fadb5f0b6b2a",
+      "symlink": null
+    },
+    {
+      "path": "00_START_HERE.md",
+      "size": 4682,
+      "sha256": "76dbd29d1697d1488c9a799cd4229c47cd3e632cac57b42bcfbc0009eb73daa8",
+      "symlink": null
+    },
+    {
+      "path": "01_RQ_GAP.md",
+      "size": 5560,
+      "sha256": "ececc5e7e8398ffdde57783fe9bcd4827ca005b72ae691e23d3b7b65d4018a7e",
+      "symlink": null
+    },
+    {
+      "path": "02_LITERATURE.md",
+      "size": 11553,
+      "sha256": "f76a30430f5cf79a1037ef93fc5f4269f6a6111bf74d1adce701a6713bd3ace9",
+      "symlink": null
+    },
+    {
+      "path": "04_SYNTHESIS/01_ECDR_Weeks_1_2_3_Theory_Full.pdf",
+      "size": 233177,
+      "sha256": "16ce289c49b1f3eaaa359ed398fead40073437f17dcf6313eea6332e3ec104cb",
+      "symlink": null
+    },
+    {
+      "path": "04_SYNTHESIS/01_ECDR_Weeks_1_2_3_Theory_Full.tex",
+      "size": 91661,
+      "sha256": "ce39afe980fa76d2344fb50f86c92312ac2da2411e2837b858fad681996af504",
+      "symlink": null
+    },
+    {
+      "path": "04_SYNTHESIS/09_presentation_app/src/components/Week1Section.tsx",
+      "size": 36329,
+      "sha256": "f35a7e72426ace097cad336b22fb283e8d70681ec618515299200144b16f45e2",
+      "symlink": null
+    },
+    {
+      "path": "05_READING_PLAN.md",
+      "size": 15363,
+      "sha256": "c5730c30f8710bc296b722906ed065b11902b17434fea409f39da9b785e4eeee",
+      "symlink": null
+    },
+    {
+      "path": "06_REVIEW_PROTOCOL.md",
+      "size": 10359,
+      "sha256": "74935737d65fc7ab51d4f41c9b93098776b97f43612db8819247ef0fb446ef08",
+      "symlink": null
+    },
+    {
+      "path": "G2_CLASS_DECISION.md",
+      "size": 9114,
+      "sha256": "aa3dffb1af1dae6e2bce2d437d612ea4f0b698a4e4c46ea6ca2834e40061ed06",
+      "symlink": null
+    },
+    {
+      "path": "GATES.md",
+      "size": 7060,
+      "sha256": "18486a89fd8ae3a13df955913690c87c4a59e84c905a2f7927dd372544ba127c",
+      "symlink": null
+    },
+    {
+      "path": "GATES_EN.md",
+      "size": 6019,
+      "sha256": "a917c5a85b811b520a94445fca69a25eabbfc6ca7a315ec82a4da4cc36beafba",
+      "symlink": null
+    },
+    {
+      "path": "PROJECT_BRIEF.md",
+      "size": 29399,
+      "sha256": "6b33e8ca2abd7c865f207af012d2c1a4d81e4987c6c6d5a9ae1bc5ff803be3a9",
+      "symlink": null
+    },
+    {
+      "path": "PROJECT_BRIEF_EN.md",
+      "size": 41571,
+      "sha256": "4983facf3404bdfd7319dcb50f1bb7666e1574f560d3a0801a80e3a4a1499acb",
+      "symlink": null
+    },
+    {
+      "path": "README.md",
+      "size": 34951,
+      "sha256": "40a62ca0bfb8aac1f0c5f31591cc8593416e51549129f40632425823027ff148",
+      "symlink": null
+    },
+    {
+      "path": "TMB.md",
+      "size": 13829,
+      "sha256": "f48b0054841a78ca904a27f944954ef03c5e15b274495709605a6d3cc55174e8",
+      "symlink": null
+    },
+    {
+      "path": "me/ECDR_Weeks_1_2_3_Theory.pdf",
+      "size": 233177,
+      "sha256": "16ce289c49b1f3eaaa359ed398fead40073437f17dcf6313eea6332e3ec104cb",
+      "symlink": null
+    },
+    {
+      "path": "me/ECDR_Weeks_1_2_3_Theory.tex",
+      "size": 91661,
+      "sha256": "ce39afe980fa76d2344fb50f86c92312ac2da2411e2837b858fad681996af504",
+      "symlink": null
+    },
+    {
+      "path": "me/Week_1_Project_Brief.pdf",
+      "size": 85293,
+      "sha256": "80c9ab8fe48bb7afc69acee1aaca3b695fcdd24725e54701a42fc2f4703689ec",
+      "symlink": null
+    },
+    {
+      "path": "me/Week_1_Project_Brief.tex",
+      "size": 18053,
+      "sha256": "3606f83133f5bc5d60e824839c2596142cfc9d2fcf9904b6f31bb89120230938",
+      "symlink": null
+    },
+    {
+      "path": "me/build.sh",
+      "size": 418,
+      "sha256": "335060c2e29a8cde0c5982da4fb978a0b34d19ad06dafbf45117744cd4564510",
+      "symlink": null
+    },
+    {
+      "path": "me/build_sources.py",
+      "size": 2786,
+      "sha256": "8672dbb4cd8f36781785ef21dcfbd8bd835ac0d62cc8bfaf9c5ac633d4bbd967",
+      "symlink": null
+    },
+    {
+      "path": "me/verify_artifacts.py",
+      "size": 5269,
+      "sha256": "3f470d9c38ed5329c7174dba5edad9010c9fa080a5d95e63a55b14370b18dd99",
+      "symlink": null
+    },
+    {
+      "path": "web/present/src/components/Week1Section.tsx",
+      "size": 36329,
+      "sha256": "f35a7e72426ace097cad336b22fb283e8d70681ec618515299200144b16f45e2",
+      "symlink": null
+    }
+  ]
+}

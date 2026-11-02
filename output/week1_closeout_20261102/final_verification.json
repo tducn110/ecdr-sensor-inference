@@ -1,0 +1,173 @@
+{
+  "timestamp_utc": "2026-11-02T14:50:04.692308+00:00",
+  "status": "VERIFIED_WEEK1_CLOSEOUT",
+  "user_accepted": false,
+  "workspace": "/home/pro/Downloads/research",
+  "branch": "main",
+  "git_head": "35d9bd446dc997df6e73cc8956a2d4a1e1c2bfdd",
+  "canonical_editable_source": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.tex",
+  "run_id": "week1_ref_1793620216_9d6c1d85",
+  "scope": "English Week 1 project brief, frozen exploratory SmallCNN1D K=12 reference and reproducibility package. Not a formal ECDR certificate or quality-gate promotion.",
+  "root_structure_checks": {
+    "single_marker_pair": true,
+    "standalone_single_document_and_body": true,
+    "confusion_rows_and_columns_labeled_1_to_12": true,
+    "native_confusion_matrix_equals_selected_evaluation": true,
+    "confusion_total": 3572,
+    "generated_body_matches": true,
+    "combined_physical_source_copy_matches": true
+  },
+  "execution_checks": {
+    "pipeline_all_exit_code": 0,
+    "internal_passed": 17,
+    "independent_passed": 65,
+    "independent_failed": 0,
+    "independent_direct_python_exit_code": 0,
+    "verifier_synthetic_fixtures_passed": 12,
+    "legacy_regression_passed": 60,
+    "legacy_regression_scope": "Historical ECDR regression, not a certificate for the new Week 1 reference."
+  },
+  "document_checks": {
+    "selected_verifier_exit_code": 0,
+    "receipt": "/home/pro/Downloads/research/output/week1_closeout_20261102/document_checks.json",
+    "desktop_canonical_compiler": "SUCCESS",
+    "shell_canonical_compile_exit_code": 0,
+    "shell_combined_compile_exit_code": 0,
+    "canonical_pages": 11,
+    "combined_pages": 36,
+    "overfull_boxes": 0,
+    "undefined_citations_or_references": false,
+    "nonfatal_warnings": "Underfull boxes and bundled font-path warnings remain; final rendered pages were inspected."
+  },
+  "visual_review": {
+    "canonical_all_11_pages_contact_review": "PASS",
+    "canonical_detail_pages": [
+      5,
+      6,
+      10,
+      11
+    ],
+    "combined_all_36_pages_contact_review": "PASS",
+    "overlap_or_clipping_observed": false,
+    "unresolved_glyphs_observed_in_current_week1": false,
+    "standalone_bibliography_contiguous": true
+  },
+  "navigation": {
+    "checked_documents": 27,
+    "broken_relative_links": 0,
+    "receipt": "/home/pro/Downloads/research/output/week1_closeout_20261102/navigation_link_audit.md"
+  },
+  "historical_preservation": {
+    "week_2_authored_block": {
+      "unchanged": true,
+      "sha256": "42cb51374336f08af6c49e0a10efd7971624929681cbe381294f074cc91d5124"
+    },
+    "week_3_authored_block": {
+      "unchanged": true,
+      "sha256": "c169b5bd12bd916f8c343264914b5f261c0dec37d0d9eff68dbd8a2e82a624a1"
+    }
+  },
+  "pdf_and_log_aliases": {
+    "me/Week_1_Project_Brief.pdf": {
+      "target": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.pdf",
+      "sha256": "7208b9e80e7b22e77d3be3aeb6cef727aced106132078bc1e629d1d5419f1f0d"
+    },
+    "me/Week_1_Project_Brief.log": {
+      "target": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.log",
+      "sha256": "9357b5709aa6df87deb8be5af3ec5dca0f499341e7811ffdb7a1e16a2f05afe8"
+    },
+    "PDF_LIBRARY/01_Week_1_Project_Brief.pdf": {
+      "target": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.pdf",
+      "sha256": "7208b9e80e7b22e77d3be3aeb6cef727aced106132078bc1e629d1d5419f1f0d"
+    },
+    "PDF_LIBRARY/16_ECDR_Weeks_1_2_3_Theory_Full.pdf": {
+      "target": "/home/pro/Downloads/research/me/ECDR_Weeks_1_2_3_Theory.pdf",
+      "sha256": "7965cc56c09acde3f1a8eac946e9ef6f0c973ee06eb7f91173d31b1aad072510"
+    },
+    "04_SYNTHESIS/01_ECDR_Weeks_1_2_3_Theory_Full.pdf": {
+      "target": "/home/pro/Downloads/research/me/ECDR_Weeks_1_2_3_Theory.pdf",
+      "sha256": "7965cc56c09acde3f1a8eac946e9ef6f0c973ee06eb7f91173d31b1aad072510"
+    },
+    "output/week1_closeout_20261102/02_Week_1_Project_Brief.pdf": {
+      "target": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.pdf",
+      "sha256": "7208b9e80e7b22e77d3be3aeb6cef727aced106132078bc1e629d1d5419f1f0d"
+    },
+    "output/week1_closeout_20261102/02_Week_1_Project_Brief.log": {
+      "target": "/home/pro/Downloads/research/00_OVERVIEW/02_Week_1_Project_Brief.log",
+      "sha256": "9357b5709aa6df87deb8be5af3ec5dca0f499341e7811ffdb7a1e16a2f05afe8"
+    }
+  },
+  "accepted_cleanup_paths_still_absent": [
+    "web",
+    "04_SYNTHESIS/09_presentation_app",
+    "tiers/00_overview/02_Week_1_Project_Brief.tex",
+    "tiers/latex_sources/Week_1_Project_Brief.tex"
+  ],
+  "drafts_preserved": "/home/pro/Downloads/research/output/week1_closeout_20261102/drafts",
+  "terminal": {
+    "root_owned_exec_session_id": 94879,
+    "history_conversation": "241c4364-6c66-4975-964a-99d1b1e59721",
+    "model": "gemini-3.8-flash-medium",
+    "effort": "medium",
+    "live_banner_verified": true,
+    "open_in_codex_status": "queued",
+    "visible_panel_confirmed": false
+  },
+  "limitations": [
+    "Transition support remains insufficient for G2 quality promotion.",
+    "Raw annotation index-origin caveat retained; alternate one-sample convention changes 98 window assignments.",
+    "No actual ECDR certificate runtime or strict decision-preservation experiment for this new reference.",
+    "No ECDR end-to-end net-cost saving established.",
+    "Historical Week 2/3 authored sections are unchanged and are not current SmallCNN1D certification."
+  ],
+  "files_sha256": {
+    "00_OVERVIEW/02_Week_1_Project_Brief.pdf": "7208b9e80e7b22e77d3be3aeb6cef727aced106132078bc1e629d1d5419f1f0d",
+    "00_OVERVIEW/02_Week_1_Project_Brief.tex": "5728770e7f697549f8ebc12a41840581491322082b8409a9889e8bc2bb905187",
+    "00_OVERVIEW/week1/CLOSEOUT.md": "180eda7448fcbaaef54af6cc6bbe12ba16f7339cb7a82618c16f3c580f6fb122",
+    "00_OVERVIEW/week1/EVIDENCE_REGISTER.md": "ff677106f63f8df79799b99d62e1f3d719c0faf896dfb272c99dc921ab509022",
+    "00_OVERVIEW/week1/HYPOTHESES.md": "04172f9748d8fc0c96512297baae5b2062bfc04decc8202bd15d54a8d5890c19",
+    "00_OVERVIEW/week1/REQUIREMENTS.md": "2cbf693253be2aefdf8feffaa13523e491602fc98ef93c09253cd9b5a20565eb",
+    "00_OVERVIEW/week1/SOURCE_OF_TRUTH.md": "730209d8fa4ab99c4e195e237be5251db49a18f996a3f53daf5c8fc453d9c925",
+    "00_OVERVIEW/week1/brief_body.tex": "9ba15bc0fee3df5699a9ffccc057992d6e25d4e068b24d9aa1f8ffc9ea75485a",
+    "me/ECDR_Weeks_1_2_3_Theory.pdf": "7965cc56c09acde3f1a8eac946e9ef6f0c973ee06eb7f91173d31b1aad072510",
+    "me/ECDR_Weeks_1_2_3_Theory.tex": "2352622fc15e5733bbee0170c2cb859a9f7c03c0c491175a0f8e3abbd733aa00",
+    "me/build.sh": "aa3bada937463e2d8a543162420d145cd4c05420ee782fcd84a8da8e8587ece8",
+    "me/build_sources.py": "b5918e7ac8a3e76eeabc42a578f862a563d9908b85ae88ca0a834d0e904f8761",
+    "me/verify_artifacts.py": "4767d9139eebe996b9a1fc072c92a043e316f483807acb127b1de346884b04a4",
+    "output/week1_closeout_20261102/document_checks.json": "9f2c5f5be91944d47449d546a68aa5de375e74b2c4e2034c2498dc4fcf3c7a4b",
+    "output/week1_closeout_20261102/orchestration/orchestration_receipt.json": "8c626a11b0564d0bcbcbc8b287bb296a4d82aec84fde19fb306c208c2911ffa4",
+    "output/week1_closeout_20261102/reference/audit_receipt.json": "dfec202aad289ac6742d58e561036715e4d813699507e7b4b98f58de5da78a05",
+    "output/week1_closeout_20261102/reference/checkpoint_seed_42.pt": "7e896db62c302121873388612acb583aed76128871580cf764ab44aba5b50661",
+    "output/week1_closeout_20261102/reference/checkpoint_seed_43.pt": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "output/week1_closeout_20261102/reference/checkpoint_seed_44.pt": "b2f857e38d17535c2c32d78bbab8037b4a4da5f906c8517b0eb676a3d64ac89f",
+    "output/week1_closeout_20261102/reference/config.json": "da82b2b4652856d6bccf9652fa0b24861e22800125d6ad52bf535c76a9893a40",
+    "output/week1_closeout_20261102/reference/eval_receipt.json": "6a08adeee75edd179c58ef544949f3dad4be0274593f7d23ca90d32a60e4652c",
+    "output/week1_closeout_20261102/reference/evaluation_results.json": "01c764f8072d9b6780d9ee47bd301860e2ef1982789afd8cddbe55176853f709",
+    "output/week1_closeout_20261102/reference/history_seed_42.json": "3b79efd58c34f10b700ff9aa39bf3b7f9e8c7358f822c387aa7b8e68bea0b3ed",
+    "output/week1_closeout_20261102/reference/history_seed_43.json": "cd1d13391d273fa4f46cecb348fb942b3013278fbd4006d2c93355b638db83a4",
+    "output/week1_closeout_20261102/reference/history_seed_44.json": "0cae7bca966c7772103a36d4351f5ae49a5cd679deb97bfa654dd304e70deb4f",
+    "output/week1_closeout_20261102/reference/independent_verification.json": "b85611edf50b9515dba9944f4480b8485b8ede6605b8be5f505998fb5ad1fedd",
+    "output/week1_closeout_20261102/reference/independent_verification_csv_fail.json": "2a38e5d34b6de1728da0ccb55230b82d56d8b55fd4f5ba6d97cda761a3de2711",
+    "output/week1_closeout_20261102/reference/independent_verification_schema_fail.json": "dfcf0c370fd1c4495baa75f6a5a077f16e159cdbc81e200c75fce66f4b1184db",
+    "output/week1_closeout_20261102/reference/normalization.json": "efb67fba16806cdbc0d3abcf5cdfe47824eefb50b827a36c0551d1810f326961",
+    "output/week1_closeout_20261102/reference/normalization.npz": "4c28d81c5ecc532057897002a595713a787faee0b39a4a7a1ba53d9a9286c622",
+    "output/week1_closeout_20261102/reference/provenance_audit.json": "62bc74be944e3e98f53187f1f8c6cb1a70df4c19ae9acbce02fad6cd8d38ec0e",
+    "output/week1_closeout_20261102/reference/selected_best.pt": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "output/week1_closeout_20261102/reference/selection.json": "e888b7ddd6bee230a6141dd5ab0192b11105cdf84750a1dc345bcf44424c0bbb",
+    "output/week1_closeout_20261102/reference/test_predictions.npz": "1c5206f91e6bfb7c9f307972ed8d829fd35165a8dca0a65302517ec6288fa9fe",
+    "output/week1_closeout_20261102/reference/test_predictions_manifest.csv": "1209ba118d552f6bbf99010f61d56482161d44695e0630a990d66c94a4b0fca3",
+    "output/week1_closeout_20261102/reference/test_predictions_seed_42.npz": "e554bd8b391cdb4ef93d184072327a30907ddbbb59cb3cea86d8d55779745487",
+    "output/week1_closeout_20261102/reference/test_predictions_seed_43.npz": "57171e3ca21c4881a545f22bbb40a85dd4b91f016b71f0ed1e814316e9e0569e",
+    "output/week1_closeout_20261102/reference/test_predictions_seed_44.npz": "50d68877527e54fe612c177837bbb619fd7d03634d50472f269c0b0ec7d0dac0",
+    "output/week1_closeout_20261102/reference/train_receipt.json": "8e78ff017e061895580cac8a375bc8d4241e1f76d6a724dc8517019fdc90ba02",
+    "output/week1_closeout_20261102/reference/verification_receipt.json": "d499fee00c28888211eb49c904b9af0b8132c36f446abf9cfd9e6281b25669ee",
+    "scripts/week1_independent_verify.py": "e88f3a7fbd90947a79782228fa5b0bf959ec406ef981b8349e47ac09a1214e58",
+    "scripts/week1_reference_pipeline.py": "1ef93101f658f8a18ebf19f0c8743ec5311ffe94933aee3505be6ec29a0be4d6",
+    "output/week1_closeout_20261102/README.md": "58989007d27aa181e71a8f13d9b84c7d65e7ae17bc0efc319dfbd590778e6dd9",
+    "output/week1_closeout_20261102/integration_inventory.md": "379c24c7cee0e4a1402885ab5e97cae72b3bb55c162e2a3ec88976e983ac454e",
+    "output/week1_closeout_20261102/navigation_link_audit.md": "5cf9ce21a7643493c1c0dc01b0b906f257090f665360354a872d681c3ec8405d",
+    "output/week1_closeout_20261102/existing_regression.log": "0df603512791d59c46b788cb300fd10e5fc1447ca7f9bd16d69aca2d05eb2294",
+    "output/week1_closeout_20261102/canonical_compile.log": "5c2162ab1679c16f2779c800c5a7006489d1a1d63d221bf39b04443282ad5200",
+    "output/week1_closeout_20261102/combined_compile.log": "c88fb1c75c0a9a8a455729d75a9d567eaacab9de34b3d72955282422a37e852b"
+  }
+}

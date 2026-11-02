@@ -1,0 +1,306 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,longtable,tabularx,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
+\geometry{left=2.25cm,right=2.25cm,top=2.3cm,bottom=2.3cm,headheight=15pt}
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\definecolor{pale}{HTML}{E8F2F2}
+\hypersetup{colorlinks=true,linkcolor=ink,citecolor=teal,urlcolor=teal,
+ pdftitle={Week 1: Project Brief và nền tảng nghiên cứu},
+ pdfauthor={ECDR Research}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlist{nosep,leftmargin=1.5em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\vecop}{\operatorname{vec}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\ind}{\mathbf 1}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Sset}{\mathcal S}
+\newcommand{\Uset}{\mathcal U}
+\newtheorem{definition}{Định nghĩa}[section]
+\newtheorem{theorem}[definition]{Định lý}
+\newtheorem{proposition}[definition]{Mệnh đề}
+\newtheorem{lemma}[definition]{Bổ đề}
+\newtheorem{corollary}[definition]{Hệ quả}
+\theoremstyle{remark}
+\newtheorem{example}[definition]{Ví dụ}
+\newtheorem{remark}[definition]{Nhận xét}
+\renewcommand{\proofname}{Chứng minh}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{ECDR | Cơ sở nghiên cứu và lý thuyết}}
+\fancyhead[R]{\small Week 1}
+\fancyfoot[L]{\small 28/10/2026}
+\fancyfoot[R]{\thepage}
+\begin{document}
+\title{\textcolor{ink}{ECDR}\\[5pt]\Large Week 1: Project Brief và nền tảng nghiên cứu}
+\author{Báo cáo nghiên cứu lý thuyết}
+\date{28 tháng 10 năm 2026}
+\maketitle
+\noindent Bản tuần độc lập, trích từ báo cáo tổng hợp. Scope: lý thuyết mới
+theo brief của người nghiên cứu; không dùng implementation cũ làm nguồn
+định nghĩa phương pháp. Các tính toán minh họa không phải benchmark.
+\tableofcontents
+\clearpage
+\part{Week 1 --- Project Brief và nền tảng nghiên cứu}
+\section{Project brief}
+\subsection{Bối cảnh và vấn đề nghiên cứu}
+Một thiết bị nhận chuỗi cảm biến liên tục, cắt thành các cửa sổ $X_t$ rồi
+chạy classifier $f_\theta$ cho từng cửa sổ. Hai cửa sổ có thể chứa nhiều mẫu
+chung nhưng baseline vẫn đánh giá đầy đủ mô hình. Điều này đặt ra cơ hội
+nghiên cứu: liệu một điều kiện kiểm tra đơn giản có thể xác định rằng quyết
+định hiện tại đã được bao hàm bởi một chứng nhận trước đó?
+
+Gọi $\mathcal P$ là preprocessing cố định và
+\begin{equation}
+ F=f_\theta\circ\mathcal P:\R^{C\times W}\longrightarrow\R^K,
+ \qquad h(X)=\arg\max_{1\le k\le K}F_k(X).
+ \label{eq:reference}
+\end{equation}
+Ở đây, $X\in\R^{C\times W}$ là cửa sổ tín hiệu thô có $C=6$ kênh (3 trục gia tốc kế $a_x,a_y,a_z$ đo bằng $g$ và 3 trục con quay hồi chuyển $g_x,g_y,g_z$ đo bằng $\text{rad/s}$) với độ rộng $W=128$ mẫu (tương đương $2{,}56\text{ s}$ ở tần số $50\text{ Hz}$). Ánh xạ $\mathcal P$ là phép tiền xử lý chuẩn hóa z-score cố định từng kênh $Z_{c,i}=\mathcal P(X)_{c,i}=(X_{c,i}-\mu_c)/\sigma_c$, với các tham số thống kê $\mu_c,\sigma_c$ được đóng băng hoàn toàn từ tập huấn luyện (training split). Tính chất \emph{cố định} (fixed) của $\mathcal P$ là điều kiện bắt buộc tiên quyết: nếu preprocessing bị thay đổi động giữa các cửa sổ (chẳng hạn như chuẩn hóa min-max cục bộ theo từng cửa sổ hay trung bình động streaming), ánh xạ tham chiếu $F$ sẽ bị dịch chuyển và chứng chỉ an toàn $\Sset_r$ xây dựng tại anchor sẽ bị vô hiệu hóa. Bộ phân loại $f_\theta$ là mạng nơ-ron sâu (mô hình SmallCNN1D) nhận tensor chuẩn hóa không thứ nguyên $Z=\mathcal P(X)\in\R^{C\times W}$ và xuất ra vector logits $K$ chiều ($K=6$ hoặc $K=12$). Toàn bộ chuỗi suy luận tham chiếu $F=f_\theta\circ\mathcal P$ ánh xạ trực tiếp từ tín hiệu vật lý thô $X$ sang logits, và $h(X)$ là quyết định lớp có logit lớn nhất. Quy tắc xử lý tie
+phải cố định. Để đơn giản và bảo thủ, certificate trong báo cáo chỉ nhận
+trường hợp lớp thắng duy nhất. Một \emph{trusted anchor} $X^r$ là cửa sổ đã
+thực sự được đánh giá bởi reference, với $c=h(X^r)$.
+
+\textbf{Problem statement.} Xây dựng một họ miền $\Sset_r$ và cơ chế kiểm tra
+sao cho mọi query được chấp nhận thỏa
+\begin{equation}
+ X\in\Sset_r\quad\Longrightarrow\quad h(X)=h(X^r)=c,
+ \label{eq:target}
+\end{equation}
+đồng thời xác định các điều kiện để chi phí xây dựng, kiểm tra và duy trì
+certificate có thể được bù bởi các lần tránh chạy reference.
+
+Mục tiêu đúng đắn là bảo toàn \emph{quyết định reference}. Nếu reference
+phân loại sai ground truth, ECDR vẫn có thể bảo toàn quyết định sai đó. Trả
+lại lớp $c$ cũng không đồng nghĩa tái tạo logits, xác suất softmax hoặc độ
+tin cậy của query.
+
+\subsection{Mục tiêu, đầu vào, đầu ra và ranh giới}
+\begin{table}[!htbp]\centering
+\caption{Project brief chuẩn hóa.}
+\begin{tabularx}{\linewidth}{@{}p{2.5cm}Y@{}}\toprule
+Thành phần & Đặc tả\\\midrule
+O1: correctness & Chấp nhận reuse chỉ khi certificate hợp lệ và query thuộc
+đúng miền đã chứng nhận.\\
+O2: hiệu quả & Suy ra điều kiện hòa vốn; sau này kiểm bằng runtime đầy đủ.\\
+O3: đối chiếu & So sánh guarantee, hình học miền và cost với các baseline;
+LipCache là một đối chiếu cần kiểm đúng mô hình được chứng nhận.\\
+Input & Chuỗi đa kênh có recording/subject/time identity, reference cố định,
+anchor và candidate domain.\\
+Output & Lớp reference hoặc fallback; certificate record có giả thiết và miền.\\
+Phạm vi lý thuyết & Định nghĩa data, dịch cửa sổ, bounds, soundness, lifecycle,
+membership và chi phí.\\
+Giới hạn & Chưa chứng minh coverage hữu ích, tốc độ trên HAPT, superiority
+so với LipCache hoặc độ chính xác của CNN 12 lớp.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Câu hỏi nghiên cứu}
+\begin{enumerate}[label=RQ\arabic*.]
+\item Dữ liệu cửa sổ có cấu trúc xác định nào có thể dùng để giảm bài toán
+chứng nhận, và cấu trúc nào chỉ là giả thuyết thống kê?
+\item Với một reference và một candidate domain, điều kiện đủ nào bảo toàn
+quyết định trên toàn miền?
+\item Miền căn chỉnh theo thời gian hoặc theo event có thể tăng xác suất
+query được chứng nhận so với miền đồng nhất hay không?
+\item Certificate có thể dùng nhiều bước mà không làm sai identity/state
+hay không, và cần mang theo thông tin nào?
+\item Những mức hit, overhead, rebuild và horizon nào cho lợi ích chi phí?
+\end{enumerate}
+RQ1--RQ2 có thành phần chứng minh được từ mô hình toán. RQ3 và lợi ích thực
+tế của RQ5 cần thí nghiệm. RQ4 có thể giải quyết soundness bằng quy tắc đủ
+bảo thủ, nhưng usefulness của quy tắc đó vẫn là câu hỏi thực nghiệm.
+
+\section{Thuật ngữ và cấu trúc của một chứng nhận}
+\begin{definition}[Window, event, region và certificate]
+Window là một ma trận quan sát $X\in\R^{C\times W}$. Event descriptor $e$
+là thông tin dùng chọn một họ miền hoặc budget. Region $\Sset_r$ là tập
+các đầu vào khả dĩ, không phải một đoạn thời gian. Certificate là bằng
+chứng cho thuộc tính của $F$ trên toàn tập đó, kèm model/preprocessing/domain
+identity và các giả thiết số học.
+\end{definition}
+Ví dụ, ``biến thiên thấp'' có thể chọn box hẹp hơn. Tên event đúng không
+thay thế chứng nhận. Event được chọn sai vẫn an toàn nếu miền thực sự đã
+được chứng nhận và query thật sự thuộc miền; tác động khi đó chủ yếu lên
+coverage hoặc chi phí.
+
+Ba tầng cần đi đúng thứ tự là
+\begin{equation}
+\underbrace{\text{candidate geometry}}_{\text{đề xuất tập}}
+\longrightarrow
+\underbrace{\text{whole-domain bound}}_{\text{chứng minh thuộc tính}}
+\longrightarrow
+\underbrace{\text{query membership}}_{\text{áp dụng cho điểm hiện tại}}.
+\end{equation}
+Một box có thể kiểm membership rất nhanh nhưng không giữ quyết định.
+Một certificate đúng có thể chỉ bao phủ anchor. Một miền có nhiều query
+có thể yêu cầu bound rất đắt. Do đó ba tầng không thể thay thế nhau.
+
+\section{Literature và định vị giả thuyết đóng góp}
+\subsection{Các nền tảng được kế thừa}
+Lipschitz--margin liên hệ biên độ biến thiên đầu ra với khoảng cách đến
+biên quyết định \cite{lmt}. IBP lan truyền interval qua các phép toán để
+bao đầu ra \cite{ibp}. CROWN xây dựng các relaxation để thu được cận hợp lệ
+\cite{crown}; auto-LiRPA mở rộng cách tính cận trên computational graph
+\cite{lirpa}. Các cơ chế này là nền tảng kế thừa, không phải định lý mới của
+ECDR. Phần chứng minh trong Week 3 trình bày các phiên bản đủ dùng và chỉ rõ
+điều kiện áp dụng.
+
+StreamiNNC nghiên cứu tái sử dụng activation khi CNN xử lý cửa sổ chồng
+lấn, đồng thời phân tích khó khăn của padding và pooling \cite{streaminnc}.
+TinyD\'ej\`aVu nghiên cứu tính tăng dần và bộ nhớ trên sensor streams/MCU
+\cite{tiny}. Hai công trình làm cho claim ``đầu tiên khai thác overlap của
+CNN'' không có cơ sở. Quy tắc exact cho CNN valid trong báo cáo là một
+chuyên biệt hóa tự suy ra, không phải tuyên bố phát minh reuse activation.
+
+LipCache là đối chiếu về certified caching \cite{lipcache}. Theo phạm vi
+của paper, certificate nằm ở phía GuardNet; bảo toàn MainNet là một nghĩa
+khác và không được tự suy ra. Vì thế bảng so sánh phải ghi \emph{model nào}
+được bảo đảm và \emph{payload nào} được trả. Không thể chuyển một con số
+speedup trên ảnh của paper thành tốc độ trên HAPT.
+
+\begin{table}[!htbp]\centering\small
+\caption{So sánh theo đối tượng và bảo đảm; chưa phải bảng benchmark.}
+\begin{tabularx}{\linewidth}{@{}p{2.25cm}YYY@{}}\toprule
+Hướng & Đối tượng chính & Điều được cung cấp & Vai trò với ECDR\\\midrule
+Full CNN & Mỗi window & Quyết định reference sau forward & Baseline kết quả/cost\\
+Heuristic reuse & Similarity/confidence & Quy tắc thực nghiệm; tự nó không là
+whole-domain proof & Negative control\\
+StreamiNNC & Streaming activations & Cơ chế giảm tính trùng; cần xử lý biên
+và alignment & Prior art overlap\\
+TinyD\'ej\`aVu & Incremental sensor inference & Cơ chế streaming và bộ nhớ
+trong thiết lập paper & Prior art systems\\
+LipCache & GuardNet/cache & Certificate theo phạm vi GuardNet paper & Đối
+chiếu cache semantics\\
+Lipschitz / IBP / CROWN & Mạng và miền perturbation & Cận có điều kiện trên miền
+được khai báo & Machinery cho proof\\
+ECDR đề xuất & Quyết định frozen reference & Reuse khi bound và membership
+đúng; usefulness còn mở & Câu hỏi nghiên cứu\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Research gap được phát biểu có thể kiểm tra}
+Giả thuyết đóng góp là kết hợp cấu trúc cửa sổ với chứng nhận quyết định
+reference và một policy có cost đủ thấp. Để claim này đứng được, cần chứng
+minh đồng thời: miền được định nghĩa đúng với data; bound sound trên miền;
+runtime membership đúng; lifecycle không làm drift certificate; và tổng
+chi phí thấp hơn baseline trong một operating regime được công bố.
+Hiện chưa có bằng chứng cho claim ``ECDR mới hoàn toàn'', ``luôn nhanh hơn''
+hoặc ``tốt hơn LipCache''. Bảng trên là targeted related work, không được
+gọi là systematic review đầy đủ.
+
+\section{Kế hoạch nghiên cứu theo ba tuần}
+\begin{table}[!htbp]\centering
+\caption{Câu hỏi, đầu ra và tiêu chí hoàn thành về nội dung.}
+\begin{tabularx}{\linewidth}{@{}p{1.35cm}YYY@{}}\toprule
+Tuần & Câu hỏi & Đầu ra & Điều kiện hoàn thành\\\midrule
+Week 1 & Nghiên cứu cái gì và bảo đảm gì? & Brief, RQ, thuật ngữ, prior work,
+gap, constraints & Phân biệt decision preservation, task accuracy và cost\\
+Week 2 & Input thật sự là gì, liên quan thế nào? & Data contract, window/label,
+normalization, shift, complexity & Truy được mỗi biến toán về đối tượng dữ liệu\\
+Week 3 & Khi nào reuse đúng và hữu ích? & Contract, proofs, counterexamples,
+miền có cấu trúc, amortization, hypotheses & Mỗi claim có giả thiết, lập luận
+và phần chưa chứng minh\\\bottomrule
+\end{tabularx}
+\end{table}
+Đây là cấu trúc trình bày nghiên cứu theo bản chuẩn hóa mới của người nghiên
+cứu, không phải lịch thực nghiệm được phục dựng từ timestamp. Hoàn thành
+báo cáo lý thuyết không tự hoàn thành verifier hoặc đo runtime.
+
+\textbf{Kết quả Week 1.} Bài toán đã được đóng thành một thuộc tính kiểm
+chứng được trên reference cố định, một mục tiêu chi phí riêng và năm RQ.
+Week 2 phải xác định cấu trúc dữ liệu đủ chặt để Week 3 không xây proof trên
+một biểu diễn hoặc preprocessing không tồn tại.
+
+\section*{Nguồn và cách tái kiểm}
+Nội dung theo bản chuẩn hóa Week 1--3 do người nghiên cứu cung cấp và các
+nguồn gốc trong bibliography. Các số data mô tả snapshot local theo policy
+đã ghi; mô hình lý thuyết không phải checkpoint triển khai cũ. Báo cáo tổng
+hợp trong cùng thư mục có đầy đủ bảng ký hiệu, provenance và các tuần còn
+lại. Phép tính số học được lưu trong \code{recompute.py} và
+\code{calculations.json}. Không có training hoặc benchmark ECDR mới.
+
+\begingroup\small
+\begin{thebibliography}{99}
+\bibitem{hapt} J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra.
+\emph{Smartphone-Based Recognition of Human Activities and Postural
+Transitions}. UCI Machine Learning Repository, 2015.
+DOI: \href{https://doi.org/10.24432/C54G7M}{10.24432/C54G7M}.
+Metadata và README local được đối chiếu ngày 28/10/2026.
+
+\bibitem{lmt} Y. Tsuzuku, I. Sato, M. Sugiyama.
+\emph{Lipschitz-Margin Training: Scalable Certification of Perturbation
+Invariance for Deep Neural Networks}. NeurIPS, 2018.
+\url{https://arxiv.org/abs/1802.04034}.
+
+\bibitem{ibp} S. Gowal et al.
+\emph{On the Effectiveness of Interval Bound Propagation for Training
+Verifiably Robust Models}. arXiv:1810.12715, 2018.
+\url{https://arxiv.org/abs/1810.12715}.
+
+\bibitem{crown} H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel.
+\emph{Efficient Neural Network Robustness Certification with General
+Activation Functions}. NeurIPS, 2018.
+\url{https://arxiv.org/abs/1811.00866}.
+
+\bibitem{lirpa} K. Xu et al.
+\emph{Automatic Perturbation Analysis for Scalable Certified Robustness
+and Beyond}. NeurIPS, 2020.
+\url{https://arxiv.org/abs/2002.12920}.
+
+\bibitem{crownibp} H. Zhang et al.
+\emph{Towards Stable and Efficient Training of Verifiably Robust Neural
+Networks}. NeurIPS, 2019.
+\url{https://arxiv.org/abs/1906.06316}.
+
+\bibitem{betacrown} S. Wang et al.
+\emph{Beta-CROWN: Efficient Bound Propagation with Per-neuron Split
+Constraints for Neural Network Robustness Verification}. NeurIPS, 2021.
+\url{https://papers.neurips.cc/paper_files/paper/2021/hash/fac7fead96dafceaf80c1daffeae82a4-Abstract.html}.
+
+\bibitem{montufar} G. Mont\'ufar, R. Pascanu, K. Cho, Y. Bengio.
+\emph{On the Number of Linear Regions of Deep Neural Networks}.
+NeurIPS, 2014.
+\url{https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a92d96e74617c3d2a-Abstract.html}.
+
+\bibitem{streaminnc} C. Kechris, J. Dan, J. Miranda, D. Atienza.
+\emph{Don't Think It Twice: Exploit Shift Invariance for Efficient Online
+Streaming Inference of CNNs}. arXiv:2408.03223, 2024.
+\url{https://arxiv.org/abs/2408.03223}.
+
+\bibitem{tiny} Z. Huang, E. Baccelli.
+\emph{TinyD\'ej\`aVu: Smaller Memory Footprint \& Faster Inference on Sensor
+Data Streams with Always-On Microcontrollers}. arXiv:2512.09786, 2025.
+\url{https://arxiv.org/abs/2512.09786}. Tên theo metadata arXiv được tra
+28/10/2026; không nhập số benchmark của paper vào kết quả HAPT.
+
+\bibitem{lipcache} Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar.
+\emph{LipCache: A Local Inference Proxy with Certified Caching for Edge
+Image Classification Service}. arXiv:2608.13144, 2026.
+\url{https://arxiv.org/abs/2608.13144}. Đối chiếu PDF v1 lưu local,
+đặc biệt phạm vi GuardNet/MainNet tại phần certification và system semantics.
+\end{thebibliography}
+
+\endgroup
+
+\end{document}

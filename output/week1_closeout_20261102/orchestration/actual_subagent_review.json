@@ -1,0 +1,141 @@
+{
+  "timestamp": "2026-11-02T11:46:00Z",
+  "reviewer_agent": {
+    "name": "Week1PythonReviewer",
+    "conversation_id": "7a169d1c-0f50-4ff7-8616-c70f2ce7bbb8",
+    "model": "gemini-3.8-flash-medium",
+    "mode": "read_only"
+  },
+  "review_summary": {
+    "total_items": 9,
+    "pass_count": 5,
+    "partial_count": 2,
+    "fail_count": 2
+  },
+  "item_evaluations": {
+    "a_k12_smallcnn1d_params_frozen_protection": {
+      "status": "PASS",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "295-302, 843-847",
+          "description": "SmallCNN1D parameters match 283,692 exactly. Frozen files (configs/backbone.yaml, scripts/backbone.py) protected without mutation."
+        },
+        {
+          "file": "scripts/backbone.py",
+          "lines": "84-86",
+          "description": "build_model helper remains locked to K=6; pipeline correctly constructs SmallCNN1D directly with num_classes=12."
+        }
+      ]
+    },
+    "b_stable_global_row_id_denominators": {
+      "status": "PARTIAL",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "533-536",
+          "severity": "PROVEN_DEFECT",
+          "description": "Supervised test denominator mismatch (expected 3572) only logs WARNING instead of raising ValueError fail-fast.",
+          "recommended_fix": "Raise ValueError on mismatch, matching fullstream 5053 check."
+        }
+      ]
+    },
+    "c_snapshot_annotation_slicing_overlap": {
+      "status": "PASS",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "150-212, 267-271",
+          "description": "64-sample stride overlap and >=0.6 majority threshold strictly match builder policy. Origin indexing claims conservatively deferred without unverified assertions."
+        }
+      ],
+      "hypotheses": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "150-152",
+          "description": "Raw acc and gyro recording length mismatch defensive trimming (min_len) recommended if sensor lengths diverge."
+        }
+      ]
+    },
+    "d_norm_seeds_schedule_val_selection_freeze": {
+      "status": "PASS",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "82-87, 286-370, 432-448",
+          "description": "Train-only norm fit on train split; seeds 42, 43, 44; 30 epochs; Adam lr=1e-3 wd=1e-4 cosine decay; patience 10 on val_macro_f1; test split strictly blind until post-selection checkpoint freeze."
+        }
+      ]
+    },
+    "e_phase_reentry_guards_checkpoint_reload": {
+      "status": "FAIL",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "966-972",
+          "severity": "PROVEN_BUG",
+          "description": "Reentry lockout bug: line 966 checks if any file exists in out_dir when running train phase, which immediately crashes if audit phase was previously run in the same directory.",
+          "recommended_fix": "Scope collision detection to phase-specific artifacts rather than any file."
+        },
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "line": 541,
+          "severity": "PROVEN_DEFECT",
+          "description": "Dead code remnant: `ckpt = torch.save if False else torch.load(ckpt_path, map_location=device)`.",
+          "recommended_fix": "Clean up to direct `torch.load`."
+        }
+      ]
+    },
+    "f_confusion_matrix_f1_wilson_zero_denominator": {
+      "status": "PARTIAL",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "416-418",
+          "severity": "PROVEN_DEFECT",
+          "description": "run_train evaluates np.where for recall/precision/f1 without np.errstate, triggering unsuppressed runtime divide warnings for zero-prediction or zero-support classes.",
+          "recommended_fix": "Wrap with `with np.errstate(divide='ignore', invalid='ignore'):` as is done in run_evaluate line 563."
+        }
+      ]
+    },
+    "g_adjacency_stratification_margin_wording": {
+      "status": "PASS",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "632, 671-695, 721, 796",
+          "description": "Gap mask strictly asserts stride=64, same experiment, consecutive win_idx. Disclaimers properly clarify empirical margins and temporal stability without ECDR certification claims."
+        }
+      ]
+    },
+    "h_cpu_single_thread_latency_benchmark": {
+      "status": "PASS",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "726-765",
+          "description": "Single-thread (torch.set_num_threads(1)), batch size 1, 100 warmup, 1000 timed samples with cycling test sample indices for both forward-only and end-to-end pipelines."
+        }
+      ]
+    },
+    "i_verify_phase_provenance_and_metrics_recomputation": {
+      "status": "FAIL",
+      "proven_findings": [
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "820-840",
+          "severity": "PROVEN_DEFECT",
+          "description": "run_verify only verifies that provenance_audit.json exists, but does not verify the recorded SHA-256 hashes against disk files.",
+          "recommended_fix": "Iterate over audit_data['file_hashes'] and verify compute_sha256 matches."
+        },
+        {
+          "file": "scripts/week1_reference_pipeline.py",
+          "lines": "867-881",
+          "severity": "PROVEN_DEFECT",
+          "description": "run_verify recomputes predictions and logits against test_predictions.npz, but does not recompute and verify summary metrics against evaluation_results.json.",
+          "recommended_fix": "Compute supervised test accuracy and macro-F1 on recomputed predictions and assert equality with persisted evaluation_results.json."
+        }
+      ]
+    }
+  }
+}

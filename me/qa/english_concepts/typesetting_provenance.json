@@ -1,0 +1,45 @@
+{
+  "completed_utc": "2026-10-28T16:53:50.810387+00:00",
+  "compiler": "/usr/lib/chatgpt/resources/tectonic/tectonic",
+  "version": "Tectonic 0.17.0",
+  "tectonic_cache_dir": "/home/pro/.config/ChatGPT/latex/tectonic",
+  "outfmt": "xdv",
+  "documents": {
+    "ECDR_Mathematics_Concepts_EN": {
+      "source_sha256": "71aa3ecde6b25915f2c996624b69785cf91e502c2aca11f1f76af751d94b5286",
+      "log_sha256": "f8fd350e8dedeefc28e63eb9438d61ab31034ec5591b4abf8838f941c1f50b19",
+      "xdv_sha256": "24de3118f65aa4ea718168df75e702b97966a372b68c9396720714fc7b21efc2",
+      "command": [
+        "/usr/lib/chatgpt/resources/tectonic/tectonic",
+        "-X",
+        "compile",
+        "--outfmt",
+        "xdv",
+        "--keep-intermediates",
+        "--keep-logs",
+        "--untrusted",
+        "--outdir",
+        "/home/pro/Downloads/research/me/qa/english_concepts/math",
+        "/home/pro/Downloads/research/me/ECDR_Mathematics_Concepts_EN.tex"
+      ]
+    },
+    "ECDR_CNN_Model_Analysis": {
+      "source_sha256": "420df7540328a2b010d56da66c5990677d3febc54bee3376ea562fd8cd211659",
+      "log_sha256": "ed942cbfc657e91e9d840d33bfd58ef131d2d1cf2c89b3efe92db6797a306336",
+      "xdv_sha256": "6bf04519e4061e93b004d059dd001d91d4553814a79e8308829855eea0b8efff",
+      "command": [
+        "/usr/lib/chatgpt/resources/tectonic/tectonic",
+        "-X",
+        "compile",
+        "--outfmt",
+        "xdv",
+        "--keep-intermediates",
+        "--keep-logs",
+        "--untrusted",
+        "--outdir",
+        "/home/pro/Downloads/research/me/qa/english_concepts/cnn",
+        "/home/pro/Downloads/research/me/ECDR_CNN_Model_Analysis.tex"
+      ]
+    }
+  }
+}

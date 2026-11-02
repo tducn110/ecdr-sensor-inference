@@ -1,50 +1,23 @@
-# 01 RQ GAP — Working Research Question + Gap Hypothesis (G0)
+# Research questions and gap — current English statement
 
-> Status: hypothesis with evidence, NOT a proven-new conclusion.
-> Depends on: refs.bib + 02_LITERATURE.md. Next: 03_DATA_AUDIT.md after G0.
+This page is a concise current navigation record. The canonical Week 1 definitions and requirements are in [00_OVERVIEW/02_Week_1_Project_Brief.tex](00_OVERVIEW/02_Week_1_Project_Brief.tex) and [00_OVERVIEW/week1/](00_OVERVIEW/week1/).
 
-## 1. Working RQ
+## Research questions
 
-Can structured, event-conditioned class-pair bounds certify that a neural
-backbone preserves its decision on temporally correlated inputs more often than
-global Lipschitz bounds, while remaining cheap enough to produce net inference
-savings?
+**RQ1 — reference quality:** What classification behavior does the declared reference pipeline produce under the train-fit normalization, subject split, and K=12 evaluation protocol?
 
-Success = better Pareto frontier: tighter certificate + higher certified reuse
-+ same backbone decision + lower total cost. No hard 50% latency target.
+**RQ2 — decision preservation:** Under fixed preprocessing, a frozen reference model, a declared input domain, and a valid whole-domain bound, when does a reused class decision preserve the reference argmax with zero disagreements?
 
-## 2. Scope
+**RQ3 — coverage and cost:** At what event-conditioned coverage do membership checks, certificate construction, lookup, fallback inference, and rebuilds produce a measured net saving?
 
-- Input: streaming sensor windows x_t (HAPT: 6 channels x 128 samples, 50 Hz).
-- Backbone f: small verifier-friendly 1D-CNN (see roadmap suggestion.md Sec 3.3;
-  24,428 params iff bias everywhere, no BN, K=12; K=6 -> 24,038; needs
-  scripts/count_params.py in G2).
-- Certificate proves reuse has the SAME PREDICTION as the backbone at a trusted
-  anchor -- it does NOT prove correctness vs ground truth. Agreement and
-  Accuracy are separate metrics.
+**RQ4 — soundness:** Which certificate bounds, membership predicates, and numerical assumptions are sufficient for the decision-preservation guarantee?
 
-## 3. Gap hypothesis (from 02 ledger)
+## Boundaries
 
-Prior art covers each piece separately (all SUPPORTED in 02):
-per-sample certified reuse exists (LipCache C1), spatio-temporal verification
-exists (STBP C5), sparse temporal reuse without cert exists (DeltaCNN C7),
-time-series smoothing cert exists (Franco C8).
+Decision preservation is separate from classification accuracy. A strict method result requires zero disagreement with the frozen reference on the tested set and declared assumptions. The historical 5% empirical threshold is not a strict certificate criterion. Novelty and net saving remain hypotheses; no 50% latency target is assumed.
 
-Combination UNVERIFIED: event-conditioned structured sets + direct
-backbone-decision cert + sequential anchor reuse + end-to-end cost WITH rebuild.
-Do not claim first class-pair radius or first structured verifier.
+The SmallCNN1D K=12 path is exploratory but now has a retained executed baseline: run `week1_ref_1793620216_9d6c1d85`, selected seed 43 at epoch 8, 89.0538% supervised test accuracy and 77.6265% macro-F1 on 3,572 windows, with 17 internal checks passed. The legacy K=6 model/checkpoint and ECDRConv1DNet K=12 experiments remain separate historical contexts. Formal certification and net-saving evidence remain pending.
 
-## 4. Three killer risks (must survive G1/G3/G5)
+## Gap hypothesis
 
-1. Membership soundness: reused input must PROVABLY lie in the certified region,
-   not just be classified as some event (G3).
-2. Overlap != similarity: 50% window overlap does not imply small ||x_{t+1}-x_t||
-   in CNN input space (G1 measures this).
-3. Rebuild cost: E[T] = T_e+T_m+(1-r)*T_f+q*T_b; saving iff r*T_f > T_e+T_m+q*T_b
-   (G5). Old formula hiding rebuild is invalid.
-
-## 5. G0 exit for this file
-
-RQ + gap stated as hypothesis with 02 ledger backing; no frozen novelty claim;
-no implementation started. After G0 -> 03_DATA_AUDIT (deltas, coverage, label
-balance) before freezing 04_THEORY.
+The candidate contribution is the combination of a direct-backbone class-pair certificate, event-conditioned domain geometry, anchor lifecycle, and an end-to-end cost model. This is a hypothesis, not a novelty claim. Prior-art collisions must be checked against primary sources in [02_LITERATURE.md](02_LITERATURE.md).

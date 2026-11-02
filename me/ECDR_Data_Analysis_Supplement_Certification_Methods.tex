@@ -1,0 +1,328 @@
+% ============================================================
+%  SUPPLEMENT 03 — CERTIFICATION METHODS
+%  IBP, CROWN, and LiRPA: How Neural Network Certificates Are Built
+%  Companion to: ECDR_Data_Analysis.tex
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\mbm}[1]{\underline{m}_{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} Certification Methods for Neural Networks}\\[0.5em]
+  {\large\color{muted} IBP, CROWN, and LiRPA: Building the Margin Lower Bound $\underline{m}_{cj}$}\\[1.2em]
+  {\normalsize Supplement~03 to \textit{ECDR Data Analysis} \textbar{} October~2026}\\[0.3em]
+  {\small\color{muted} This document is supplementary only. The main document is not modified.}
+\end{center}
+
+\vspace{1em}\hrule\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{Why Formal Certification Is Required}
+
+The ECDR decision-reuse condition (see Supplement~01) requires that
+$\underline{m}_{cj}(\mathcal{S}) > 0$ for all competing classes $j \ne c$,
+where $\underline{m}_{cj}$ is a \emph{sound lower bound} on the logit margin
+over the continuous domain $\mathcal{S}$.
+
+A naive approach might try to test this empirically: sample thousands of random
+points from $\mathcal{S}$ and verify that $F_c(X) > F_j(X)$ for all of them.
+This fails for two fundamental reasons:
+
+\begin{enumerate}
+  \item \textbf{Continuous domains are infinite.} Even $10^{10}$ samples leave
+        uncountably many points untested. A neural network can have a sharp
+        decision boundary crossing inside $\mathcal{S}$ that sampling misses.
+  \item \textbf{Safety demands guarantees, not likelihoods.} An adversarial example
+        sitting exactly at the boundary of $\mathcal{S}$ would cause a reuse failure
+        — the system outputs a wrong label with full confidence. For safety-critical
+        applications, probabilistic empirical evidence is insufficient.
+\end{enumerate}
+
+Formal verifiers compute a provably correct bound by reasoning about the entire
+domain analytically, using the structure of the neural network.
+
+% ============================================================
+\section{Network Architecture Relevant to ECDR}
+
+The reference classifier $f_\theta$ in the ECDR workspace is a Conv1D network:
+\[
+  f_\theta = \text{Linear} \circ \text{GAP} \circ \underbrace{(\text{ReLU} \circ \text{Conv1D})^L}_{L \text{ blocks}} \circ \text{BN},
+\]
+where BN is batch normalization (frozen to affine at test time), GAP is
+global average pooling, and the final layer maps to $K = 12$ class logits.
+
+The key observations for certification:
+\begin{itemize}[leftmargin=1.5em]
+  \item Convolution and linear layers are \textbf{affine} (linear + bias).
+  \item ReLU is \textbf{piecewise linear} but non-linear at the kink ($x = 0$).
+  \item GAP is \textbf{affine} (mean over spatial dimension).
+  \item BN at test time is \textbf{affine} (rescale + shift by frozen statistics).
+\end{itemize}
+All non-linearity comes from ReLU. This is what makes the network
+certifiable in polynomial time with sound bounds.
+
+% ============================================================
+\section{Interval Bound Propagation (IBP)}
+
+\subsection{Core Idea}
+
+IBP is the simplest complete-layer-wise bound propagation technique.
+Given a box input domain:
+\[
+  \mathcal{X} = \bigl\{ x \in \R^n : \ell \le x \le u \bigr\}
+  \quad (\ell, u \in \R^n, \text{ coordinate-wise}),
+\]
+IBP propagates a pair $(\ell^{(k)}, u^{(k)})$ of lower and upper bound vectors
+through each layer $k$ of the network.
+
+\subsection{Propagation Rules}
+
+\textbf{Affine layer} $h^{(k)} = W^{(k)} h^{(k-1)} + b^{(k)}$:
+\begin{align}
+  \ell^{(k)} &= W^{(k)}_+ \ell^{(k-1)} + W^{(k)}_- u^{(k-1)} + b^{(k)}, \\
+  u^{(k)}    &= W^{(k)}_+ u^{(k-1)} + W^{(k)}_- \ell^{(k-1)} + b^{(k)},
+\end{align}
+where $W^{(k)}_+ = \max(W^{(k)}, 0)$ and $W^{(k)}_- = \min(W^{(k)}, 0)$.
+This uses the interval arithmetic rule: for a linear function, the extrema
+occur at the extrema of the input.
+
+\textbf{ReLU layer} $h^{(k)} = \max(0, h^{(k-1)})$:
+\begin{align}
+  \ell^{(k)} &= \max(0, \ell^{(k-1)}), \\
+  u^{(k)}    &= \max(0, u^{(k-1)}).
+\end{align}
+This is tight: ReLU is monotone, so the range of $\max(0, x)$ over
+$x \in [\ell_i, u_i]$ is exactly $[\max(0, \ell_i), \max(0, u_i)]$.
+
+\subsection{Computing the Margin Lower Bound}
+
+After propagating bounds through all $L$ layers, we obtain bounds
+$(\ell^{(L)}, u^{(L)})$ on the output logit vector $F(X) \in \R^K$.
+The sound lower bound on the margin between class $c$ and class $j$ is:
+\begin{equation}
+  \mbm{cj}^{\text{IBP}} = \ell^{(L)}_c - u^{(L)}_j.
+\end{equation}
+If $\ell^{(L)}_c - u^{(L)}_j > 0$, then for every $X \in \mathcal{X}$,
+$F_c(X) \ge \ell^{(L)}_c > u^{(L)}_j \ge F_j(X)$, guaranteeing that class $c$
+always beats class $j$.
+
+\subsection{IBP Is Sound but Loose}
+
+The propagation rules above are valid (sound) because they cover all possible
+values. However, they are often \emph{conservative}: the true range of $h^{(k)}$
+may be much smaller than $[\ell^{(k)}, u^{(k)}]$.
+
+The looseness compounds across layers. After $L$ ReLU layers, the bound intervals
+can grow very wide, yielding $\mbm{cj}^{\text{IBP}} \ll$ the true margin.
+For deep networks, IBP may fail to certify a domain even when it is truly certifiable.
+
+% ============================================================
+\section{CROWN: Tighter Linear Relaxation}
+
+\subsection{The Key Insight}
+
+CROWN does not propagate intervals naively. Instead, it constructs a
+\textbf{linear relaxation} of each non-linear activation and propagates
+that relaxation backward to the input. This avoids most of the looseness
+introduced by IBP's axis-aligned interval arithmetic.
+
+\subsection{ReLU Relaxation}
+
+For a ReLU unit with pre-activation bounds $[\ell_i, u_i]$:
+
+\begin{enumerate}
+  \item \textbf{Stable positive} ($\ell_i \ge 0$): ReLU is the identity.
+        Exact; no relaxation needed.
+  \item \textbf{Stable negative} ($u_i \le 0$): ReLU outputs 0 for all inputs.
+        Exact; no relaxation needed.
+  \item \textbf{Unstable} ($\ell_i < 0 < u_i$): The activation behaves
+        differently depending on the input value. CROWN uses a linear upper bound
+        (the chord connecting $(\ell_i, 0)$ and $(u_i, u_i)$) and a linear lower
+        bound (either $0$ or the identity line). Both are valid linear relaxations:
+        \begin{align}
+          \hat{h} &\le \frac{u_i}{u_i - \ell_i}(h - \ell_i) \quad \text{(upper bound)}, \\
+          \hat{h} &\ge 0 \quad \text{(or } \hat{h} \ge h, \text{ a tighter choice)}.
+        \end{align}
+\end{enumerate}
+
+\subsection{Backward Bound Propagation}
+
+CROWN expresses the output $F_c(X) - F_j(X)$ as a function of the input $X$
+by substituting each activation's linear relaxation and propagating backward
+through the network via the chain rule (in reverse). This yields a linear
+function of $X$:
+\[
+  F_c(X) - F_j(X) \;\ge\; a^\top X + b \quad \forall X \in \mathcal{X},
+\]
+for some vector $a$ and scalar $b$ computed analytically. Minimizing the
+right-hand side over $\mathcal{X}$ (trivial for a box: just evaluate at the
+appropriate corners) gives $\mbm{cj}^{\text{CROWN}} = \min_{X \in \mathcal{X}} (a^\top X + b)$.
+
+\begin{remark}[CROWN $\ge$ IBP Always]
+  The CROWN bound is always at least as tight as the IBP bound:
+  $\mbm{cj}^{\text{CROWN}} \ge \mbm{cj}^{\text{IBP}}$.
+  Both are sound lower bounds on the true margin. CROWN certifies more domains
+  because it avoids the compounded interval looseness of IBP.
+\end{remark}
+
+% ============================================================
+\section{LiRPA: Generalized Propagation Framework}
+
+LiRPA (Linear Relaxation based Perturbation Analysis) is a software framework
+that implements and unifies multiple bound propagation methods, including IBP
+and CROWN, in a differentiable and auto-differentiable way.
+
+Key properties:
+\begin{itemize}[leftmargin=1.5em]
+  \item Supports arbitrary PyTorch models: Conv1D, Conv2D, LSTM, Transformers.
+  \item Provides $\alpha$-CROWN (optimizing the ReLU relaxation slopes to tighten bounds).
+  \item Can compute bounds with respect to any $L_p$ input domain, not just $L_\infty$.
+  \item Integrates with training: bounds can be used as a certified training loss
+        (\textit{certified training}) so the model is optimized to be more verifiable.
+\end{itemize}
+
+For ECDR purposes, LiRPA is the computational backend that, given:
+(a) the Conv1D model $f_\theta$,
+(b) the normalization $N$,
+(c) the domain $\mathcal{S}$,
+computes the bound $\mbm{cj}$ for each class pair.
+
+% ============================================================
+\section{Soundness, Completeness, and Practical Implications}
+
+\subsection{Definitions Revisited}
+
+\begin{definition}[Sound Verifier]
+  A verifier $V$ is sound if, whenever it reports $\mbm{cj} > 0$,
+  the true infimum of $F_c(X) - F_j(X)$ over $\mathcal{S}$ is indeed $> 0$.
+  Sound verifiers never produce false positives (never claim safe when actually unsafe).
+\end{definition}
+
+\begin{definition}[Complete Verifier]
+  A verifier $V$ is complete if, whenever the true infimum of the margin is $> 0$,
+  the verifier reports $\mbm{cj} > 0$. Complete verifiers produce no false negatives.
+\end{definition}
+
+\begin{theorem}[Complexity Lower Bound]
+  Verifying whether a neural network with ReLU activations is robust on an
+  $L_\infty$ ball is NP-hard in general (Katz et al., 2017).
+\end{theorem}
+
+This means that polynomial-time verifiers (IBP, CROWN, LiRPA) must be
+incomplete: they may fail to certify some certifiable networks. But they
+are always sound, which is the property ECDR requires.
+
+\subsection{Practical Implications for Domain Size}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lYY@{}}
+\toprule
+Domain Size & IBP & CROWN \\
+\midrule
+Very small (tight around $X^r$) & Usually certifies; margin is large. & Same. \\
+Medium & May or may not certify; depends on network. & Often certifies when IBP fails. \\
+Very large & Likely fails: intervals grow too wide. & May also fail; domain too big. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The data audit establishes empirical window-to-window distances that inform
+what ``medium'' and ``large'' mean for HAPT:
+\begin{itemize}[leftmargin=1.5em]
+  \item Median $L_\infty$ same-pure distance: $\approx 0.987$ (normalized).
+  \item Median $L_\infty$ majority-change distance: $\approx 5.81$ (normalized).
+\end{itemize}
+A domain radius of $\epsilon = 0.5$ in $L_\infty$ normalized space would contain
+roughly half of all same-pure adjacent pairs by the empirical CDF, while keeping
+the domain small enough for CROWN to have a chance of certifying the network.
+The exact break-even point requires experimental verification (Evidence D07).
+
+% ============================================================
+\section{From $\underline{m}_{cj}$ to the Evidence Ledger}
+
+The connection between the verifier output and the data audit:
+
+\begin{enumerate}[leftmargin=2em]
+  \item The data audit verifies \textbf{membership}: what fraction of streaming
+        queries $X_t$ fall inside a given domain $\mathcal{S}(X^r)$ (based on
+        empirical distances).
+  \item The verifier computes \textbf{certification}: whether $\mbm{cj} > 0$ over
+        the entire continuous domain $\mathcal{S}$ (independent of observed data points).
+\end{enumerate}
+
+Both are necessary. A large domain that captures 95\% of empirical queries is
+useless if the verifier cannot certify it ($\mbm{cj} \le 0$). A tiny domain
+that certifies perfectly but contains only 1\% of queries provides negligible
+computational savings.
+
+This balance — coverage vs.\ certifiability — is the central design challenge
+for ECDR and drives the motivation for structured domains (wave-domain, PCA-based)
+explored in Section~12 of the main document.
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\bibitem{weeks}
+  ECDR Research Workspace. \textit{ECDR Weeks~1--3 Theory Brief}.
+  \code{ECDR\_Weeks\_1\_2\_3\_Theory.tex}, October~2026.
+\bibitem{katz2017}
+  G.~Katz, C.~Barrett, D.~Dill, K.~Julian, M.~Kochenderfer.
+  \textit{Reluplex: An Efficient SMT Solver for Verifying Deep Neural Networks}.
+  CAV~2017.
+\bibitem{zhang2018}
+  H.~Zhang, T.-W.~Weng, P.-Y.~Chen, C.-J.~Hsieh, L.~Daniel.
+  \textit{Efficient Neural Network Robustness Certification with General Activation Functions}.
+  NeurIPS~2018.
+\bibitem{xu2020}
+  K.~Xu, H.~Shi, H.~Zhang, Y.~Wang, S.~Chang, M.~Ghavamzadeh, H.~Huang, C.-J.~Hsieh.
+  \textit{Automatic Perturbation Analysis for Scalable Certified Robustness and Beyond}.
+  NeurIPS~2020.
+\end{thebibliography}
+
+\end{document}

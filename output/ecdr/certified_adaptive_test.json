@@ -1,0 +1,36 @@
+{
+  "provenance": {
+    "checkpoint": "/home/pro/Downloads/research/output/ecdr/smoke/checkpoints_seed20261031/ecdr_k12_best.pt",
+    "checkpoint_sha256": "10128d8cf0f62b95130e25772397ba14085cf0b6b42600e2e49565e61d1e5e68",
+    "model_id": "ab99a5c313e9de08",
+    "prep_id": "cf84f76ba4787676",
+    "model_boundary": "ECDRConv1DNet K=12; not SmallCNN1D K=6",
+    "split": "test",
+    "scope": "full_stream"
+  },
+  "query_counts": {
+    "total_queries": 5053,
+    "hits": 0,
+    "hit_rate_pct": 0.0,
+    "misses": 5053,
+    "disagreements_vs_full_cnn": 0,
+    "disagreement_rate_pct": 0.0
+  },
+  "quality_on_valid_labels": {
+    "valid_windows": 3572,
+    "full_cnn_accuracy": 0.7701567749160134,
+    "certified_adaptive_accuracy": 0.7701567749160134,
+    "accuracy_delta_points": 0.0
+  },
+  "latency_ms": {
+    "full_cnn_mean": 3.1592744605395553,
+    "certified_adaptive_mean": 3.201735262990392,
+    "speedup_factor": 0.9867381907112525
+  },
+  "certified_radius": {
+    "finite_anchor_count": 5053,
+    "min": 3.679199212580901e-10,
+    "median": 1.998935922717831e-06,
+    "max": 1.2973727330881674e-05
+  }
+}

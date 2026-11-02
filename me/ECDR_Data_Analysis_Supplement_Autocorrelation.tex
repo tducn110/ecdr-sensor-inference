@@ -1,0 +1,322 @@
+% ============================================================
+%  SUPPLEMENT 04 — AUTOCORRELATION DEEP DIVE
+%  Pearson Correlation, Stationarity, ACF, and the Four Metrics
+%  Companion to: ECDR_Data_Analysis.tex
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.88]
+
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs, tabularx, array}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\definecolor{ink}{RGB}{20,20,20}
+\definecolor{teal}{RGB}{0,120,120}
+\definecolor{muted}{RGB}{90,90,90}
+
+\hypersetup{colorlinks=true, linkcolor=teal, urlcolor=teal, citecolor=teal}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\corr}{\operatorname{corr}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries\color{ink}}{}{0em}{\thesubsection\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{teal} Autocorrelation: Concepts and the Four Metrics}\\[0.5em]
+  {\large\color{muted} Pearson Correlation, Stationarity, ACF, and Their Application to HAPT IMU Data}\\[1.2em]
+  {\normalsize Supplement~04 to \textit{ECDR Data Analysis} \textbar{} October~2026}\\[0.3em]
+  {\small\color{muted} This document is supplementary only. The main document is not modified.}
+\end{center}
+
+\vspace{1em}\hrule\vspace{1em}
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{Pearson Correlation: Precise Definition}
+
+\subsection{Population Definition}
+
+Given two random variables $A$ and $B$ with finite variances, their Pearson
+correlation coefficient is:
+\begin{equation}
+  \rho(A, B) \;=\; \frac{\Cov(A, B)}{\sqrt{\Var(A) \cdot \Var(B)}}
+  \;=\; \frac{\E[(A - \mu_A)(B - \mu_B)]}{\sigma_A \, \sigma_B}.
+\end{equation}
+
+Properties:
+\begin{itemize}[leftmargin=1.5em]
+  \item $\rho \in [-1, 1]$ always (Cauchy-Schwarz inequality).
+  \item $\rho = 1$: perfect positive linear relationship. $\rho = -1$: perfect negative.
+  \item $\rho = 0$: no linear relationship (but may still have nonlinear dependence).
+  \item \textbf{Scale-invariant}: multiplying either variable by a positive constant
+        does not change $\rho$. Only the \emph{direction} of covariation matters, not magnitude.
+  \item \textbf{Shift-invariant}: adding any constant to either variable does not
+        change $\rho$. This is why correlation measures linear relationship after
+        mean-centering.
+\end{itemize}
+
+\subsection{Sample Estimator}
+
+For two finite vectors $a, b \in \R^m$ (same length $m$), the sample Pearson
+correlation is:
+\begin{equation}\label{eq:sample_pearson}
+  \corr(a, b) \;=\;
+  \frac{\sum_{i=1}^m (a_i - \bar{a})(b_i - \bar{b})}
+       {\sqrt{\sum_{i=1}^m (a_i - \bar{a})^2 \;\cdot\; \sum_{i=1}^m (b_i - \bar{b})^2}},
+\end{equation}
+where $\bar{a} = m^{-1} \sum_i a_i$ and $\bar{b} = m^{-1} \sum_i b_i$.
+
+This is the formula used in the main data analysis to compute all four
+autocorrelation metrics.
+
+% ============================================================
+\section{The Autocorrelation Function (ACF)}
+
+\subsection{Definition for a Stationary Process}
+
+A discrete time series $\{r[n]\}_{n=0}^{T-1}$ is \textbf{(weakly) stationary} if:
+\begin{enumerate}[leftmargin=1.5em]
+  \item Its mean is constant: $\E[r[n]] = \mu$ for all $n$.
+  \item Its autocovariance depends only on the lag $k$, not on the absolute time:
+        $\Cov(r[n], r[n+k]) = \gamma(k)$ for all $n$.
+\end{enumerate}
+
+The \textbf{autocorrelation function (ACF)} at lag $k$ is:
+\begin{equation}
+  \rho_k \;=\; \frac{\gamma(k)}{\gamma(0)} \;=\;
+  \frac{\Cov(r[n], r[n+k])}{\Var(r[n])}.
+\end{equation}
+
+Note $\rho_0 = 1$ always (a signal is perfectly correlated with itself at lag 0).
+
+\subsection{Estimation from Finite Data}
+
+Given a single observed series of length $T$, the sample ACF at lag $k$ is:
+\begin{equation}
+  \hat{\rho}_k \;=\;
+  \frac{\sum_{n=0}^{T-k-1} (r[n] - \bar{r})(r[n+k] - \bar{r})}
+       {\sum_{n=0}^{T-1} (r[n] - \bar{r})^2}.
+\end{equation}
+This is equivalent to applying the sample Pearson formula~\eqref{eq:sample_pearson}
+with $a = r[0:T-k]$ and $b = r[k:T]$.
+
+% ============================================================
+\section{Physical Intuition for the HAPT Sensor Series}
+
+\subsection{Why Lag-1 Autocorrelation Is Near 1.0}
+
+Human motion at 50\,Hz (20\,ms between samples) is smooth. The body cannot
+instantaneously change acceleration; the physics of human gait imposes continuity.
+Therefore, adjacent raw samples $r[n]$ and $r[n+1]$ are nearly identical.
+
+More precisely, the Nyquist theorem tells us that human gait energy is mostly
+concentrated below 25\,Hz (and typically below 10\,Hz). At 50\,Hz sampling,
+neighboring samples are oversampled relative to the signal bandwidth. The lag-1
+correlation is high simply because consecutive samples see almost the same
+physical state.
+
+The empirical values ($0.83 - 0.98$ across channels, Table 5 in the main doc)
+are consistent with this explanation.
+
+\subsection{Why Lag-64 Autocorrelation Drops — Especially for Gyroscope}
+
+Lag 64 corresponds to 64/50 = 1.28 seconds — exactly the query stride $S$.
+This is a physically meaningful time scale:
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Accelerometer (acc):} Gravitational acceleration creates a strong
+        DC bias in \code{acc\_x} ($+0.82\,g$). Slow postural drift changes this
+        bias slowly, keeping lag-64 correlation high ($0.72 - 0.82$).
+  \item \textbf{Gyroscope (gyro):} Gyroscope measures angular velocity, which
+        integrates to rotation angle. In a complete gait cycle ($\approx 1$ s),
+        angular velocity oscillates through a full cycle. Over 1.28 s, the
+        gyroscope value can be at a completely different phase of the cycle.
+        Hence lag-64 autocorrelation for \code{gyro\_x}, \code{gyro\_y},
+        \code{gyro\_z} drops sharply ($0.06 - 0.15$).
+\end{itemize}
+
+\begin{remark}[Critical Implication for ECDR]
+  High lag-1 autocorrelation does \textbf{not} imply that window-to-window
+  differences are small. The stride is 64 samples (1.28\,s), not 1 sample.
+  The relevant autocorrelation for understanding ECDR reuse is at lag 64 — and
+  for gyroscope channels, the signal is nearly uncorrelated at this lag.
+
+  This is why the main document explicitly warns: ``High short-term autocorrelation
+  cannot be naively extrapolated to the 1.28\,s query stride.''
+\end{remark}
+
+% ============================================================
+\section{The Four Metrics and What They Each Measure}
+
+The main document computes four distinct autocorrelation metrics to avoid
+conflating different physical phenomena. Each answers a different question.
+
+\subsection{Metric 1: Raw Lag-1 Autocorrelation}
+
+\textbf{Vectors:} $a = r_e[0:T_e-1, c]$ and $b = r_e[1:T_e, c]$.
+
+\textbf{Question:} How similar is each raw sample to its immediate neighbor?
+
+\textbf{Physical meaning:} Smoothness of the sensor signal over 20\,ms.
+
+\textbf{Empirical values:} $0.83 - 0.98$. Very high for all channels.
+
+\textbf{ECDR relevance:} Tells us the sensor signal is band-limited and smooth.
+Does \textbf{not} tell us anything about window-to-window similarity (different time scale).
+
+\subsection{Metric 2: Raw Lag-64 Autocorrelation}
+
+\textbf{Vectors:} $a = r_e[0:T_e-64, c]$ and $b = r_e[64:T_e, c]$.
+
+\textbf{Question:} How similar is each raw sample to the sample 1.28 s later?
+
+\textbf{Physical meaning:} Temporal coherence over the query stride.
+
+\textbf{Empirical values:} Accelerometer $0.72 - 0.82$; gyroscope $0.06 - 0.15$.
+
+\textbf{ECDR relevance:} Directly measures how much the signal changes over one
+query stride. Low gyroscope lag-64 correlation means gyroscope waveform shapes
+change substantially between consecutive windows.
+
+\subsection{Metric 3: Window Positional Correlation}
+
+\textbf{Vectors:} For window $k$ and $k+1$ at identical tensor index $i$:
+$a = X_{e,k}[c, \cdot]$ and $b = X_{e,k+1}[c, \cdot]$ (128-dimensional).
+
+\textbf{Question:} How correlated are the \emph{shapes} of two consecutive windows
+at matching temporal positions?
+
+\textbf{Physical meaning:} Whether the waveform profile (centered and scaled) at
+time offset $i$ in window $k$ matches the same offset in window $k+1$.
+Note: offset $i$ in window $k$ corresponds to time $t_k + i/50$, while the same
+offset in window $k+1$ is at time $t_k + (S + i)/50 = t_k + i/50 + 1.28$ s.
+These are samples 1.28 s apart — Metric 3 compares the \emph{positional structure},
+not the instantaneous value.
+
+\textbf{Empirical values:} Near zero ($-0.03$ to $+0.05$). Appears surprising but is
+consistent: since the stride is 1.28 s, positions $i$ in consecutive windows contain
+samples 1.28 s apart, at different points in the gait cycle.
+
+\textbf{ECDR relevance:} Near-zero positional correlation is \emph{not} a sign that
+windows are unrelated. It shows that the waveform shape (as a vector aligned by
+position, not by phase) is essentially random between windows — which is why
+phase-aware domains (wave-domain) are more appropriate than shape-matching domains.
+
+\subsection{Metric 4: Window Channel-Mean Correlation}
+
+\textbf{Vectors:} Let $g_k = \frac{1}{128}\sum_i X_{e,k}[c, i]$ (channel mean
+of window $k$). Compare $(g_0, \ldots, g_{N_e-2})$ and $(g_1, \ldots, g_{N_e-1})$.
+
+\textbf{Question:} How correlated are the spatial-average values of consecutive windows?
+
+\textbf{Physical meaning:} The mean of a window over 128 samples ($= 2.56$ s of data)
+represents the ``level'' of the signal. For \code{acc\_x}, this is dominated by
+gravitational orientation. This level changes slowly as posture drifts.
+
+\textbf{Empirical values:} High ($0.56 - 0.97$). Much higher than Metric 3.
+
+\textbf{ECDR relevance:} The spatial mean is more stable than the waveform shape.
+This motivates decomposing the perturbation domain into a ``mean component''
+(certifiable with a tight small domain) plus a ``waveform residual'' component
+(requires wider tolerance) — exactly the idea behind the wave-domain model.
+
+% ============================================================
+\section{Worked Example: Linear Ramp Counterexample}
+
+The main document proves (via a mathematical counterexample) that high lag-1
+autocorrelation does not imply small positional window delta. Here is the
+construction with full details.
+
+\subsection{Setup}
+
+Let $r[n] = n$ for $n = 0, 1, 2, \ldots$ (a linear ramp). The raw lag-1 correlation:
+\begin{align}
+  a &= (0, 1, 2, \ldots, T-2), \\
+  b &= (1, 2, 3, \ldots, T-1).
+\end{align}
+Both have mean $\bar{a} = (T-2)/2$ and $\bar{b} = T/2$. The centered vectors are
+$(a - \bar{a}) = (-T/2+1, -T/2+2, \ldots, T/2-1)$ and $(b - \bar{b}) = (-T/2, -T/2+1, \ldots, T/2-1)$.
+These are identical except for the boundary element. As $T \to \infty$:
+\[
+  \hat{\rho}_1 \to 1.
+\]
+The ramp has lag-1 correlation approaching 1 because the signal is perfectly smooth.
+
+\subsection{Window Positional Delta Is Large}
+
+Window $k$ starts at position $kS$ (stride $S = 64$). Its tensor is:
+\[
+  X_{k}[i] = r[kS + i] = kS + i, \quad i = 0, \ldots, 127.
+\]
+Window $k+1$:
+\[
+  X_{k+1}[i] = (k+1)S + i.
+\]
+The positional delta at index $i$:
+\[
+  X_{k+1}[i] - X_k[i] = S = 64 \quad \text{for all } i.
+\]
+The $L_2$ norm of the positional delta vector:
+\[
+  \|X_{k+1} - X_k\|_2 = \sqrt{128 \times 64^2} = 64\sqrt{128} \approx 724.1.
+\]
+
+\textbf{Conclusion:} The ramp has lag-1 correlation $\approx 1$ but window positional
+delta $\approx 724$ — two orders of magnitude away from zero. The two metrics are
+completely decoupled. Lag-1 autocorrelation cannot bound the window-to-window $L_2$ distance.
+
+% ============================================================
+\section{Summary Table}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lYrYY@{}}
+\toprule
+Metric & Vectors compared & Typical value & What it measures & ECDR relevance \\
+\midrule
+Lag-1 raw & $r[n]$ vs $r[n+1]$ & $0.83 - 0.98$ & Signal smoothness at 20 ms & Bandwidth; irrelevant to stride \\
+Lag-64 raw & $r[n]$ vs $r[n+64]$ & acc: $0.72$; gyro: $0.10$ & Coherence at 1.28 s & Directly relevant to query stride \\
+Window positional & $X_k[c,i]$ vs $X_{k+1}[c,i]$ & $-0.03$ to $0.05$ & Waveform shape alignment & Near-zero: phase mismatch \\
+Window channel-mean & $g_k$ vs $g_{k+1}$ & $0.56 - 0.97$ & Level / orientation stability & Supports mean-component domain \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{thebibliography}{9}
+\bibitem{main}
+  ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
+  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+\end{thebibliography}
+
+\end{document}

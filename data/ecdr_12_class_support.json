@@ -1,0 +1,282 @@
+{
+  "pure": {
+    "classes": [
+      {
+        "class_id": 1,
+        "class_name": "WALKING",
+        "train_count": 965,
+        "train_subjects": 17,
+        "val_count": 221,
+        "val_subjects": 4,
+        "test_count": 474,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 2,
+        "class_name": "WALKING_UPSTAIRS",
+        "train_count": 814,
+        "train_subjects": 17,
+        "val_count": 205,
+        "val_subjects": 4,
+        "test_count": 449,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 3,
+        "class_name": "WALKING_DOWNSTAIRS",
+        "train_count": 734,
+        "train_subjects": 17,
+        "val_count": 189,
+        "val_subjects": 4,
+        "test_count": 394,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 4,
+        "class_name": "SITTING",
+        "train_count": 991,
+        "train_subjects": 17,
+        "val_count": 261,
+        "val_subjects": 4,
+        "test_count": 484,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 5,
+        "class_name": "STANDING",
+        "train_count": 1099,
+        "train_subjects": 17,
+        "val_count": 286,
+        "val_subjects": 4,
+        "test_count": 541,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 6,
+        "class_name": "LAYING",
+        "train_count": 1090,
+        "train_subjects": 17,
+        "val_count": 288,
+        "val_subjects": 4,
+        "test_count": 532,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 7,
+        "class_name": "STAND_TO_SIT",
+        "train_count": 19,
+        "train_subjects": 13,
+        "val_count": 5,
+        "val_subjects": 3,
+        "test_count": 15,
+        "test_subjects": 7
+      },
+      {
+        "class_id": 8,
+        "class_name": "SIT_TO_STAND",
+        "train_count": 5,
+        "train_subjects": 5,
+        "val_count": 1,
+        "val_subjects": 1,
+        "test_count": 6,
+        "test_subjects": 4
+      },
+      {
+        "class_id": 9,
+        "class_name": "SIT_TO_LIE",
+        "train_count": 36,
+        "train_subjects": 16,
+        "val_count": 16,
+        "val_subjects": 4,
+        "test_count": 25,
+        "test_subjects": 8
+      },
+      {
+        "class_id": 10,
+        "class_name": "LIE_TO_SIT",
+        "train_count": 30,
+        "train_subjects": 14,
+        "val_count": 6,
+        "val_subjects": 3,
+        "test_count": 18,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 11,
+        "class_name": "STAND_TO_LIE",
+        "train_count": 65,
+        "train_subjects": 17,
+        "val_count": 7,
+        "val_subjects": 3,
+        "test_count": 40,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 12,
+        "class_name": "LIE_TO_STAND",
+        "train_count": 30,
+        "train_subjects": 15,
+        "val_count": 5,
+        "val_subjects": 4,
+        "test_count": 15,
+        "test_subjects": 7
+      }
+    ],
+    "num_blockers": 17,
+    "blockers": [
+      "Class 7 (STAND_TO_SIT) in train: 19 windows, 13 subjects",
+      "Class 7 (STAND_TO_SIT) in val: 5 windows, 3 subjects",
+      "Class 7 (STAND_TO_SIT) in test: 15 windows, 7 subjects",
+      "Class 8 (SIT_TO_STAND) in train: 5 windows, 5 subjects",
+      "Class 8 (SIT_TO_STAND) in val: 1 windows, 1 subjects",
+      "Class 8 (SIT_TO_STAND) in test: 6 windows, 4 subjects",
+      "Class 9 (SIT_TO_LIE) in train: 36 windows, 16 subjects",
+      "Class 9 (SIT_TO_LIE) in val: 16 windows, 4 subjects",
+      "Class 9 (SIT_TO_LIE) in test: 25 windows, 8 subjects",
+      "Class 10 (LIE_TO_SIT) in train: 30 windows, 14 subjects",
+      "Class 10 (LIE_TO_SIT) in val: 6 windows, 3 subjects",
+      "Class 10 (LIE_TO_SIT) in test: 18 windows, 9 subjects",
+      "Class 11 (STAND_TO_LIE) in val: 7 windows, 3 subjects",
+      "Class 11 (STAND_TO_LIE) in test: 40 windows, 9 subjects",
+      "Class 12 (LIE_TO_STAND) in train: 30 windows, 15 subjects",
+      "Class 12 (LIE_TO_STAND) in val: 5 windows, 4 subjects",
+      "Class 12 (LIE_TO_STAND) in test: 15 windows, 7 subjects"
+    ],
+    "k12_trainable_status": "HOLD"
+  },
+  "majority": {
+    "classes": [
+      {
+        "class_id": 1,
+        "class_name": "WALKING",
+        "train_count": 1255,
+        "train_subjects": 17,
+        "val_count": 288,
+        "val_subjects": 4,
+        "test_count": 617,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 2,
+        "class_name": "WALKING_UPSTAIRS",
+        "train_count": 1219,
+        "train_subjects": 17,
+        "val_count": 302,
+        "val_subjects": 4,
+        "test_count": 662,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 3,
+        "class_name": "WALKING_DOWNSTAIRS",
+        "train_count": 1140,
+        "train_subjects": 17,
+        "val_count": 284,
+        "val_subjects": 4,
+        "test_count": 620,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 4,
+        "class_name": "SITTING",
+        "train_count": 1128,
+        "train_subjects": 17,
+        "val_count": 295,
+        "val_subjects": 4,
+        "test_count": 557,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 5,
+        "class_name": "STANDING",
+        "train_count": 1270,
+        "train_subjects": 17,
+        "val_count": 328,
+        "val_subjects": 4,
+        "test_count": 635,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 6,
+        "class_name": "LAYING",
+        "train_count": 1226,
+        "train_subjects": 17,
+        "val_count": 324,
+        "val_subjects": 4,
+        "test_count": 605,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 7,
+        "class_name": "STAND_TO_SIT",
+        "train_count": 87,
+        "train_subjects": 17,
+        "val_count": 21,
+        "val_subjects": 4,
+        "test_count": 53,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 8,
+        "class_name": "SIT_TO_STAND",
+        "train_count": 74,
+        "train_subjects": 17,
+        "val_count": 16,
+        "val_subjects": 4,
+        "test_count": 43,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 9,
+        "class_name": "SIT_TO_LIE",
+        "train_count": 102,
+        "train_subjects": 17,
+        "val_count": 32,
+        "val_subjects": 4,
+        "test_count": 61,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 10,
+        "class_name": "LIE_TO_SIT",
+        "train_count": 103,
+        "train_subjects": 17,
+        "val_count": 18,
+        "val_subjects": 3,
+        "test_count": 54,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 11,
+        "class_name": "STAND_TO_LIE",
+        "train_count": 129,
+        "train_subjects": 17,
+        "val_count": 19,
+        "val_subjects": 3,
+        "test_count": 76,
+        "test_subjects": 9
+      },
+      {
+        "class_id": 12,
+        "class_name": "LIE_TO_STAND",
+        "train_count": 126,
+        "train_subjects": 17,
+        "val_count": 29,
+        "val_subjects": 4,
+        "test_count": 68,
+        "test_subjects": 9
+      }
+    ],
+    "num_blockers": 7,
+    "blockers": [
+      "Class 7 (STAND_TO_SIT) in val: 21 windows, 4 subjects",
+      "Class 8 (SIT_TO_STAND) in val: 16 windows, 4 subjects",
+      "Class 8 (SIT_TO_STAND) in test: 43 windows, 9 subjects",
+      "Class 9 (SIT_TO_LIE) in val: 32 windows, 4 subjects",
+      "Class 10 (LIE_TO_SIT) in val: 18 windows, 3 subjects",
+      "Class 11 (STAND_TO_LIE) in val: 19 windows, 3 subjects",
+      "Class 12 (LIE_TO_STAND) in val: 29 windows, 4 subjects"
+    ],
+    "k12_trainable_status": "HOLD"
+  }
+}

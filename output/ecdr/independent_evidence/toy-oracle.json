@@ -1,0 +1,25 @@
+{
+  "old_logits": [
+    "9/2",
+    "-1/2",
+    "1"
+  ],
+  "first_logits": [
+    "13/2",
+    "-5/2",
+    "5"
+  ],
+  "stale_second_logits": [
+    "17/2",
+    "-4",
+    "9"
+  ],
+  "exact_margin_minima": [
+    "35/4",
+    "11/8"
+  ],
+  "ibp_margin_expected": [
+    "8",
+    "7/8"
+  ]
+}

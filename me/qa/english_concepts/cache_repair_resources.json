@@ -1,0 +1,87 @@
+{
+  "compiler": "/usr/lib/chatgpt/resources/tectonic/tectonic",
+  "cache_directory": "/home/pro/.config/ChatGPT/latex/tectonic",
+  "bundle_digest": "6ffe055852f8faf66c0acbe1a7fb27f87b869a90bad1204f3bf4d9683f597c7c",
+  "font_resources": [
+    {
+      "file": "cmex10.pfb",
+      "bytes": 30251,
+      "sha256": "791b31aa1db8608d0144b3a40fc0fe53383a60f6b00d0e8fd9f06ac4a11df8cb",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmex8.pfb",
+      "bytes": 30273,
+      "sha256": "778a2aaea4bf9d19ce2a7342864fa2696c07770c86d36a62e2ef799ad0724b05",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmmi10.pfb",
+      "bytes": 36299,
+      "sha256": "e3661061e8aa474d6de5ffa916edceb0e3d8b998862018c147f0357fce00bcd7",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmmi6.pfb",
+      "bytes": 37166,
+      "sha256": "c31dbaffb861162eadf3a7210bdf271b0dda577841aed4c0572069b0d52662b6",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmmi8.pfb",
+      "bytes": 35469,
+      "sha256": "f396f52d9ed3498c15aa7e694baef74c0a11119624fcd6db66dad4ac76972cb0",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmr10.pfb",
+      "bytes": 35752,
+      "sha256": "fdcede8794018df5f2b58f0905fb20a2b418ed8f67b73ee12445855dfbe5b1be",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmr6.pfb",
+      "bytes": 32734,
+      "sha256": "9fe20cb9ef24a0f4c74d38a65d4eee5cff3165f3b8600407ceba396aeb2b7617",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmr7.pfb",
+      "bytes": 32762,
+      "sha256": "b37e8671820b0753c6e233eaa3230c6ab9cff04e6c4baee312d60ae261e5aba1",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmr8.pfb",
+      "bytes": 32726,
+      "sha256": "8150cbfac5cfe53040327df171c3059f10730b32cabf2504b01713d639a11feb",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmsy10.pfb",
+      "bytes": 32569,
+      "sha256": "62ee8cef552017551cd3e026a483e700730103eceaad959c87b7730017f59cff",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmsy6.pfb",
+      "bytes": 32587,
+      "sha256": "73eed8a83a07d8ef04d240da22bce1fd3646074f46179e3677f4f42a542f20b6",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "cmsy8.pfb",
+      "bytes": 32626,
+      "sha256": "2313392f0f4cd974d9da5fb54a52feae126059759edc04a4e47e33ea6027418b",
+      "readable_with_only_cached": true
+    },
+    {
+      "file": "msbm10.pfb",
+      "bytes": 34694,
+      "sha256": "d2121de7e7c14490a2d352e3b62e62882d6c300235464bfa577e6055696e6e62",
+      "readable_with_only_cached": true
+    }
+  ],
+  "PDF_exported": false,
+  "app_binary_or_sandbox_policy_modified": false
+}

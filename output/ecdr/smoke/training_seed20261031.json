@@ -1,0 +1,30 @@
+{
+  "research_status": "EXPERIMENTAL_HOLD",
+  "label_policy": "majority",
+  "epochs": 2,
+  "lr": 0.001,
+  "batch_size": 64,
+  "seed": 20261031,
+  "prep_id": "cf84f76ba4787676",
+  "best_epoch": 2,
+  "best_val_acc": 0.806967447173044,
+  "best_val_macro_f1": 0.5649667186883217,
+  "test_acc": 0.7701567749160134,
+  "test_macro_f1": 0.514974741142365,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.260713203813771,
+      "val_loss": 0.7527978291244659,
+      "val_acc": 0.7538549400342661,
+      "val_macro_f1": 0.43600861161997356
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.557472145454563,
+      "val_loss": 0.6432790121713547,
+      "val_acc": 0.806967447173044,
+      "val_macro_f1": 0.5649667186883217
+    }
+  ]
+}

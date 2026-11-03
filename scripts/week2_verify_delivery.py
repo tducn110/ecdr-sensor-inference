@@ -414,9 +414,46 @@ def verify_delivery() -> tuple[dict, dict]:
         record(checks, "final_generated_verification_receipt_passes", receipt_ok,
                {"overall_status": "PASS"}, {"overall_status": final_receipt.get("overall_status")},
                {"receipt": str(FINAL_RECEIPT.relative_to(ROOT))})
+        primary_hashes = final_receipt.get("primary_evidence", {})
+        required_primary = {
+            str((OUT / name).relative_to(ROOT)) for name in (
+                "data_audit.json", "model_audit.json", "week1_preservation_verification.json",
+                "visual_review.json", "concept_audit_64.csv", "content_review.md",
+            )
+        }
+        primary_results = {}
+        for relative_path, expected_hash in primary_hashes.items():
+            path = (ROOT / relative_path).resolve()
+            valid_path = path.is_relative_to(ROOT) and path.is_file()
+            actual_hash = sha256(path) if valid_path else None
+            primary_results[relative_path] = {
+                "expected": expected_hash, "actual": actual_hash,
+                "matches": actual_hash == expected_hash,
+            }
+        primary_ok = required_primary.issubset(primary_hashes) and all(
+            item["matches"] for item in primary_results.values()
+        )
+        record(checks, "final_receipt_primary_evidence_hashes_match_current_files", primary_ok,
+               "all required primary evidence exists and every declared SHA-256 matches",
+               primary_results, {"required_paths": sorted(required_primary)})
     else:
         pending.append({"artifact": str(FINAL_RECEIPT.relative_to(ROOT)),
                         "reason": "generated final verification receipt; checked automatically when it exists"})
+
+    visual_path = OUT / "visual_review.json"
+    visual_review = read_json(visual_path) if visual_path.is_file() else {}
+    visual_documents = {item.get("path"): item for item in visual_review.get("documents", [])}
+    visual_results = {}
+    for pdf in (DATA_PDF, MODEL_PDF):
+        relative_path = str(pdf.relative_to(ROOT))
+        item = visual_documents.get(relative_path, {})
+        visual_results[relative_path] = (
+            pdf.is_file() and item.get("sha256") == sha256(pdf)
+            and item.get("physical_pages") == page_counts.get(relative_path)
+        )
+    record(checks, "visual_review_binds_current_canonical_pdf_bytes_and_page_counts",
+           visual_review.get("overall_status") == "PASS" and all(visual_results.values()),
+           {path: True for path in visual_results}, visual_results)
 
     markdown_paths = [ROOT / "README.md", ROOT / "01_DATA/README.md", ROOT / "02_MODEL/README.md",
                       ROOT / "me/README.md", OUT / "README.md"]
@@ -454,6 +491,7 @@ def verify_delivery() -> tuple[dict, dict]:
 
     artifact_candidates = [
         DATA_TEX, DATA_PDF, MODEL_TEX, MODEL_PDF, concept_audit_path, content_review_path,
+        OUT / "hash_chain_regression.json",
         ROOT / "README.md", ROOT / "01_DATA/README.md", ROOT / "02_MODEL/README.md",
         ROOT / "04_SYNTHESIS/README.md",
         ROOT / "me/README.md", OUT / "README.md",

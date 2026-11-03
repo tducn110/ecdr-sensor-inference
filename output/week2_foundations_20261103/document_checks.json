@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "started_at_utc": "2026-11-03T00:48:57.511467+00:00",
-  "completed_at_utc": "2026-11-03T00:48:57.668493+00:00",
+  "started_at_utc": "2026-11-03T00:52:14.661115+00:00",
+  "completed_at_utc": "2026-11-03T00:52:14.833985+00:00",
   "command": ".venv/bin/python scripts/week2_verify_delivery.py",
   "environment": {
     "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
@@ -655,6 +655,13 @@
     },
     {
       "source": "output/week2_foundations_20261103/README.md",
+      "target": "hash_chain_regression.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
       "target": "visual_review.json",
       "exists": true,
       "fragment_valid": true,
@@ -1160,6 +1167,71 @@
       }
     },
     {
+      "name": "final_receipt_primary_evidence_hashes_match_current_files",
+      "status": "PASS",
+      "expected": "all required primary evidence exists and every declared SHA-256 matches",
+      "actual": {
+        "output/week2_foundations_20261103/data_audit.json": {
+          "expected": "e50d8fc069ef6930f126d8c1b3ec7d32fc9ac320aba62b67daafdea3ab107f36",
+          "actual": "e50d8fc069ef6930f126d8c1b3ec7d32fc9ac320aba62b67daafdea3ab107f36",
+          "matches": true
+        },
+        "output/week2_foundations_20261103/model_audit.json": {
+          "expected": "40fb586b1231207fcccea5d0656f1ccf1e5b75759bc232f82eedd4d26bc9fbce",
+          "actual": "40fb586b1231207fcccea5d0656f1ccf1e5b75759bc232f82eedd4d26bc9fbce",
+          "matches": true
+        },
+        "output/week2_foundations_20261103/week1_preservation_verification.json": {
+          "expected": "dda504d67e2aaeb1945325f8f6feadb15037297a894f9f72e3dc4b4dc0ecccc9",
+          "actual": "dda504d67e2aaeb1945325f8f6feadb15037297a894f9f72e3dc4b4dc0ecccc9",
+          "matches": true
+        },
+        "output/week2_foundations_20261103/visual_review.json": {
+          "expected": "c5b2364e3b37de0673d005a7f9ad4a9640dcf4e031ac141d01acc8f36bbe16ac",
+          "actual": "c5b2364e3b37de0673d005a7f9ad4a9640dcf4e031ac141d01acc8f36bbe16ac",
+          "matches": true
+        },
+        "output/week2_foundations_20261103/concept_audit_64.csv": {
+          "expected": "61270f8063a36d777996908973a19c6fdc3e4362ab99562dba6d33869010e29a",
+          "actual": "61270f8063a36d777996908973a19c6fdc3e4362ab99562dba6d33869010e29a",
+          "matches": true
+        },
+        "output/week2_foundations_20261103/content_review.md": {
+          "expected": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99",
+          "actual": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99",
+          "matches": true
+        },
+        "output/week2_foundations_20261103/hash_chain_regression.json": {
+          "expected": "ec42c6d100ef1b38213c86e4ad38a7ad83de955a44b468c521dfcd1365d9ad98",
+          "actual": "ec42c6d100ef1b38213c86e4ad38a7ad83de955a44b468c521dfcd1365d9ad98",
+          "matches": true
+        }
+      },
+      "evidence": {
+        "required_paths": [
+          "output/week2_foundations_20261103/concept_audit_64.csv",
+          "output/week2_foundations_20261103/content_review.md",
+          "output/week2_foundations_20261103/data_audit.json",
+          "output/week2_foundations_20261103/model_audit.json",
+          "output/week2_foundations_20261103/visual_review.json",
+          "output/week2_foundations_20261103/week1_preservation_verification.json"
+        ]
+      }
+    },
+    {
+      "name": "visual_review_binds_current_canonical_pdf_bytes_and_page_counts",
+      "status": "PASS",
+      "expected": {
+        "01_DATA/03_Week_2_Data_Foundations.pdf": true,
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf": true
+      },
+      "actual": {
+        "01_DATA/03_Week_2_Data_Foundations.pdf": true,
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf": true
+      },
+      "evidence": {}
+    },
+    {
       "name": "markdown_relative_links_and_local_fragments_resolve",
       "status": "PASS",
       "expected": "all local links resolve and Markdown fragments exist",
@@ -1172,7 +1244,7 @@
           "me/README.md",
           "output/week2_foundations_20261103/README.md"
         ],
-        "local_links_checked": 92,
+        "local_links_checked": 93,
         "external_links_skipped_without_network": true,
         "pending_receipt_links": 0
       }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "completed_at_utc": "2026-11-03T00:47:33.048537+00:00",
+  "completed_at_utc": "2026-11-03T00:52:14.617275+00:00",
   "date_local": "2026-11-03",
   "timezone": "Asia/Ho_Chi_Minh",
   "repository": "/home/pro/Downloads/research",
@@ -47,7 +47,8 @@
       "expected_items": 64,
       "original_source_matches_base_revision": true,
       "current_sections_resolve": true
-    }
+    },
+    "primary_evidence_hash_chain_negative_regression": "PASS: an intentionally stale hash is rejected; canonical evidence remains untouched"
   },
   "document_integrity_receipt": "output/week2_foundations_20261103/document_checks.json",
   "delivery_manifest": "output/week2_foundations_20261103/delivery_manifest.json",
@@ -64,8 +65,9 @@
     "output/week2_foundations_20261103/model_audit.json": "40fb586b1231207fcccea5d0656f1ccf1e5b75759bc232f82eedd4d26bc9fbce",
     "output/week2_foundations_20261103/week1_preservation_verification.json": "dda504d67e2aaeb1945325f8f6feadb15037297a894f9f72e3dc4b4dc0ecccc9",
     "output/week2_foundations_20261103/visual_review.json": "c5b2364e3b37de0673d005a7f9ad4a9640dcf4e031ac141d01acc8f36bbe16ac",
-    "output/week2_foundations_20261103/concept_audit_64.csv": "b2c5757674c7f843d42450917349e365815e358471d3ae90ebea39662c6fcf62",
-    "output/week2_foundations_20261103/content_review.md": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99"
+    "output/week2_foundations_20261103/concept_audit_64.csv": "61270f8063a36d777996908973a19c6fdc3e4362ab99562dba6d33869010e29a",
+    "output/week2_foundations_20261103/content_review.md": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99",
+    "output/week2_foundations_20261103/hash_chain_regression.json": "ec42c6d100ef1b38213c86e4ad38a7ad83de955a44b468c521dfcd1365d9ad98"
   },
   "research_limits": [
     "Upstream annotation index origin remains unresolved; 98 offset-sensitive window assignments.",
@@ -73,5 +75,6 @@
     "G2 quality remains HOLD because transition classes are weakly supported.",
     "No certified region, numerical-soundness proof, verified cache runtime, net end-to-end saving or energy benefit is established."
   ],
-  "acceptance": "Not claimed"
+  "acceptance": "Not claimed",
+  "receipt_integrity_correction": "CSV line endings were normalized during publication; refreshed its primary-evidence checksum and added a fail-fast hash-chain check. No report or model result changed."
 }

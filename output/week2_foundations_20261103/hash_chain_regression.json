@@ -1,0 +1,12 @@
+{
+  "executed_at_utc": "2026-11-03T00:52:14.616957+00:00",
+  "test": "isolated receipt with an incorrect CSV primary-evidence hash",
+  "expected": "FAIL on primary-evidence SHA-256 mismatch",
+  "observed_status": "FAIL",
+  "observed_failed_checks": [
+    "final_receipt_primary_evidence_hashes_match_current_files"
+  ],
+  "passed": true,
+  "changed_canonical_artifacts": false,
+  "validator_sha256": "aea037d67e6edb4173038c468cdaa6be1635f98b7251ea5ca5203b4c8c8b56ed"
+}

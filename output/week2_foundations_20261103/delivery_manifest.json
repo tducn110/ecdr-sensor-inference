@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "created_at_utc": "2026-11-03T00:48:57.668351+00:00",
+  "created_at_utc": "2026-11-03T00:52:14.833913+00:00",
   "repository_root": "/home/pro/Downloads/research",
   "scope": "Week 2 delivery artifact inventory; hashes exclude document_checks.json and delivery_manifest.json themselves",
   "artifacts": [
@@ -35,6 +35,11 @@
       "sha256": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99"
     },
     {
+      "path": "output/week2_foundations_20261103/hash_chain_regression.json",
+      "bytes": 469,
+      "sha256": "ec42c6d100ef1b38213c86e4ad38a7ad83de955a44b468c521dfcd1365d9ad98"
+    },
+    {
       "path": "README.md",
       "bytes": 5751,
       "sha256": "daf4643af9ba41bc0f3c98b7d0ea25843fe5c0f96cb5288a10ede75d12991c8d"
@@ -61,8 +66,8 @@
     },
     {
       "path": "output/week2_foundations_20261103/README.md",
-      "bytes": 9430,
-      "sha256": "02e0c994bc5674cc101d852982b8c23777a1f50dc1341eb0f4f0e24e2ec69f93"
+      "bytes": 9655,
+      "sha256": "2d7ead967df64b7b71db556de365c8b4c804b03d22fa2a451f1b7bb759b45525"
     },
     {
       "path": "scripts/week2_data_audit.py",
@@ -76,8 +81,8 @@
     },
     {
       "path": "scripts/week2_verify_delivery.py",
-      "bytes": 30083,
-      "sha256": "da8e5cc78e111d7c76cca5b89f3952b67ddf7febe2547b745954ba5e995151c9"
+      "bytes": 32187,
+      "sha256": "aea037d67e6edb4173038c468cdaa6be1635f98b7251ea5ca5203b4c8c8b56ed"
     },
     {
       "path": "me/build_sources.py",
@@ -121,8 +126,8 @@
     },
     {
       "path": "output/week2_foundations_20261103/final_verification.json",
-      "bytes": 4447,
-      "sha256": "b2918f94d33d609d20bb568308d6ed5736aad713796bd4130fc7dee53983b012"
+      "bytes": 4930,
+      "sha256": "4809a169e78d52bca5763bdd98817221839c9caa7a57b4c8c2d35643839687b3"
     },
     {
       "path": "output/week2_foundations_20261103/visual_review.json",

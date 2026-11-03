@@ -3,7 +3,7 @@
 \setmainfont{Noto Serif}
 \setsansfont{Noto Sans}
 \setmonofont{Noto Sans Mono}[Scale=0.86]
-\usepackage[vietnamese]{babel}
+% fontspec handles Vietnamese Unicode; no external babel language package.
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{geometry,booktabs,longtable,tabularx,array}
 \usepackage{tikz}
@@ -39,11 +39,15 @@ pdftitle={ECDR: Giải thích toàn bộ nền tảng toán học},pdfauthor={EC
 \theoremstyle{definition}
 \newtheorem{example}[proposition]{Ví dụ}
 \renewcommand{\proofname}{Chứng minh}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\refname}{Tài liệu tham khảo}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\textcolor{ink}{ECDR | Giải thích toán học}}
 \fancyhead[R]{\small Tài liệu đồng hành Week 1--3}
-\fancyfoot[L]{\small 28/10/2026}
+\fancyfoot[L]{\small 03/11/2026}
 \fancyfoot[R]{\thepage}
 \begin{document}
 \hypersetup{pageanchor=false}
@@ -64,8 +68,7 @@ Phạm vi & Bao gồm phần toán của data, CNN, probability, certification,
 structured domains, lifecycle và cost; không chỉ Lipschitz.\\
 Ví dụ xuyên suốt & Một CNN nhỏ tính tay được; mọi số trong ví dụ là minh
 họa toán học, không phải mô hình HAPT đã train.\\
-Nguồn đối chiếu & \code{ECDR_Weeks_1_2_3_Theory.tex} trong cùng thư mục và
-các nguồn gốc trong bibliography.\\\bottomrule
+Nguồn đối chiếu & \code{03_Week_3_Mathematical_Foundations.tex}, frozen Week1--2 và các nguồn gốc trong bibliography.\\\bottomrule
 \end{tabularx}
 \vfill
 \textbf{Mục tiêu đọc.} Sau khi đọc, người đọc có thể giải thích mỗi công
@@ -104,6 +107,135 @@ $\rho_b$ là build/query, không phải bias hay box budget.
 \tableofcontents
 \endgroup
 \clearpage
+
+\section*{Đọc cùng actual reference K=12}
+\addcontentsline{toc}{section}{Đọc cùng actual reference K=12}
+Tài liệu này giải thích vì sao công thức cần thiết và cách thay số; báo cáo
+A giữ chứng minh đầy đủ và ledger audit. Hai vai trò khác nhau.
+Reference hiện tại là \code{SmallCNN1D(num_classes=12)} tại commit xuất phát
+\code{8d4ebae576e612837dfd2f3cdcbaab737a705c4b}, không phải toy valid--GAP.
+
+\textbf{Phân biệt bốn số.} $C=6$ là số channel cảm biến, $W=128$ là số
+sample trong một window, $s=64$ là số sample dịch, $K=12$ là số activity
+logits. Input có $CW=768$ scalar; new wave có $Cs=384$ scalar; mỗi winner
+phải so với $K-1=11$ competitors. Tăng K không tăng số channel cảm biến.
+
+\textbf{Từ raw đến reference.} $X\in\R^{6\times128}$ chứa gia tốc theo$g$
+và vận tốc góc theo rad/s. $\mu,\sigma\in\R^6$ là constants train-fit đã
+khóa. $Z=N(X)=(X-\mu)/\sigma$ là tensor normalized không có đơn vị;
+$f_\theta(Z)$ có 12 logits, $F(X)=f_\theta(N(X))$ là ideal real map.
+$\widehat F(X)$ là executable float32; proof của $F$ cần numerical bridge
+mới áp được cho $\widehat F$. Lưu constants float32 chính xác xác định một
+hàm toán học; nó không tự bao sai số của các phép tính float32 sau đó.
+
+\begin{table}[!htbp]\centering\small
+\caption{Kích thước actual graph, đọc theo một query $B=1$.}
+\begin{tabularx}{\linewidth}{@{}p{7.2cm}Y@{}}\toprule
+Bước & Tensor output\\\midrule
+Input; Conv6$\to$32 k5 p2; BN--ReLU & $1\times32\times128$ sau Conv/BN/ReLU\\
+Pool2; Conv32$\to$64 k3 p1; BN--ReLU & $1\times64\times64$ sau Conv thứ hai\\
+Pool2; Conv64$\to$64 k3 p1; BN--ReLU & $1\times64\times32$\\
+Flatten; Linear2048$\to$128; ReLU & $1\times128$ sau Linear/ReLU\\
+Linear128$\to$12 & $1\times12$ logits\\\bottomrule
+\end{tabularx}
+\end{table}
+Checkpoint ở \code{output/week1_closeout_20261102/reference/selected_best.pt},
+SHA-256 \code{8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1}.
+Preprocessing ID \code{aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e}.
+283,692 trainable parameters; BN running buffers cũng thuộc identity nhưng
+không tính như trainable parameters. Full test stream 5,053 và supervised
+subset 3,572 có mẫu số khác nhau. Accuracy 0.8905375 và macro-F1 0.7762645
+chỉ thuộc subset có nhãn; G2 giữ HOLD.
+
+\subsection*{Ví dụ1: point margin, regional minimum và lower bound}
+Đây là ví dụ hai lớp, không phải output của checkpoint. Cho
+$F_1(x)=1-x,F_2(x)=0$, anchor$x^r=0$, winner$c=1$ và miền$[-0.2,0.2]$.
+Point margin là$g_{12}(0)=1$. Exact regional minimum là
+$\inf_{x\in[-0.2,0.2]}(1-x)=0.8$. Một thuật toán có thể chỉ trả lower
+bound$\ell=0.7$: vì$0.7\le0.8$ và$0.7>0$, vẫn chứng nhận được miền.
+Nếu nó trả$-0.1$, không có certificate từ bound đó, dù exact minimum vẫn
+$0.8$. Nếu đổi miền thành$[-2,2]$, point margin vẫn1 nhưng minimum$-1$.
+Với actual model phải thực hiện cùng lập luận cho đủ 11 margins, không chỉ
+logit đứng thứ hai tại anchor vì competitor mạnh nhất có thể đổi trong miền.
+
+\subsection*{Ví dụ2: BN, MaxPool và direct margin, tính từng bước}
+Các constants nhỏ sau chỉ dùng minh họa operator của actual graph.
+BN eval có dạng $y=a v+b$ với
+$a=\gamma/\sqrt{\mathrm{running\_var}+\epsilon_{\rm BN}}$,
+$b=\beta-a\,\mathrm{running\_mean}$. Nếu$v\in[-1,2]$, $a=-2,b=1$,
+thì $y\in[-2\cdot2+1,-2\cdot(-1)+1]=[-3,3]$; scale âm đòi đổi đầu mút.
+ReLU cho interval$[0,3]$. Pool của hai pre-pool intervals$[0,3]$ và$[2,4]$
+được bao bởi$[\max(0,2),\max(3,4)]=[2,4]$. Nó không affine khi winning
+pool index thay đổi, dù từng nhánh là một phép chọn tọa độ.
+
+Xét hidden interval$h_1,h_2\in[0,2]$, final rows$W_c=(2,1)$,
+$W_j=(1,1)$ và biases$b_c=1,b_j=0$. Bound riêng logits là
+$F_c\in[1,7]$, $F_j\in[0,4]$ nên lower margin$1-4=-3$.
+Gộp rows trước: $g_{cj}=(W_c-W_j)h+1=h_1+1\in[1,3]$,
+lower margin1. Term$h_2$ đã triệt tiêu. Đây là lý do bound direct margin,
+không chứng minh direct margin đủ chặt ở mọi lớp phi tuyến.
+
+Một phản ví dụ cho IBP nói chung: $h_1=h_2=\relu(x+1)$,
+$x\in[-1,1]$, $g=1+h_1-h_2$. True margin luôn 1; nếu hai hidden units bị interval hóa độc lập
+thành$[0,2]^2$, direct-margin IBP trả$1+0-2=-1$ và không nhận strict certificate.
+Việc gộp final rows có thể sửa một số cancellation, nhưng không khôi phục
+mọi dependency đã mất ở tầng trước. Đây là incompleteness, không unsoundness.
+
+\subsection*{Ví dụ3: suy ra12 aligned feature positions của actual graph}
+Dùng index zero-based. Conv1 tại$i$ nhìn$[i-2,i+2]$.
+Pool1 tại$i$ lấy hai Conv1 positions$2i,2i+1$, nên nhìn
+$[2i-2,2i+3]$. Conv2 dùng$i-1,i,i+1$ của Pool1, nên nhìn
+$[2i-4,2i+5]$. Pool2 cho$[4i-4,4i+7]$; Conv3 cho
+\[
+ [4j-8,4j+11],\qquad (4j+11)-(4j-8)+1=20.
+\]
+Jump4 nghĩa là sang feature tiếp theo dịch4 raw samples. Dịch64 samples
+là dịch$64/4=16$ final features. Để RF nằm trong shared half$[0,63]$:
+\[
+ 4j-8\ge0\Rightarrow j\ge2,\qquad
+ 4j+11\le63\Rightarrow j\le13.
+\]
+Vì vậy $H_j(X_{t+1})=H_{j+16}(X_t)$ cho$j=2,\ldots,13$ với same
+pool phase, BN eval frozen và time-homogeneous normalization. Có
+$13-2+1=12$ positions, mỗi vị trí64 channels:768 feature scalars.
+Tại$j=2$, RF$[0,19]$ chuyển sang$[64,83]$ ở window cũ.
+Tại$j=13$, RF$[44,63]$ chuyển sang$[108,127]$.
+$j=1$ dùng padding mới; $j=14$ dùng new wave nên không được theorem bảo đảm.
+Interval$[4j-9,4j+10]$ đôi khi được nhắc có đúng width20 nhưng sai origin.
+
+\textbf{Vì sao equality này chưa cho reuse class?} Actual Flatten sắp
+$(channel,time)$ vào 2048 coordinates. Một dense head nhỏ có thể đặt weight1
+ở position2 và weight0 ở position18. Dù new feature2 bằng old feature18,
+hai output vẫn dùng coefficients khác nhau. Actual head còn có ReLU của
+128 hidden units. Vì vậy không thể thế công thức GAP vào head này.
+Các tính toán valid--GAP ở những mục sau vẫn được giữ để hiểu định lý H13
+cũ và H14; chúng là alternative/historical architecture với giả thiết riêng.
+
+\subsection*{Ví dụ4: fixed-overlap box và kiểm biên bảo thủ}
+Với một channel toy$W=4,s=2$, anchor normalized$(1,2,3,4)$ thì next
+window có dạng$(3,4,u_1,u_2)$. Nếu$u_1\in[4.9,5.1]$,
+$u_2\in[5.8,6.2]$, chỉ hai biến tự do. Query$(3,4,5,6)$ thuộc miền;
+query$(3.01,4,5,6)$ không thuộc dù tail đúng. Không có trusted prefix state
+thì không được bỏ kiểm hai tọa độ đầu. Trong HAPT, ví dụ này tăng lên 384
+prefix scalars và 384 tail scalars. K=12 không tác động các số này.
+
+Nếu normalization của raw query chỉ được biết nằm trong interval
+$[\underline z_i,\overline z_i]$, muốn accept phải chứng minh cả interval
+nằm trong certified interval$[L_i,U_i]$. Điều kiện là
+$\underline z_i\ge L_i$ và$\overline z_i\le U_i$.
+Ví dụ certified$[0,1]$, enclosure$[0.999,1.001]$ phải reject dù midpoint1.
+Sai số mỗi operator và mỗi bước tính bound cần có biện minh; cộng tùy ý
+$10^{-6}$ hoặc chỉ ép float64 không phải proof cho float32.
+
+\subsection*{Ví dụ5: no-hit và chi phí âm là kết quả hợp lệ}
+Giả sử có$N=100$ query, không query nào được reuse và mọi query fallback
+đúng reference. All-query agreement có thể100/100, nhưng
+$A_{\rm reuse}=0/0$ là N/A; $r_{\rm cert}=0/100=0$.
+Trong mô hình giả định$t_f=0.2$ms, $t_v+t_m=0.01$ms,
+$B=10$ builds, $t_b=2$ms, mean ECDR cost là
+$0.01+0.2+(10/100)\cdot2=0.41$ms, speed ratio$0.2/0.41=0.488$.
+Đây là thay số toy, không phải benchmark. Nó giải thích H19--H20:
+sound gate có thể hữu ích về correctness nhưng không tạo saving.
 
 \section{Đọc ngôn ngữ toán học trong báo cáo}
 \subsection{Điểm, tập, hàm và lượng từ}
@@ -798,7 +930,7 @@ M=T_{\rm out}C_{\rm out}C_{\rm in}k.
 MAC là một multiply--accumulate; FLOP $\approx2M$ chỉ cho các phép tương
 ứng theo convention, không gồm mọi operator và memory traffic.
 
-\subsection{Receptive field tại sao cộng $(k_\ell-1)$?}
+\subsection{Receptive field tại sao cộng \texorpdfstring{$(k_\ell-1)$}{(k-l trừ 1)}?}
 Layer đầu RF là $k_1$. Layer tiếp lấy $k_2$ activation liên tiếp, mỗi activation
 dịch một raw position, nên union RF dài $k_1+k_2-1$. Quy nạp cho
 \begin{equation}
@@ -1304,8 +1436,7 @@ H03 & Annotation cùng activity có ràng buộc CNN weights không? & Không;
 reference error có thể khác nhau; mục 3,7,8.\\
 H04 & Continuity và strict margin tại anchor & Cho một local radius tồn tại,
 chưa suy ra useful coverage; mục 9.\\
-H05 & $\ell_{cj}>0$ và $\ell$ valid whole-domain & Đủ giữ target, không cần
-biết exact infimum; mục 8.\\
+H05 & $\ell_{cj}>0$ và $\ell$ valid whole-domain & Đủ giữ target trong số thực; K=12 cần 11 competitors và numerical bridge; mục 8.\\
 H06 & Margin giảm tối đa $L\epsilon$ & Có certified ball theo assumptions;
 mục 10.\\
 H07 & Interval enclosure có phát hiện mọi invariant domain? & Không;
@@ -1314,16 +1445,13 @@ H08 & Gộp margin có giữ cancellation? & Có thể, như $t+1-t$ và toy CRO
 mục 11,12.\\
 H09 & Bound method chặt có luôn rẻ? & Không suy từ proof; build cost cần
 đo; mục 12,23.\\
-H10 & Temporal directions có projection/penalty nhỏ theo margin normal? & Là hypothesis;
-toy có cancellation không chứng minh HAPT; mục 13,14.\\
+H10 & Temporal directions có projection/penalty nhỏ theo margin normal? & Đã đo local geometry trên 32 validation anchors; whole-region usefulness vẫn NOT ESTABLISHED; mục 13,14 và execution.\\
 H11 & Geometry structured hơn box ở matched condition? & Cần matching và
 held-out coverage, không chỉ volume/tên miền; mục 13,15.\\
 H12 & $Cs$ biến mới thay vì $CW$ biến tự do & Đúng khi overlap fixed;
 noise có thể mở dimension; mục 5.\\
-H13 & Aligned features của valid CNN bằng nhau & Theo RF/input/architecture
-contract; mục 17.\\
-H14 & GAP update là new-minus-dropped & Exact identity, sau đó vẫn cần
-margin bounds; mục 18,19.\\
+H13 & Nghĩa gốc: aligned features của valid CNN bằng nhau & Giữ theorem gốc; actual padded/BN/pool có RF[4j$-$8,4j$+$11], j2--13 theo phần K=12 mới; finite checks không là universal float theorem.\\
+H14 & GAP update là new-minus-dropped & DERIVED cho GAP lịch sử; không áp actual Flatten--MLP; mục 18,19 giữ ví dụ và giả thiết.\\
 H15 & Recenter sau hit giữ certificate cũ & Sai vì đổi miền, có drift;
 mục 21.\\
 H16 & Giữ fixed anchor và checker sound mỗi lần & Sound nếu certificate
@@ -1342,8 +1470,7 @@ H22 & Ideal proof tự áp cho float32 & Không; cần $\widehat\ell>\delta+\eta
 với bounds hợp lệ; mục 22.\\
 H23 & Event name đủ để reuse & Không; event chỉ chọn miền, certificate và
 membership mới áp property; mục 15.\\
-H24 & Có regime đồng thời sound, useful, saving & Câu hỏi trung tâm cần
-cả proof và thí nghiệm; mục 24.\\\bottomrule
+H24 & Có regime đồng thời sound, useful, saving & Measured policies zero reuse, negative savings; tồn tại regime khác vẫn NOT ESTABLISHED; mục 24 và execution.\\\bottomrule
 \end{longtable}
 
 \section{Các lỗi đọc công thức thường gặp}
@@ -1367,17 +1494,86 @@ số giả định là measured speedup.
 \end{enumerate}
 
 \section{Nguồn và phép tính tái kiểm}
-Đối tượng được giải thích là toàn bộ mathematical content của
-\code{ECDR_Weeks_1_2_3_Theory.tex}. Tài liệu này không thay đổi báo cáo chính,
-dataset hoặc model. Các source facts về HAPT dựa trên dataset documentation;
+Đối tượng được giải thích là mathematical content của báo cáo chuẩn
+\code{03_Week_3_Mathematical_Foundations.tex}, gồm actual K=12 và các theorem lịch sử giữ giả thiết. Dataset và model frozen không thay đổi. Các source facts về HAPT dựa trên dataset documentation;
 những theorem/bound principles tham khảo các bài gốc dưới đây. Những ví dụ
 nhỏ là minh họa tự dựng và được kiểm arithmetic riêng.
 
 Các checks/JSON trong \code{qa/} ghi provenance và kết quả số cho tài liệu
 đồng hành. Enumerating corners kiểm các affine examples; sampled cases chỉ
 đối chiếu implementation arithmetic, không thay proof trên continuous domain.
-Không chạy training, neural verifier hoặc benchmark ECDR. Những property
-empirical và floating-point obligations chưa giải quyết vẫn giữ trạng thái mở.
+Các receipt Week3 mới ở
+\code{output/week3_certification_20261103/} phải đọc theo measurement scope; không có retraining. Những property empirical hoặc floating-point obligations chưa được evidence giải quyết vẫn giữ trạng thái mở.
+
+% BEGIN WEEK3 EXPLAINED EXECUTION EVIDENCE
+\section*{Đọc kết quả thực tế Week3, không lẫn các mẫu số}
+\addcontentsline{toc}{section}{Đọc kết quả thực tế Week3, không lẫn các mẫu số}
+Run mới hoàn tất03/11/2026 trên CPU một thread, PyTorch 2.14.1+cpu,
+checkpoint và preprocessing đã nêu, không retrain. Reproduce bằng
+\code{.venv/bin/python scripts/week3_experiments.py}; receipt gốc ở
+\code{output/week3_certification_20261103/experiment_results.json}.
+Report A chứa bảng đầy đủ, phương pháp và mọi measurement scope; ở đây
+chỉ giải thích cách đọc đúng các kết quả chính.
+
+\begin{enumerate}
+\item \textbf{Positive build không là hit.} Radius$10^{-6}$ được chọn từ
+validation theo tie-break khi không positive radius nào cho joint next-hit.
+Tại5,053 test anchors, diagonal có 5,034 positive diagnostics và wave 4,211.
+Cả hai có 0 candidate next-member,0 executable certificates,0 accepted reuse.
+Tức$5034/5053$ là conditional build fraction, không phải reuse fraction.
+Wave chỉ có 384 free variables không khiến nó tự tốt hơn full box768.
+\item \textbf{No-hit không có 100\% reused agreement.} Từng chronological
+runtime run xử lý5,053 queries,19 recordings, reset tại boundaries; tất cả
+fallback reference nên full-stream disagreements0. Vì reused denominator 0,
+$A_{\rm reuse}$ là N/A. Nó không là safety evidence trên accepted regions.
+Full-stream strata là 2,874 pure-basic,119 pure-transition,579 majority-mixed,
+479 ambiguous và 1,002 unlabeled. Supervised subset 3,572 dùng cho task metrics.
+\item \textbf{Điều gì đã kiểm ở feature?} Independent receipt
+\code{feature_alignment.json} kiểm 5,034 valid pairs và 3,866,112 scalar
+comparisons ở j2--13: bitwise equal, max error 0 trong môi trường này.
+Boundary j0,1,14,15 thất bại ở một số cặp. Cùng receipt có 78/2,661
+same-pure-activity pairs đổi prediction: overlap hay activity name không
+là decision certificate. Feature theorem vẫn cần đúng BN/pool/padding contract.
+\item \textbf{CROWN probe giải quyết gì?} Native1D conversion lỗi ở
+BoundMaxPool; auto-LiRPA 0.8.0 yêu cầu torch$<2.12$, environment 2.14.1
+nằm ngoài version contract. Surrogate height1 copy Conv kernel$(1,k)$,
+pool$(1,2)$, same BN constants và flatten order là tương đương trong số
+thực theo từng operator. Trên8 validation inputs logits match; điều đó
+không chứng minh universal float32 equivalence. Tại2 validation anchors,
+radius 0.001: CROWN positive 2/2, IBP 0/2; thời gian CROWN 388--428ms và
+IBP 2.80--8.59ms/call. Đây là conditional individual probes, không runtime
+benefit hay full-stream CROWN certification.
+\item \textbf{Vì sao formal gate đóng?} Native IBP tính bound bằng float64
+không directed rounding, chưa có proven enclosure cho toàn bound arithmetic
+và float32 reference/normalization. Gate vì vậy luôn từ chối formal reuse.
+Đây là fail-closed behavior cần thiết; không được bỏ numerical check để
+làm hit rate đẹp hơn.93 tests pass (60 historical,27 actual K=12 và 6
+math counterexamples), cùng65 baseline consistency checks, vẫn không thay
+universal numerical proof.
+\end{enumerate}
+
+\textbf{Đọc chi phí với đúng baseline.} Core reference gồm conversion,
+normalization và forward/argmax, mean 0.2147--0.2240ms. Frozen wrapper có
+full identity rehash mỗi query, mean 1.5885--1.6747ms. ECDR complete path
+mean 3.1069--3.1975ms, gồm membership/identity/state,49 diagonal hoặc69
+wave builds/run và mọi fallback. Ratios wrapper/ECDR là 0.5013--0.5276;
+core/ECDR là 0.06777--0.07058. Mọi ratio nhỏ hơn1: measured saving âm.
+Không được mô tả wrapper overhead như CNN forward cost. Per-query scope
+là raw RAM-resident replay, không có disk/network I/O; setup/load báo riêng,
+shadow logits ngoài timer, process peak RSS không là incremental cache memory.
+Cần đọc mean/p50/p95 và complete scope trong\code{runtime_results.json}.
+
+\textbf{H10--H11 và H24 còn gì?} Local geometry dùng 9,944 train deltas,
+32 validation gradients, top3 PCs giải thích21.48\% variance; mean temporal
+absolute cosine 0.05097 và PCA projection 0.07982. Các số local này không là
+whole-domain Lipschitz bound. Same-center wave/full control có 107/127 positive
+ở cả hai, song không có useful candidate hit ở selected policy. Không có
+matched LipCache HAPT comparator; strict reference-equivalence không tự giống
+GuardNet proxy target. H21 và H24 NOT ESTABLISHED, executable soundness NOT
+ESTABLISHED, G2 HOLD, G3 PARTIAL, G4 chưa established, G5 không PASS.
+Negative result áp các cấu hình đã đo, không bác mọi operating regime.
+
+% END WEEK3 EXPLAINED EXECUTION EVIDENCE
 
 \begin{thebibliography}{99}
 \bibitem{hapt} J. Reyes-Ortiz et al. \emph{Smartphone-Based Recognition of

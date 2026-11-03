@@ -1,14 +1,14 @@
 # 07 G3 Domain Contract — Minimal Diagonal Decision-Reuse Prototype
 
-> 22/10/2026 · **Proposed contract, documentation only; no verifier or runtime
-> implemented. G3 pending.** This file specifies the next prototype. It does
-> not change model weights, dataset/label policy, saved results or G4/G5 status.
-> Mathematical formulation: [04_THEORY.md](04_THEORY.md).
+> Updated 03/11/2026 · Contract for the frozen K=12 actual graph.
+> Executable evidence and remaining numerical limitations are recorded in §9.
+> G2 remains HOLD. A diagnostic positive bound never overrides an unresolved
+> executable numerical guarantee. Mathematical owner: [01_04_THEORY.md](01_04_THEORY.md).
 
 ## 1. Goal, scope and completion boundary
 
 G3 must connect valid class-pair bounds to conservative query membership and
-a trusted-anchor reuse gate for the frozen K=6 model. The first target is a
+a trusted-anchor reuse gate for the frozen K=12 model. The first target is a
 **normalized diagonal candidate box**; global boxes are its isotropic special
 case. PCA and semantic event selectors remain later scope, not prerequisites
 for the first diagonal certificate.
@@ -32,7 +32,7 @@ or validate these outputs.
 
 Source authority: `scripts/backbone.py` (`SmallCNN1D`, `apply_norm`), frozen
 `configs/`, checkpoint weights and normalization statistics. The current
-282,918-parameter model contains BN/MaxPool; actual graph integration must be
+283,692-parameter model contains BN/MaxPool; actual graph integration must be
 validated. A library name does not establish operator support or valid bounds.
 
 Real-valued equations do not model float32 rounding by themselves. Numerical
@@ -71,7 +71,7 @@ certified region; changes need their own matching bound/domain identity.
 
 ## 4. Minimal verifier and certificate record
 
-For anchor winner `a`, form all five class-pair specifications
+For anchor winner `a`, form all eleven class-pair specifications
 
     h_aj(z) = f_theta,a(z) - f_theta,j(z),   j != a.
 
@@ -91,7 +91,7 @@ failure to certify does not prove a decision change. Zero margins, ties,
 unsupported operators, bound failures and uncertain numerical cases cause
 construction failure with reason, not successful certification.
 
-Store domain/anchor/model/preprocessing identities, winner `a`, all five safe
+Store domain/anchor/model/preprocessing identities, winner `a`, all eleven safe
 lower margins, verifier configuration/version, build status/time and numerical
 guarantee. Do not apply bounds from a smaller domain to a larger candidate.
 
@@ -120,12 +120,11 @@ must conservatively fail/fallback.
 Future validation must include an independently checkable affine/toy case,
 class-pair specification checks, zero/small budgets, out-of-domain queries,
 boundaries, stale identities, ties/non-finite inputs and unsupported operators.
-Add shadow-reference checks on the fixed-model data path. These are required
-future checks, not tests performed in this documentation revision.
+Add shadow-reference checks on the fixed-model data path. These are proof obligations; actual execution receipts must identify which checks ran and which remain unresolved.
 
 ## 6. Reuse gate and trusted-anchor lifecycle
 
-Proposed per-query gate:
+Required per-query gate (implementation evidence must name the matching version):
 
 1. Obtain a descriptor/template choice if the policy needs it.
 2. Require a successful certificate with compatible anchor/model/preprocessing/
@@ -162,8 +161,8 @@ undefined; do not report measured 100% agreement from an empty denominator.
 Choose policy on validation recordings, then use fixed held-out test streams
 chronologically with per-recording reset. Full test stream: 5,053 windows.
 Reference agreement is definable without activity ground truth. Accuracy/F1
-must retain a declared K=6 ground-truth scope (existing pure K=6 test count
-2,874). Do not pool corpus train/val/test as test.
+uses only the 3,572 supervised K=12 test windows. Historical pure-K=6 test
+count 2,874 is a different evaluation population. Do not pool corpus train/val/test as test.
 
 Test coverage and model metrics have already been inspected in earlier stages.
 Future fixed-policy evaluation must disclose that exploratory use and any
@@ -193,15 +192,58 @@ implementation must bind centering, basis, residual norm/orthogonality,
 coordinate transform and sound membership to the correct relaxation domain.
 The first diagonal certificate does not certify these other candidates.
 
-## 9. Current completion checklist
+## 9. Exact identity and evidence boundary
 
-- [x] Proposed domain, roles, records and evidence requirements documented.
-- [ ] Model/domain/normalization identity loaded and validated in a prototype.
-- [ ] Minimal class-pair verifier integrated and its bounds justified.
-- [ ] Conservative numerical membership and acceptance implemented/validated.
-- [ ] Reuse gate, invalidation and trusted-anchor lifecycle implemented.
-- [ ] Instrumentation, negative cases and shadow-reference evidence recorded.
-- [ ] Mathematical and executable numerical soundness obligations resolved.
+The reference graph is Conv6→32 k5 p2, BN(eval), ReLU, Pool2; Conv32→64
+k3 p1, BN(eval), ReLU, Pool2; Conv64→64 k3 p1, BN(eval), ReLU;
+Flatten2048→Linear128→ReLU→Linear12. Freeze all running means/variances,
+BN epsilon, weights/biases, pooling phase and flatten order.
 
-G3 remains **PENDING**. No retraining, new audit, certificate construction,
-runtime benchmark or experiment was performed in this documentation update.
+- Checkpoint: `output/week1_closeout_20261102/reference/selected_best.pt`.
+- SHA-256: `8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1`.
+- Preprocessing: `aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e`.
+- Parameter count: 283,692; ordered class list from frozen configuration,
+  explicitly 12 logits and eleven distinct competing margins.
+- Week 3 receipts: `output/week3_certification_20261103/`; canonical reports
+  separate mathematical, executable, empirical and cost findings.
+
+The historical `10_script_11_gate_a_prototype.py` and
+`11_p0_verifier_probe.json` target K=6. They remain historical artifacts.
+They do not establish current operator support or numerical soundness.
+The new verifier must prove or conservatively enclose every operation listed
+above; unsupported operators, nonfinite intermediates or insufficient
+arithmetic guarantees fail closed. Float64 evaluation or a last-step
+`nextafter` alone does not bound all accumulated float32 errors.
+
+Minimal normalized boxes have 768 coordinates. Fixed-overlap wave boxes have
+384 free coordinates and an immutable prefix tied to prior normalized input;
+verify the prefix unless trusted acquisition state establishes it exactly.
+Changing that prefix is a new domain and invalidates the old bound identity.
+No automatic recentering after reuse is permitted.
+
+A candidate can pass a real-arithmetic/diagnostic margin calculation while
+remaining ineligible for executable certified reuse. Report both fields:
+`mathematical_bound_positive` and `executable_certificate_valid`. Formal runtime
+acceptance requires the latter and validated membership, all identities and
+lifecycle state. Report zero accepted reuse as zero, and reused-query agreement
+as N/A when its denominator is zero. Negative coverage/cost findings are valid.
+
+The required closure remains: valid actual-graph bound; conservative executable
+normalization/membership; strictly positive all-eleven safe margins; trusted
+anchor, identity/invalidation/reset/fallback; executed negative and shadow tests;
+complete trace accounting. A checklist or test count is not proof that the
+universal numerical obligation is resolved. G3 must stay conditional/pending
+when any required premise is missing, regardless of successful diagnostics.
+
+The implementation is `ecdr/week3_verifier.py`; `ActualGraphIBP` explicitly
+handles the frozen operators and eleven direct-margin objectives. Its finite
+float64 bounds are conditional estimates, with no directed-rounding/error
+bridge to the executable float32 reference. `ConditionalCertificate` therefore
+cannot enable formal reuse. `RuntimeGate` executes identity/membership/lifecycle
+checks and reference fallback. Executed negative checks are in
+`tests/test_week3_verifier.py`, with the 93-test full-suite receipt at
+`output/week3_certification_20261103/regression_tests.log` (27 tests target the
+actual K=12 verifier, 60 are historical, 6 are mathematical counterexamples).
+The completed test-stream run accepts zero reuse, so G3 remains PARTIAL and
+its numerical obligation unresolved. Candidate/build-positive counts are
+reported independently in `domain_results.json`; they are not certificates.

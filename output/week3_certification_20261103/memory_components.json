@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "measurement_method": "tensor numel*element_size; recursive sys.getsizeof with object-ID de-duplication",
+  "source_function": "scripts/week3_verify_delivery.py:measure_memory_components",
+  "source_sha256": "fe58a65ae7ceb76437d7e0a7f8c10936b8a2a97f8990cd2b18f3243af1dd7466",
+  "python_version": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+  "torch_version": "2.14.1+cpu",
+  "reference_float32_tensor_payload": {
+    "parameter_bytes": 1134768,
+    "buffer_bytes": 1304,
+    "total_tensor_payload_bytes": 1136072
+  },
+  "bound_snapshot_float64_tensor_payload": {
+    "parameter_bytes": 2269536,
+    "buffer_bytes": 2584,
+    "total_tensor_payload_bytes": 2272120
+  },
+  "conditional_certificate_reachable_python_bytes": 54839,
+  "domain_reachable_python_bytes_standalone": 49898,
+  "certificate_example": {
+    "domain_kind": "diagonal_box",
+    "radius": 0.0,
+    "coordinates": 768,
+    "formal_reuse_enabled": false,
+    "numerical_status": "NOT ESTABLISHED"
+  },
+  "scope": "persistent CPU tensor payload + standalone reachable certificate representation; domain is included in certificate count and must not be added twice",
+  "not_measured": [
+    "peak live interval/workspace memory",
+    "Python model/module object overhead",
+    "allocator/reserved memory",
+    "incremental process RSS",
+    "GPU memory",
+    "energy"
+  ],
+  "interpretation": "working-memory components only; global experiment process_peak_rss includes data/PCA and is not cache overhead"
+}

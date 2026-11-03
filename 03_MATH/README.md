@@ -1,46 +1,89 @@
-# TẦNG 3: LÝ THUYẾT TOÁN HỌC & CHỨNG NHẬN AN TOÀN (TIER 3 - MATHEMATICAL THEORY)
+# Tầng 3 — Cơ sở toán học, chứng nhận miền và tính khả thi K=12
 
-> **Mục tiêu của Tầng 3**:  
-> Làm chủ toàn bộ cơ sở lý thuyết toán học hình thức của ECDR: Hiểu cách chứng minh mọi mẫu trong miền $\mathcal{D}(X^r)$ giữ nguyên quyết định lớp $h(X) = c$, phương pháp lan truyền khoảng IBP, CROWN relaxation, giải quyết bẫy hình học chuẩn $L_2$ vs $L_\infty$ trong không gian 768 chiều, tham số hóa miền sóng $T_S$, và khế ước kỹ thuật Gate G3.
+Bản chuẩn Week 3 hiện dùng đúng frozen `SmallCNN1D(num_classes=12)` đã khóa
+ở Week 1–2: input `[B,6,128]`, 283.692 trainable parameters, padded
+Conv–BN(eval)–ReLU–MaxPool và Flatten–MLP, 12 logits, 11 competing margins.
+`C=6` là số sensor channels; `K=12` là số activity classes. **G2 giữ HOLD.**
 
----
+Mục tiêu toán học là lower bound hợp lệ cho từng margin trên **toàn miền**;
+membership của một query chỉ nối query đó với miền đã chứng minh. Định lý
+số thực, operator implementation, numerical soundness float32, zero observed
+disagreements và net savings là các mức bằng chứng khác nhau.
 
-## 1. Trình Tự Đọc Tuyến Tính (Step-by-Step Reading Path)
+## Trình tự đọc và trách nhiệm nguồn
 
-1. [`01_04_THEORY.md`](01_04_THEORY.md):  
-   - **Nói cái gì**: Khung lý thuyết toán học: Định nghĩa miền sự kiện $\mathcal{D}$, cận biên an toàn $g_{cj}(X)$, và định lý Soundness.  
-   - **Đọc xong hiểu được**: Điều kiện toán học để tái sử dụng nhãn an toàn là $\min_{X \in \mathcal{D}} (F_c(X) - F_j(X)) > 0, \forall j \neq c$.
-2. [`02_07_G3_DOMAIN_CONTRACT.md`](02_07_G3_DOMAIN_CONTRACT.md):  
-   - **Nói cái gì**: Khế ước kỹ thuật Gate 3: Ràng buộc bất biến giữa Preprocessing, Normalization và Verifier.  
-   - **Đọc xong hiểu được**: Khế ước sống còn: Mạng CNN và Verifier phải nhìn cùng một không gian đầu vào chuẩn hóa; không được nhầm lẫn giữa raw sensor và normalized tensor.
-3. [`03_Week_3_Mathematical_Foundations.pdf`](03_Week_3_Mathematical_Foundations.pdf) ([Mã nguồn TeX](03_Week_3_Mathematical_Foundations.tex)):  
-   - **Nói cái gì**: Báo cáo học thuật Tuần 3: Toàn văn các định lý, bất đẳng thức Lipschitz, IBP và cơ chế chống stale certificate.  
-   - **Đọc xong hiểu được**: Cách thiết lập hệ thống chứng chỉ toán học có thể kiểm chứng độc lập.
-4. [`04_ECDR_Mathematics_Explained.pdf`](04_ECDR_Mathematics_Explained.pdf) ([Mã nguồn TeX](04_ECDR_Mathematics_Explained.tex)):  
-   - **Nói cái gì**: Cẩm nang giải thích toán học 29 trang: Giải nghĩa 24 giả thuyết H01–H24, ví dụ CNN nhỏ tính tay từng bước.  
-   - **Đọc xong hiểu được**: Tự tay tính được GAP, logits, margins của một mạng CNN thu nhỏ và hiểu rõ phản ví dụ stale certificate.
-5. [`05_ECDR_Mathematics_Concepts_104_Atlas.tex`](05_ECDR_Mathematics_Concepts_104_Atlas.tex):  
-   - **Nói cái gì**: Bản đồ 104 khái niệm toán học tiếng Anh (mỗi trang 1 concept độc lập).  
-   - **Đọc xong hiểu được**: Tra cứu nhanh bất kỳ khái niệm toán học nào trong đề tài.
-6. [`06_SUPP02_Norm_Geometry.pdf`](06_SUPP02_Norm_Geometry.pdf) ([Mã nguồn TeX](06_SUPP02_Norm_Geometry.tex)):  
-   - **Nói cái gì**: Chuyên đề hình học chuẩn (SUPP-02): $L_2$ vs $L_\infty$ trong $\mathbb{R}^{768}$, tỷ số $\sqrt{768} \approx 27.7$.  
-   - **Đọc xong hiểu được**: Hiện tượng vỏ cầu cao chiều và lý do tại sao không thể dịch chuyển percentile ngây thơ qua các chuẩn khác nhau.
-7. [`07_SUPP03_Certification_Methods.pdf`](07_SUPP03_Certification_Methods.pdf) ([Mã nguồn TeX](07_SUPP03_Certification_Methods.tex)):  
-   - **Nói cái gì**: Chuyên đề phương pháp chứng nhận (SUPP-03): Quy tắc lan truyền khoảng IBP, CROWN relaxation và LiRPA framework.  
-   - **Đọc xong hiểu được**: Sự đánh đổi giữa độ chặt (tightness) và chi phí tính toán giữa IBP và CROWN.
-8. [`08_SUPP05_Wave_Domain.pdf`](08_SUPP05_Wave_Domain.pdf) ([Mã nguồn TeX](08_SUPP05_Wave_Domain.tex)):  
-   - **Nói cái gì**: Chuyên đề miền sóng (SUPP-05): Toán tử dịch pha $T_S$, thành phần PCA bậc thấp và cận trôi dạt đa bước.  
-   - **Đọc xong hiểu được**: Cách khai thác tính chất sóng tuần hoàn của bước chân để thắt chặt cận chứng nhận.
-9. [`09_SUPP06_Float_Precision.pdf`](09_SUPP06_Float_Precision.pdf) ([Mã nguồn TeX](09_SUPP06_Float_Precision.tex)):  
-   - **Nói cái gì**: Chuyên đề độ chính xác số học (SUPP-06): IEEE 754 float32 vs float64, machine epsilon và lượng tử hóa int8.  
-   - **Đọc xong hiểu được**: Khi nào float32 làm hỏng chứng chỉ và cách containment lỗi số học.
-10. [`10_script_11_gate_a_prototype.py`](10_script_11_gate_a_prototype.py):  
-    - **Nói cái gì**: Prototype mã nguồn thực nghiệm cho Gate 3 verifier.
+1. [Khung toán học](01_04_THEORY.md): định nghĩa raw `X`, frozen normalization
+   `N`, normalized `Z`, reference `F=fθ∘N`, anchor, box/wave domain và
+   whole-domain margin. Có đối chiếu K=6/GAP lịch sử và actual K=12.
+2. [G3 domain contract](02_07_G3_DOMAIN_CONTRACT.md): identity, all-eleven
+   margins, conservative membership, numerical obligation, lifecycle và fallback.
+3. [Report A — Mathematical Foundations](03_Week_3_Mathematical_Foundations.tex)
+   ([PDF](03_Week_3_Mathematical_Foundations.pdf)): báo cáo chuẩn gồm mô hình,
+   assumptions, theorem/proof/counterexample, IBP/CROWN, domain geometry,
+   numerical/cost analysis và audit từng H01–H24. Mỗi ID giữ nghĩa gốc,
+   loại, giả thiết, applicability K=12, evidence, proof obligation và disposition.
+4. [Report B — Mathematics Explained](04_ECDR_Mathematics_Explained.tex)
+   ([PDF](04_ECDR_Mathematics_Explained.pdf)): giải thích ký hiệu, đơn vị,
+   dimensions, thay số, lỗi diễn giải và cùng mapping H01–H24. Ví dụ toy
+   tính tay được phân biệt với output của checkpoint; phần đầu giải thích
+   actual graph, BN/Pool, direct margin và RF alignment từng bước.
+5. [English concept atlas](05_ECDR_Mathematics_Concepts_104_Atlas.tex): 104
+   khái niệm nền tảng. Các mục valid-convolution/GAP là ví dụ chuyên biệt
+   giữ giả thiết, không được dùng như graph hiện tại.
+6. [Norm geometry](06_SUPP02_Norm_Geometry.tex): norm trong `R^768`, raw
+   versus normalized units, joint versus marginal coverage; structured-domain
+   benefit là hypothesis phải kiểm, không phải hệ quả của correlation.
+7. [Certification methods](07_SUPP03_Certification_Methods.tex): real IBP,
+   actual BN/Pool/Flatten rules, CROWN relaxations và giới hạn software/numerical.
+   Không khẳng định mọi CROWN variant luôn chặt/rẻ hơn IBP.
+8. [Wave domains](08_SUPP05_Wave_Domain.tex): fixed overlap, 384 free tail
+   values, centered PCA, exact reachable-state recurrence và giả thiết residual.
+9. [Floating-point precision](09_SUPP06_Float_Precision.tex): stored float32
+   constants, rounding, normalization containment, conditional error bounds và
+   nghĩa của executable soundness. `float64` hoặc epsilon tùy ý không tự là proof.
+10. [Gate-A prototype lịch sử](10_script_11_gate_a_prototype.py) và
+    [probe lịch sử](11_p0_verifier_probe.json): K=6/pure-only; giữ để truy nguồn,
+    không tính là operator hoặc certificate evidence K=12.
 
----
+## Các kết quả toán học cần giữ đúng scope
 
-## 2. Tiêu Chí Nghiệm Thu Tầng 3 (Exit Criteria)
-- [x] Hiểu công thức biên khoảng cách lớp $g_{cj}(X) = F_c(X) - F_j(X) > 0$.
-- [x] Nắm vững cơ chế IBP và CROWN cho mạng Conv1d/ReLU.
-- [x] Hiểu nghịch lý vỏ cầu $\mathbb{R}^{768}$ và toán tử dịch sóng $T_S$.
-- [x] Sẵn sàng chuyển tiếp sang **[Tầng 4: Tổng Hợp & Đóng Gói Nghiên Cứu](../04_synthesis_and_gates/README.md)**.
+Whole-domain positive lower margins bảo toàn winner trong số thực với đúng
+identity và membership. Real IBP sound khi mọi operator enclosure đúng nhưng
+incomplete. Continuity chỉ bảo đảm tồn tại local region, không bảo đảm
+coverage. Feature alignment actual graph có inclusive RF `[4j−8,4j+11]`,
+jump 4, và `H_j(X_next)=H_(j+16)(X_anchor)` cho `j=2,…,13` với fixed
+BN evaluation và pooling phase: 12 positions × 64 channels. Equality này
+không suy ra invariance của Flatten–MLP. Theorem valid/GAP A1–A6 vẫn hợp lệ
+trong architecture lịch sử của nó; GAP delta không áp vào actual head.
+
+Giữ fixed anchor hoặc dùng transfer/horizon theorem có proof. Không recenter
+certificate sau một hit. Soundness không suy ra useful coverage; coverage
+không suy ra speedup. H21/LipCache phải so đúng semantics; H24 đòi đồng thời
+mathematical validity, executable numerical validity, useful hits và net savings.
+
+## Execution evidence và trạng thái khoa học
+
+Nguồn thực thi mới, tests và receipt ở
+[`output/week3_certification_20261103/`](../output/week3_certification_20261103/).
+Run cuối có 5.053 diagonal và 5.053 wave builds: lần lượt 5.034 và 4.211
+conditional-positive, nhưng zero next-member và zero formal runtime reuse.
+Bốn runtime replays fallback toàn bộ; ECDR mean 3,1069–3,1975 ms/query,
+core reference 0,2147–0,2240 ms/query; saving âm cho measured CPU policies.
+93 tests pass gồm 60 historical, 27 actual K=12, 6 math; thêm 65 baseline
+artifact checks pass. Đọc scope cụ thể trong hai report và receipt cuối; không nâng
+candidate hits hoặc positive diagnostic bounds thành executable certified reuse.
+Zero accepted reuse có reused-query agreement **N/A**. G3 còn conditional nếu
+numerical bridge chưa được chứng minh; G4/G5 chỉ được cập nhật theo evidence
+coverage/cost của đúng workload. Không mục nào được tự gắn ACCEPTED.
+
+Checkpoint SHA-256:
+`8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1`.
+Preprocessing ID:
+`aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e`.
+Frozen Week 1/2 evidence không được sửa hoặc thay bằng probe mới.
+
+Các bản `_VI.md` là bản dịch lịch sử, giữ nguyên để truy nguồn; contract
+English cập nhật ở trên là authority hiện tại. Tổng hợp/gates ở
+[Tầng 4](../04_SYNTHESIS/README.md) và [GATES.md](../GATES.md) có trách nhiệm
+khác với mathematical report này. PDF phải được compile từ đúng source hiện
+hành và kiểm render; compiler exit0 riêng lẻ không phải visual QA.

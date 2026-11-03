@@ -58,7 +58,7 @@ Language & English throughout; previous Vietnamese documents remain available se
 Reading unit & 104 concepts: 46 foundations, 30 data/model bridges, 28 certification and systems concepts.\\
 Explanatory depth & Definition, every local symbol, derivation or example, motivation, assumptions and connections.\\
 Meaning of span & Linear span, annotation temporal span, and receptive-field span are explained separately.\\
-Reference model & Fixed preprocessing plus a CNN; valid/ReLU/GAP is a specified theoretical example, not a trained K12 result.\\
+Reference model & Frozen SmallCNN1D K=12,283,692 parameters, padded Conv/BN/Pool/Flatten--MLP. Valid/ReLU/GAP concepts retain their stated historical assumptions.\\
 Evidence boundary & Mathematical derivations and declared examples; no new HAPT inference, formal executable verification or runtime benchmark.\\\bottomrule
 \end{tabularx}
 \vfill
@@ -2380,7 +2380,7 @@ positions whose receptive fields contain equal inputs.
 \paragraph{Conditions and connections.}
 Stride, dilation, grouping and padding change connectivity and output
 length; they must be stated rather than inferred from the word CNN.
-The main theoretical model uses valid stride~1/dilation~1 convolutions.
+The historical specialized example uses valid stride~1/dilation~1 convolutions; the current reference has padding, BN and pooling.
 The separate English CNN document gives an individual page to each
 operator parameter. \hyperref[concept:B24]{B24} proves the corresponding feature identity.
 \par\label{endconcept:B19}

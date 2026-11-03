@@ -1,0 +1,106 @@
+test_all_11_competitors_computed (test_bounds_all_competitors.TestBoundsAllCompetitors.test_all_11_competitors_computed) ... ok
+test_diagonal_rounding_counterexample_rejected (test_bounds_all_competitors.TestBoundsAllCompetitors.test_diagonal_rounding_counterexample_rejected) ... ok
+test_invalid_shift_rejected (test_bounds_all_competitors.TestBoundsAllCompetitors.test_invalid_shift_rejected) ... ok
+test_invalid_target_class_rejected (test_bounds_all_competitors.TestBoundsAllCompetitors.test_invalid_target_class_rejected) ... ok
+test_negative_margin_threshold_rejected (test_bounds_all_competitors.TestBoundsAllCompetitors.test_negative_margin_threshold_rejected) ... ok
+test_preactivation_overflow_rejected_before_relu (test_bounds_all_competitors.TestBoundsAllCompetitors.test_preactivation_overflow_rejected_before_relu) ... /home/pro/Downloads/research/ecdr/model.py:273: RuntimeWarning: overflow encountered in multiply
+  term = np.multiply(w[:, c, r, None], x[c, r : r + t_out][None, :])
+ok
+test_conv_l1_norm_is_induced_bound (test_certified_adaptive.CertifiedAdaptiveTests.test_conv_l1_norm_is_induced_bound) ... ok
+test_global_bounds_and_cache_lifecycle (test_certified_adaptive.CertifiedAdaptiveTests.test_global_bounds_and_cache_lifecycle) ... ok
+test_margin_radius_is_positive_only_for_strict_margin (test_certified_adaptive.CertifiedAdaptiveTests.test_margin_radius_is_positive_only_for_strict_margin) ... ok
+test_full_stream_denominators (test_data_loader_denominators.TestDataLoaderDenominators.test_full_stream_denominators) ... ok
+test_pairwise_disjoint_subjects (test_data_loader_denominators.TestDataLoaderDenominators.test_pairwise_disjoint_subjects) ... ok
+test_raw_windows_finiteness (test_data_loader_denominators.TestDataLoaderDenominators.test_raw_windows_finiteness) ... ok
+test_recording_single_split_and_subject (test_data_loader_denominators.TestDataLoaderDenominators.test_recording_single_split_and_subject) ... ok
+test_supervised_dataset_counts (test_data_loader_denominators.TestDataLoaderDenominators.test_supervised_dataset_counts) ... ok
+test_anti_aliasing_detached_payload (test_incremental_equivalence.TestIncrementalEquivalence.test_anti_aliasing_detached_payload) ... ok
+test_bitwise_equivalence_on_shifted_stream (test_incremental_equivalence.TestIncrementalEquivalence.test_bitwise_equivalence_on_shifted_stream) ... ok
+test_nan_overlap_triggers_fallback (test_incremental_equivalence.TestIncrementalEquivalence.test_nan_overlap_triggers_fallback) ... ok
+test_overlap_perturbation_triggers_fallback (test_incremental_equivalence.TestIncrementalEquivalence.test_overlap_perturbation_triggers_fallback) ... ok
+test_detached_base_alias_immutability (test_intervals_soundness.TestIntervalsSoundness.test_detached_base_alias_immutability) ... ok
+test_inverted_bounds_rejection (test_intervals_soundness.TestIntervalsSoundness.test_inverted_bounds_rejection) ... ok
+test_nonfinite_bounds_rejection (test_intervals_soundness.TestIntervalsSoundness.test_nonfinite_bounds_rejection) ... ok
+test_outward_addition_enclosure (test_intervals_soundness.TestIntervalsSoundness.test_outward_addition_enclosure) ... ok
+test_outward_scalar_multiplication_enclosure (test_intervals_soundness.TestIntervalsSoundness.test_outward_scalar_multiplication_enclosure) ... ok
+test_outward_subtraction_enclosure (test_intervals_soundness.TestIntervalsSoundness.test_outward_subtraction_enclosure) ... ok
+test_rational_interval (test_intervals_soundness.TestIntervalsSoundness.test_rational_interval) ... ok
+test_relu_enclosure (test_intervals_soundness.TestIntervalsSoundness.test_relu_enclosure) ... ok
+test_compatibility_invalidation (test_lifecycle_invalidation.TestLifecycleInvalidation.test_compatibility_invalidation) ... ok
+test_establish_trusted_anchor_rejects_invalid_certificate (test_lifecycle_invalidation.TestLifecycleInvalidation.test_establish_trusted_anchor_rejects_invalid_certificate) ... ok
+test_establish_trusted_anchor_rejects_window_content_mismatch (test_lifecycle_invalidation.TestLifecycleInvalidation.test_establish_trusted_anchor_rejects_window_content_mismatch) ... ok
+test_horizon_expiration (test_lifecycle_invalidation.TestLifecycleInvalidation.test_horizon_expiration) ... ok
+test_recording_boundary_reset (test_lifecycle_invalidation.TestLifecycleInvalidation.test_recording_boundary_reset) ... ok
+test_validate_all11_competitors_positive (test_lifecycle_invalidation.TestLifecycleInvalidation.test_validate_all11_competitors_positive) ... ok
+test_validate_rejects_negative_or_zero_competitor (test_lifecycle_invalidation.TestLifecycleInvalidation.test_validate_rejects_negative_or_zero_competitor) ... ok
+test_validate_rejects_nonfinite_or_missing_margins (test_lifecycle_invalidation.TestLifecycleInvalidation.test_validate_rejects_nonfinite_or_missing_margins) ... ok
+test_validate_rejects_scalar_vector_inconsistency (test_lifecycle_invalidation.TestLifecycleInvalidation.test_validate_rejects_scalar_vector_inconsistency) ... ok
+test_validate_rejects_tampered_integrity_hash (test_lifecycle_invalidation.TestLifecycleInvalidation.test_validate_rejects_tampered_integrity_hash) ... ok
+test_layer_specs_k12 (test_model_spec.TestModelSpecifications.test_layer_specs_k12) ... ok
+test_layer_specs_k6 (test_model_spec.TestModelSpecifications.test_layer_specs_k6) ... ok
+test_nonfinite_input_rejection (test_model_spec.TestModelSpecifications.test_nonfinite_input_rejection) ... ok
+test_torch_model_parameter_count (test_model_spec.TestModelSpecifications.test_torch_model_parameter_count) ... ok
+test_torch_vs_numpy_sequential_forward (test_model_spec.TestModelSpecifications.test_torch_vs_numpy_sequential_forward) ... ok
+test_wrong_shape_rejection (test_model_spec.TestModelSpecifications.test_wrong_shape_rejection) ... ok
+test_empty_fit_data_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_empty_fit_data_rejected) ... ok
+test_infinite_std_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_infinite_std_rejected) ... ok
+test_invalid_input_shapes_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_invalid_input_shapes_rejected) ... ok
+test_nan_mean_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_nan_mean_rejected) ... ok
+test_negative_and_nonfinite_budgets_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_negative_and_nonfinite_budgets_rejected) ... ok
+test_negative_std_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_negative_std_rejected) ... ok
+test_overlap_preservation (test_preprocessing_boundary.TestPreprocessingBoundary.test_overlap_preservation) ... ok
+test_replay_args_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_replay_args_rejected) ... ok
+test_train_args_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_train_args_rejected) ... ok
+test_zero_std_and_zero_sigma_min_rejected (test_preprocessing_boundary.TestPreprocessingBoundary.test_zero_std_and_zero_sigma_min_rejected) ... ok
+test_toy_activations_and_shift_identity (test_toy_paper_worked_example.TestToyPaperWorkedExample.test_toy_activations_and_shift_identity) ... ok
+test_toy_continuous_wave_domain_bounds (test_toy_paper_worked_example.TestToyPaperWorkedExample.test_toy_continuous_wave_domain_bounds) ... ok
+test_toy_exact_minima (test_toy_paper_worked_example.TestToyPaperWorkedExample.test_toy_exact_minima) ... ok
+test_toy_gap_and_logits (test_toy_paper_worked_example.TestToyPaperWorkedExample.test_toy_gap_and_logits) ... ok
+test_toy_gap_delta_identity (test_toy_paper_worked_example.TestToyPaperWorkedExample.test_toy_gap_delta_identity) ... ok
+test_certificate_lifecycle_consumption (test_toy_stale_regression.TestToyStaleRegression.test_certificate_lifecycle_consumption) ... ok
+test_stale_membership_rejection (test_toy_stale_regression.TestToyStaleRegression.test_stale_membership_rejection) ... ok
+test_x2_logits_and_winner (test_toy_stale_regression.TestToyStaleRegression.test_x2_logits_and_winner) ... ok
+test_h02_overlap_does_not_bound_ordinary_distance (test_week3_math.Week3Counterexamples.test_h02_overlap_does_not_bound_ordinary_distance) ... ok
+test_h07_direct_margin_ibp_is_incomplete (test_week3_math.Week3Counterexamples.test_h07_direct_margin_ibp_is_incomplete) ... ok
+test_h15_recentered_hit_can_cross_decision_boundary (test_week3_math.Week3Counterexamples.test_h15_recentered_hit_can_cross_decision_boundary) ... ok
+test_h19_sound_singleton_has_no_future_coverage (test_week3_math.Week3Counterexamples.test_h19_sound_singleton_has_no_future_coverage) ... ok
+test_h20_nonzero_reuse_can_still_cost_more (test_week3_math.Week3Counterexamples.test_h20_nonzero_reuse_can_still_cost_more) ... ok
+test_h22_real_positive_margin_can_round_to_wrong_tie (test_week3_math.Week3Counterexamples.test_h22_real_positive_margin_can_round_to_wrong_tie) ... ok
+test_budget_broadcast_and_invalid_domains (test_week3_verifier.DomainTests.test_budget_broadcast_and_invalid_domains) ... ok
+test_domain_storage_is_immutable_and_unaliased (test_week3_verifier.DomainTests.test_domain_storage_is_immutable_and_unaliased) ... ok
+test_fixed_overlap_wave_has_384_variables (test_week3_verifier.DomainTests.test_fixed_overlap_wave_has_384_variables) ... ok
+test_zero_budget_boundary_and_no_epsilon (test_week3_verifier.DomainTests.test_zero_budget_boundary_and_no_epsilon) ... ok
+test_actual_graph_small_box_sample_consistency_and_direct_tightness (test_week3_verifier.FrozenActualGraphTests.test_actual_graph_small_box_sample_consistency_and_direct_tightness) ... ok
+test_boolean_or_negative_class_and_location_rejected (test_week3_verifier.FrozenActualGraphTests.test_boolean_or_negative_class_and_location_rejected) ... ok
+test_bound_snapshot_mutation_fails_closed (test_week3_verifier.FrozenActualGraphTests.test_bound_snapshot_mutation_fails_closed) ... ok
+test_exact_selected_k12_identity_and_normalization (test_week3_verifier.FrozenActualGraphTests.test_exact_selected_k12_identity_and_normalization) ... ok
+test_forward_hooks_and_child_forward_override_invalidate_identity (test_week3_verifier.FrozenActualGraphTests.test_forward_hooks_and_child_forward_override_invalidate_identity) ... ok
+test_invalid_raw_rejected_without_inference_or_state_mutation (test_week3_verifier.FrozenActualGraphTests.test_invalid_raw_rejected_without_inference_or_state_mutation) ... ok
+test_lifecycle_negative_identity_anchor_expiry_and_specifications (test_week3_verifier.FrozenActualGraphTests.test_lifecycle_negative_identity_anchor_expiry_and_specifications) ... ok
+test_mutated_weights_buffers_class_order_and_preprocessing_rejected (test_week3_verifier.FrozenActualGraphTests.test_mutated_weights_buffers_class_order_and_preprocessing_rejected) ... ok
+test_normalization_overflow_does_not_reset_existing_state (test_week3_verifier.FrozenActualGraphTests.test_normalization_overflow_does_not_reset_existing_state) ... ok
+test_numerical_gate_cannot_be_bypassed_by_positive_or_forged_certificate (test_week3_verifier.FrozenActualGraphTests.test_numerical_gate_cannot_be_bypassed_by_positive_or_forged_certificate) ... ok
+test_runtime_fixed_anchor_resets_fallback_and_expiry (test_week3_verifier.FrozenActualGraphTests.test_runtime_fixed_anchor_resets_fallback_and_expiry) ... ok
+test_runtime_inconclusive_build_cannot_create_certificate (test_week3_verifier.FrozenActualGraphTests.test_runtime_inconclusive_build_cannot_create_certificate) ... ok
+test_tied_and_tiny_anchor_margin_unit_branches (test_week3_verifier.FrozenActualGraphTests.test_tied_and_tiny_anchor_margin_unit_branches) ... ok
+test_zero_radius_eleven_margins_match_double_point_diagnostic (test_week3_verifier.FrozenActualGraphTests.test_zero_radius_eleven_margins_match_double_point_diagnostic) ... ok
+test_batchnorm_negative_gamma (test_week3_verifier.OperatorTransferTests.test_batchnorm_negative_gamma) ... ok
+test_batchnorm_without_affine (test_week3_verifier.OperatorTransferTests.test_batchnorm_without_affine) ... ok
+test_direct_margin_dependency_cancellation (test_week3_verifier.OperatorTransferTests.test_direct_margin_dependency_cancellation) ... ok
+test_flatten_relu_and_linear (test_week3_verifier.OperatorTransferTests.test_flatten_relu_and_linear) ... ok
+test_grouped_dilated_conv (test_week3_verifier.OperatorTransferTests.test_grouped_dilated_conv) ... ok
+test_maxpool_negative_inputs_padding_and_ceil (test_week3_verifier.OperatorTransferTests.test_maxpool_negative_inputs_padding_and_ceil) ... ok
+test_padded_signed_conv (test_week3_verifier.OperatorTransferTests.test_padded_signed_conv) ... ok
+test_reject_training_or_untracked_batchnorm (test_week3_verifier.OperatorTransferTests.test_reject_training_or_untracked_batchnorm) ... ok
+test_reject_unsupported_operator_and_nonfinite_intervals (test_week3_verifier.OperatorTransferTests.test_reject_unsupported_operator_and_nonfinite_intervals) ... ok
+
+----------------------------------------------------------------------
+Ran 93 tests in 1.685s
+
+OK
+================================================================================
+ECDR STREAMING REPLAY BENCHMARK — Split: TEST | Domain: DIAGONAL_BOX
+================================================================================
+================================================================================
+ECDR STREAMING REPLAY BENCHMARK — Split: TEST | Domain: DIAGONAL_BOX
+================================================================================

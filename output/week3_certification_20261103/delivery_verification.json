@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "started_at_utc": "2026-11-03T05:26:24.933639+00:00",
+  "completed_at_utc": "2026-11-03T05:26:25.723599+00:00",
+  "command": "scripts/week3_verify_delivery.py",
+  "script_sha256": "fe58a65ae7ceb76437d7e0a7f8c10936b8a2a97f8990cd2b18f3243af1dd7466",
+  "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+  "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+  "overall_status": "PASS",
+  "pending": [],
+  "checks": [
+    {
+      "name": "all_170_preexisting_protected_paths_preserved",
+      "status": "PASS",
+      "evidence": {
+        "checked": 170,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "week2_primary_evidence_hash_chain_preserved",
+      "status": "PASS",
+      "evidence": {
+        "checked": 7,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "week2_data_sources_hashes_current",
+      "status": "PASS",
+      "evidence": {
+        "checked": 132,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "week2_model_inputs_hashes_current",
+      "status": "PASS",
+      "evidence": {
+        "checked": 10,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "week2_data_audit_script_hashes_current",
+      "status": "PASS",
+      "evidence": {
+        "checked": 1,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "week2_model_audit_script_hashes_current",
+      "status": "PASS",
+      "evidence": {
+        "checked": 1,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "week1_independent_65_check_receipt_consistency",
+      "status": "PASS",
+      "evidence": {
+        "observed_check_statuses": {
+          "PASS": 65
+        },
+        "receipt_sha256": "ce054acde6f5bba5da1470eb4dd4b6f6ec02825cbf00b0f0cb2e1c87d32a16b4",
+        "evidence_type": "consistency of original independent-verification receipt; original check execution was performed separately",
+        "not_established_by_this_check": "new model execution, float32 enclosure, mathematical certification or user acceptance"
+      }
+    },
+    {
+      "name": "original_93_test_execution_log_consistency",
+      "status": "PASS",
+      "evidence": {
+        "log_sha256": "78bee4c7bab3dd33cef5af348047ffd6bb47ce1dde45a752009ffea37b67c083",
+        "parsed_test_runs": [
+          [
+            "93",
+            "1.685"
+          ]
+        ],
+        "original_command": ".venv/bin/python -m unittest discover -s tests -v",
+        "original_exit_code_reported_by_executing_parent": 0,
+        "command_rerun_by_this_verifier": false,
+        "scope": "original historical and Week3 tests executed; receipt consistency is not a numerical-soundness proof"
+      }
+    },
+    {
+      "name": "experiment_source_and_trace_hash_chain_current",
+      "status": "PASS",
+      "evidence": {
+        "checked": 6,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "frozen_full_stream_denominators",
+      "status": "PASS",
+      "evidence": {
+        "full_stream": 5053,
+        "supervised_from_original_experiment": 3572,
+        "supervised_metric_not_recomputed": true
+      }
+    },
+    {
+      "name": "independent_domain_and_runtime_trace_row_counts",
+      "status": "PASS",
+      "evidence": {
+        "domain_rows": 10106,
+        "runtime_rows": 20212
+      }
+    },
+    {
+      "name": "diagonal_box_5053_domain_records_match_independent_recount",
+      "status": "PASS",
+      "evidence": {
+        "counts": {
+          "attempted_builds": 5053,
+          "conditional_positive_builds": 5034,
+          "candidate_next_members": 0,
+          "conditional_positive_member_queries": 0,
+          "conditional_shadow_disagreements": 0
+        },
+        "adjacent_query_pairs": 5034,
+        "record_order_matches_frozen": true,
+        "interpretation": "positive=float64 conditional estimate only; candidate membership is not certified acceptance"
+      }
+    },
+    {
+      "name": "fixed_overlap_wave_5053_domain_records_match_independent_recount",
+      "status": "PASS",
+      "evidence": {
+        "counts": {
+          "attempted_builds": 5053,
+          "conditional_positive_builds": 4211,
+          "candidate_next_members": 0,
+          "conditional_positive_member_queries": 0,
+          "conditional_shadow_disagreements": 0
+        },
+        "adjacent_query_pairs": 5034,
+        "record_order_matches_frozen": true,
+        "interpretation": "positive=float64 conditional estimate only; candidate membership is not certified acceptance"
+      }
+    },
+    {
+      "name": "runtime_has_exactly_four_declared_runs",
+      "status": "PASS",
+      "evidence": {
+        "observed_runs": [
+          [
+            0,
+            "diagonal_box"
+          ],
+          [
+            0,
+            "fixed_overlap_wave"
+          ],
+          [
+            1,
+            "diagonal_box"
+          ],
+          [
+            1,
+            "fixed_overlap_wave"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "runtime_repeat0_diagonal_box_independent_recount",
+      "status": "PASS",
+      "evidence": {
+        "repeat": 0,
+        "kind": "diagonal_box",
+        "windows": 5053,
+        "reused": 0,
+        "reference_disagreements": 0,
+        "builds": 49,
+        "conditional_positive_builds": 48
+      }
+    },
+    {
+      "name": "runtime_repeat0_fixed_overlap_wave_independent_recount",
+      "status": "PASS",
+      "evidence": {
+        "repeat": 0,
+        "kind": "fixed_overlap_wave",
+        "windows": 5053,
+        "reused": 0,
+        "reference_disagreements": 0,
+        "builds": 69,
+        "conditional_positive_builds": 48
+      }
+    },
+    {
+      "name": "runtime_repeat1_diagonal_box_independent_recount",
+      "status": "PASS",
+      "evidence": {
+        "repeat": 1,
+        "kind": "diagonal_box",
+        "windows": 5053,
+        "reused": 0,
+        "reference_disagreements": 0,
+        "builds": 49,
+        "conditional_positive_builds": 48
+      }
+    },
+    {
+      "name": "runtime_repeat1_fixed_overlap_wave_independent_recount",
+      "status": "PASS",
+      "evidence": {
+        "repeat": 1,
+        "kind": "fixed_overlap_wave",
+        "windows": 5053,
+        "reused": 0,
+        "reference_disagreements": 0,
+        "builds": 69,
+        "conditional_positive_builds": 48
+      }
+    },
+    {
+      "name": "report_A_exactly_one_original_ledger_record_H01_H24",
+      "status": "PASS",
+      "evidence": {
+        "observed_ids": [
+          "H01",
+          "H02",
+          "H03",
+          "H04",
+          "H05",
+          "H06",
+          "H07",
+          "H08",
+          "H09",
+          "H10",
+          "H11",
+          "H12",
+          "H13",
+          "H14",
+          "H15",
+          "H16",
+          "H17",
+          "H18",
+          "H19",
+          "H20",
+          "H21",
+          "H22",
+          "H23",
+          "H24"
+        ],
+        "scope": "ID traceability/count only; independent mathematical review covers meaning/proofs"
+      }
+    },
+    {
+      "name": "report_B_complete_H01_H24_pedagogical_mapping",
+      "status": "PASS",
+      "evidence": {
+        "observed_ids": [
+          "H01",
+          "H02",
+          "H03",
+          "H04",
+          "H05",
+          "H06",
+          "H07",
+          "H08",
+          "H09",
+          "H10",
+          "H11",
+          "H12",
+          "H13",
+          "H14",
+          "H15",
+          "H16",
+          "H17",
+          "H18",
+          "H19",
+          "H20",
+          "H21",
+          "H22",
+          "H23",
+          "H24"
+        ]
+      }
+    },
+    {
+      "name": "current_generator_week3_wrapper_sync_is_idempotent_read_only",
+      "status": "PASS",
+      "evidence": {
+        "generator_sha256": "5bcde42f52fd7e85f373326a285e43eaebde9c9304f45bbdbbc5fafc97fdb5d8",
+        "captured_write_attempts": [],
+        "method": "executed current sync_week3_wrappers with Path.write_text mocked; no write permitted",
+        "wrapper_sha256": {
+          "me/Week_3_Mathematical_Foundations.tex": "ff45e4a1d71b7a60bf8b7ad213769c58d1fda59e43ea33f0ebbbb29c35c14fa9",
+          "me/ECDR_Mathematics_Explained.tex": "40c974d1b42496eb05916a24cd37e9c71099c3df95248f2b1a2ca9968c77378c"
+        }
+      }
+    },
+    {
+      "name": "pdf_review_contains_both_canonical_reports",
+      "status": "PASS",
+      "evidence": {
+        "recorded_review_scope": "Main Report A26physical pages and Report B33physical pages; supporting supplements source/smokecompile only, no separate visualQA claim",
+        "method": "Every final PDF page rasterized by pdftoppm90dpi and visually inspected; PDF extraction and compile diagnostics separately checked"
+      }
+    },
+    {
+      "name": "canonical_pdf_source_render_chain:03_Week_3_Mathematical_Foundations.pdf",
+      "status": "PASS",
+      "evidence": {
+        "pages": 26,
+        "pdf_sha256": "5af507b94cdc1ed9b7c3bda684082bc2eee5747df048c4d3e78b8c17846735eb",
+        "source_sha256": "07459572a722b6f7d94df981ca1453f22ba23386c03f23d97cf286f7d5e77f2d",
+        "rendered_pages_rehashed": 26,
+        "render_mismatches": [],
+        "compile_log_sha256": "1d3fb6ef363b401de941b69383b56025a9edf1a6eec4b66dd1438d07efbdb1cc",
+        "compile_error_matches": [],
+        "H01_H24_in_extracted_pdf": true,
+        "visual_review": "original separate visual-review assertion checked for current inputs; this script does not perform visual inspection"
+      }
+    },
+    {
+      "name": "canonical_pdf_source_render_chain:04_ECDR_Mathematics_Explained.pdf",
+      "status": "PASS",
+      "evidence": {
+        "pages": 33,
+        "pdf_sha256": "4b75bdd1ad20f2dca18890934eb76ff5cae08698b0efa3ce939ee9e947d62b6d",
+        "source_sha256": "5073ea33532da0bee4cc29183676b99cc4eb1cfd29e52d66edb760c2424ddc64",
+        "rendered_pages_rehashed": 33,
+        "render_mismatches": [],
+        "compile_log_sha256": "7add610c986ffbc95be4309b868add1c0758d75314fb0ef7eb7b8c099165a4ad",
+        "compile_error_matches": [],
+        "H01_H24_in_extracted_pdf": true,
+        "visual_review": "original separate visual-review assertion checked for current inputs; this script does not perform visual inspection"
+      }
+    },
+    {
+      "name": "git_diff_check",
+      "status": "PASS",
+      "evidence": {
+        "command": "git diff --check",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "scope": "tracked working-tree diff; does not add/commit untracked implementation files"
+      }
+    },
+    {
+      "name": "persistent_memory_components_measured",
+      "status": "PASS",
+      "evidence": {
+        "artifact": "output/week3_certification_20261103/memory_components.json",
+        "sha256": "b222f4faef3c6b6ebce031531cc15da7474ed123d16bde68da5e51c2cc65db32"
+      }
+    }
+  ],
+  "details": {
+    "frozen_evidence": null,
+    "experiment_consistency": {
+      "independent_domain_recounts": {
+        "diagonal_box": {
+          "attempted_builds": 5053,
+          "conditional_positive_builds": 5034,
+          "candidate_next_members": 0,
+          "conditional_positive_member_queries": 0,
+          "conditional_shadow_disagreements": 0
+        },
+        "fixed_overlap_wave": {
+          "attempted_builds": 5053,
+          "conditional_positive_builds": 4211,
+          "candidate_next_members": 0,
+          "conditional_positive_member_queries": 0,
+          "conditional_shadow_disagreements": 0
+        }
+      },
+      "independent_runtime_recounts": [
+        {
+          "repeat": 0,
+          "kind": "diagonal_box",
+          "windows": 5053,
+          "reused": 0,
+          "reference_disagreements": 0,
+          "builds": 49,
+          "conditional_positive_builds": 48
+        },
+        {
+          "repeat": 0,
+          "kind": "fixed_overlap_wave",
+          "windows": 5053,
+          "reused": 0,
+          "reference_disagreements": 0,
+          "builds": 69,
+          "conditional_positive_builds": 48
+        },
+        {
+          "repeat": 1,
+          "kind": "diagonal_box",
+          "windows": 5053,
+          "reused": 0,
+          "reference_disagreements": 0,
+          "builds": 49,
+          "conditional_positive_builds": 48
+        },
+        {
+          "repeat": 1,
+          "kind": "fixed_overlap_wave",
+          "windows": 5053,
+          "reused": 0,
+          "reference_disagreements": 0,
+          "builds": 69,
+          "conditional_positive_builds": 48
+        }
+      ],
+      "empirical_semantics": "5053 valid queries per run; all frozen-reference fallback, zero accepted formal reuse. Zero reference disagreements is consistency of fallback, not proof of certifier soundness. A_reuse is N/A/null."
+    },
+    "document_mapping_and_wrappers": null,
+    "pdfs": {
+      "03_MATH/03_Week_3_Mathematical_Foundations.tex": {
+        "pages": 26,
+        "pdf_sha256": "5af507b94cdc1ed9b7c3bda684082bc2eee5747df048c4d3e78b8c17846735eb",
+        "source_sha256": "07459572a722b6f7d94df981ca1453f22ba23386c03f23d97cf286f7d5e77f2d",
+        "rendered_pages_rehashed": 26,
+        "render_mismatches": [],
+        "compile_log_sha256": "1d3fb6ef363b401de941b69383b56025a9edf1a6eec4b66dd1438d07efbdb1cc",
+        "compile_error_matches": [],
+        "H01_H24_in_extracted_pdf": true,
+        "visual_review": "original separate visual-review assertion checked for current inputs; this script does not perform visual inspection"
+      },
+      "03_MATH/04_ECDR_Mathematics_Explained.tex": {
+        "pages": 33,
+        "pdf_sha256": "4b75bdd1ad20f2dca18890934eb76ff5cae08698b0efa3ce939ee9e947d62b6d",
+        "source_sha256": "5073ea33532da0bee4cc29183676b99cc4eb1cfd29e52d66edb760c2424ddc64",
+        "rendered_pages_rehashed": 33,
+        "render_mismatches": [],
+        "compile_log_sha256": "7add610c986ffbc95be4309b868add1c0758d75314fb0ef7eb7b8c099165a4ad",
+        "compile_error_matches": [],
+        "H01_H24_in_extracted_pdf": true,
+        "visual_review": "original separate visual-review assertion checked for current inputs; this script does not perform visual inspection"
+      }
+    }
+  },
+  "exceptions": [],
+  "original_execution_records": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -v > output/week3_certification_20261103/regression_tests.log 2>&1",
+      "unified_exec_session_id": 62029,
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/bin/python scripts/week1_independent_verify.py --output output/week3_certification_20261103/week1_preservation.json > output/week3_certification_20261103/week1_verification.log 2>&1",
+      "unified_exec_session_id": 74454,
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/bin/python scripts/week3_experiments.py > output/week3_certification_20261103/experiment.log 2>&1",
+      "unified_exec_session_id": 60096,
+      "exit_code": 0
+    }
+  ],
+  "original_execution_provenance": "parent executing agent supplied completed unified-exec tool results and exit codes; these commands are not rerun by delivery verification",
+  "evidence_boundary": "This execution verifies artifact bytes, trace aggregation, ID mappings and recorded execution evidence. It does not rerun original scientific experiments/tests or establish floating-point certification, useful formal reuse, novelty or user acceptance.",
+  "source_hashes": {
+    "03_MATH/03_Week_3_Mathematical_Foundations.tex": "07459572a722b6f7d94df981ca1453f22ba23386c03f23d97cf286f7d5e77f2d",
+    "03_MATH/04_ECDR_Mathematics_Explained.tex": "5073ea33532da0bee4cc29183676b99cc4eb1cfd29e52d66edb760c2424ddc64",
+    "ecdr/week3_verifier.py": "5f86aa2863406b01071e6b49ce5badd28322f1ca6e004b425568f0ad4cab09eb",
+    "scripts/week3_experiments.py": "a646e96d7d039cf6f4c20553e665b40a95663a834f34256823166bfe38384fab",
+    "tests/test_week3_verifier.py": "3d5f54c6554977ad85e957fac3719c4e030661cd20d3e8e9d90b98cd04c52d27"
+  }
+}

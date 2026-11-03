@@ -1,0 +1,11 @@
+test_h02_overlap_does_not_bound_ordinary_distance (tests.test_week3_math.Week3Counterexamples.test_h02_overlap_does_not_bound_ordinary_distance) ... ok
+test_h07_direct_margin_ibp_is_incomplete (tests.test_week3_math.Week3Counterexamples.test_h07_direct_margin_ibp_is_incomplete) ... ok
+test_h15_recentered_hit_can_cross_decision_boundary (tests.test_week3_math.Week3Counterexamples.test_h15_recentered_hit_can_cross_decision_boundary) ... ok
+test_h19_sound_singleton_has_no_future_coverage (tests.test_week3_math.Week3Counterexamples.test_h19_sound_singleton_has_no_future_coverage) ... ok
+test_h20_nonzero_reuse_can_still_cost_more (tests.test_week3_math.Week3Counterexamples.test_h20_nonzero_reuse_can_still_cost_more) ... ok
+test_h22_real_positive_margin_can_round_to_wrong_tie (tests.test_week3_math.Week3Counterexamples.test_h22_real_positive_margin_can_round_to_wrong_tie) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.027s
+
+OK

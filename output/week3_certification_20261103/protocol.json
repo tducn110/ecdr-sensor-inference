@@ -1,0 +1,305 @@
+{
+  "date": "2026-11-03",
+  "scope": "exploratory feasibility, frozen before held-out test loading",
+  "radius_grid_normalized": [
+    0.0,
+    1e-06,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0
+  ],
+  "validation_anchor_indices": [
+    0,
+    38,
+    76,
+    114,
+    153,
+    191,
+    229,
+    268,
+    307,
+    345,
+    384,
+    422,
+    460,
+    498,
+    537,
+    575,
+    614,
+    653,
+    691,
+    729,
+    768,
+    806,
+    844,
+    882,
+    922,
+    960,
+    998,
+    1037,
+    1075,
+    1113,
+    1152,
+    1191,
+    1229,
+    1267,
+    1306,
+    1344,
+    1382,
+    1421,
+    1459,
+    1498,
+    1537,
+    1575,
+    1613,
+    1651,
+    1690,
+    1728,
+    1767,
+    1806,
+    1844,
+    1882,
+    1921,
+    1959,
+    1997,
+    2035,
+    2074,
+    2112,
+    2151,
+    2190,
+    2228,
+    2266,
+    2305,
+    2343,
+    2381,
+    2420
+  ],
+  "domain_kinds": [
+    "diagonal_box",
+    "fixed_overlap_wave"
+  ],
+  "wave_selector": "constant continuation [old suffix, old suffix]; first half fixed",
+  "selection": "maximize sum of conditional-positive next memberships across both families; tie: conditional positives then smallest positive radius; zero radius control ineligible",
+  "test_matching": "both families same chosen radius, same anchor/winner; domain ablation, different centers/free coordinates, no general superiority claim",
+  "matched_center_control": "full box at wave center, same tail radius/method/winner; wave is its fixed-overlap slice, different volume",
+  "runtime": "max_age128, fixed trusted anchor, build on missing certificate, all formal reuse disabled",
+  "baseline_scope": "same RAM-resident raw float32 windows, CPU, 1 torch thread; includes conversion, normalization and transfer/forward; loading setup reported separately",
+  "runtime_repetitions": 2,
+  "optional_pca_regions": "DEFERRED until numerical verifier valid; H10 geometry still measured",
+  "selected_radius": 1e-06,
+  "validation_results": [
+    {
+      "radius": 0.0,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 64,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.182980578216757,
+        "p50": 5.969497499791032,
+        "p95": 7.612013549442053,
+        "total": 395.71075700587244
+      }
+    },
+    {
+      "radius": 0.0,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 55,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.939713999912556,
+        "p50": 6.416000000172062,
+        "p95": 10.186252698622408,
+        "total": 444.14169599440356
+      }
+    },
+    {
+      "radius": 1e-06,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 63,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.750249843861411,
+        "p50": 6.3914545007719425,
+        "p95": 8.490165699822683,
+        "total": 432.0159900071303
+      }
+    },
+    {
+      "radius": 1e-06,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 55,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.731166281070955,
+        "p50": 6.532952000270598,
+        "p95": 8.27884940072181,
+        "total": 430.7946419885411
+      }
+    },
+    {
+      "radius": 0.0001,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 52,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.472613156262241,
+        "p50": 6.328391999886662,
+        "p95": 8.132378299706033,
+        "total": 414.24724200078344
+      }
+    },
+    {
+      "radius": 0.0001,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 50,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.401765656363523,
+        "p50": 6.129199499810056,
+        "p95": 8.299168099438246,
+        "total": 409.71300200726546
+      }
+    },
+    {
+      "radius": 0.001,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 4,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.21884560939634,
+        "p50": 5.850319999808562,
+        "p95": 7.413687449206917,
+        "total": 398.00611900136573
+      }
+    },
+    {
+      "radius": 0.001,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 13,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 5.985972890812263,
+        "p50": 5.659970999658981,
+        "p95": 7.528022751284879,
+        "total": 383.10226501198485
+      }
+    },
+    {
+      "radius": 0.01,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 0,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.7106307970163925,
+        "p50": 6.462028500209271,
+        "p95": 8.653656900241911,
+        "total": 429.4803710090491
+      }
+    },
+    {
+      "radius": 0.01,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 0,
+      "next_members": 0,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.125386437531688,
+        "p50": 5.964746998870396,
+        "p95": 7.568444449680101,
+        "total": 392.02473200202803
+      }
+    },
+    {
+      "radius": 0.1,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 0,
+      "next_members": 7,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.084038421931837,
+        "p50": 5.903605499952391,
+        "p95": 7.569599048929375,
+        "total": 389.37845900363754
+      }
+    },
+    {
+      "radius": 0.1,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 0,
+      "next_members": 9,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.469150968626991,
+        "p50": 6.066132499654486,
+        "p95": 8.630564199484068,
+        "total": 414.0256619921274
+      }
+    },
+    {
+      "radius": 1.0,
+      "kind": "diagonal_box",
+      "attempts": 64,
+      "conditional_positive": 0,
+      "next_members": 22,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.544105109639986,
+        "p50": 6.175686499773292,
+        "p95": 8.31200779939536,
+        "total": 418.8227270169591
+      }
+    },
+    {
+      "radius": 1.0,
+      "kind": "fixed_overlap_wave",
+      "attempts": 64,
+      "conditional_positive": 0,
+      "next_members": 22,
+      "conditional_positive_members": 0,
+      "build_ms": {
+        "n": 64,
+        "mean": 6.410655546915223,
+        "p50": 6.298704000073485,
+        "p95": 7.604008949783746,
+        "total": 410.28195500257425
+      }
+    }
+  ],
+  "frozen_at_utc": "2026-11-03T05:13:46.357539+00:00"
+}

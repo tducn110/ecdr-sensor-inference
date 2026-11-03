@@ -45,28 +45,83 @@
 \newtheorem{example}[definition]{Ví dụ}
 \newtheorem{remark}[definition]{Nhận xét}
 \renewcommand{\proofname}{Chứng minh}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\refname}{Tài liệu tham khảo}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\textcolor{ink}{ECDR | Cơ sở nghiên cứu và lý thuyết}}
 \fancyhead[R]{\small Week 3}
-\fancyfoot[L]{\small 28/10/2026}
+\fancyfoot[L]{\small 03/11/2026}
 \fancyfoot[R]{\thepage}
 \begin{document}
 \title{\textcolor{ink}{ECDR}\\[5pt]\Large Week 3: Cơ sở toán học của ECDR}
 \author{Báo cáo nghiên cứu lý thuyết}
-\date{28 tháng 10 năm 2026}
+\date{3 tháng 11 năm 2026}
 \maketitle
-\noindent Bản tuần độc lập, trích từ báo cáo tổng hợp. Scope: lý thuyết mới
-theo brief của người nghiên cứu; không dùng implementation cũ làm nguồn
-định nghĩa phương pháp. Các tính toán minh họa không phải benchmark.
+\noindent Báo cáo chuẩn Week 3: toán học, kiểm chứng miền và tính khả thi cho
+reference SmallCNN1D K=12 đã khóa ở Week 1--2. Giữ toàn bộ H01--H24;
+phân biệt định lý có điều kiện, phản ví dụ, kiểm tra thực thi và câu hỏi mở.
+Các ví dụ nhỏ và valid--GAP lịch sử không phải benchmark của reference.
+Nguồn xuất phát: commit \code{8d4ebae576e612837dfd2f3cdcbaab737a705c4b}.
 \tableofcontents
 \clearpage
 \part{Week 3 --- Cơ sở toán học và hệ thống giả thuyết}
 \section{Certification contract và problem formulation}
-Trong phần này $x=\vecop(X)\in\R^d$, $d=CW=768$; ký hiệu $F$ đã bao gồm
-preprocessing. $K\ge2$ tổng quát, áp dụng cho $K=12$ khi reference được định
-nghĩa trên toàn bộ nhãn. Mỗi certificate có target $c$, domain $\Sset$ và
-identity của reference. Không cần giả định anchor nằm trong miền next-wave.
+\subsection{Đối tượng nghiên cứu và nguồn chuẩn}
+Mục tiêu là tìm miền có thể bảo toàn quyết định của reference đã cố định,
+kiểm điều kiện thực thi và đo liệu chi phí tránh được có vượt overhead.
+Không đòi mọi giả thuyết đúng; không huấn luyện lại hoặc đổi preprocessing.
+G2 chất lượng giữ \textbf{HOLD}; toán đúng không thay kết luận chất lượng.
+Nguồn chuẩn là \code{00_OVERVIEW/week1/SOURCE_OF_TRUTH.md},
+\code{01_DATA/03_Week_2_Data_Foundations.tex},
+\code{02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex} và graph
+\code{scripts/backbone.py:SmallCNN1D(num_classes=12)}.
+
+Đặt $X\in\R^{6\times128}$ là raw window (gia tốc theo đơn vị $g$, vận tốc
+ góc rad/s), $x=\vecop(X)\in\R^{768}$ theo thứ tự channel-first.
+$N(X)=(X-\mu)/\sigma$, $\sigma_c>0$, dùng đúng mean/std train-fit đã khóa.
+$Z=N(X)$ không có đơn vị; $f_\theta:\R^{768}\to\R^{12}$ là mạng,
+$F=f_\theta\circ N$ là hàm reference lý tưởng trong số thực. Ký hiệu
+$\widehat F$ chỉ chương trình float32 khi cần phân biệt. Mục tiêu thực thi là
+$h_{\rm ECDR}(X)=\arg\max_k\widehat F_k(X)$ với decision semantics đã khóa,
+không phải chứng minh ground-truth activity đúng.
+
+\begin{table}[!htbp]\centering\small
+\caption{Frozen reference K=12 và provenance.}
+\begin{tabularx}{\linewidth}{@{}p{3.0cm}Y@{}}\toprule
+Input & $[B,6,128]$, 50 Hz, stride 64, 768 scalar/window; 384 scalar mới/bước.\\
+Graph & Conv6$\to$32 k5 p2--BN--ReLU--Pool2;
+Conv32$\to$64 k3 p1--BN--ReLU--Pool2;
+Conv64$\to$64 k3 p1--BN--ReLU; Flatten2048--Linear128--ReLU--Linear12.\\
+State & Eval mode; BN running statistics và epsilon cố định;
+12 logits; 283,692 trainable parameters.\\
+Checkpoint & \code{output/week1_closeout_20261102/reference/selected_best.pt}\\
+SHA-256 & \code{8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1}\\
+Preprocessing ID & \code{aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e}\\
+Evaluation & 5,053 chronological test windows; 3,572 supervised;
+accuracy 0.8905375, macro-F1 0.7762645 trên supervised subset.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+Class order zero-based0--11 cố định là
+\code{WALKING}, \code{WALKING_UPSTAIRS}, \code{WALKING_DOWNSTAIRS},
+\code{SITTING}, \code{STANDING}, \code{LAYING}, \code{STAND_TO_SIT},
+\code{SIT_TO_STAND}, \code{SIT_TO_LIE}, \code{LIE_TO_SIT},
+\code{STAND_TO_LIE}, \code{LIE_TO_STAND}.
+
+Trusted anchor $X^r$ là input đã chạy đúng frozen reference; lưu logits,
+class $c$, input và identity. Candidate $\Sset$ là tập input được đề xuất,
+khác một query. Margin $g_{cj}(X)=F_c(X)-F_j(X)$ có
+\textbf{11 competitors} $j\in\{0,\ldots,11\}\setminus\{c\}$.
+Certificate phải khóa checkpoint, preprocessing, full class order, graph,
+operator/numerical semantics, anchor, miền, bound method/version và lifecycle.
+Event chỉ chọn candidate; không được dùng nhãn test như runtime oracle.
+
+K=6/282,918-parameter checkpoints, probe 1,450 mẫu và valid--GAP network là
+nghiên cứu lịch sử. Các định lý tương ứng được giữ với giả thiết gốc,
+không chuyển thành bằng chứng K=12. Không cần anchor thuộc miền next-wave.
 
 \begin{table}[!htbp]\centering
 \caption{Unified contract C1--C10.}
@@ -276,6 +331,11 @@ $0-1=-1$. Bound trực tiếp affine difference cho đúng 1.
 Ở bước quyết định cuối, chỉ cần \emph{lower bound của margin}. Tuy nhiên
 để tạo nó khi các hệ số có dấu khác nhau, phải dùng cả lower và upper
 activation bounds. Chỉ lấy lower activation là sai với hệ số âm.
+Một phản ví dụ mạnh hơn vẫn đúng với direct final margin: đặt
+$h_1=h_2=\relu(t+1)$, $t\in[-1,1]$ và $g=1+h_1-h_2$.
+True margin luôn 1. Hidden intervals độc lập là$[0,2]^2$ nên direct-margin
+IBP cho$1+0-2=-1$. Dependencies có thể mất trước final Linear;
+gộp final rows không làm verifier complete.
 IBP sound không đồng nghĩa IBP complete: nó có thể bỏ lỡ một miền bất biến.
 Phân tích và training IBP trong literature \cite{ibp} không tự chuyển thành
 hit rate hoặc latency của ECDR.
@@ -431,7 +491,68 @@ tăng membership đồng thời làm mất positive margin. Đây là trade-off 
 đo của event-conditioned ECDR.
 
 \section{Từ wave data đến exact feature và margin identities}
-\subsection{Giả thiết kiến trúc chuyên biệt A1--A6}
+\subsection{Actual K=12: receptive field, pool phase và aligned features}
+\label{sec:actual-feature}
+Đặt $H(X)=\mathrm{conv}(N(X))\in\R^{64\times32}$ là output sau ReLU thứ ba trước Flatten.
+Các support dưới đây là inclusive intervals trên chỉ số input zero-based;
+chúng là support có thể phụ thuộc, không khẳng định mọi weight khác zero.
+\begin{table}[!htbp]\centering
+\caption{Suy ra origin chính xác của receptive field cho graph đã khóa.}
+\begin{tabular}{@{}lll@{}}\toprule
+Output tại index $i$ & Inclusive input support & Jump\\\midrule
+Conv1 & $[i-2,i+2]$ & 1\\
+Pool1 & $[2i-2,2i+3]$ & 2\\
+Conv2 & $[2i-4,2i+5]$ & 2\\
+Pool2 & $[4i-4,4i+7]$ & 4\\
+Conv3 & $[4i-8,4i+11]$ & 4\\\bottomrule
+\end{tabular}
+\end{table}
+Ví dụ Pool1 lấy Conv1 indices $2i,2i+1$; hợp hai support là
+$[2i-2,2i+3]$. Conv2 lấy ba Pool1 positions $i-1,i,i+1$,
+sau đó Pool2 và Conv3 lặp cùng cách hợp support. BN eval frozen và ReLU
+pointwise không mở rộng support. Width $20$ và jump4 đúng với Week2;
+interval $[4i-9,4i+10]$ có cùng width nhưng sai origin.
+
+\begin{theorem}[Aligned interior features cho actual reference]\label{th:actual-feature}
+Giả sử (B1) $X'[:,0:64]=X[:,64:128]$ cùng recording/grid;
+(B2) normalization là cùng frozen pointwise affine theo channel;
+(B3) graph đúng bảng frozen, BN ở eval với running statistics cố định,
+không input-dependent statistics;
+(B4) hai phép Pool2 dùng origin0, stride 2, không lệch phase;
+(B5) mọi phép toán được hiểu trong số thực với cùng parameters.
+Khi đó
+\begin{equation}
+ H_j(X')=H_{j+16}(X),\qquad j=2,\ldots,13.
+ \label{eq:actual-alignment}
+\end{equation}
+Có $12\times64=768$ feature scalars bằng nhau sau căn chỉnh.
+\end{theorem}
+\begin{proof}
+Support cuối của $H_j(X')$ là $[4j-8,4j+11]$.
+Nằm hoàn toàn trong shared input $[0,63]$ khi
+$4j-8\ge0$ và $4j+11\le63$, tương đương $2\le j\le13$.
+Truy vết ngược cho các index này cho thấy Conv3 chỉ dùng Pool2 indices
+1--14; chúng dùng Conv2 indices2--29; các Conv2 này chỉ dùng Pool1
+indices1--30 và Conv1 indices2--61. Vì vậy không node padding nào nằm
+trên computation tree đó. Bên window cũ các index dịch tương ứng cũng
+nằm trong interior: final indices18--29.
+
+Dịch64 input indices là dịch64 ở Conv1,32 ở Pool1/Conv2,16 ở
+Pool2/Conv3. Cả hai độ dịch trước pool chia hết cho 2 nên các cặp toán
+hạng max trùng nhau sau dịch. Từng convolution nhận cùng các operands
+và weights; BN fixed affine, ReLU và max giữ equality. Quy nạp qua các
+operator cho (\ref{eq:actual-alignment}).
+\end{proof}
+Không mở rộng theorem đến boundary $j=0,1,14,15$ chỉ từ RF width.
+$j=1$ cần input index$-4$ (padding của window mới nhưng sample thật ở
+window cũ); $j=14$ có support đến 67, gồm new wave. Những indices ngoài
+miền bảo đảm vẫn có thể trùng tình cờ với một input/weight cụ thể.
+Bitwise equality trên checkpoint/backend đã chạy là evidence thực nghiệm
+riêng; theorem số thực không bảo đảm mọi backend cho cùng bit pattern
+\cite{pytorch-numerical}. Có aligned activations không suy ra cùng logits:
+Flatten--MLP gán weights theo vị trí nên cột$j$ và$j+16$ có thể có weights khác.
+
+\subsection{H13--H14 lịch sử: giả thiết chuyên biệt A1--A6}
 Các kết quả trong mục này dùng: A1, window shift--append cùng sampling grid;
 A2, Conv1D valid, stride 1, dilation 1; A3, ReLU hoặc pointwise map giống
 nhau ở mọi vị trí; A4, không pooling/position encoding/stateful preprocessing
@@ -514,7 +635,7 @@ Nếu chỉ dùng $\underline D$ cho cả hệ số âm sẽ cho $0.3$, không p
 bound hợp lệ trên toàn interval. Với nhiều competitor phải kiểm tất cả.
 \end{example}
 
-\subsection{Tính toán cho cấu hình HAPT lý thuyết và các giới hạn}
+\subsection{Tính toán cho family valid--GAP lịch sử và các giới hạn}
 Với $k=(5,3,3)$, $R=1+4+2+2=9$, $n=128-9+1=120$.
 Dịch $s=64$ cho $n-s=56$ shared positions và 64 new positions ở layer
 cuối. Tỷ lệ shared là $56/120=46.\overline6\%$. Sau $q$ lần dịch, số
@@ -729,8 +850,7 @@ có mean forward $t_f=251.1\,\mu$s và \emph{giả sử} $r=0.5$, thì
 \end{equation}
 Số $251.1$ đến từ \code{data/g2_cpu_latency.json}: forward CPU của model
 6 lớp cũ trên tensor normalized trong RAM, không phải timing của reference
-12 lớp hay của valid--GAP family. Báo cáo không chạy lại benchmark và
-không chuyển mốc này thành kết quả của hướng mới.
+12 lớp hay của valid--GAP family. Mốc lịch sử này không được chạy lại hoặc dùng làm benchmark K=12; lần đo Week3 mới được báo riêng ở phần execution.
 
 \subsection{Build amortization theo số hit/certificate}
 Một certificate tốn $t_b$, dùng cho $L$ query sau build và có $h$ hit, tổng
@@ -752,62 +872,229 @@ Lipschitz hoặc valid relaxation; phải chứng minh/bound. Các giả thuyế
 \emph{empirical} như useful coverage, margin alignment và cost không được
 thay bằng giả định rồi dùng làm kết luận nghiên cứu.
 
-\begin{longtable}{@{}p{0.8cm}p{4.0cm}p{4.3cm}p{3.9cm}@{}}
-\caption{Hypothesis ledger: phát biểu, trạng thái và cách kiểm tra.}
-\label{tab:hypotheses}\\\toprule
-ID & Phát biểu & Trạng thái lý thuyết & Phép kiểm/điều kiện còn cần\\\midrule
-\endfirsthead
-\toprule ID & Phát biểu & Trạng thái lý thuyết & Phép kiểm/điều kiện còn cần\\\midrule
-\endhead
-H01 & Window kế tiếp giữ nguyên overlap sau dịch chỉ số & Đã chứng minh với
-grid/recording contract & Kiểm sampling alignment/missing samples\\
-H02 & Overlap 50\% khiến ordinary distance nhỏ & Sai vô điều kiện; có
-counterexample & Chỉ có thể khảo sát một phân bố cụ thể\\
-H03 & Cùng activity cho cùng prediction & Sai vô điều kiện & Đo agreement
-có strata, không dùng làm certificate\\
-H04 & Unique winner và continuity cho miền bất biến cục bộ & Đã chứng minh
-tồn tại; không cho radius hữu ích & Margin/bound và coverage\\
-H05 & Positive valid lower margins đủ cho reuse & Đã chứng minh trong số
-thực và đúng domain identity & Numerical containment khi triển khai\\
-H06 & Lipschitz bound hợp lệ cho certified ball & Đã chứng minh có điều kiện
-& Cách lấy $L$ sound và đủ chặt\\
-H07 & IBP luôn tìm được miền invariant & Sai; sound nhưng incomplete
-& Đo bound gap trên domain cố định\\
-H08 & Direct margin có thể tránh logit dependency loss & Có ví dụ exact
-& So sánh cùng domain và bound budget\\
-H09 & CROWN luôn rẻ hơn mọi phương pháp khác & Không được chứng minh
-& Đo build cost/tightness theo cấu hình\\
-H10 & Temporal/PCA direction phù hợp margin normals & Giả thuyết mở
-& Đo alignment, ablation và held-out data\\
-H11 & Structured region cho coverage tốt hơn matched box & Giả thuyết mở
-& Chốt criterion matching trước đánh giá\\
-H12 & Wave-domain giảm số biến từ $CW$ xuống $Cs$ & Đúng khi overlap cố định
-& Không đồng nhất giảm dimension với giảm runtime\\
-H13 & Valid--ReLU CNN reuse exact shared activations & Đã chứng minh với A1--A6
-& Không tự áp cho padding/pool khác\\
-H14 & GAP delta chỉ phụ thuộc new-minus-dropped sum & Đã chứng minh cho head
-được khai báo & Bound phần mới và đủ mọi competitor\\
-H15 & Có thể recenter sau mỗi hit không cần proof mới & Sai; có drift
-counterexample & Giữ anchor hoặc chứng minh transfer rule\\
-H16 & Fixed-anchor membership mỗi lần cho multi-step soundness & Đã chứng minh
-có điều kiện & Useful lifetime/hit count còn mở\\
-H17 & Product-wave horizon certificate cho nhiều bước & Đã chứng minh có điều
-kiện trên reachable sets & Bound tightness và cost theo $H$\\
-H18 & Box membership có cost $\Theta(m)$ worst-case & Đúng trong coordinate
-query model & Wall-clock phụ thuộc backend/memory\\
-H19 & Soundness kéo theo useful coverage & Sai; miền có thể không chứa query
-mới & Báo hit denominator và no-hit case\\
-H20 & Useful coverage kéo theo speedup & Sai khi build/overhead lớn
-& Accounting đầy đủ theo (\ref{eq:breakeven})\\
-H21 & ECDR hơn CNN hoặc LipCache trên HAPT & Chưa chứng minh
-& Reference-equivalent benchmark và matched semantics\\
-H22 & Float32 tự kế thừa proof số thực & Sai nếu không bao sai số
-& Bound error, membership và output semantics\\
-H23 & Event name đúng là đủ để reuse & Sai; selector chỉ đề xuất region
-& Gate độc lập certificate và membership\\
-H24 & Có operating regime vừa sound, coverage hữu ích, cost thấp & Giả thuyết
-trung tâm còn mở & Chứng minh contract, rồi đo cùng workload\\\bottomrule
-\end{longtable}
+\subsection{Ledger đầy đủ: nghĩa gốc, giả thiết và disposition K=12}
+Mỗi ID dưới đây xuất hiện đúng một lần như một record audit. Trạng thái
+DERIVED nói về proof với giả thiết; VERIFIED nói về execution hữu hạn;
+CONDITIONAL cần premise chưa khép; FALSIFIED chỉ bác đúng universal claim
+đã nêu; NOT ESTABLISHED không đồng nghĩa sai. Không record nào được gắn
+ACCEPTED thay người nghiên cứu. Bằng chứng thực nghiệm mới được liên kết
+ở phần execution, không thay nghĩa gốc của ID.
+
+\subsubsection*{H01: Window kế tiếp giữ nguyên overlap sau dịch chỉ số.}
+\textbf{Loại.} Structural property. \textbf{Giả thiết gốc.} Cùng recording, sample grid, stride; preprocessing pointwise frozen.
+
+\textbf{K=12.} Không phụ thuộc K. Bằng nhau tại aligned indices, không phải cùng local index. \textbf{Evidence.} Week2 data audit: 17,392 cặp toàn corpus; 5,034 cặp test.
+
+\textbf{Proof obligation / phép kiểm.} Kiểm raw slice, normalized overlap, reset/gap. Thiếu alignment thì reject wave.
+
+\textbf{Disposition.} DERIVED; VERIFIED trên các cặp đã audit.
+
+\subsubsection*{H02: Overlap50\% khiến ordinary distance nhỏ.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Không có smoothness/amplitude bound trong window contract.
+
+\textbf{K=12.} Sai cho K=12 cũng như K bất kỳ; ramp có delta64 tại cùng local index. \textbf{Evidence.} Phản ví dụ ramp trong Week2 và phép shift--append.
+
+\textbf{Proof obligation / phép kiểm.} Không chứng minh claim sai; chỉ đo empirical distribution nếu cần.
+
+\textbf{Disposition.} FALSIFIED ở nghĩa vô điều kiện.
+
+\subsubsection*{H03: Cùng activity cho cùng CNN prediction.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Activity annotation không ràng buộc classifier weights.
+
+\textbf{K=12.} Không dùng nhãn hoạt động làm decision oracle. \textbf{Evidence.} Ví dụ affine $F_1=1-x,F_2=0$; actual\code{feature_alignment.json} có 78/2,661 same-pure-label adjacent pairs đổi prediction.
+
+\textbf{Proof obligation / phép kiểm.} Đo adjacent agreement chỉ là mô tả; không thay whole-domain bound.
+
+\textbf{Disposition.} FALSIFIED ở nghĩa vô điều kiện.
+
+\subsubsection*{H04: Unique winner và continuity cho miền bất biến cục bộ.}
+\textbf{Loại.} Theorem. \textbf{Giả thiết gốc.} Hữu hạn logits; continuity tại anchor, strict positive point margin.
+
+\textbf{K=12.} Conv/BN-eval/ReLU/MaxPool/Flatten/Linear liên tục trong số thực. \textbf{Evidence.} Định lý\ref{th:exist}.
+
+\textbf{Proof obligation / phép kiểm.} Tìm radius hữu ích và numerical bridge; local existence không đo coverage.
+
+\textbf{Disposition.} DERIVED; usefulness NOT ESTABLISHED từ theorem.
+
+\subsubsection*{H05: Positive valid lower margins đủ cho reuse.}
+\textbf{Loại.} Theorem. \textbf{Giả thiết gốc.} Mỗi bound valid trên toàn cùng miền; membership, model identity đúng.
+
+\textbf{K=12.} Phải kiểm 11 competitors; strict bound không chỉ point margin. \textbf{Evidence.} Định lý\ref{th:margin}, gate\ref{th:gate}.
+
+\textbf{Proof obligation / phép kiểm.} Chứng minh bound arithmetic, normalization containment và executable semantics.
+
+\textbf{Disposition.} DERIVED trong số thực; executable CONDITIONAL.
+
+\subsubsection*{H06: Lipschitz bound hợp lệ cho certified ball.}
+\textbf{Loại.} Conditional theorem. \textbf{Giả thiết gốc.} Lipschitz upper bound hợp lệ trên miền chứa ball, đúng norm.
+
+\textbf{K=12.} Áp dụng K=12 nếu đủ 11 $L_{cj}$ và anchor margins. \textbf{Evidence.} Định lý\ref{th:lip}; không lấy một gradient làm global bound.
+
+\textbf{Proof obligation / phép kiểm.} Tính upper bounds sound và đo tightness/build/coverage.
+
+\textbf{Disposition.} DERIVED có điều kiện; useful K=12 radius chưa suy từ theorem.
+
+\subsubsection*{H07: IBP luôn tìm được mọi miền invariant.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} IBP enclosure từng layer; dependencies bị bỏ khi interval hóa.
+
+\textbf{K=12.} Actual graph có thể dùng real IBP; không complete. \textbf{Evidence.} Ví dụ $h_1=h_2=\relu(t+1)$, $g=1+h_1-h_2=1$ nhưng direct-margin IBP trên$[0,2]^2$ cho$-1$.
+
+\textbf{Proof obligation / phép kiểm.} Kiểm từng operator và arithmetic; fail không phải counterexample.
+
+\textbf{Disposition.} FALSIFIED universal completeness; soundness CONDITIONAL.
+
+\subsubsection*{H08: Direct margin có thể tránh logit dependency loss.}
+\textbf{Loại.} Existential/structural property. \textbf{Giả thiết gốc.} Cùng graph/domain; combine class-difference trước intervalization.
+
+\textbf{K=12.} Ghép rows $W_{2,c}-W_{2,j}$ của actual final Linear cho 11 objectives. \textbf{Evidence.} Cùng ví dụ cancellation cho exact bound1; với cùng hidden box, direct affine minimum không kém separate-logit subtraction vì $\inf(A-B)\ge\inf A-\sup B$.
+
+\textbf{Proof obligation / phép kiểm.} Không suy strict improvement mọi input; đo cùng budgets/method.
+
+\textbf{Disposition.} DERIVED về khả năng; K=12 lợi ích đo riêng.
+
+\subsubsection*{H09: CROWN luôn rẻ hơn mọi phương pháp khác.}
+\textbf{Loại.} Empirical universal claim không được hỗ trợ. \textbf{Giả thiết gốc.} Version, operators, slopes, bound budget và hardware phải khai báo.
+
+\textbf{K=12.} Không có proof hay dominance áp mọi CROWN/IBP implementation. \textbf{Evidence.} Các affine relaxations ở mục CROWN chỉ chứng minh validity.
+
+\textbf{Proof obligation / phép kiểm.} Đo build/tightness cùng miền; native operator/version blockers phải báo.
+
+\textbf{Disposition.} NOT ESTABLISHED; không mặc định superiority.
+
+\subsubsection*{H10: Temporal/PCA directions phù hợp margin normals.}
+\textbf{Loại.} Empirical research hypothesis. \textbf{Giả thiết gốc.} PCA centering/basis/residual contract; gradient không là regional proof.
+
+\textbf{K=12.} Không thay trained K=12 margin geometry bằng toy. \textbf{Evidence.} Ví dụ $1+x_1-x_2$ cho alignment có thể giúp.
+
+\textbf{Proof obligation / phép kiểm.} Đo projections/ablation trên train/validation; test-only conclusion hạn chế.
+
+\textbf{Disposition.} VERIFIED descriptive local geometry trong\code{geometry.json}; whole-region alignment/usefulness NOT ESTABLISHED cho actual reference.
+
+\subsubsection*{H11: Structured region hơn matched diagonal box về certified coverage.}
+\textbf{Loại.} Empirical research hypothesis. \textbf{Giả thiết gốc.} Cùng reference/bound method, xác định matching/budget trước so.
+
+\textbf{K=12.} Wave fixed prefix và full box là hai geometry khác nhau. \textbf{Evidence.} Support identities\ref{th:support}--\ref{th:pca}.
+
+\textbf{Proof obligation / phép kiểm.} Coverage candidate/bound-positive/executable reuse phải tách; không gọi khác dimension là fair match tự động.
+
+\textbf{Disposition.} VERIFIED no useful candidate hits trong measured policy; superiority tổng quát NOT ESTABLISHED.
+
+\subsubsection*{H12: Wave-domain giảm biến tự do từ $CW$ xuống $Cs$.}
+\textbf{Loại.} Structural property. \textbf{Giả thiết gốc.} Overlap fixed exactly; new-wave embedding injective trên admitted set.
+
+\textbf{K=12.} C=6,W=128,s=64 cho 768 full và 384 new scalars, K=12 không đổi C. \textbf{Evidence.} Shift--append và fixed-prefix domain.
+
+\textbf{Proof obligation / phép kiểm.} Trust/verify prefix, recording/grid identity; noise mở prefix thì dimension tăng.
+
+\textbf{Disposition.} DERIVED; không suy cost giảm50\%.
+
+\subsubsection*{H13: Valid--ReLU CNN tái dùng exact aligned activations.}
+\textbf{Loại.} Architectural conditional theorem. \textbf{Giả thiết gốc.} Gốc A1--A6: valid stride 1, no pool, pointwise maps; GAP cho head follow-up.
+
+\textbf{K=12.} Giữ theorem gốc; actual padded/BN/Pool phải dùng B1--B5 riêng, j2--13. \textbf{Evidence.} Định lý\ref{th:feature} và theorem mới\ref{th:actual-feature}, RF[4j$-$8,4j$+$11].
+
+\textbf{Proof obligation / phép kiểm.} Actual intermediate checks:5,034 pairs,3,866,112 scalars bitwise equal tại j2--13 trong\code{feature_alignment.json}; chỉ môi trường đã chạy.
+
+\textbf{Disposition.} DERIVED real identity; actual finite checks ghi ở evidence execution.
+
+\subsubsection*{H14: GAP delta bằng new-minus-dropped feature sum.}
+\textbf{Loại.} Architectural conditional theorem. \textbf{Giả thiết gốc.} A5: GAP rồi affine logits; shared features theorem tương ứng.
+
+\textbf{K=12.} Không áp dụng Flatten--Linear--ReLU--Linear của reference. \textbf{Evidence.} Định lý\ref{th:gap}, hệ quả\ref{cor:interval} giữ nguyên lịch sử.
+
+\textbf{Proof obligation / phép kiểm.} Muốn incremental Flatten--MLP phải derive objective mới, không tái dùng GAP formula.
+
+\textbf{Disposition.} DERIVED cho GAP; NOT APPLICABLE cho actual head.
+
+\subsubsection*{H15: Recenter sau hit không cần proof mới.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Certificate valid trên miền cố định của anchor0.
+
+\textbf{K=12.} Reuse không tạo trusted anchor mới; phải có forward/transfer theorem. \textbf{Evidence.} $F_1=1-x,F_2=0$, radius 0.6;0.6 hit rồi1.2 sai.
+
+\textbf{Proof obligation / phép kiểm.} Negative tests stale/mutated domain/reused-anchor; giữ lifecycle.
+
+\textbf{Disposition.} FALSIFIED.
+
+\subsubsection*{H16: Fixed-anchor membership mỗi lần bảo toàn multi-step soundness.}
+\textbf{Loại.} Conditional theorem. \textbf{Giả thiết gốc.} Bound/domain/anchor identity giữ nguyên, checker sound ở từng query.
+
+\textbf{K=12.} 11 positive margins và numerical bridge phải tiếp tục đúng mọi lần accept. \textbf{Evidence.} Định lý\ref{th:fixed}.
+
+\textbf{Proof obligation / phép kiểm.} Đo lifetime/hits; reset recording và stale identity invalidate.
+
+\textbf{Disposition.} DERIVED có điều kiện; actual hit utility đo riêng.
+
+\subsubsection*{H17: Product-wave horizon certificate cho nhiều bước.}
+\textbf{Loại.} Conditional theorem. \textbf{Giả thiết gốc.} Bound trên mọi reachable set, mọi admitted wave sequence và dependency.
+
+\textbf{K=12.} Không cần shared raw sample tồn tại mãi; horizons>=2 có thể thay hết window. \textbf{Evidence.} Định lý\ref{th:horizon}.
+
+\textbf{Proof obligation / phép kiểm.} Construct reachable sets và bound tất cả horizons; cost/tightness chưa được theorem cho.
+
+\textbf{Disposition.} DERIVED có điều kiện; practical horizon NOT ESTABLISHED.
+
+\subsubsection*{H18: Exact box membership có worst-case $\Theta(m)$.}
+\textbf{Loại.} Complexity theorem. \textbf{Giả thiết gốc.} Coordinate-access model, nondegenerate box, exact decisions mọi input.
+
+\textbf{K=12.} m=768 full;384 tail chỉ khi prefix được bảo đảm. \textbf{Evidence.} Adversarial unread-coordinate proof trong mục membership.
+
+\textbf{Proof obligation / phép kiểm.} SIMD/time/memory đo riêng; all-reject filter không phải exact membership.
+
+\textbf{Disposition.} DERIVED trong model đã nêu.
+
+\subsubsection*{H19: Soundness kéo theo useful coverage.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Không có lower bound trên future probability mass.
+
+\textbf{K=12.} Singleton anchor hoặc tiny box có thể không hit query mới. \textbf{Evidence.} Counterexample no-hit domain.
+
+\textbf{Proof obligation / phép kiểm.} Báo full-stream denominator, candidate/membership/reuse riêng; zero-hit agreement N/A.
+
+\textbf{Disposition.} FALSIFIED implication; actual coverage đo riêng.
+
+\subsubsection*{H20: Useful coverage kéo theo net speedup.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Build, membership, event, state, preprocessing, fallback đều có cost.
+
+\textbf{K=12.} Small K=12 CNN có thể rẻ hơn certificate overhead. \textbf{Evidence.} Định lý\ref{th:cost}; chọn build cost lớn làm speed ratio<1.
+
+\textbf{Proof obligation / phép kiểm.} Đo full traces cả failed builds; không thay mean bằng p50.
+
+\textbf{Disposition.} FALSIFIED implication; savings là empirical question.
+
+\subsubsection*{H21: ECDR hơn CNN hoặc LipCache trên HAPT.}
+\textbf{Loại.} Empirical research hypothesis. \textbf{Giả thiết gốc.} Cùng semantics, data, device và workload; guarantee của LipCache phải đọc đúng target.
+
+\textbf{K=12.} CNN baseline phải actual K=12; GuardNet proxy của LipCache không mặc nhiên MainNet-equivalent. \textbf{Evidence.} Primary LipCache paper\cite{lipcache}; không dùng speedup miền ảnh thay HAPT.
+
+\textbf{Proof obligation / phép kiểm.} Comparator HAPT faithful chưa có thì mark NOT ESTABLISHED; báo benchmark CNN scope riêng.
+
+\textbf{Disposition.} NOT ESTABLISHED về superiority/LipCache.
+
+\subsubsection*{H22: Float32 tự kế thừa proof số thực.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Arithmetic implementation, rounding, overflow, backend/order chưa được bao.
+
+\textbf{K=12.} Float64 bound diagnostic không chứng nhận executable float32. \textbf{Evidence.} Mục numerical; margin rounding counterexample; official notes\cite{pytorch-numerical}.
+
+\textbf{Proof obligation / phép kiểm.} Bound normalization, operator và acceptance errors; epsilon tùy ý không đủ.
+
+\textbf{Disposition.} FALSIFIED implication; executable soundness chưa tự established.
+
+\subsubsection*{H23: Event name đúng là đủ reuse.}
+\textbf{Loại.} Universal claim bị bác. \textbf{Giả thiết gốc.} Selector chỉ đề xuất miền; event label không là bound hoặc membership.
+
+\textbf{K=12.} Tất cả candidates vẫn qua identity/bound/numerical/membership gate. \textbf{Evidence.} Selector proposition và counterexample membership-only.
+
+\textbf{Proof obligation / phép kiểm.} Negative selector/domain tests; ground truth chỉ stratification offline.
+
+\textbf{Disposition.} FALSIFIED.
+
+\subsubsection*{H24: Tồn tại regime vừa sound, useful, cost thấp.}
+\textbf{Loại.} Central empirical/existence hypothesis. \textbf{Giả thiết gốc.} Đồng thời mathematical validity, executable soundness, useful hits, net savings.
+
+\textbf{K=12.} Không chứng minh từ H05 hoặc zero disagreements ở no-hit run. \textbf{Evidence.} Kết hợp actual evidence ở phần execution; negative findings hợp lệ.
+
+\textbf{Proof obligation / phép kiểm.} Chỉ kết luận trong configurations đã chạy; không falsify mọi regime từ một run âm.
+
+\textbf{Disposition.} NOT ESTABLISHED; measured policies zero reuse và negative savings, chưa bác mọi regime có thể có.
 
 \subsection{Thiết kế kiểm chứng giả thuyết sau báo cáo lý thuyết}
 Để kiểm H10--H11, cố định reference, data representation và bound method,
@@ -841,8 +1128,8 @@ Data algebra & Window count, shift--append, overlap, normalization transform
 & Tín hiệu mượt, same prediction, population coverage\\
 General certification & Margin theorem, local existence, Lipschitz rule,
 IBP soundness, support identities & HAPT usefulness hoặc numerical soundness tự động\\
-Specialized CNN & RF, aligned feature equality, GAP/margin delta, interval rule
-& Exact rule cho mọi CNN architecture\\
+Specialized CNN & Actual RF/alignment theo B1--B5; historical GAP identities theo A1--A6
+& GAP rule cho actual Flatten--MLP hoặc universal bitwise equality\\
 Lifecycle & Fixed-anchor và finite-horizon sufficient rules & Reuse vô hạn
 với recenter không proof\\
 Complexity & Coordinate-model membership bounds, cost break-even
@@ -867,16 +1154,221 @@ và mathematics quyết định khi nào miền đó giữ class. Câu hỏi tru
 lại là tìm được miền vừa chứng nhận được, vừa chứa đủ query, vừa có chi
 phí sử dụng thấp trong một thiết lập được xác định rõ.
 
+% BEGIN WEEK3 EXECUTION EVIDENCE
+\section{Execution K=12: kết quả đo và giới hạn kết luận}
+\subsection{Protocol, source và denominator}
+Lệnh thực thi là \code{.venv/bin/python scripts/week3_experiments.py};
+probe là \code{.venv/bin/python scripts/week3_lirpa_probe.py}.
+Receipt ở \code{output/week3_certification_20261103/}.
+Run cuối hoàn tất 03/11/2026, 12:16:27 Asia/Ho\_Chi\_Minh, wall 167.597s,
+Python 3.11.15, PyTorch 2.14.1+cpu, NumPy 2.4.6, CPU một torch thread.
+Đây là exploratory feasibility trên split đã từng được nghiên cứu; không
+mô tả test split là hoàn toàn untouched. Không retrain, relabel hoặc refit norm.
+Hash source verifier là
+\code{5f86aa2863406b01071e6b49ce5badd28322f1ca6e004b425568f0ad4cab09eb}.
+
+Radius grid normalized là$0,10^{-6},10^{-4},10^{-3},10^{-2},0.1,1$,
+64 validation anchors mỗi family. Zero radius là control không được chọn.
+Policy tối đa hóa conditional-positive next memberships; tất cả positive
+radii có zero joint hits ở validation, nên tie-break cho radius$10^{-6}$.
+Việc chọn radius nhỏ nhất trong tie không chứng minh tìm được region hữu ích.
+Protocol đóng băng trước test loading; không được suy general superiority
+của structured domain từ tie-break này. Optional PCA certificate regions
+DEFERRED vì numerical gate chưa valid; local geometry vẫn được đo.
+
+Domain audit build tại mọi test anchor:5,053 anchors trong19 recordings;
+5,034 valid next pairs và 19 terminal anchors không có next query.
+Runtime là chronological replay5,053 queries, recording resets, fixed anchor,
+max age 128; build khi thiếu certificate theo policy. Tách audit build-every-
+anchor khỏi số build49/69 của runtime. Full-stream strata là 2,874 pure-basic,
+119 pure-transition,579 majority-mixed,479 ambiguous và 1,002 unlabeled.
+Trong next-pair coverage có 983 unlabeled query và 19 terminal anchors;
+không chuyển denominator này thành supervised accuracy.
+Fresh reference decisions trùng frozen artifact trên 5,053/5,053 inputs;
+supervised metrics 3572 giữ accuracy 0.8905375, macro-F1 0.7762645.
+
+\subsection{Actual-graph IBP và numerical gate}
+\code{ecdr/week3_verifier.py} triển khai explicit transfers cho zero-padded
+Conv1d, BN frozen eval (kể cả scale âm), ReLU, MaxPool1d, Flatten và Linear.
+Chỉ loại operator đã khai báo được chấp nhận; unsupported graph, training/
+untracked BN, invalid/nonfinite intervals hoặc identity mismatch fail closed.
+Bound objective ghép final class-difference rows để tính11 margins;
+separate-logit estimates được giữ làm diagnostic control.
+
+\textbf{Giới hạn chủ chốt.} Transfers được tính float64 không directed
+rounding; BN coefficients cũng được tính hữu hạn. Chưa có enclosure toàn
+bộ bound arithmetic, normalization hay sai khác reference float32. Vì vậy
+đây là \textbf{CONDITIONAL real-arithmetic diagnostic}, không phải sound
+executable certificate. Positive record mang lifecycle CONDITIONAL\_ONLY;
+\code{formal_reuse_enabled} luôn false, không có constructor flag bypass.
+Domain checker so endpoint với exact stored normalized float32 values được
+promote, không nới bằng epsilon; điều đó không giải quyết numerical bridge
+cho toàn pipeline. Identity khóa checkpoint, preprocessing, class order,
+graph, buffers, anchor, domain, bound method và state. Hooks/forward override,
+stale anchor, mutated state/domain và recording resets đều được kiểm.
+
+\begin{table}[!htbp]\centering\small
+\caption{Audit tại 5,053 anchors, cùng selected radius$10^{-6}$.
+``Positive'' chỉ là conditional diagnostic.}
+\begin{tabularx}{\linewidth}{@{}p{6.9cm}YY@{}}\toprule
+Đại lượng & Full diagonal box & Fixed-overlap wave\\\midrule
+Attempted builds & 5,053 & 5,053\\
+All-eleven conditional positive & 5,034 (99.624\%) & 4,211 (83.337\%)\\
+Nonpositive margin estimates & 19 & 842\\
+Numerical guarantee unavailable & 5,034 & 4,211\\
+Validated executable certificates & 0 & 0\\
+Next candidate members / full stream & 0/5,053 & 0/5,053\\
+Next candidate members / eligible pairs & 0/5,034 & 0/5,034\\
+Conditional-positive member queries & 0 & 0\\
+Accepted formal reuse; $r_{\rm cert}$ & 0; 0 & 0; 0\\
+$A_{\rm reuse}$; shadow accepted-hit mismatch & N/A; no accepted hits & N/A; no accepted hits\\
+Build mean/p50/p95 (ms) & 6.774/6.398/9.174 & 6.830/6.381/9.866\\
+Bound mean/p50/p95 (ms) & 4.516/4.184/6.299 & 4.546/4.166/6.748\\\bottomrule
+\end{tabularx}
+\end{table}
+No-hit giữ đúng mọi strata; không được gọi zero disagreements ở tập rỗng
+là 100\% reused-query agreement. Ngay cả nếu numerical premises được giải
+quyết, các selected domains trong run này chưa chứa next query nào.
+Wave center là constant-continuation$[\text{old suffix},\text{old suffix}]$,
+khác full anchor center. Same-center control tại 127 test anchors dùng cùng
+winner, method và tail radius:107/127 positive ở cả wave và full box.
+Wave là slice384 free coordinates của containing full box768 free coordinates;
+real containment giải thích bound có thể chặt hơn, không phải matched-volume
+hoặc matched-coverage superiority. Cấu hình này không establish H11.
+
+\subsection{H03, H10 và H13: independent/geometry checks}
+\code{feature_alignment.json} kiểm độc lập đủ 5,034 adjacent test pairs,
+19 recordings, batch1 float32 CPU một thread. Có3,866,112 aligned scalar
+comparisons tại$j=2,\ldots,13$, tất cả bitwise equal, max absolute error 0.
+Các boundary positions$j=0,1,14,15$ không bằng cho mọi cặp (max errors lần
+lượt 14.9244,7.0225,7.8390,18.5721). Đây là VERIFIED finite evidence phù
+hợp theorem\ref{th:actual-feature}; universal runtime bitwise equivalence
+vẫn NOT ESTABLISHED. Cùng receipt cho 78 prediction disagreements trong
+2,661 same-pure-label adjacent pairs. Witness global rows682/683 có pure
+label11 nhưng zero-based predictions10/8. H03 vì vậy có cả counterexample
+trừu tượng và witness của đúng frozen reference.
+
+\code{geometry.json} fit centered PCA trên 9,944 train adjacent ordinary-
+coordinate deltas và lấy32 validation winner-minus-runner-up gradients.
+Top3 PCs giải thích21.4837\% train variance. Mean absolute cosine giữa
+normalized temporal delta và margin normal là 0.05097 (p50 0.03675,p95 0.15373);
+mean projection norm lên top3-PC subspace là 0.07982
+(p50 0.07242,p95 0.15322). Projection nhỏ là local tangent-like observation,
+không là upper sensitivity bound trên miền và không chứng minh H10 hay H11.
+
+\subsection{auto-LiRPA/CROWN: native blocker và surrogate có điều kiện}
+\code{lirpa_probe.json} ghi auto-LiRPA 0.8.0 với metadata yêu cầu
+$2.0\le\mathrm{torch}<2.12$; environment frozen2.14.1 nằm ngoài contract.
+Import chạy được nhưng native1D graph conversion lỗi
+\code{IndexError('list index out of range')} ở BoundMaxPool padding indexing.
+Không đổi hoặc downgrade frozen environment để biến probe thành guarantee.
+
+Đặt embedding$I(Z)_{b,c,0,t}=Z_{b,c,t}$. Copy Conv1D weights thành
+Conv2D kernel$(1,k)$, padding$(0,p)$; mỗi output tại$(0,t)$ có đúng tổng
+$\sum_{c,q}w_{o,c,q}Z_{b,c,t+q-p}+b_o$. Frozen BN1D/BN2D dùng cùng
+channel constants, ReLU pointwise, Pool$(1,2)$ lấy cùng hai time indices,
+height luôn 1. Flatten order$(c,0,t)$ trùng$(c,t)$, head được copy nguyên.
+Quy nạp theo operator chứng minh surrogate tương đương trong số thực
+với graph hiện tại. Đây không là theorem cho arbitrary grouped/dilated/
+stateful graph, cũng không là universal float32 equivalence.
+
+Trên8 validation inputs, surrogate logits bitwise match (max error 0,
+zero decision disagreements). Probe2 validation anchors (indices0,345),
+radii$0,0.001,0.01$, đủ 11 margins bằng IBP và CROWN:12 bound calls.
+Tại radius 0 cả hai positive; tại 0.001 IBP 0/2 nhưng CROWN 2/2 positive;
+tại 0.01 cả hai0/2. Riêng radius 0.001, IBP calls 2.795/8.581ms và
+CROWN 388.221/427.153ms. Đây là individual diagnostic calls, không phải
+full-stream CROWN benchmark hay tuyên bố universal dominance. Không query
+nào được formal reuse từ surrogate vì version mismatch, numerical bound
+arithmetic và universal executable equivalence chưa được established.
+
+\subsection{Chi phí complete query path và negative finding}
+\code{runtime_results.json} và\code{runtime_trace.csv} chứa hai repetitions
+cho mỗi family, cùng5,053 raw RAM-resident inputs, CPU một thread.
+\code{reference_core_ms} gồm conversion, frozen normalization, tensor transfer
+và forward/argmax, bỏ full identity rehash. \code{baseline_ms} gọi frozen
+wrapper có full rehash identity mỗi query. ECDR query timer gồm input validation,
+identity, selector/policy, membership, state, normalization, fallback và mọi
+attempted build, kể cả duplicate anchor inference trong build.
+Timer membership cũng chứa identity gate nên không là primitive comparison
+latency. Disk/network/I/O setup không nằm trong per-query timing; setup17.084ms,
+test load183.346ms được báo riêng. Shadow logits precomputed ngoài path.
+CSV/summary collection ngoài query timers nhưng nằm trong loop wall receipt.
+Không có energy/GPU measurement; process peak679,380KiB gồm data/PCA/verifier,
+không là incremental cache overhead. Backend/background load chưa được cô lập
+như device deployment; kết quả chỉ áp replay environment này.
+
+\begin{table}[!htbp]\centering\small
+\caption{CPU reference latency (ms/query), cùng trace ở hai repetitions.}
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+ & \multicolumn{3}{c}{Core reference} & \multicolumn{3}{c}{Wrapper baseline}\\
+Repeat & Mean & p50 & p95 & Mean & p50 & p95\\\midrule
+1 & 0.2240 & 0.2019 & 0.3394 & 1.6747 & 1.4941 & 2.6232\\
+2 & 0.2147 & 0.2030 & 0.2951 & 1.5885 & 1.4715 & 2.1625\\
+\bottomrule\end{tabular}\end{table}
+\begin{table}[!htbp]\centering\small
+\caption{ECDR complete query latency; cả 4 runs đều0 reuse,5,053 fallback,
+zero full-stream disagreements; reused-query agreement N/A.}
+\begin{tabular}{@{}llrrrrr@{}}\toprule
+Family & Repeat & Mean ms & p50 & p95 & Wrapper/ECDR & Core/ECDR\\\midrule
+Diagonal & 1 & 3.1741 & 2.9483 & 4.0889 & 0.5276 & 0.0706\\
+Wave & 1 & 3.1975 & 2.9336 & 4.3673 & 0.5237 & 0.0701\\
+Diagonal & 2 & 3.1069 & 2.8764 & 4.0410 & 0.5113 & 0.0691\\
+Wave & 2 & 3.1687 & 2.9254 & 4.1967 & 0.5013 & 0.0678\\
+\bottomrule\end{tabular}\end{table}
+Mỗi diagonal run có 49 attempted builds,48 conditional-positive,1 nonpositive;
+wave có 69 builds,48 conditional-positive,21 nonpositive. Fallback reason
+counts diagonal: no-certificate2, outside-domain5,004, stale/expired29,
+recording-reset18; wave:22,4,984,29,18. Không recenter từ reused input.
+Initialization/failed builds đã tính trong query horizon. So wrapper baseline,
+query-time savings lần lượt$-7.577,-7.695,-7.672,-7.985$ seconds; mọi ratio
+trong bảng nhỏ hơn1. Core baseline còn rẻ hơn nhiều. Không gọi wrapper's
+full-rehash overhead là chi phí forward CNN thuần hoặc lấy historical
+forward-only timing làm denominator thuận lợi. Net savings \textbf{NEGATIVE}
+cho measured fail-closed policies; đây không là impossibility theorem về
+mọi ECDR regime. H21/LipCache comparison NOT ESTABLISHED: faithful GuardNet
+proxy có target guarantee khác strict MainNet-equivalence; chưa có matched
+HAPT comparator. Không nhập published image speedup như HAPT evidence.
+
+\subsection{Verification và scientific status}
+Lệnh\code{.venv/bin/python -m unittest discover -s tests -v} chạy93 tests,
+exit0 (1.685s):60 historical,27 actual-graph/lifecycle/negative cases và 6
+math counterexample tests; receipt\code{regression_tests.log}. Historical
+passes không được gộp thành 93 K=12 tests. Các sampled operator checks,
+boundary/tie/nonfinite/invalid-domain/stale identity/reset/unsupported tests
+là finite implementation evidence, không chứng minh universal numerical
+soundness. Week1 consistency rerun65/65 PASS ở\code{week1_preservation.json}
+kiểm frozen baseline artifacts; đó không là formal region verifier.
+Source hashes, selected radius, run environment và unchanged frozen identities
+ở\code{experiment_results.json},\code{protocol.json} và preservation receipts.
+
+Mathematical implications và actual feature theorem: DERIVED dưới giả thiết
+đã ghi; finite actual-graph transfers/gate tests: VERIFIED; actual-graph
+verifier: CONDITIONAL; executable soundness: NOT ESTABLISHED; useful formal
+certified reuse: NOT ESTABLISHED (measured accepted count0); net saving:
+NEGATIVE trong cấu hình đã chạy; G2 HOLD; G3 PARTIAL vì numerical obligation;
+G4 NOT ESTABLISHED; G5 negative measured result, không PASS.
+H24 vẫn NOT ESTABLISHED: configurations này không thể hiện đủ bốn điều kiện
+sound mathematical, sound executable, useful coverage và saving. Hoàn thành
+các bước nghiên cứu khả thi không được đổi thành tuyên bố mọi hypothesis đúng.
+
+% END WEEK3 EXECUTION EVIDENCE
+
 \section*{Nguồn và cách tái kiểm}
 Nội dung theo bản chuẩn hóa Week 1--3 do người nghiên cứu cung cấp và các
 nguồn gốc trong bibliography. Các số data mô tả snapshot local theo policy
-đã ghi; mô hình lý thuyết không phải checkpoint triển khai cũ. Báo cáo tổng
-hợp trong cùng thư mục có đầy đủ bảng ký hiệu, provenance và các tuần còn
-lại. Phép tính số học được lưu trong \code{recompute.py} và
-\code{calculations.json}. Không có training hoặc benchmark ECDR mới.
+đã ghi; actual reference được khóa đúng bảng ở mục đầu. Family valid--GAP giữ
+vai trò historical/alternative với A1--A6. Canonical report này và tài liệu
+đồng hành có vai trò độc lập. Các receipt mới phải nêu command, environment,
+identity và measurement scope; các phép tính \code{recompute.py} và
+\code{calculations.json} cũ chỉ kiểm ví dụ lý thuyết, không là verifier K=12.
 
 \begingroup\small
 \begin{thebibliography}{99}
+\bibitem{pytorch-numerical} PyTorch 2.14. \emph{Numerical accuracy};
+\emph{BatchNorm1d}. Đối chiếu ngày 03/11/2026.
+\url{https://docs.pytorch.org/docs/2.14/notes/numerical_accuracy.html}.
+\url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.BatchNorm1d.html}.
 \bibitem{hapt} J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra.
 \emph{Smartphone-Based Recognition of Human Activities and Postural
 Transitions}. UCI Machine Learning Repository, 2015.

@@ -18,10 +18,11 @@
 \usepackage{xcolor}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
-\usepackage{hyperref}
+\usepackage{hyperref,xurl}
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{parskip}
+\setlength{\emergencystretch}{3em}
 
 \definecolor{ink}{RGB}{20,20,20}
 \definecolor{teal}{RGB}{0,120,120}
@@ -41,7 +42,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
-\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
 
 \usepackage{titlesec}
 \titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
@@ -80,12 +81,10 @@ Specifically, the relationship between consecutive normalized windows has struct
         $z^r[i+64]$ (for $i = 0, \ldots, 63$) reappear in $z_t$ at position $z_t[i]$.
         This is a time shift of 64 samples in the raw dimension.
   \item \textbf{Low-rank residual:} The ``new'' 64 samples at the tail of $z_t$
-        are not arbitrary — they continue a smooth human motion trajectory that
-        lies on a low-dimensional manifold.
-  \item \textbf{Bounded noise:} Sensor noise and minor gait irregularities add
-        a small residual in all directions.
+        may have temporal structure. Smoothness or a low-dimensional manifold is a research hypothesis, not a consequence of overlap.
+  \item \textbf{Bounded noise:} Any admitted sensor noise or deviation requires an explicit residual set; its size is not supplied by the overlap identity.
 \end{enumerate}
-The wave-domain model captures all three components explicitly.
+The exact shift is structural. Low-rank and residual constraints are candidate assumptions whose coverage and margins must be measured.
 
 % ============================================================
 \section{The Temporal Shift Operator $T_S$}
@@ -138,15 +137,13 @@ the ``new samples'' at the head of $z_t$ that were not in $z^r$.
 
 \subsection{PCA and the Concept of a Low-Rank Basis}
 
-Principal Component Analysis (PCA) applied to a dataset of $N$ normalized window
-vectors $\{z_1, \ldots, z_N\} \subset \R^{768}$ finds an orthonormal matrix
-$V \in \R^{768 \times p}$ (whose columns are the first $p$ principal components)
-such that:
-\begin{equation}
-  \hat{z} = V V^\top z \quad \text{is the best rank-$p$ linear approximation to } z.
-\end{equation}
-The residual of the approximation is $\rho = z - V V^\top z$, which lies in the
-orthogonal complement of the column space of $V$.
+For centered vectors $w_i=z_i-\bar z$, PCA finds orthonormal columns
+$V\in\mathbb R^{768\times p}$, $V^\top V=I$. The reconstruction is
+$\hat z_i=\bar z+VV^\top(z_i-\bar z)$ and residual
+$\rho_i=(I-VV^\top)(z_i-\bar z)$. A zero-mean convention may omit $\bar z$
+only when explicitly established. Reconstruction optimality is aggregate
+least-squares for the fitted sample and subspace dimension, not a worst-case
+residual guarantee for future input.
 
 The explained variance ratio:
 \[
@@ -164,7 +161,7 @@ This is false for two reasons.
 \textbf{Reason 1 (Average vs.\ worst case):} The explained variance $\eta_p$ is an
 \emph{average} squared reconstruction error over the training dataset:
 \[
-  \eta_p = 1 - \frac{\frac{1}{N} \sum_{i=1}^N \norm{\rho_i}{2}^2}{\frac{1}{N}\sum_{i=1}^N \norm{z_i}{2}^2}.
+  \eta_p = 1 - \frac{\frac{1}{N} \sum_{i=1}^N \norm{\rho_i}{2}^2}{\frac{1}{N}\sum_{i=1}^N \norm{z_i-\bar z}{2}^2}.
 \]
 The worst-case residual norm $\max_i \norm{\rho_i}{2}$ can be much larger than the
 average. Certification requires a bound on the worst case, not the average.
@@ -192,6 +189,27 @@ The domain design question is: what compact sets $\mathcal{U}$ and $\mathcal{R}$
 \end{itemize}
 
 % ============================================================
+\section{Exact Fixed-Overlap Domain for the K=12 Reference}
+Set $C=6,W=128,s=64,K=12$. With trusted normalized prefix
+$P=Z_t[:,64:128]$, define
+\[
+ \mathcal Z_{\rm wave}(P,L,U)=\{[P,V]:L\le V\le U\},\qquad
+ V\in\mathbb R^{6\times64}.
+\]
+If every tail interval has positive width, this set has384 free scalar
+coordinates; a full box has768. A generic full-dimensional $Vu+\rho$
+model does not inherit this reduction unless both components are restricted
+to zero in the prefix. If no trusted prefix state exists, validate it exactly
+or conservatively before accepting membership. This is not an automatic50\%
+reduction in inference/verifier cost.
+
+For actual padded Conv--BN--Pool graph, final feature support is
+$[4j-8,4j+11]$ inclusive and jump4. With same pool phase and BN frozen eval,
+$H_j(Z_{t+1})=H_{j+16}(Z_t)$ for $j=2,\ldots,13$ in real arithmetic.
+The proof traces interior operators and equal pool operand groups; it is in
+the canonical Week3 report. The actual Flatten--MLP head does not admit the
+historical GAP delta identity merely from these equalities.
+
 \section{Sinusoidal Motion: Full Worked Example}
 
 \subsection{Model Setup}
@@ -260,29 +278,35 @@ the stride of 1.28 s may be approximately half the gait period.
 
 \subsection{Implication for Domain Design}
 
-A naive $L_2$ ball centered at $z^r$ would require radius $\ge 2A\sqrt{128}$ to
-contain $z_t$ (the norm of a constant-amplitude cosine over 128 samples).
-For typical normalized accelerometer amplitudes $A \approx 1$--$2$, this radius
-is $2 \times 2 \times \sqrt{128} \approx 45.3$ — consistent with the empirical p50
-for walking ($\approx 36.4$) and larger than any reasonable $L_2$ certification radius.
+The exact toy distance is
+\[
+ \|\Delta\|_2=2|A\sin(\omega S/2)|
+ \sqrt{\sum_{i=0}^{127}\cos^2(\omega(kS+i)+\phi+\omega S/2)}.
+\]
+Consequently $2|A|\sqrt{128}$ is an upper bound, not a necessary lower
+bound on a containing radius. At $\omega=\pi/64$, the128 samples span a
+complete cosine period, the sum of squared cosines is64 and
+$\|\Delta\|_2=16|A|$; if$A=2$, this toy distance is32, not45.3.
+The earlier illustrative HAPT median36.4 is not used as current K=12
+coverage evidence because its population/normalization must be reidentified.
+No universal useful certification radius follows from these toy values.
 
-A wave-domain approach avoids this: instead of requiring the ball to contain the
-full periodic shift, it explicitly models $T_S z^r$ (which accounts for the
-deterministic shift), and only the residual $Vu + \rho$ needs a small bound.
+A shift-based wave domain models the deterministic prefix relation.
+Its new tail or residual can still have large amplitude; a small residual
+budget and useful coverage must be justified separately. A sinusoidal
+low-rank example does not establish a low-rank manifold for HAPT.
 
 % ============================================================
 \section{PCA Dimension Selection: Explained Variance vs. Certification}
 
 \subsection{Standard PCA Selection by Variance}
 
-The standard data science heuristic: choose $p$ such that $\eta_p \ge 0.99$
-(99\% explained variance). For 768-dimensional window vectors of HAPT:
-\begin{itemize}[leftmargin=1.5em]
-  \item Static activities (SITTING, STANDING, LAYING) have very low intrinsic
-        dimensionality: likely $p = 5$--$20$ captures 99\% of variance.
-  \item Locomotion activities have higher intrinsic dimensionality (diverse gait
-        patterns): may require $p = 50$--$100$ for 99\% variance.
-\end{itemize}
+A common heuristic chooses$p$ so explained variance$\eta_p\ge0.99$.
+Suggested ranges such as$p=5$--20 for static activities or50--100 for
+locomotion in earlier drafts are unmeasured illustrations, not HAPT findings.
+The selected$p$, centering, fitting population and eigenvalue spectrum must
+come from a declared train-only analysis. Neither99\% training variance nor
+an activity name bounds every test residual or margin support penalty.
 
 \subsection{Certification Requires More Than Variance}
 
@@ -314,24 +338,37 @@ Under the wave-domain model, each single-step delta is:
 \[
   z_{r+k+1} - z_{r+k} = T_S z_{r+k} + V u_{r+k} + \rho_{r+k} - z_{r+k}.
 \]
-This is not simply the shift $(T_S - I)z_{r+k}$ because $V u_{r+k}$ and $\rho_{r+k}$
-are query-dependent. Over $h$ steps, the worst-case multi-step drift accumulates:
-\[
-  \norm{z_{r+h} - z^r}{} \le h \cdot \Bigl[\norm{(T_S - I)z^r}{} + \norm{V}{\cdot}\text{diam}(\mathcal{U}) + \text{diam}(\mathcal{R})\Bigr] + \text{higher-order terms},
-\]
-where $\text{diam}(\cdot)$ is the diameter of the parameter set.
+This per-step identity does not provide a uniform multi-step drift bound without declared sets and state propagation.
 
-For static postures, $(T_S - I)z^r$ is small (the signal barely changes in 1.28 s)
-and $\mathcal{U}$ is tight, so multi-step drift is manageable. For locomotion,
-the large periodic swings dominate, and anchor lifetime is short.
+A valid finite-horizon enclosure must propagate the state dependence.
+Write $z_{k+1}=T_Sz_k+w_k$, with $w_k$ in declared compact set $W_k$
+(new-wave embedding or a sound $Vu+\rho$ set). Induction gives
+\[
+ z_{r+h}=T_S^h z_r+\sum_{k=0}^{h-1}T_S^{h-1-k}w_{r+k}.
+\]
+For any induced norm and $M_k\ge\sup_{w\in W_k}\|w\|$,
+\[
+ \|z_{r+h}-z_r\|\le\|(T_S^h-I)z_r\|
+ +\sum_{k=0}^{h-1}\|T_S^{h-1-k}\|M_{r+k}.
+\]
+This follows by repeated substitution and the triangle inequality. Set
+diameters alone do not bound norms unless the set's center is also controlled:
+a singleton far from zero has diameter 0 and large norm. A vague
+``higher-order terms'' remainder is not a certified bound. The earlier
+heuristic linear-in-h expression using the initial shift and diameters is
+therefore not retained as a theorem. The exact reachable set can be tighter
+when dependencies between waves are preserved. Static-posture/locomotion
+lifetime remains empirical; no lifetime guarantee follows from those names.
+The fixed-anchor and horizon certificate rules still require positive margins
+on every admitted reachable set and valid runtime membership.
 
 \begin{thebibliography}{9}
 \bibitem{main}
   ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
-  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+  \code{ECDR_Data_Analysis.tex}, October~2026.
 \bibitem{weeks}
   ECDR Research Workspace. \textit{ECDR Weeks~1--3 Theory Brief}.
-  \code{ECDR\_Weeks\_1\_2\_3\_Theory.tex}, October~2026.
+  \code{ECDR_Weeks_1_2_3_Theory.tex}, October~2026.
 \bibitem{jolliffe2002}
   I.T. Jolliffe. \textit{Principal Component Analysis}, 2nd ed. Springer, 2002.
 \end{thebibliography}

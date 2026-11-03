@@ -18,10 +18,11 @@
 \usepackage{xcolor}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
-\usepackage{hyperref}
+\usepackage{hyperref,xurl}
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{parskip}
+\setlength{\emergencystretch}{3em}
 
 \definecolor{ink}{RGB}{20,20,20}
 \definecolor{teal}{RGB}{0,120,120}
@@ -39,7 +40,7 @@
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
-\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
 \newcommand{\mbm}[1]{\underline{m}_{#1}}
 
 \usepackage{titlesec}
@@ -88,29 +89,37 @@ domain analytically, using the structure of the neural network.
 % ============================================================
 \section{Network Architecture Relevant to ECDR}
 
-The reference classifier $f_\theta$ in the ECDR workspace is a Conv1D network:
-\[
-  f_\theta = \text{Linear} \circ \text{GAP} \circ \underbrace{(\text{ReLU} \circ \text{Conv1D})^L}_{L \text{ blocks}} \circ \text{BN},
-\]
-where BN is batch normalization (frozen to affine at test time), GAP is
-global average pooling, and the final layer maps to $K = 12$ class logits.
-
-The key observations for certification:
+The current frozen reference is SmallCNN1D K=12 (283,692 trainable
+parameters), with these stages:
 \begin{itemize}[leftmargin=1.5em]
-  \item Convolution and linear layers are \textbf{affine} (linear + bias).
-  \item ReLU is \textbf{piecewise linear} but non-linear at the kink ($x = 0$).
-  \item GAP is \textbf{affine} (mean over spatial dimension).
-  \item BN at test time is \textbf{affine} (rescale + shift by frozen statistics).
+\item Conv6$\to$32, k5 p2; BN(eval), ReLU, MaxPool2.
+\item Conv32$\to$64, k3 p1; BN(eval), ReLU, MaxPool2.
+\item Conv64$\to$64, k3 p1; BN(eval), ReLU.
+\item Flatten2048, Linear128, ReLU, Linear12.
 \end{itemize}
-All non-linearity comes from ReLU. This is what makes the network
-certifiable in polynomial time with sound bounds.
+Its authority is the frozen Week1 checkpoint and Week2 graph audit, rather
+than a valid/GAP example. Bound all eleven class competitors.
+
+Convolution and Linear are affine in real arithmetic. Frozen BN eval with
+running statistics is channelwise affine; negative scale reverses interval
+endpoints. Flatten is a fixed reindexing. ReLU and MaxPool are both
+piecewise-linear nonlinear operators. Pool grouping and padding are part of
+the graph contract. A training-mode BN or eval BN with no fixed running
+statistics cannot be treated as the same affine map.
+
+The historical alternative
+$\mathrm{Linear}\circ\mathrm{GAP}\circ(\mathrm{ReLU}\circ\mathrm{Conv})^L$
+retains its own GAP identities; it is not this reference's head. Polynomial
+cost of an approximate bound construction does not mean the exact robustness
+problem is solved completely. All following soundness statements assume
+correct real-arithmetic enclosures unless numerical guarantees are added.
 
 % ============================================================
 \section{Interval Bound Propagation (IBP)}
 
 \subsection{Core Idea}
 
-IBP is the simplest complete-layer-wise bound propagation technique.
+IBP propagates a layerwise interval enclosure; it is an incomplete verification method.
 Given a box input domain:
 \[
   \mathcal{X} = \bigl\{ x \in \R^n : \ell \le x \le u \bigr\}
@@ -137,6 +146,13 @@ occur at the extrema of the input.
 \end{align}
 This is tight: ReLU is monotone, so the range of $\max(0, x)$ over
 $x \in [\ell_i, u_i]$ is exactly $[\max(0, \ell_i), \max(0, u_i)]$.
+
+\textbf{MaxPool and BN.} For pool group $I$,
+$[\ell,u]\mapsto[\max_{i\in I}\ell_i,\max_{i\in I}u_i]$ because max is
+coordinatewise monotone. A padded Conv uses the fixed padding values as
+zero-width intervals, not unknown input values. BN eval $av+b$ uses the
+Affine rule, and Flatten preserves the enclosure under the same index order.
+These rules prove enclosure by induction through the actual graph.
 
 \subsection{Computing the Margin Lower Bound}
 
@@ -200,13 +216,18 @@ function of $X$:
 \]
 for some vector $a$ and scalar $b$ computed analytically. Minimizing the
 right-hand side over $\mathcal{X}$ (trivial for a box: just evaluate at the
-appropriate corners) gives $\mbm{cj}^{\text{CROWN}} = \min_{X \in \mathcal{X}} (a^\top X + b)$.
+appropriate corners) gives
+\[\mbm{cj}^{\text{CROWN}}=\min_{X\in\mathcal X}(a^\top X+b).\]
 
-\begin{remark}[CROWN $\ge$ IBP Always]
-  The CROWN bound is always at least as tight as the IBP bound:
-  $\mbm{cj}^{\text{CROWN}} \ge \mbm{cj}^{\text{IBP}}$.
-  Both are sound lower bounds on the true margin. CROWN certifies more domains
-  because it avoids the compounded interval looseness of IBP.
+\begin{remark}[No universal CROWN-versus-IBP ordering]
+A validity proof does not establish that every CROWN slope choice or software
+variant dominates IBP. For $y=\mathrm{ReLU}(x)$, $x\in[-1,1]$, IBP lower
+bound is 0. The valid linear lower relaxation $y\ge x$ gives minimum$-1$.
+Optimization or a hybrid can improve a specified variant, but ``CROWN is
+always tighter or faster'' is not a theorem here. Taking the maximum of two
+independently sound lower bounds preserves soundness and dominates both,
+with the cost of computing both. Compare tightness and build cost on the same
+actual graph, objective and domain.
 \end{remark}
 
 % ============================================================
@@ -218,18 +239,18 @@ and CROWN, in a differentiable and auto-differentiable way.
 
 Key properties:
 \begin{itemize}[leftmargin=1.5em]
-  \item Supports arbitrary PyTorch models: Conv1D, Conv2D, LSTM, Transformers.
+  \item Supports documented operators and combinations for a pinned library/PyTorch version; arbitrary graphs are not guaranteed.
   \item Provides $\alpha$-CROWN (optimizing the ReLU relaxation slopes to tighten bounds).
   \item Can compute bounds with respect to any $L_p$ input domain, not just $L_\infty$.
   \item Integrates with training: bounds can be used as a certified training loss
         (\textit{certified training}) so the model is optimized to be more verifiable.
 \end{itemize}
 
-For ECDR purposes, LiRPA is the computational backend that, given:
+A proposed ECDR LiRPA integration must establish support before use. Given:
 (a) the Conv1D model $f_\theta$,
 (b) the normalization $N$,
 (c) the domain $\mathcal{S}$,
-computes the bound $\mbm{cj}$ for each class pair.
+it may compute a bound for each of the eleven class pairs only when every operator, domain and arithmetic premise is supported. Current Week3 probe receipts record actual compatibility outcomes; a package import is not that validation.
 
 % ============================================================
 \section{Soundness, Completeness, and Practical Implications}
@@ -252,9 +273,12 @@ computes the bound $\mbm{cj}$ for each class pair.
   $L_\infty$ ball is NP-hard in general (Katz et al., 2017).
 \end{theorem}
 
-This means that polynomial-time verifiers (IBP, CROWN, LiRPA) must be
-incomplete: they may fail to certify some certifiable networks. But they
-are always sound, which is the property ECDR requires.
+Unless P=NP, a polynomial-time general verifier cannot be both sound and
+complete for an NP-hard exact decision problem. This complexity statement
+alone is not a proof that a particular implementation is sound. IBP/CROWN
+real-arithmetic soundness follows from valid operator enclosures; finite
+implementations also need numerical analysis. An unsupported graph must fail
+closed, not inherit soundness from the method's name.
 
 \subsection{Practical Implications for Domain Size}
 
@@ -271,16 +295,14 @@ Very large & Likely fails: intervals grow too wide. & May also fail; domain too 
 \end{tabularx}
 \end{center}
 
-The data audit establishes empirical window-to-window distances that inform
-what ``medium'' and ``large'' mean for HAPT:
-\begin{itemize}[leftmargin=1.5em]
-  \item Median $L_\infty$ same-pure distance: $\approx 0.987$ (normalized).
-  \item Median $L_\infty$ majority-change distance: $\approx 5.81$ (normalized).
-\end{itemize}
-A domain radius of $\epsilon = 0.5$ in $L_\infty$ normalized space would contain
-roughly half of all same-pure adjacent pairs by the empirical CDF, while keeping
-the domain small enough for CROWN to have a chance of certifying the network.
-The exact break-even point requires experimental verification (Evidence D07).
+Historical data-audit distances are candidate-selection diagnostics, not
+certificates. A claimed radius coverage must be read from the exact empirical
+CDF and scope. In particular a median near0.987 cannot justify saying radius 0.5
+covers half the pairs. Even an observed candidate hit fraction cannot establish
+that CROWN certifies those regions. Tiny/medium/large labels above are
+qualitative; margin, weights, relaxation choices and arithmetic determine the
+actual outcome. Week3 receipts use the K=12 reference and keep candidate
+membership, diagnostic positive bounds and executable certified reuse separate.
 
 % ============================================================
 \section{From $\underline{m}_{cj}$ to the Evidence Ledger}
@@ -297,8 +319,7 @@ The connection between the verifier output and the data audit:
 
 Both are necessary. A large domain that captures 95\% of empirical queries is
 useless if the verifier cannot certify it ($\mbm{cj} \le 0$). A tiny domain
-that certifies perfectly but contains only 1\% of queries provides negligible
-computational savings.
+that certifies perfectly but contains only 1\% of queries does not by itself imply useful computational savings; the complete cost trace decides.
 
 This balance — coverage vs.\ certifiability — is the central design challenge
 for ECDR and drives the motivation for structured domains (wave-domain, PCA-based)
@@ -307,10 +328,10 @@ explored in Section~12 of the main document.
 \begin{thebibliography}{9}
 \bibitem{main}
   ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
-  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+  \code{ECDR_Data_Analysis.tex}, October~2026.
 \bibitem{weeks}
   ECDR Research Workspace. \textit{ECDR Weeks~1--3 Theory Brief}.
-  \code{ECDR\_Weeks\_1\_2\_3\_Theory.tex}, October~2026.
+  \code{ECDR_Weeks_1_2_3_Theory.tex}, October~2026.
 \bibitem{katz2017}
   G.~Katz, C.~Barrett, D.~Dill, K.~Julian, M.~Kochenderfer.
   \textit{Reluplex: An Efficient SMT Solver for Verifying Deep Neural Networks}.

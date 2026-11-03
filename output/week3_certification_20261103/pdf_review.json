@@ -1,0 +1,164 @@
+{
+  "reports": [
+    {
+      "source": "03_MATH/03_Week_3_Mathematical_Foundations.tex",
+      "source_sha256": "07459572a722b6f7d94df981ca1453f22ba23386c03f23d97cf286f7d5e77f2d",
+      "pdf": "03_MATH/03_Week_3_Mathematical_Foundations.pdf",
+      "pdf_sha256": "5af507b94cdc1ed9b7c3bda684082bc2eee5747df048c4d3e78b8c17846735eb",
+      "pages": 26,
+      "rendered_page_hashes": {
+        "/tmp/ecdr_week3_pdfqa/foundations/page-01.png": "a114ebb8b512b5146a94fbdb9ef28561c3d402658f27e9e8b12f37aba5d187f0",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-02.png": "5d24c6e33b0d4029b677a3f5854ec0f37939cbfb6594e631a26a6215a08e232b",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-03.png": "7eca01c544da56a35f914a7c56dcf46f8386a832af1a1f6364f0e16b4161a1cb",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-04.png": "cb39719abde32eec8cf8a811d1c4e0e396774452e96a3bef4f7b19fb252f29c1",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-05.png": "f2d699d9a397d947a5258eb54c1d09ed13d14f8153729e11662c41c79f418bbc",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-06.png": "7453793f23c016aebb2d17404a9bad0374f2c995be389cbd459cc332d0fa886f",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-07.png": "3c35c80bd20c0d6e2c83f6d9c816b2c883a62a6c489a01eb1191230d0807095e",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-08.png": "57203d1fa1d65b8b440481eb673573d90b99c2556a322c8ca78376a3c22d33d8",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-09.png": "7d1d41c95fcac6f698cc2e4695a127208781ffc11744aeea02f88223c33006a6",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-10.png": "fe174692d663e8bd37a0264508849780eacfd80837b4b1e5ffe3af3556bc364f",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-11.png": "f899886f0fdf21c3c841d394815cbb227b78a099835a2dc9810bd71adf21f718",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-12.png": "f3f46b2fac7fc5fdd3fa2d151c2e245b53beb4c964048185dc9625a105c4da3b",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-13.png": "3fef28ccfe4ab925556bbfa30890c10b029e9f5ada401cfe771086e5a3d8c3b4",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-14.png": "0bba1f3ff8674ad1bd5e5fed7aaaea420043f898360844eaf825b0efd2ab1b03",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-15.png": "04e039465336ec77166b2271c8518d4d4b32064eda13fc6f8ef7ff735f7ab4b6",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-16.png": "ecbada30079f083ed74b450f8a224f6b6383a17d56f8161a18117a40a3e39eb5",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-17.png": "dacfddcf24f7593bb8622465ee1f28b166c6e83e6bd19c3ab23bb8348665c404",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-18.png": "bb203bb8e2324aed44408b4ec4924023ababd58ce1369a73b68e237a41759555",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-19.png": "e73ff6572f5b4ae919d98f7fb19c27af95a3132918fdcfdcf6b280f7110ba1d0",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-20.png": "62249cd7a0840d44ab2fbcf29b04f4335ab453f42e2d480368e9e67064527c9b",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-21.png": "a8ad74b6a3a4c47c0ba4d4bfccfe926878a7200693537f30fd24e416cc3c8d87",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-22.png": "4ad803b802dad888e12417dcab1e71ae94438a0033b92c1374a9199c9b6434e5",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-23.png": "abfce49e21516872ea1ffa82824b24d004e57c8e608e01cb84478b8347375069",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-24.png": "f82c7ad85b35b63e5bb72b3483771595100e7db1de0bdfb4de6a27a30d42c680",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-25.png": "b5d9794e069677f4c6c80463b6c6d2eee8b3f4ed19668f9610728d3228284d84",
+        "/tmp/ecdr_week3_pdfqa/foundations/page-26.png": "17c7106dbafe74dc3a1c6b1e3aeaae07848b2375944dbc036c341ec1ad7c5ddb"
+      },
+      "visual_review": "PASS",
+      "final_compile_log": "output/week3_certification_20261103/foundations_compile.log",
+      "visual_method": "all physical pages reviewed through six-page contact sheets; selected equations, tables and ledger pages inspected individually at 90dpi",
+      "enlarged_physical_pages": [
+        23,
+        25
+      ],
+      "layout_findings": "no clipped/overlapping text, broken equations, missing glyphs or overfull boxes; B excessive forced blank page removed and complete final render rereviewed",
+      "compiler_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "compiler": "XeLaTeX TeX Live2025, 3 stabilization passes from canonical source"
+    },
+    {
+      "source": "03_MATH/04_ECDR_Mathematics_Explained.tex",
+      "source_sha256": "5073ea33532da0bee4cc29183676b99cc4eb1cfd29e52d66edb760c2424ddc64",
+      "pdf": "03_MATH/04_ECDR_Mathematics_Explained.pdf",
+      "pdf_sha256": "4b75bdd1ad20f2dca18890934eb76ff5cae08698b0efa3ce939ee9e947d62b6d",
+      "pages": 33,
+      "rendered_page_hashes": {
+        "/tmp/ecdr_week3_pdfqa/explained/page-01.png": "3340b565f45a5f8b7e1fe83e7f436ad37de6c7026af4d131fb8a6a3be95c6b1e",
+        "/tmp/ecdr_week3_pdfqa/explained/page-02.png": "a3de0fea1e4c3167fd590c02c12014a39a90b26ca3e0c982be32ec77829ca988",
+        "/tmp/ecdr_week3_pdfqa/explained/page-03.png": "c0bc846528aece27b097859b767fe10a1454e29a1fedb0d474a9eea04d88661a",
+        "/tmp/ecdr_week3_pdfqa/explained/page-04.png": "e515904259bf8e53f396405661291a221419d53215e92bec469233016a54542d",
+        "/tmp/ecdr_week3_pdfqa/explained/page-05.png": "c874917176bf49c09db3c0cd8ba6fb2d1c3a78724dbb26332bd26f1402d55248",
+        "/tmp/ecdr_week3_pdfqa/explained/page-06.png": "a34dced3ee511cdcb3c1e05a0c3aac7e944c78a01f8091056e6a3dee9406cd3e",
+        "/tmp/ecdr_week3_pdfqa/explained/page-07.png": "ad3783b4f190d79756e998f0265acbf5d440e5747b316b1f792500cd3ad6b0d3",
+        "/tmp/ecdr_week3_pdfqa/explained/page-08.png": "30dcbdb3b9fa60acce73a0fddc777892cd6cbe9d2395d4669aa26548abd892b0",
+        "/tmp/ecdr_week3_pdfqa/explained/page-09.png": "9672a8de358897d05c9ffc7e2e6abc2965eba1adf17d7dd62a82bf543525ff74",
+        "/tmp/ecdr_week3_pdfqa/explained/page-10.png": "b32248ab58d05c14c7b2951b74f6daab7dbd57d95f10049565b41a6c81d98354",
+        "/tmp/ecdr_week3_pdfqa/explained/page-11.png": "19ed7cabec5332c398fce522ad2f8ed9d447ea209ce9d3bb1aa927d10335ead2",
+        "/tmp/ecdr_week3_pdfqa/explained/page-12.png": "95dc1b589f06988b4ee4f79c50327ec8cb66b0a648aab0b6aeae1ada841c8343",
+        "/tmp/ecdr_week3_pdfqa/explained/page-13.png": "9e78d328fcdf7aae799ddc819bd12b73d4b4b63aaa31c36cd83d33e13730c11e",
+        "/tmp/ecdr_week3_pdfqa/explained/page-14.png": "9953d9ffff40c1337ac32ec0d22176579247dc5b8b3281fbf1424a0b5ebddfe4",
+        "/tmp/ecdr_week3_pdfqa/explained/page-15.png": "a6fd93d38dc223a4a38cfd5fdcaa6773ccbaaff686117912d0f258e989480d2b",
+        "/tmp/ecdr_week3_pdfqa/explained/page-16.png": "b382275928982735c790a522d5860a17cbb794684f67ff28ec54c6783b1cfb40",
+        "/tmp/ecdr_week3_pdfqa/explained/page-17.png": "0d67a2d57786c08453012c69d0882e16307eff04a03171720063808eaa18b11a",
+        "/tmp/ecdr_week3_pdfqa/explained/page-18.png": "3b59e8ab012798a21a7b3cb1464c1080ac95476e5aff6dcac8a12ebed28bcac3",
+        "/tmp/ecdr_week3_pdfqa/explained/page-19.png": "6f98690fdc388136022622cffdb011c04dffa4df5f417abb6157db1ed4b9d89e",
+        "/tmp/ecdr_week3_pdfqa/explained/page-20.png": "eb1f57f42a418183ac1d96011157f6ed3e2746bca8503a46d337ae6cfb4155de",
+        "/tmp/ecdr_week3_pdfqa/explained/page-21.png": "0d69e67a65a2ebca6c7c05ed7011ec92210ef49f19c3ca03025f0ee6bae6e57c",
+        "/tmp/ecdr_week3_pdfqa/explained/page-22.png": "50d250cd65d20342e1dfd68301dbb293ddd8b16e248db035ddeb6bd14e4620a1",
+        "/tmp/ecdr_week3_pdfqa/explained/page-23.png": "1d460edb89e21e9cb995912972ea259a0dc8681279540ea4fd014c3375495e86",
+        "/tmp/ecdr_week3_pdfqa/explained/page-24.png": "ff201613c86f0d17d3f776981ae5fff7e2922693dd8ff288c3c4ca6daece6a6d",
+        "/tmp/ecdr_week3_pdfqa/explained/page-25.png": "a9b2ef15f1ff8b84e66e809c857a69cce5b2c9a497392ac004d3e37feca5da64",
+        "/tmp/ecdr_week3_pdfqa/explained/page-26.png": "fcfbbeed0c9cc799d87de6fb39ae79d1f52afca147bbab80e0f0f89d677417bf",
+        "/tmp/ecdr_week3_pdfqa/explained/page-27.png": "c39c8a38059812f9c51ec7595f81183dfbc6a3283706d59f73d99a921c33bfca",
+        "/tmp/ecdr_week3_pdfqa/explained/page-28.png": "be45e900c42b96c08cd50286fdc6c89d25fc11b88e028c7a76ea5499f9e5af96",
+        "/tmp/ecdr_week3_pdfqa/explained/page-29.png": "b261a1881c380a7661baad1a78dfd4b10edb84781fbc016a8fb9d05d52aba6f9",
+        "/tmp/ecdr_week3_pdfqa/explained/page-30.png": "8cc31e6ec043a8342f29f7a9668b67cf93948bb19ec515b8bbcd8a5a3187c6cb",
+        "/tmp/ecdr_week3_pdfqa/explained/page-31.png": "040a7dd3cfcd8d1cc9671602c9ab5ff2513c83211f8bf65ac2b301eb2cb816d9",
+        "/tmp/ecdr_week3_pdfqa/explained/page-32.png": "805a8558c545397a6ad9ae5f6195fea3273e0c4f4e44a9bcb59b1b02efca13a0",
+        "/tmp/ecdr_week3_pdfqa/explained/page-33.png": "d4e643e79bd9bce3b3d31b83cea4f5655cedb31bca87be0a8fbfebb844acebd6"
+      },
+      "visual_review": "PASS",
+      "final_compile_log": "output/week3_certification_20261103/explained_compile.log",
+      "visual_method": "all physical pages reviewed through six-page contact sheets; selected equations, tables and ledger pages inspected individually at 90dpi",
+      "enlarged_physical_pages": [
+        6,
+        20,
+        29,
+        30
+      ],
+      "layout_findings": "no clipped/overlapping text, broken equations, missing glyphs or overfull boxes; B excessive forced blank page removed and complete final render rereviewed",
+      "compiler_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "compiler": "XeLaTeX TeX Live2025, 3 stabilization passes from canonical source"
+    }
+  ],
+  "method": "Every final PDF page rasterized by pdftoppm90dpi and visually inspected; PDF extraction and compile diagnostics separately checked",
+  "scope": "Main Report A26physical pages and Report B33physical pages; supporting supplements source/smokecompile only, no separate visualQA claim",
+  "visual_reviewer": "root assistant actual image inspection, no external/user acceptance",
+  "wrapper_compile_checks": [
+    {
+      "cwd": "/home/pro/Downloads/research",
+      "source": "/home/pro/Downloads/research/me/Week_3_Mathematical_Foundations.tex",
+      "command": [
+        "xelatex",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-output-directory=/tmp/ecdr_week3_pdfqa/wrappers/root/Week_3_Mathematical_Foundations",
+        "/home/pro/Downloads/research/me/Week_3_Mathematical_Foundations.tex"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/home/pro/Downloads/research",
+      "source": "/home/pro/Downloads/research/me/ECDR_Mathematics_Explained.tex",
+      "command": [
+        "xelatex",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-output-directory=/tmp/ecdr_week3_pdfqa/wrappers/root/ECDR_Mathematics_Explained",
+        "/home/pro/Downloads/research/me/ECDR_Mathematics_Explained.tex"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/home/pro/Downloads/research/me",
+      "source": "/home/pro/Downloads/research/me/Week_3_Mathematical_Foundations.tex",
+      "command": [
+        "xelatex",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-output-directory=/tmp/ecdr_week3_pdfqa/wrappers/me/Week_3_Mathematical_Foundations",
+        "/home/pro/Downloads/research/me/Week_3_Mathematical_Foundations.tex"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/home/pro/Downloads/research/me",
+      "source": "/home/pro/Downloads/research/me/ECDR_Mathematics_Explained.tex",
+      "command": [
+        "xelatex",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-output-directory=/tmp/ecdr_week3_pdfqa/wrappers/me/ECDR_Mathematics_Explained",
+        "/home/pro/Downloads/research/me/ECDR_Mathematics_Explained.tex"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

@@ -18,10 +18,11 @@
 \usepackage{xcolor}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
-\usepackage{hyperref}
+\usepackage{hyperref,xurl}
 \usepackage{enumitem}
 \usepackage{microtype}
 \usepackage{parskip}
+\setlength{\emergencystretch}{3em}
 
 \definecolor{ink}{RGB}{20,20,20}
 \definecolor{teal}{RGB}{0,120,120}
@@ -41,7 +42,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
 \newcommand{\Se}{\mathcal{S}_e}
-\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
 
 \usepackage{titlesec}
 \titleformat{\section}{\large\bfseries\color{teal}}{}{0em}{\thesection\quad}
@@ -74,8 +75,7 @@ Two special cases are critical for ECDR certification:
   \[
     \norm{v}{2} = \sqrt{\sum_{i=1}^n v_i^2}.
   \]
-  This is the standard Euclidean distance. Its unit ball is a perfect
-  \emph{hypersphere}: all points equidistant from the origin.
+  This norm induces Euclidean distance. The closed unit ball is $\{v:\|v\|_2\le1\}$ and includes its interior; only the boundary sphere $\{v:\|v\|_2=1\}$ consists of points at distance 1 from the origin.
 \end{definition}
 
 \begin{definition}[$L_\infty$ Chebyshev Norm]
@@ -148,19 +148,18 @@ Same-pure / $L_\infty$ & 0.987 & 7.064 & 12.31 \\
   At the p50, $d_2 = 4.936$ and $d_\infty = 0.987$.
   Check: $d_\infty \le d_2$? $\;0.987 \le 4.936$. \checkmark \\
   Check: $d_2 \le 27.71 \, d_\infty$? $\;4.936 \le 27.71 \times 0.987 = 27.35$. \checkmark \\
-  The actual ratio is $d_2 / d_\infty = 4.936 / 0.987 \approx 5.0$, far below
-  the worst-case $\sqrt{768} \approx 27.7$. This is expected: real sensor data
-  is highly correlated across time steps, so the maximum coordinate deviation
-  and the RMS deviation are much closer together than for a worst-case vector.
+  The ratio of these two medians is about5.0; it is not necessarily
+  the median of the per-vector ratios, and it does not prove correlation.
 \end{example}
 
-\begin{remark}[Do Not Translate Percentiles Across Norms]
-  The bounds in~\eqref{eq:norm_bounds} relate individual vector norms, not
-  statistical percentiles across a population of vectors. The p90 of $d_\infty$
-  is \textbf{not} $\le$ the p90 of $d_2$ divided by $\sqrt{768}$. The two
-  distributions are computed on the same set of pairs but measure different
-  scalar summaries. Use the empirical table; do not attempt norm conversion of
-  quantiles.
+\begin{remark}[Quantile bounds, not exact quantile conversion]
+For the same population, percentile$p$ and quantile convention, the pointwise
+inequalities imply $Q_p(d_\infty)\le Q_p(d_2)\le\sqrt{768}Q_p(d_\infty)$
+by monotonicity of quantiles. They do not give an exact conversion, the
+joint distribution or the distribution of ratios. The reverse assertion
+$Q_p(d_\infty)\le Q_p(d_2)/\sqrt{768}$ need not hold. The table above is
+historical normalized same-pure-pair evidence; its fitting population must
+not be substituted for the current frozen normalization without rechecking.
 \end{remark}
 
 % ============================================================
@@ -200,24 +199,24 @@ $\epsilon \sigma_c$ along each channel direction. Channels with larger $\sigma_c
 admit larger raw-space perturbations for the same normalized radius.
 
 \begin{example}[Semi-Axis Comparison]
-  Using the audit's fitted parameters:
+  Using historical fitted parameters as an illustrative substitution (not the frozen K=12 constants):
   \begin{center}
   \small
   \begin{tabular}{@{}lrr@{}}
   \toprule
   Channel & $\sigma_c$ & Raw semi-axis at $\epsilon = 1$ \\
   \midrule
-  \code{acc\_x} & 0.413195 & 0.413 $g$ \\
-  \code{acc\_y} & 0.402293 & 0.402 $g$ \\
-  \code{acc\_z} & 0.356522 & 0.357 $g$ \\
-  \code{gyro\_x} & 0.417901 & 0.418 rad/s \\
-  \code{gyro\_y} & 0.406792 & 0.407 rad/s \\
-  \code{gyro\_z} & 0.261610 & 0.262 rad/s \\
+  \code{acc_x} & 0.413195 & 0.413 $g$ \\
+  \code{acc_y} & 0.402293 & 0.402 $g$ \\
+  \code{acc_z} & 0.356522 & 0.357 $g$ \\
+  \code{gyro_x} & 0.417901 & 0.418 rad/s \\
+  \code{gyro_y} & 0.406792 & 0.407 rad/s \\
+  \code{gyro_z} & 0.261610 & 0.262 rad/s \\
   \bottomrule
   \end{tabular}
   \end{center}
   A certified $\epsilon = 1$ ball in normalized space corresponds to very different
-  raw perturbation tolerances across channels. \code{gyro\_z} tolerates the smallest
+  raw perturbation tolerances across channels. \code{gyro_z} tolerates the smallest
   raw perturbation ($\approx 0.26$ rad/s) before exiting the certified set.
 \end{example}
 
@@ -241,8 +240,7 @@ into dimensionless standard-deviation units.
 
 \subsection{Almost All Volume Is Near the Shell}
 
-In low dimensions, most of the volume of a ball is near the center. In high
-dimensions, the opposite is true: an $L_2$ ball of radius $r$ in $\R^n$ has most
+For a fixed relative shell thickness, the fraction of ball volume in that shell increases with dimension: an $L_2$ ball of radius $r$ in $\R^n$ has most
 of its volume concentrated in a thin shell near the surface.
 
 Formally, for $\epsilon < r$:
@@ -254,29 +252,28 @@ Formally, for $\epsilon < r$:
 In $\R^{768}$, with $\epsilon = 0.01r$, the fraction of volume outside the
 innermost 1\% shell is $1 - 0.99^{768} \approx 1 - 0.00041 = 99.96\%$.
 
-\textbf{Implication for ECDR:} Almost all random perturbations of an anchor will
-land near the boundary of the $L_2$ ball, not near the anchor itself. The margin
+\textbf{Implication for ECDR:} A perturbation sampled uniformly by volume in the ball is likely to lie near its boundary in high dimension. Arbitrary temporal sensor distributions need not be uniform and can concentrate near the center. The margin
 bound $\underline{m}_{cj}$ must hold at all points in $\Se$, including those on
 the far shell.
 
 \subsection{Coordinate-Wise Coverage Collapse}
 
-As discussed in the main document, marginal coverage does not imply joint coverage.
-The geometric equivalent is that a Cartesian product of 90th-percentile intervals
-in each of 768 dimensions contains nearly \emph{zero} probability mass from the
-joint empirical distribution of $\Delta z$. The joint distribution lives on a
-low-dimensional manifold (driven by sensor correlations), not in the full 768-cube.
+Marginal coverage does not imply joint coverage. If 768 coordinate events
+were independent with probability 0.9 each, their intersection probability
+would be $0.9^{768}$, about $7.2\times10^{-36}$. Independence is a toy
+assumption, not a proved HAPT property. Without dependence assumptions,
+$\max(0,1-\sum_i\Pr(E_i^c))\le\Pr(\cap_iE_i)\le\min_i\Pr(E_i)$.
+Correlated data can have high or low joint coverage; a low-dimensional
+manifold and near-zero coverage cannot be concluded from marginal percentiles.
 
-\subsection{Consequence: Prefer Structured Domains}
-
-Because the data lies on a low-dimensional manifold, a domain that reflects this
-structure (wave-domain, PCA-based domain) will simultaneously:
-\begin{enumerate}[leftmargin=1.5em]
-  \item Contain most of the empirical data (high coverage).
-  \item Be small enough to certify (tight enough for the verifier to confirm $\underline{m}_{cj} > 0$).
-\end{enumerate}
-A naive hyperrectangle constructed from marginal percentiles does neither: it is
-too large to certify and simultaneously misses the actual data distribution.
+\subsection{Consequence: Compare Structured Domains Under Matched Conditions}
+Structured domains may reduce support penalties when their directions align
+with margin geometry. They can also miss queries or remain too loose to
+certify. H10--H11 therefore require actual K=12 regional bounds and declared
+matching conditions. Neither low-rank PCA nor a diagonal box guarantees
+simultaneously useful coverage and positive margins. The normalized box is
+the minimal baseline; compare wave/structured candidates rather than assuming
+the conclusion. $C=6,W=128,K=12$ gives768 input coordinates regardless of K.
 
 % ============================================================
 \section{$L_\infty$ Box Domains and the Normalization Constraint}
@@ -299,11 +296,13 @@ per-window z-score normalization:
 \[
   Z_w[c, i] = \frac{X_w[c, i] - \bar{X}_w[c]}{\hat{\sigma}_w[c]},
 \]
-then the map $N_w$ depends on $X_w$ itself. This makes $N_w$ \emph{non-linear},
-and the composed classifier $F_w = f_\theta \circ N_w$ is no longer an affine
-transformation of $X_w$. IBP and CROWN require the input transformation to be
-affine (or at minimum piecewise-linear) to propagate interval bounds efficiently.
-Dynamic normalization invalidates all affine certification results.
+then the map $N_w$ depends on $X_w$ itself. The frozen affine
+transformation identities no longer apply unchanged. A sound verifier could
+in principle bound nonlinear normalization with suitable operators, positivity
+conditions on the denominator and numerical enclosures; IBP/LiRPA is not
+restricted in principle to affine or piecewise-linear graphs. That would be a
+different reference function and contract. This study preserves frozen
+train-fit statistics, including their actual stored dtype and values.
 
 \begin{remark}
   This is why the data analysis mandates that normalization parameters be
@@ -323,7 +322,7 @@ Norm bounds & $d_\infty \le d_2 \le \sqrt{768}\,d_\infty$ & Cannot translate per
 Normalization & $\Delta z = D^{-1} \Delta x$ & $L_2$ ball in $\R^{768}$ $\leftrightarrow$ ellipsoid in raw space. \\
 $L_\infty$ box & $|\Delta z[c,i]| \le b$ & Raw equivalent: $|\Delta x[c,i]| \le b \sigma_c$ per channel. \\
 Volume shell & $1-(1-\epsilon/r)^{768}$ & Most of ball volume is near the surface in $\R^{768}$. \\
-Non-linear norm & Dynamic $N_w$ & Breaks affine certificate; prohibited. \\
+Non-linear norm & Dynamic $N_w$ & Changes reference; needs a separately justified transform bound. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -331,10 +330,10 @@ Non-linear norm & Dynamic $N_w$ & Breaks affine certificate; prohibited. \\
 \begin{thebibliography}{9}
 \bibitem{main}
   ECDR Research Workspace. \textit{ECDR Data Analysis} (English edition).
-  \code{ECDR\_Data\_Analysis.tex}, October~2026.
+  \code{ECDR_Data_Analysis.tex}, October~2026.
 \bibitem{math}
   ECDR Research Workspace. \textit{ECDR Mathematics Concepts}.
-  \code{ECDR\_Mathematics\_Concepts\_EN.tex}, October~2026.
+  \code{ECDR_Mathematics_Concepts_EN.tex}, October~2026.
 \end{thebibliography}
 
 \end{document}

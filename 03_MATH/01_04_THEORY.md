@@ -1,12 +1,11 @@
 # 04 THEORY — Event-Conditioned Certified Decision Reuse
 
-> Updated 22/10/2026. **Working specification; verifier and certified reuse are
-> unimplemented, G3 pending.** Gate record: G0 PASS; G1
-> COMPLETE_WITH_REVISIONS; G2 PASS. This revision reconciles notation and candidate
-> domains with the existing audit; it reports no new experiment and does not
-> freeze a validated implementation. Minimal G3 scope:
-> [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md).
-> Measured results remain in `data/` and [03_DATA_AUDIT.md](03_DATA_AUDIT.md).
+> Updated 03/11/2026. **Actual reference: frozen SmallCNN1D K=12; G2 HOLD.**
+> This source owns the mathematical specification. Implementation/evaluation
+> evidence is reported separately in §7 and the canonical Week 3 reports.
+> A real-arithmetic bound is not an executable float32 certificate.
+> Contract: [02_07_G3_DOMAIN_CONTRACT.md](02_07_G3_DOMAIN_CONTRACT.md).
+> Historical K=6/GAP artifacts remain provenance, not the current reference.
 
 ## 1. Objects, coordinates and reference decision
 
@@ -33,14 +32,29 @@ Use `x` for raw input and `z` for normalized input. Let `m` and positive
 `sigma` be the train-fit per-channel statistics repeated over time:
 
     A = diag(1 / sigma),   N(x) = A(x - m),   z = N(x),
-    f_theta: R^768 -> R^6,                 F = f_theta o N.
+    f_theta: R^768 -> R^12,                 F = f_theta o N.
 
-`F` is the reference pipeline. `scripts/backbone.py` applies normalization
-outside `SmallCNN1D`; the current model includes BatchNorm, ReLU and MaxPool
-and has 282,918 parameters. Certificate construction must use the frozen
-checkpoint in evaluation mode, including BN running state, class order and
-normalization. K=6 is fixed; K=12 remains HOLD for data-support reasons, not
-because Proposition 1 requires six classes.
+`F` is the ideal real-arithmetic reference pipeline. The executable reference
+is its frozen float32 implementation, denoted `F_hat` when the distinction
+matters. `scripts/backbone.py:SmallCNN1D(num_classes=12)` has 283,692 trainable
+parameters and this graph:
+
+    [B,6,128] -> Conv(6,32,k5,p2) -> BN(eval) -> ReLU -> Pool2
+              -> Conv(32,64,k3,p1) -> BN(eval) -> ReLU -> Pool2
+              -> Conv(64,64,k3,p1) -> BN(eval) -> ReLU -> [B,64,32]
+              -> Flatten(2048) -> Linear(2048,128) -> ReLU -> Linear(128,12).
+
+Checkpoint: `output/week1_closeout_20261102/reference/selected_best.pt`;
+SHA-256 `8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1`.
+Preprocessing ID: `aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e`.
+The ordered 12-class list is read from the frozen reference configuration;
+class competitors are all eleven indices other than the anchor winner.
+The canonical authority is `00_OVERVIEW/week1/SOURCE_OF_TRUTH.md`, with
+Week 2 graph audit `output/week2_foundations_20261103/model_audit.json`.
+
+Historical K=6 `SmallCNN1D` has 282,918 parameters; its pure-only metrics and
+checkpoint do not identify this reference. The separate valid-convolution/GAP
+family supplies conditional historical theorems, not this graph's head.
 
 These affine equations describe real arithmetic. The float32 pipeline rounds
 intermediate values; §3.4 states the additional numerical proof obligation.
@@ -196,8 +210,7 @@ If `h^T z+k` is valid for every `z ∈ N(S)`, its raw expression is
 
 One may then use §3.2's raw support functions. This transformation does not
 establish relaxation validity over `N(S)`. A PCA support formula does not
-supply correlated-domain support in auto_LiRPA. Integration must validate
-operators and bounds on the actual BN/MaxPool graph; no result exists yet.
+supply correlated-domain support in auto_LiRPA. Actual-graph integration and its remaining numerical limitation are recorded in §7; these support identities alone do not validate that implementation.
 
 ### 3.4 Mathematical and numerical soundness
 
@@ -229,8 +242,8 @@ First path: trusted anchor → choose normalized diagonal candidate → construc
 valid class-pair bounds → store successful certificate → online identity and
 conservative membership check → reuse or fallback. Candidate construction,
 membership, verifier and reuse gate are separate responsibilities. Records and
-failure behavior: [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md).
-These components remain unimplemented.
+failure behavior: [02_07_G3_DOMAIN_CONTRACT.md](02_07_G3_DOMAIN_CONTRACT.md).
+Executable component status and its numerical restrictions are recorded in §7; the implication above remains conditional on valid bounds and containment.
 
 Only real reference inference refreshes an anchor in the minimal policy. Reset
 between recordings; reject stale model/preprocessing/domain versions. Failed
@@ -253,7 +266,7 @@ for the declared evaluation horizon; never omit it.
 Saved CPU batch1 forward baseline: mean 0.2511 ms, p50 0.2357 ms, p95 0.3313 ms
 (`data/g2_cpu_latency.json`). This times already-normalized RAM tensors, not
 preprocessing or a fallback trace. G5 needs comparable complete paths on the
-same workload/device, including construction/rebuilds and actual preprocessing.
+same workload/device, including construction/rebuilds and actual preprocessing. This historical timing is K=6 provenance; it is not a K=12 timing result.
 
 ## 5. Metrics and experiments still required
 
@@ -264,18 +277,19 @@ same workload/device, including construction/rebuilds and actual preprocessing.
   stated stream denominator. Report construction success, membership hits,
   fallback reasons, anchor age, bound margins and builds separately. No reuse
   means empirical reused-query agreement is undefined, not measured 100%.
-- **Task accuracy/macro-F1:** only on the declared ground-truth K=6 scope.
-  Existing best test macro-F1 is 0.9354; three-seed mean 0.9122 ± 0.0183 on
-  2,874 pure K=6 test windows, not full-stream accuracy.
+- **Task accuracy/macro-F1:** on 3,572 supervised K=12 test windows only:
+  frozen reference accuracy 0.8905375 and macro-F1 0.7762645. The historical
+  pure-K=6 result (2,874 test windows, best F1 0.9354; three-seed
+  0.9122 ± 0.0183) is retained solely as provenance.
 - **Runtime:** mean/p50/p95, throughput, build/membership/forward costs, memory
   and environment. Reuse rate alone does not establish saving.
 
-Denominators: full corpus 17,453 windows, including 5,053 test windows; pure
-K=6 corpus 10,017, including 2,874 test windows. The 13,866 windows with some
-label are not identical to pure K=6 task scope. Select policy on validation,
-then evaluate fixed held-out test recordings; do not pool all splits as test.
-Reference-decision agreement is defined on unlabeled/transition windows even
-though K=6 task correctness is not established there.
+Denominators: full corpus 17,453 windows; full chronological test stream 5,053;
+supervised K=12 test subset 3,572. The historical pure-K=6 corpus contains
+10,017 windows and its test subset has 2,874. These are distinct populations.
+Fit candidate budgets on training and select policy on validation; chronological
+test evaluation resets at recording boundaries. Reference-decision agreement
+uses all test windows, including those excluded from activity-label metrics.
 
 Existing audit coverage and G2 metrics have already been inspected on the test
 subjects. Do not describe this test split as untouched by the whole research
@@ -287,11 +301,82 @@ matched (coverage, budget or a defensible region-size measure) and report it.
 Tiny regions may certify while covering no useful queries. PCA's adjacent-pair
 coverage advantage alone passes neither G3 nor G4/G5.
 
-## 6. Current evidence boundary
+## 6. Actual-graph wave and feature identities (H12–H14)
 
-Evidence establishes data feasibility with revisions and a frozen backbone.
-The domains, support identities and sufficient proposition specify a proposed
-verifier; they do not close G3. Minimal verifier, conservative numerical
-membership, reuse gate, lifecycle and instrumentation remain to implement and
-validate. Event selection/structured gains and net savings remain open. Broader
-novelty and net saving stay UNVERIFIED in [02_LITERATURE.md](02_LITERATURE.md).
+For C=6 channels, W=128 samples and shift s=64 samples, a window has 768
+scalar values. If the overlap is fixed exactly, only Cs=384 new values vary:
+
+    X_next = [X_anchor[:,64:128], U],   U in R^(6x64).
+
+After the same frozen pointwise normalization this remains a fixed-prefix
+normalized box. If raw U budgets are used, transform them with the frozen
+channel scales and conservatively enclose normalization arithmetic. Exact
+384-variable parameterization does not halve forward or verifier runtime.
+A checker without trusted overlap state must also validate all overlap values.
+
+For zero-based final features H_j, the exact inclusive theoretical input
+support derived from this graph is:
+
+| Operator output at index i | Inclusive input support | Jump |
+|---|---|---|
+| Conv1 k5 p2 | [i−2,i+2] | 1 |
+| Pool1 k2 stride2 | [2i−2,2i+3] | 2 |
+| Conv2 k3 p1 | [2i−4,2i+5] | 2 |
+| Pool2 k2 stride2 | [4i−4,4i+7] | 4 |
+| Conv3 k3 p1 | [4i−8,4i+11] | 4 |
+
+Thus width is 20 samples and feature jump 4. The shift 64 is 16 final
+positions. With frozen BN evaluation statistics, shared kernels and matching
+pool phase, RF containment in next-window overlap [0,63] gives
+`4j−8>=0` and `4j+11<=63`, hence **j=2,…,13**:
+
+    H_j(X_next) = H_(j+16)(X_anchor),   j=2,...,13.
+
+Proof: trace each used index through the graph. All intermediate ancestors
+for these j are within their valid array interiors, so no padding node is used.
+Translation by 64 input positions becomes 32 after the first pool and 16
+after the second. Corresponding convolution arguments, frozen BN affine maps,
+ReLU operands and paired max operands are equal. Induction through those
+operators gives equality. This is a real-arithmetic identity for 12 positions
+and 64 channels, 768 feature scalars. Bitwise equality is a separate executed
+property of a chosen backend, not a universal float32 theorem. The often
+quoted RF interval [4j−9,4j+10] has the correct width but the wrong origin.
+Boundary features must not be included merely by counting width.
+
+The historical A1–A6 valid/stride-one/no-pool theorem remains valid under
+its own assumptions: R=9, n=120, 56 shared positions for s=64. Its GAP delta
+identity remains valid only for GAP then affine logits. The actual head is
+`W2 ReLU(W1 Flatten(H)+b1)+b2`; shared features at shifted positions can
+receive different dense weights. No new-minus-dropped GAP output rule follows.
+
+## 7. Evidence status and reproducibility boundary
+
+The complete H01–H24 original-statement, architecture, proof-obligation and
+K=12 disposition ledger is in `03_Week_3_Mathematical_Foundations.tex`;
+`04_ECDR_Mathematics_Explained.tex` provides worked examples and the same ID
+mapping. Supplementary geometry formulas retain their declared assumptions.
+Current execution receipts are under `output/week3_certification_20261103/`.
+Only the actual completed receipts support empirical claims; no prior K=6
+probe or an unexecuted measurement plan closes a K=12 obligation.
+
+Distinguish DERIVED ideal implications, VERIFIED finite execution evidence,
+CONDITIONAL guarantees, FALSIFIED universal claims, and NOT ESTABLISHED
+empirical/numerical conclusions. Candidate bounds and positive point margins
+cannot be counted as executable certified reuse. If an end-to-end numerical
+bridge is unavailable, the formal runtime gate must reject that candidate and
+fall back, even if a real-arithmetic diagnostic bound is positive. G2 remains
+HOLD; G3/G4/G5 are governed by their own unmet premises and measured evidence.
+
+The executed `experiment_results.json` records 5,053 test windows, selected
+validation radius 1e-6, conditional-positive build counts 5,034 diagonal and
+4,211 wave, zero next candidate members and zero formal runtime reuse.
+All four runtime replays fall back on all 5,053 queries with zero full-stream
+disagreements; reused-query agreement is N/A. Complete ECDR means are
+3.1069–3.1975 ms/query versus core reference 0.2147–0.2240 ms/query and
+identity-rehashing wrapper 1.5885–1.6747 ms/query. These negative savings apply
+to the measured fail-closed CPU replay policies. No general impossibility
+claim follows. Native auto-LiRPA 1D conversion fails at MaxPool; singleton-height
+2D is algebraically equivalent in reals and sampled consistent, but remains a
+conditional diagnostic outside the package's torch version contract. The
+93 executed tests (60 historical, 27 actual-graph, 6 mathematical) and 65
+baseline artifact checks do not establish a universal numerical certificate.

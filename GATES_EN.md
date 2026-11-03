@@ -1,5 +1,11 @@
 # GATES.md — Research Evidence Gates (English)
 
+> Current 2026-11-03 authority: [GATES.md](GATES.md). Frozen K=12 G2 is HOLD;
+> G3 actual-graph implementation is PARTIAL, executable numerical soundness NOT
+> ESTABLISHED and formal reuse disabled. Historical K=6 PASS below is not a
+> current K=12 status. [Week 3 evidence](output/week3_certification_20261103/).
+
+
 > **Current Week 1 scope (2026-11-02):** The executed run `week1_ref_1793620216_9d6c1d85` provides a verified SmallCNN1D K=12 baseline: seed 43 at epoch 8, 17 internal checks passed, 89.0538% supervised test accuracy and 77.6265% macro-F1 on 3,572 windows. This verifies the baseline execution; formal certification and net savings remain pending Week3/G5 evidence. The historical gate body below remains preserved.
 
 > Reconciled 22/10/2026, documentation only. **G0 PASS; G1 COMPLETE_WITH_REVISIONS; G2 PASS; G3–G6 PENDING.** The three completed baseline stages are empirical milestones, not unconditional scientific claims of novelty, certified reuse, or net compute savings. New reports or specifications do not pass a gate without required empirical evidence. Saved measurements were not rerun. Current theory: [04_THEORY.md](04_THEORY.md); minimal next contract: [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md).

@@ -1,0 +1,93 @@
+{
+  "status": "VERIFIED_EXECUTED_INDEPENDENT_CHECK",
+  "date": "2026-11-03",
+  "reference": {
+    "checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+    "architecture_source": "scripts/backbone.py:SmallCNN1D(num_classes=12)",
+    "architecture_source_sha256_at_frozen_audit": "0f26f8fe731de32a67eecef5eedbfbe88f13698d104454c41ef3bd5d7b4d5037",
+    "dtype": "float32",
+    "device": "cpu",
+    "torch_threads": 1,
+    "batch_size": 1,
+    "operator_graph_contract": "Conv1d(6,32,k5,p2)-BN(eval)-ReLU-MaxPool1d(k2,s2,p0)-Conv1d(32,64,k3,p1)-BN(eval)-ReLU-MaxPool1d(k2,s2,p0)-Conv1d(64,64,k3,p1)-BN(eval)-ReLU-Flatten2048-Linear128-ReLU-Linear12",
+    "fixed_graph_semantics": "pool phase origin0, conv stride1/dilation1/groups1, fixed BN running statistics/epsilon, channel-major flatten"
+  },
+  "h13": {
+    "original_execution_command": ".venv/bin/python /tmp/week3_h13_independent.py",
+    "reproduction_command_pointer": "independent_review.md: Reproducible read-only H13/H03 check",
+    "adjacent_pairs": 5034,
+    "total_test_windows": 5053,
+    "recordings": 19,
+    "receptive_field_inclusive": "[4j-8,4j+11]",
+    "feature_jump": 4,
+    "mapping": "H_new[:,j] == H_old[:,j+16]",
+    "guaranteed_j_zero_based": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "bitwise_equal_pairs_for_each_guaranteed_j": 5034,
+    "bitwise_equal_scalar_comparisons_guaranteed_region": 3866112,
+    "max_abs_error_guaranteed_region": 0.0,
+    "max_abs_error_j0_to15": [
+      14.924388885498047,
+      7.022495269775391,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      7.839027404785156,
+      18.572065353393555
+    ],
+    "all_pairs_bitwise_equal_j0_to15": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ],
+    "universal_runtime_bitwise_equivalence": "NOT ESTABLISHED; finite current backend evidence only"
+  },
+  "h03": {
+    "source": "frozen saved test_predictions.npz after global-row identity check",
+    "same_pure_activity_adjacent_pairs": 2661,
+    "prediction_disagreement_pairs": 78,
+    "witness": {
+      "left_global_row": 682,
+      "right_global_row": 683,
+      "pure_label_one_based": 11,
+      "left_prediction_zero_based": 10,
+      "right_prediction_zero_based": 8
+    },
+    "disposition": "FALSIFIED unconditional statement; actual frozen-reference witness"
+  }
+}

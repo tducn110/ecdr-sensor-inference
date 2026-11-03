@@ -1,0 +1,6 @@
+/home/pro/Downloads/research/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+native_1d FAILED 0
+/home/pro/Downloads/research/.venv/lib/python3.11/site-packages/auto_LiRPA/bound_general.py:1070: UserWarning: Creating an identity matrix with size 2048x2048 for node BoundBatchNormalization(name=/input-28, inputs=[/input-24, /17, /18, /19, /20], perturbed=True). This may indicate poor performance for bound computation. If you see this message on a small network please submit a bug report.
+  sparse_C = self.get_sparse_C(node, ref_intermediate)
+singleton_height_2d PASS 12

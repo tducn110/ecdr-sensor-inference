@@ -1,3 +1,7 @@
+> **Bản dịch lịch sử:** các claim K=6/G2 PASS hoặc chưa triển khai bên dưới thuộc snapshot 22/10/2026.
+> Contract K=12 và trạng thái Week 3 hiện tại ở [03_MATH/02_07_G3_DOMAIN_CONTRACT.md](03_MATH/02_07_G3_DOMAIN_CONTRACT.md); G2 giữ HOLD.
+> Giữ bản này để truy nguồn, không dùng làm evidence certification K=12.
+
 # 07 Khế Ước Miền G3 — Bản Thử Nghiệm Tái Sử Dụng Quyết Định Hộp Đường Chéo Tối Thiểu
 
 > 22/10/2026 · **Khế ước đề xuất, chỉ mang tính tài liệu; chưa triển khai verifier hay runtime. Gate G3 PENDING.** Tệp này đặc tả bản thử nghiệm tiếp theo. Nó không làm thay đổi trọng số mô hình, chính sách nhãn/dữ liệu, kết quả đã lưu hay trạng thái các Gate G4/G5. Công thức toán học xem tại: [04_THEORY.md](04_THEORY.md).

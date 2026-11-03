@@ -1,3 +1,8 @@
+> **Bản dịch lịch sử trước khi khóa reference K=12 (giữ để truy nguồn).**
+> Các phát biểu K=6/G2 PASS hoặc “chưa triển khai” trong bản này mô tả snapshot cũ.
+> Contract/trạng thái hiện tại ở [01_04_THEORY.md](01_04_THEORY.md), được cập nhật 03/11/2026.
+> Không dùng bản lịch sử này làm evidence cho verifier hoặc metric K=12.
+
 # 04 THEORY — Tái Sử Dụng Quyết Định Có Chứng Nhận Theo Điều Kiện Sự Kiện (ECDR)
 
 > Cập nhật 22/10/2026. **Đặc tả hoạt động nghiên cứu; verifier và cơ chế certified reuse chưa triển khai, Gate G3 PENDING.** Hồ sơ nghiệm thu: G0 PASS; G1 COMPLETE_WITH_REVISIONS; G2 PASS. Lượt soát xét này đối chiếu hệ thống ký hiệu và các miền ứng viên với kết quả kiểm toán hiện hữu; không báo cáo thêm thực nghiệm mới và chưa đóng băng bản triển khai đã xác thực. Phạm vi tối thiểu của G3 xem tại: [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md). Kết quả đo lường đã lưu giữ tại `data/` và [03_DATA_AUDIT.md](03_DATA_AUDIT.md).

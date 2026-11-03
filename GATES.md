@@ -1,14 +1,15 @@
 # GATES.md — Research Evidence Gates
 
-> **Current Week 1 scope (2026-11-02):** The executed run `week1_ref_1793620216_9d6c1d85` provides a verified SmallCNN1D K=12 baseline: seed 43 at epoch 8, 17 internal checks passed, 89.0538% supervised test accuracy and 77.6265% macro-F1 on 3,572 windows. This verifies the baseline execution; formal certification and net savings remain pending Week3/G5 evidence. The historical gate body below remains preserved.
-
-> Reconciled 22/10/2026, documentation only. **G0 PASS; G1
-> COMPLETE_WITH_REVISIONS; G2 PASS; G3–G6 PENDING.** The three completed baseline
-> stages are not three unconditional scientific claims and do not establish
-> novelty, certified reuse or net savings. New specifications/reports do not
-> pass a gate without its required evidence. Saved measurements were not rerun.
-> Current theory: [04_THEORY.md](04_THEORY.md); minimal next contract:
-> [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md).
+> **Current K=12 status (2026-11-03):** G2 quality remains **HOLD**. The
+> Week 1 baseline is verified execution, not a quality-gate pass. Week 3 now
+> has an actual-graph eleven-margin IBP diagnostic and a fail-closed runtime;
+> executable numerical soundness is **NOT ESTABLISHED**, so formal reuse is
+> disabled and G3 remains **PARTIAL / NOT PASSED**. G4–G6 are not passed.
+> Canonical contract: [03_MATH/02_07_G3_DOMAIN_CONTRACT.md](03_MATH/02_07_G3_DOMAIN_CONTRACT.md).
+> Evidence: [Week 3 run](output/week3_certification_20261103/).
+>
+> **Historical gate body:** the K=6 G2 PASS and older saved metrics below are
+> retained as history. They do not override the current K=12 HOLD.
 
 - [x] **G0 — Initial literature/RQ baseline PASS** (historical 15/10/2026 gate)
   - EVIDENCE: initial 7-entry bibliography and scoped PDF/API checks; ledger,
@@ -48,11 +49,11 @@
     on already-normalized RAM tensors, 6 Torch threads. This is neither a fallback
     trace nor complete-path runtime evidence. Source/JSON inspection is not a rerun.
 
-- [ ] **G3 — Sound minimal verifier, membership and reuse gate PENDING**
+- [ ] **G3 — Sound minimal verifier, membership and reuse gate PARTIAL / NOT PASSED**
   - REQUIRED DOMAIN: implement the normalized diagonal contract in
     `07_G3_DOMAIN_CONTRACT.md`; raw `x`, fixed `N`, `F=f_theta o N`, normalized box
     and raw preimage must agree. Event selection only proposes a candidate.
-  - REQUIRED VERIFIER: all five class-pair bounds valid on the entire declared
+  - REQUIRED VERIFIER: all eleven class-pair bounds for current K=12 valid on the entire declared
     domain or a proved enclosure; positive safe lower margins are sufficient.
     Ties, failed/unsupported bounds and inconclusive cases must fall back.
   - REQUIRED GATE: conservative membership independent of event heuristics;
@@ -68,7 +69,7 @@
   - REQUIRED INSTRUMENTATION: descriptor/lookup/membership/forward/build timings,
     build count, anchor age, fallback reasons and identity trace. G3 component
     costs inform G5; a positive saving is not a G3 prerequisite.
-  - CURRENT: contract/theory documented only; no verifier/runtime implemented.
+  - CURRENT: actual-graph K=12 IBP, identity/membership/lifecycle checks and fail-closed fallback implemented; ordinary float64 bounds are conditional diagnostics. Executable float32 containment is unresolved; no formal runtime reuse. See current Week 3 evidence for executed tests, conditional coverage and full cost traces.
 
 - [ ] **G4 — Useful event structure PENDING**
   - CHECK: first distinguish bound-method quality (fixed domain) from region

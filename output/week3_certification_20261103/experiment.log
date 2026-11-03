@@ -1,0 +1,16 @@
+validation selected radius 1e-06
+diagonal_box 1000 / 5053
+diagonal_box 2000 / 5053
+diagonal_box 3000 / 5053
+diagonal_box 4000 / 5053
+diagonal_box 5000 / 5053
+fixed_overlap_wave 1000 / 5053
+fixed_overlap_wave 2000 / 5053
+fixed_overlap_wave 3000 / 5053
+fixed_overlap_wave 4000 / 5053
+fixed_overlap_wave 5000 / 5053
+runtime 0 diagonal_box builds 49 speedup 0.5276026169547132
+runtime 0 fixed_overlap_wave builds 69 speedup 0.5237467554804126
+runtime 1 diagonal_box builds 49 speedup 0.5112820650459393
+runtime 1 fixed_overlap_wave builds 69 speedup 0.5013083989177523
+completed 167.59727434600063 seconds

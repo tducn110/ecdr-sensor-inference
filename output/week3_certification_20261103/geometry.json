@@ -1,0 +1,249 @@
+{
+  "status": "VERIFIED_DESCRIPTIVE_LOCAL_GEOMETRY",
+  "train_pair_count": 9944,
+  "val_gradient_count": 32,
+  "space": "normalized 768 coordinates; gradient of winner-minus-runner-up logit at validation anchor",
+  "pca_fit": "training adjacent ordinary-coordinate deltas, centered; covariance eigendecomposition",
+  "pca_top3_explained_variance": 0.21483718039085958,
+  "temporal_abs_cosine": {
+    "n": 32,
+    "mean": 0.05097144529096703,
+    "p50": 0.03675122567889501,
+    "p95": 0.15372552075497753,
+    "total": 1.631086249310945
+  },
+  "pca_top3_normal_projection": {
+    "n": 32,
+    "mean": 0.07982268960356523,
+    "p50": 0.07241621528416764,
+    "p95": 0.1532187231476918,
+    "total": 2.5543260673140873
+  },
+  "interpretation": "large normal projection means locally sensitive; small projection is tangent-like, not a whole-region certificate; no PCA superiority established",
+  "observations": [
+    {
+      "val_index": 0,
+      "winner": 0,
+      "competitor": 2,
+      "temporal_abs_cosine": 0.023741800941600787,
+      "pca_top3_normal_projection": 0.09528525275599091
+    },
+    {
+      "val_index": 77,
+      "winner": 5,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.0003043891159856491,
+      "pca_top3_normal_projection": 0.04237704059727336
+    },
+    {
+      "val_index": 155,
+      "winner": 0,
+      "competitor": 1,
+      "temporal_abs_cosine": 0.06414908982969608,
+      "pca_top3_normal_projection": 0.07637239453628307
+    },
+    {
+      "val_index": 233,
+      "winner": 4,
+      "competitor": 0,
+      "temporal_abs_cosine": 0.008391506594153941,
+      "pca_top3_normal_projection": 0.08592789719905938
+    },
+    {
+      "val_index": 312,
+      "winner": 4,
+      "competitor": 3,
+      "temporal_abs_cosine": 0.050435999778218964,
+      "pca_top3_normal_projection": 0.1375853958282326
+    },
+    {
+      "val_index": 390,
+      "winner": 9,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.001604632295332092,
+      "pca_top3_normal_projection": 0.12910132794504217
+    },
+    {
+      "val_index": 468,
+      "winner": 0,
+      "competitor": 2,
+      "temporal_abs_cosine": 0.07494656049009236,
+      "pca_top3_normal_projection": 0.05433665750312401
+    },
+    {
+      "val_index": 545,
+      "winner": 2,
+      "competitor": 11,
+      "temporal_abs_cosine": 0.043810232059478454,
+      "pca_top3_normal_projection": 0.11261707007971306
+    },
+    {
+      "val_index": 624,
+      "winner": 3,
+      "competitor": 4,
+      "temporal_abs_cosine": 0.008204533501156816,
+      "pca_top3_normal_projection": 0.048562724492344625
+    },
+    {
+      "val_index": 702,
+      "winner": 4,
+      "competitor": 3,
+      "temporal_abs_cosine": 0.0044908080898817095,
+      "pca_top3_normal_projection": 0.15169642585554674
+    },
+    {
+      "val_index": 780,
+      "winner": 0,
+      "competitor": 1,
+      "temporal_abs_cosine": 0.1595624048828614,
+      "pca_top3_normal_projection": 0.10780489916709782
+    },
+    {
+      "val_index": 858,
+      "winner": 1,
+      "competitor": 0,
+      "temporal_abs_cosine": 0.09711438510967502,
+      "pca_top3_normal_projection": 0.04111698121577221
+    },
+    {
+      "val_index": 937,
+      "winner": 3,
+      "competitor": 4,
+      "temporal_abs_cosine": 0.18337589630815587,
+      "pca_top3_normal_projection": 0.051476475296610466
+    },
+    {
+      "val_index": 1014,
+      "winner": 4,
+      "competitor": 3,
+      "temporal_abs_cosine": 0.07378751762516995,
+      "pca_top3_normal_projection": 0.13030021886570903
+    },
+    {
+      "val_index": 1092,
+      "winner": 1,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.029028100709019976,
+      "pca_top3_normal_projection": 0.0988264551051932
+    },
+    {
+      "val_index": 1170,
+      "winner": 0,
+      "competitor": 1,
+      "temporal_abs_cosine": 0.048277591067237106,
+      "pca_top3_normal_projection": 0.10807349040461067
+    },
+    {
+      "val_index": 1249,
+      "winner": 3,
+      "competitor": 4,
+      "temporal_abs_cosine": 0.026111040070673174,
+      "pca_top3_normal_projection": 0.05179538138221446
+    },
+    {
+      "val_index": 1327,
+      "winner": 0,
+      "competitor": 2,
+      "temporal_abs_cosine": 0.0022957900067915103,
+      "pca_top3_normal_projection": 0.06846003603205222
+    },
+    {
+      "val_index": 1405,
+      "winner": 1,
+      "competitor": 9,
+      "temporal_abs_cosine": 0.011444003188098824,
+      "pca_top3_normal_projection": 0.03847088459925807
+    },
+    {
+      "val_index": 1483,
+      "winner": 11,
+      "competitor": 2,
+      "temporal_abs_cosine": 0.054409533997148395,
+      "pca_top3_normal_projection": 0.09099445199650356
+    },
+    {
+      "val_index": 1561,
+      "winner": 5,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.1489498882867089,
+      "pca_top3_normal_projection": 0.17611437936434532
+    },
+    {
+      "val_index": 1639,
+      "winner": 0,
+      "competitor": 4,
+      "temporal_abs_cosine": 0.008486302543818214,
+      "pca_top3_normal_projection": 0.060053758228503874
+    },
+    {
+      "val_index": 1717,
+      "winner": 1,
+      "competitor": 7,
+      "temporal_abs_cosine": 0.05083017607526032,
+      "pca_top3_normal_projection": 0.028432660987156026
+    },
+    {
+      "val_index": 1796,
+      "winner": 3,
+      "competitor": 4,
+      "temporal_abs_cosine": 0.10378272584934713,
+      "pca_top3_normal_projection": 0.04779219777914505
+    },
+    {
+      "val_index": 1874,
+      "winner": 5,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.014252723669706077,
+      "pca_top3_normal_projection": 0.10168389499302391
+    },
+    {
+      "val_index": 1951,
+      "winner": 0,
+      "competitor": 2,
+      "temporal_abs_cosine": 0.019874231884221636,
+      "pca_top3_normal_projection": 0.030094746960015784
+    },
+    {
+      "val_index": 2029,
+      "winner": 2,
+      "competitor": 0,
+      "temporal_abs_cosine": 0.02969221929831156,
+      "pca_top3_normal_projection": 0.04535867372254609
+    },
+    {
+      "val_index": 2107,
+      "winner": 1,
+      "competitor": 9,
+      "temporal_abs_cosine": 0.008838259886877873,
+      "pca_top3_normal_projection": 0.08309789379923112
+    },
+    {
+      "val_index": 2186,
+      "winner": 4,
+      "competitor": 3,
+      "temporal_abs_cosine": 0.07800687798153606,
+      "pca_top3_normal_projection": 0.1550793087269802
+    },
+    {
+      "val_index": 2264,
+      "winner": 0,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.0724366246369472,
+      "pca_top3_normal_projection": 0.009490817331522548
+    },
+    {
+      "val_index": 2342,
+      "winner": 1,
+      "competitor": 0,
+      "temporal_abs_cosine": 0.1207944018498728,
+      "pca_top3_normal_projection": 0.06757081148980366
+    },
+    {
+      "val_index": 2420,
+      "winner": 11,
+      "competitor": 10,
+      "temporal_abs_cosine": 0.009656001687909498,
+      "pca_top3_normal_projection": 0.02837546307418167
+    }
+  ]
+}

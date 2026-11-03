@@ -1,0 +1,12 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Study contract and evidence levels}{2}{section.1}%
+\contentsline {section}{\numberline {2}W2-01: Physical recordings and channel semantics}{3}{section.2}%
+\contentsline {section}{\numberline {3}W2-02: Window construction, duration, and overlap}{3}{section.3}%
+\contentsline {section}{\numberline {4}W2-03: Label policy and annotation alignment}{5}{section.4}%
+\contentsline {section}{\numberline {5}W2-04: Splits, denominators, and class support}{6}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Historical majority-count discrepancy}{6}{subsection.5.1}%
+\contentsline {section}{\numberline {6}W2-05: Train-only normalization and coordinate systems}{7}{section.6}%
+\contentsline {section}{\numberline {7}W2-06: Data-quality evidence and dependence}{8}{section.7}%
+\contentsline {section}{\numberline {8}W2-07: Dataset provenance and reproducibility}{9}{section.8}%
+\contentsline {section}{\numberline {9}W2-08: Final data contract and handoff}{9}{section.9}%
+\contentsline {section}{\numberline {10}Conclusions and evidence status}{11}{section.10}%

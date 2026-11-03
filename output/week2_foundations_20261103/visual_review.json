@@ -1,0 +1,157 @@
+{
+  "reviewed_at_utc": "2026-11-03T00:47:33.008819+00:00",
+  "method": "Rendered all final pages at 90dpi; inspected all-page contact sheets and full-size dense tables/plots. Reinspected changed pages after independent-study separation and final layout fixes.",
+  "reviewer": "root assistant visual inspection",
+  "overall_status": "PASS",
+  "checks": {
+    "all_pages_rendered": true,
+    "no_observed_clipping_or_overlap": true,
+    "tables_fit_page_width": true,
+    "figures_and_labels_legible": true,
+    "contents_and_page_numbers_present": true,
+    "no_final_tex_errors_or_overfull_boxes": true
+  },
+  "scope_limit": "Layout QA only; no scientific acceptance or formal certification implied.",
+  "documents": [
+    {
+      "path": "01_DATA/03_Week_2_Data_Foundations.pdf",
+      "sha256": "90ebf2e324bbcde3d87b9be8c03fd37dd8f5003f6c4051418acd4f7701bbca9d",
+      "physical_pages": 13,
+      "rendered_pages": [
+        {
+          "path": "output/week2_foundations_20261103/qa/data-01.png",
+          "sha256": "a1d0cdec21536b378e91b6f21916ee81cf5be0370dbc31aa2a64e9224ed43777"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-02.png",
+          "sha256": "c097d57a2eec69465300448ba60996d10fe0d0249972d38fa738a86817cf0b47"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-03.png",
+          "sha256": "e9330bdd1885ca2839237b6288d7d177915f3636f9acb0e422004bd19ffc1253"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-04.png",
+          "sha256": "bae7961c07de93667c909163fa3a4adf81a88b06f64ff5af09e74cf37e2ce756"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-05.png",
+          "sha256": "c1db688aa8d1a61692367d80cc13aec1cd992895e2d2223f93548d1ef56951fc"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-06.png",
+          "sha256": "0f1e394a747461efb31d696c805044d88a858c97bf2c1e8469132f66cd098cc3"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-07.png",
+          "sha256": "7c833cbef271dfb5bd5ddc5a185230ab6432df27a2150bd89a4c2722b4be23df"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-08.png",
+          "sha256": "cea154b91ac2798f3d035cc29d36bfbffc01eb82be2ad4c54153151ff8614576"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-09.png",
+          "sha256": "30677c72b8ce2a50d11762a306fa099554a38e5af2c3bcc7b6b17fb983de09a2"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-10.png",
+          "sha256": "df3267dff4349ee02dee780a5410f786e0fd656e2c89c201649b575c530508c9"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-11.png",
+          "sha256": "3a42f58ae31ef0d08865b119363aefc9d72c5b38c3b8f28d9a42bc2c9255c5aa"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-12.png",
+          "sha256": "32af1494a20ed92be79fe5762fbf22f7c3bfaf867e0c0aac36b61b8884201e85"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/data-13.png",
+          "sha256": "344d46a8401ba737549ce4350e99956b706f0744a712c72c0250eb4b3beb3fbf"
+        }
+      ],
+      "contact_sheets": [
+        "output/week2_foundations_20261103/qa/data_contact_1.jpg",
+        "output/week2_foundations_20261103/qa/data_contact_2.jpg",
+        "output/week2_foundations_20261103/qa/data_contact_3.jpg"
+      ]
+    },
+    {
+      "path": "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf",
+      "sha256": "02de3fb4c6ca0a07eb1407a6017ed540c0dd45b8292cbc0c1e822c42d4e57188",
+      "physical_pages": 16,
+      "rendered_pages": [
+        {
+          "path": "output/week2_foundations_20261103/qa/model-01.png",
+          "sha256": "b2c077a3e372d875b7010962464ee2802a59b526a7428c747f967136eb50d6f1"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-02.png",
+          "sha256": "d1956b7890c99556808058e2b8cea00edfc833148f4d9e4583c5502882ebb5a7"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-03.png",
+          "sha256": "dad841c347843e8bb3ca15f62e582881b2e0f38089d1874aadc51f79dac6e970"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-04.png",
+          "sha256": "0d598da687dc06db417d8aec02e6ec98744c7a9ffda293f91cab95640ff101c6"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-05.png",
+          "sha256": "017b14c2b5e2a841b5f7d6d7ffd1465c32a3b92f39b9667d3cd0202e8bedebf7"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-06.png",
+          "sha256": "dc42412c72c964315d67cac52ba076e0e2f3dd876a21ff4318b60ffa18e89781"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-07.png",
+          "sha256": "270bc2c809cf7e280008d3eafabad3803be19fd4e3c479fed7c71ca609f24042"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-08.png",
+          "sha256": "e126a141441a136794fc3c156c20a5e72edd0904979b63b3e0cbe5bc460be8b6"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-09.png",
+          "sha256": "e9b523f745fb2f3f2ebbf482a56aedb14da53313743f576c4444c4136f4755e7"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-10.png",
+          "sha256": "2b6fa2af7f0a99ba6478f805c70df309bab4a0515f37f14cff09fe88ad534d7f"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-11.png",
+          "sha256": "cb65c95dd33f9f57bc3a62c47b89c6969ec81dbfec16d9d3691eda0781b4e608"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-12.png",
+          "sha256": "7eb0afc09798287b9fed4754c3b661acff6ce12d126591f85b3493d3d44d1624"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-13.png",
+          "sha256": "c8c0bf31d732ab39c247f336ba3998d355ab44994bc292b193441dd02aee85dd"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-14.png",
+          "sha256": "64b653e9eb14d785a3edc6acfaad9e59795d3841ad4281278fde4c4669f71653"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-15.png",
+          "sha256": "f9cdbbe151460d1ee314103f2a1977659d87b1bd84e2aeba5be48abfdedd9c9b"
+        },
+        {
+          "path": "output/week2_foundations_20261103/qa/model-16.png",
+          "sha256": "5d509858cb5c65144472c75aa199ae87f4b6628414d32cfb8cfe4a421d319094"
+        }
+      ],
+      "contact_sheets": [
+        "output/week2_foundations_20261103/qa/model_contact_1.jpg",
+        "output/week2_foundations_20261103/qa/model_contact_2.jpg",
+        "output/week2_foundations_20261103/qa/model_contact_3.jpg"
+      ]
+    }
+  ]
+}

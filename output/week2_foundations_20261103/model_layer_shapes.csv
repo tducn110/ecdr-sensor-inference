@@ -1,0 +1,16 @@
+module,type,input_shape,output_shape,trainable_parameters,buffers
+conv.0,Conv1d,"[1, 6, 128]","[1, 32, 128]",992,{}
+conv.1,BatchNorm1d,"[1, 32, 128]","[1, 32, 128]",64,"{'running_mean': {'shape': [32], 'dtype': 'torch.float32'}, 'running_var': {'shape': [32], 'dtype': 'torch.float32'}, 'num_batches_tracked': {'shape': [], 'dtype': 'torch.int64'}}"
+conv.2,ReLU,"[1, 32, 128]","[1, 32, 128]",0,{}
+conv.3,MaxPool1d,"[1, 32, 128]","[1, 32, 64]",0,{}
+conv.4,Conv1d,"[1, 32, 64]","[1, 64, 64]",6208,{}
+conv.5,BatchNorm1d,"[1, 64, 64]","[1, 64, 64]",128,"{'running_mean': {'shape': [64], 'dtype': 'torch.float32'}, 'running_var': {'shape': [64], 'dtype': 'torch.float32'}, 'num_batches_tracked': {'shape': [], 'dtype': 'torch.int64'}}"
+conv.6,ReLU,"[1, 64, 64]","[1, 64, 64]",0,{}
+conv.7,MaxPool1d,"[1, 64, 64]","[1, 64, 32]",0,{}
+conv.8,Conv1d,"[1, 64, 32]","[1, 64, 32]",12352,{}
+conv.9,BatchNorm1d,"[1, 64, 32]","[1, 64, 32]",128,"{'running_mean': {'shape': [64], 'dtype': 'torch.float32'}, 'running_var': {'shape': [64], 'dtype': 'torch.float32'}, 'num_batches_tracked': {'shape': [], 'dtype': 'torch.int64'}}"
+conv.10,ReLU,"[1, 64, 32]","[1, 64, 32]",0,{}
+head.0,Flatten,"[1, 64, 32]","[1, 2048]",0,{}
+head.1,Linear,"[1, 2048]","[1, 128]",262272,{}
+head.2,ReLU,"[1, 128]","[1, 128]",0,{}
+head.3,Linear,"[1, 128]","[1, 12]",1548,{}

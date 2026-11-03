@@ -2,544 +2,245 @@
 \usepackage{fontspec}
 \setmainfont{Noto Serif}
 \setsansfont{Noto Sans}
-\setmonofont{Noto Sans Mono}[Scale=0.86]
-% XeLaTeX with fontspec natively handles Vietnamese UTF-8 without babel
-\usepackage{amsmath,amssymb,amsthm,mathtools}
-\usepackage{geometry,booktabs,longtable,tabularx,array}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,calc}
+\setmonofont{Noto Sans Mono}[Scale=0.84]
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage[margin=2.25cm,headheight=15pt]{geometry}
+\usepackage{booktabs,longtable,tabularx,array,graphicx}
 \usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
-\geometry{left=2.25cm,right=2.25cm,top=2.3cm,bottom=2.3cm,headheight=15pt}
 \definecolor{ink}{HTML}{183449}
 \definecolor{teal}{HTML}{187C80}
 \definecolor{pale}{HTML}{E8F2F2}
-\hypersetup{colorlinks=true,linkcolor=ink,citecolor=teal,urlcolor=teal,
- pdftitle={Week 2: Dữ liệu và quan hệ với ECDR},
- pdfauthor={ECDR Research}}
+\hypersetup{colorlinks=true,linkcolor=ink,urlcolor=teal,pdftitle={Week 2: HAPT Data Foundations},pdfauthor={ECDR Research}}
 \urlstyle{same}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{5pt}
-\setlength{\emergencystretch}{3em}
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.15}
-\setlist{nosep,leftmargin=1.5em}
+\graphicspath{{output/week2_foundations_20261103/}{../output/week2_foundations_20261103/}}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.13}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\newcommand{\R}{\mathbb R}
-\newcommand{\N}{\mathbb N}
-\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
-\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\R}{\mathbb R}\newcommand{\N}{\mathbb N}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
 \newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
-\newcommand{\diag}{\operatorname{diag}}
-\newcommand{\vecop}{\operatorname{vec}}
-\newcommand{\relu}{\operatorname{ReLU}}
-\newcommand{\ind}{\mathbf 1}
-\newcommand{\E}{\mathbb E}
-\newcommand{\Sset}{\mathcal S}
-\newcommand{\Uset}{\mathcal U}
-\newtheorem{definition}{Định nghĩa}[section]
-\newtheorem{theorem}[definition]{Định lý}
-\newtheorem{proposition}[definition]{Mệnh đề}
-\newtheorem{lemma}[definition]{Bổ đề}
-\newtheorem{corollary}[definition]{Hệ quả}
-\theoremstyle{remark}
-\newtheorem{example}[definition]{Ví dụ}
-\newtheorem{remark}[definition]{Nhận xét}
-\renewcommand{\proofname}{Chứng minh}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small\textcolor{ink}{ECDR | Cơ sở nghiên cứu và lý thuyết}}
-\fancyhead[R]{\small Week 2}
-\fancyfoot[L]{\small 28/10/2026}
-\fancyfoot[R]{\thepage}
+\newcommand{\ind}{\mathbf 1}\newcommand{\Sset}{\mathcal S}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small\textcolor{ink}{ECDR | Week 2 data foundations}}\fancyhead[R]{\small HAPT and frozen reference}\fancyfoot[L]{\small 3 November 2026 | English edition}\fancyfoot[R]{\thepage}
+\setlist{nosep,leftmargin=1.5em}\raggedbottom
 \begin{document}
-\title{\textcolor{ink}{ECDR}\\[5pt]\Large Week 2: Dữ liệu và quan hệ với ECDR}
-\author{Báo cáo nghiên cứu lý thuyết}
-\date{28 tháng 10 năm 2026}
-\maketitle
-\noindent Bản tuần độc lập, trích từ báo cáo tổng hợp. Scope: lý thuyết mới
-theo brief của người nghiên cứu; không dùng implementation cũ làm nguồn
-định nghĩa phương pháp. Các tính toán minh họa không phải benchmark.
-\tableofcontents
-\clearpage
-\part{Week 2 --- Dữ liệu và quan hệ trực tiếp với bài toán}
-\section{Data specification: từ đại lượng vật lý đến tensor}
-\subsection{Nguồn, ý nghĩa và đơn vị}
-HAPT có raw inertial recordings và một nhánh vector đặc trưng được dựng sẵn.
-Trong hướng này, input là \emph{raw sensor window}, không phải vector
-561 features. Hồ sơ HAPT mô tả điện thoại đeo ở eo, 30 người, accelerometer
-ba trục và gyroscope ba trục lấy mẫu 50 Hz \cite{hapt}. Metadata của dataset
-là nguồn cho ý nghĩa vật lý; những con số trong raw file chỉ là phép đo
-biểu diễn các đại lượng đó.
+\begin{titlepage}
+\vspace*{1.2cm}{\Large\color{teal}DATA FOUNDATIONS AND AUDIT\par}\vspace{.5cm}
+{\huge\bfseries\color{ink}HAPT Data Foundations\par}\vspace{.4cm}
+{\Large Physical data contract, dependence, support, preprocessing, and decision evidence\par}\vspace{1cm}
+\begin{tabularx}{\linewidth}{@{}P{3.1cm}Y@{}}\toprule
+Dataset & Human Activity and Postural Transition (HAPT): 30 participants, 61 recordings, six inertial channels, 50 Hz.\\
+Window tensor & 17,453 windows with shape $6\times128$, stride 64; float32 and finite.\\
+Reconstruction & All rebuilt sensor values and all 10 manifest fields match the frozen window artifact exactly.\\
+Reference & Week 1 selected K=12 SmallCNN1D, seed 43/epoch 8, 283,692 trainable parameters; this report describes its data contract and evidence boundary.\\
+Key open item & Historical majority-support counts do not reproduce the current source predicate. The cause remains unproven.\\
+\bottomrule\end{tabularx}
+\vfill
+This is an independent Week 2 data study. Its objective is to specify and audit what enters the frozen reference pipeline: sampled physical channels, window coordinates, annotation policy, subject partitions, and train-derived normalization. It asks whether those data objects can be reconstructed from the identified source and whether the resulting handoff is unambiguous. The method combines source inspection with a read-only reconstruction audit against frozen tensors, manifests, split metadata, and normalization values. Conclusions are limited to that data contract; network architecture, prediction accuracy, and certification mathematics belong to the separate Week 2 CNN study.
+\end{titlepage}
+\tableofcontents\clearpage
 
-Đặt $\tau_n=n/f_s$, $f_s=50\,\mathrm{Hz}$. Một sample là
-\begin{equation}
- s[n]=[a_x[n],a_y[n],a_z[n],\omega_x[n],\omega_y[n],\omega_z[n]]^\top
- \in\R^6.
- \label{eq:sample}
-\end{equation}
-Ba $a$ là gia tốc theo ba trục, đơn vị $g$; $1g=9.80665\,\mathrm{m/s^2}$.
-Ba $\omega$ là vận tốc góc, đơn vị $\mathrm{rad/s}$ theo README đi kèm.
-Raw acceleration có thể chứa thành phần trọng lực; không được gọi toàn bộ
-raw acc là body acceleration đã tách trọng lực nếu chưa áp phép tách đó.
-Tính căn chỉnh acc/gyro, thứ tự kênh và recording identity là một phần data
-contract.
+\section{Study contract and evidence levels}
+\textbf{Abstract.} This study reconstructs the HAPT data path used by the frozen Week 1 reference. It specifies six physical sensor channels, the 128-sample/64-stride window rule, sample-index label policy, subject-disjoint partitions, supervised denominators, and train-only normalization. A read-only audit reproduces 17,453 windows and every manifest field; all 17,392 eligible aligned overlap pairs match exactly. The study finds that the current local pipeline is reproducible while upstream annotation index origin and historical support-file provenance remain unresolved. Transition classes have much lower support than basic activities, and overlapping windows are dependent observations. These results establish a bounded local data contract, not model quality or certification.
 
-\begin{table}[!htbp]\centering
-\caption{Các cấp biểu diễn và vai trò của chúng.}
-\begin{tabularx}{\linewidth}{@{}p{2.3cm}p{3.1cm}Y@{}}\toprule
-Cấp & Không gian & Ý nghĩa trong ECDR\\\midrule
-Sample $s[n]$ & $\R^6$ & Một thời điểm; chưa đủ lịch sử để gọi là window\\
-Recording $S$ & $\R^{6\times T}$ & Chuỗi liên tục của một recording\\
-Window $X_t$ & $\R^{6\times128}$ & Một query của classifier\\
-Vector $x_t$ & $\R^{768}$ & Cùng dữ liệu theo một thứ tự flatten cố định\\
-New wave $U_t$ & $\R^{6\times64}$ & Mẫu mới đi vào khi dịch 64 bước\\
-Feature $H(X_t)$ & Phụ thuộc kiến trúc & Biểu diễn được mạng tính; khác raw data\\
-Region $\Sset_r$ & Tập con của input space & Tập query cần chứng nhận\\\bottomrule
-\end{tabularx}
-\end{table}
+The source revision is \code{633dc05a80511af4d4580cd985edd494cdc373ff} on \code{main}. The worktree was clean before this Week 2 revision. Local report and audit additions are recorded by hash in the Week 2 final verification receipt. This report is the current standalone Week 2 authority; the older combined Weeks 1--3 document remains a historical synthesis.
 
-\subsection{Windowing và phép đếm}
-Với recording có $T$ sample, đặt $W=128$, stride $s=64$ và chỉ tạo cửa sổ
-nằm trọn trong recording:
-\begin{equation}
- X_t[:,i]=s[ts+i],\qquad i=0,\ldots,W-1,
- \quad t=0,\ldots,n_T-1.
- \label{eq:window}
-\end{equation}
-Các chỉ số đã được quy về zero-based. Nếu source annotation dùng quy ước
-khác, phải chuyển sang quy ước này trước khi gán nhãn.
+The study objective is to make explicit what data the frozen Week 1 reference receives, how each window and label is built, how examples are divided and normalized, and which claims can be supported by the resulting artifacts. The answer is bounded to the canonical current source and the existing run. It is not a new training study and does not revise the selected checkpoint, labels, splits or preprocessing.
 
-\begin{proposition}[Số window của một recording]\label{prop:count}
-Với $T\ge W$, số window stride $s$ là
-\begin{equation}
- n_T=1+\left\lfloor\frac{T-W}{s}\right\rfloor.
-\end{equation}
-Nếu $T<W$ thì $n_T=0$.
-\end{proposition}
-\begin{proof}
-Điều kiện hợp lệ của start là $0\le ts$ và $ts+W\le T$. Vì $t$ nguyên không
-âm, $0\le t\le\lfloor(T-W)/s\rfloor$. Đếm các giá trị nguyên thu được công
-thức. Không nối recording nên tổng corpus là $\sum_r n_{T_r}$.
-\end{proof}
-Các phép quy đổi thời gian và dung lượng là
-\begin{align}
- CW&=6\times128=768, & W/f_s&=2.56\,\mathrm{s},\\
- s/f_s&=1.28\,\mathrm{s}, & 1-s/W&=50\%,\\
- Cs&=384, & C(W-s)&=384.
-\end{align}
-Một tensor float32 window chứa $768\times4=3072$ byte, tức $3$ KiB, chưa
-gồm metadata hay allocator overhead. Nhịp tạo window sau warm-up là
-$f_s/s=0.78125$ window/s. Khoảng cách từ timestamp sample đầu đến sample
-cuối là $(W-1)/f_s=2.54$ s; cách gọi window 2.56 s dùng thời lượng $W$ chu
-kỳ lấy mẫu. Hai quy ước thời gian này cần được phân biệt.
+The executed read-only audit is \code{scripts/week2_data_audit.py}. It rebuilt windows from 122 raw sensor files and \code{labels.txt}, checked the reconstructed tensor and manifest against the frozen artifacts, recomputed subject-disjoint split and supervised support, and independently recomputed the train-only normalization. The full machine-readable receipt is \code{output/week2_foundations_20261103/data_audit.json}; row-level adjacent overlap checks are in \code{data_aligned_overlap_pairs.csv}; the historical-support comparison is \code{data_support_comparison.json}; interpreted results are in \code{data_findings.md}. The audit records its environment, timestamp and input hashes. The current model behavior audit is separate and recorded in \code{model_audit.json} and \code{model_findings.md}.
 
-\subsection{Vector hóa không làm mất cấu trúc, nhưng có thể che cấu trúc}
-Chọn channel-major vectorization
-\begin{equation}
- x_{cW+i}=X[c,i],\quad 0\le c<C,\quad0\le i<W.
-\end{equation}
-Phép này là song ánh tuyến tính giữa hai biểu diễn; $\norm{x}_2=\norm{X}_F$.
-Nếu chỉ đổi thứ tự bằng permutation $P$, $P^\top P=I$ nên norm Euclidean
-không đổi. Tuy nhiên, cấu trúc convolution và adjacency phải được chuyển
-cùng thứ tự. Việc viết $x\in\R^{768}$ không khiến 768 tọa độ độc lập về
-thống kê và cũng không biến mọi phương hướng perturbation thành có ý nghĩa
-vật lý.
+Four evidence labels are useful throughout. \emph{Source contract} means behavior read from an identified implementation or locked source-of-truth file. \emph{Verified artifact} means a check was actually run against identified files. \emph{Mathematical consequence} means a result follows under named definitions and assumptions. \emph{Open provenance} means the available files do not resolve a historical or semantic question. A checked checksum proves file identity, not the truth of an undocumented historical interpretation. A successful reconstruction proves the implementation reproduces its own frozen artifact, not that every upstream annotation convention is semantically correct.
 
-\section{Nhãn, preprocessing và tính hợp lệ của phép so sánh}
-\subsection{Nhãn hoạt động và nhãn window}
-Dataset có 12 nhãn, gồm sáu hoạt động cơ bản và sáu chuyển tư thế. Một nhãn
-đoạn $[a,b)$ nghĩa là sample $a,\ldots,b-1$ thuộc hoạt động đó. Đặt
-\begin{equation}
- n_k(X)=\sum_{i=0}^{W-1}\ind\{\ell[ts+i]=k\},\quad
- n_0(X)=W-\sum_{k=1}^{12}n_k(X),
-\end{equation}
-trong đó $0$ là chưa annotation, không phải lớp hoạt động thứ 13.
-Window pure nếu có $k$ sao cho $n_k=W$; unlabeled nếu $n_0=W$;
-majority nếu không pure và $\max_k n_k/W\ge0.6$; các window còn lại
-ambiguous. Với $W=128$, ngưỡng majority là $\lceil0.6\times128\rceil=77$
-sample. Mẫu số là toàn bộ 128 sample, không phải chỉ sample đã annotation.
+The canonical Week 1 contract is \code{00_OVERVIEW/week1/SOURCE_OF_TRUTH.md}. The data-construction path includes \code{scripts/03_build_windows.py}, \code{ecdr/data.py}, \code{ecdr/preprocessing.py}, \code{scripts/ecdr_audit_support.py}, and \code{configs/backbone.yaml}. The pipeline's currently used annotation slice begins at the zero-based raw index used by its window builder. The UCI documentation describes the dataset but does not establish the index-origin choice used by this local builder. An independently executed one-sample offset changes 98 window policy/label assignments; this makes the convention consequential while leaving its intended semantic origin unresolved.
 
-\begin{proposition}[Window pure nằm trong một span]
-Với span half-open $[a,b)$ và lưới start $ms$, số window nằm trọn trong
-span và recording dài $T$ là
-\begin{equation}
- n_{[a,b)}=\max\left(0,
- \left\lfloor\frac{\min(b-W,T-W)}s\right\rfloor
- -\left\lceil\frac{\max(a,0)}s\right\rceil+1\right).
-\end{equation}
-\end{proposition}
-\begin{proof}
-Window nằm trọn khi $a\le ms$ và $ms+W\le b$, đồng thời
-$0\le ms\le T-W$. Lấy ceil ở cận dưới, floor ở cận trên và đếm số nguyên.
-\end{proof}
-Span ngắn hơn $W$ không có pure window. Điều này giải thích bằng cơ chế
-đếm vì sao chuyển tư thế ngắn có thể ít pure support. Tổng theo span chỉ
-đúng không đếm trùng nếu các span đã chuẩn hóa và không chồng lấn; hai span
-cùng nhãn liền nhau có thể cần hợp nhất trước khi đếm pure windows.
+The dataset is distributed by the \href{https://archive.ics.uci.edu/dataset/341/smartphone+based+recognition+of+human+activities+and+postural+transitions}{UCI Machine Learning Repository}. That source describes the study and file families. For exact claims in this report, the checked out source, frozen manifests and audit receipt govern the local pipeline behavior. This distinction prevents a public dataset description from being used to silently fill a missing local provenance link.
 
-\subsection{Phân bố lớp và giới hạn của hồ sơ dữ liệu hiện có}
-\begin{table}[!htbp]\centering\small
-\caption{Pure windows theo lớp trong artifact audit cũ. Đây là bảng mô tả
-local window policy; không phải phân bố population hoặc kết quả CNN 12 lớp.}
-\label{tab:classes}
-\begin{tabularx}{\linewidth}{@{}rYrrrr@{}}\toprule
-ID & Hoạt động & Train & Val & Test & Tổng\\\midrule
-1 & WALKING &965&221&474&1660\\
-2 & WALKING\_UPSTAIRS &814&205&449&1468\\
-3 & WALKING\_DOWNSTAIRS &734&189&394&1317\\
-4 & SITTING &991&261&484&1736\\
-5 & STANDING &1099&286&541&1926\\
-6 & LAYING &1090&288&532&1910\\
-7 & STAND\_TO\_SIT &19&5&15&39\\
-8 & SIT\_TO\_STAND &5&1&6&12\\
-9 & SIT\_TO\_LIE &36&16&25&77\\
-10 & LIE\_TO\_SIT &30&6&18&54\\
-11 & STAND\_TO\_LIE &65&7&40&112\\
-12 & LIE\_TO\_STAND &30&5&15&50\\\midrule
- & Tổng 12 lớp &5878&1490&2993&10361\\
- & Riêng 6 lớp cơ bản &5693&1450&2874&10017\\\bottomrule
-\end{tabularx}
-\end{table}
-Nguồn bảng: \code{data/g2_class_support.json}; các count đã được đếm lại
-từ manifest Parquet trong lượt biên soạn và khớp artifact. Tổng transition pure là
-$10361-10017=344$, chiếm khoảng $3.32\%$ pure corpus. Bảng mô tả phụ thuộc
-convention annotation/window được code cũ sử dụng; báo cáo không khẳng định
-đã xác nhận lại nguồn gốc zero-/one-based của annotation. Hướng lý thuyết
-mới dùng $K$ tổng quát, với $K=12$ cho schema đầy đủ. Kết quả của checkpoint
-6 lớp cũ không được chuyển thành bằng chứng về classifier 12 lớp.
+\section{W2-01: Physical recordings and channel semantics}
+HAPT contains body-worn inertial measurements collected from 30 subjects performing six basic activities and six postural transitions. The local data inventory has 61 recordings, each with one accelerometer file and one gyroscope file, for 122 sensor files in total. The raw sample rate is 50 Hz. Each raw time step supplies six row-aligned values: three acceleration axes and three angular-velocity axes.
 
-\begin{table}[!htbp]\centering
-\caption{Các denominator khác nhau trong snapshot local.}
-\begin{tabularx}{\linewidth}{@{}Yrrr@{}}\toprule
-Tập & Train & Val & Test\\\midrule
-Subjects &17&4&9\\
-Toàn bộ window &9978&2422&5053\\
-Pure 12 lớp &5878&1490&2993\\
-Pure 6 lớp &5693&1450&2874\\\bottomrule
-\end{tabularx}
-\end{table}
-Corpus local có $17453$ windows trên 61 recordings; các policy counts là
-$10361$ pure, $1917$ majority, $1588$ ambiguous, $3587$ unlabeled, tổng đúng
-$17453$. Con số 10929 instances trong metadata UCI thuộc nhánh đặc trưng
-được dựng sẵn, không phải số raw samples hay tổng windows của policy local.
-Các số audit được dẫn để mô tả data, không để chọn architecture lý thuyết.
+For recording $r$, denote its signal by
+\[
+ X^{(r)}=(x^{(r)}_{t,c})_{t=0}^{T_r-1}{}_{,\,c=0}^{5}\in\R^{T_r\times6}.
+\]
+Row alignment is the local data contract; equality of file dimensions and row indices does not independently verify physical sensor-clock synchronization. The first three columns correspond to acceleration axes $x,y,z$ and the final three to gyroscope axes $x,y,z$. Acceleration is stored in multiples of gravitational acceleration $g$; gyroscope angular velocity is stored in radians per second (rad/s). The report preserves the dataset's acceleration unit and does not convert it to metres per second squared. This formula represents the raw temporal array; the model's window tensor uses channel-first convention, so a window has shape $C\times W=6\times128$. A batch has shape $B\times6\times128$, with batch size $B$.
 
-\subsection{Normalization và đơn vị của perturbation}
-Với mean $\mu_c$ và scale $\sigma_c>0$ fit chỉ trên train, đặt
-\begin{equation}
- Z[c,i]=\frac{X[c,i]-\mu_c}{\sigma_c},\qquad
- z=\mathcal P(x)=D_\sigma^{-1}(x-\mu).
- \label{eq:norm}
-\end{equation}
-$D_\sigma$ lặp scale của từng kênh theo thời gian. Mean và scale không được
-fit lại trên từng query nếu certificate tham chiếu preprocessing cố định.
-Nếu dùng filter, resample, clipping hoặc gravity separation, chúng cũng
-phải nằm trong $\mathcal P$; filter có state phải được đưa vào state của
-bài toán, hoặc đầu vào chứng nhận phải là output filter đã cố định.
+Accelerometer and gyroscope components have different stored physical units and distributions. Their numerical magnitudes cannot be pooled into a single physical Euclidean distance without first defining unit conversion, scaling and intended semantics. The Week 2 raw-channel table therefore reports each channel separately. The later network normalization makes each input coordinate dimensionless relative to training-set statistics, but that standardized coordinate system does not retroactively change the physical units of the raw source measurements.
 
-\begin{proposition}[Biến đổi budget và metric]
-Với normalization affine cố định, raw diagonal budget $b^{\rm raw}$ tương
-đương normalized budget $b_i=b_i^{\rm raw}/\sigma_i$. Ngoài ra
-\begin{equation}
- \norm{\mathcal P(x)-\mathcal P(x')}^2_2
- =\sum_i\frac{(x_i-x'_i)^2}{\sigma_i^2}.
-\end{equation}
-\end{proposition}
-\begin{proof}
-Lấy hiệu hai vế của (\ref{eq:norm}), rồi chia từng bất đẳng thức
-$|x_i-x_i'|\le b_i^{\rm raw}$ cho $\sigma_i>0$. Bình phương và cộng cho
-công thức metric.
-\end{proof}
-Raw Euclidean distance cộng bình phương gia tốc và vận tốc góc có nhiều
-đơn vị. Giá trị của nó phụ thuộc scale đo. Normalization định nghĩa một
-metric có trọng số rõ ràng; nó không tự chứng minh metric này phù hợp với
-decision boundary. Tuyên bố ``features nằm trong $[-1,1]$'' của nhánh
-561 features không được mặc nhiên áp cho raw signals hoặc z-score.
+The HAPT distribution also provides a 561-dimensional engineered-feature representation derived from sensor windows. Those feature dimensions are not 561 additional raw files and are not concatenated to the six-channel signal in the frozen model input. The model receives the six raw inertial channels after windowing and channelwise normalization. Counting the engineered files as extra channels would misstate the reference function and its input contract.
 
-\subsection{Split và phụ thuộc giữa window}
-Vì adjacent windows dùng mẫu chung, random split theo window có thể đặt
-cùng raw sample vào train và test. Để đánh giá sang người khác, subject sets
-phải rời nhau; để replay, cần giữ recording/time order và reset state khi
-đổi recording. Snapshot local có 17/4/9 subjects cho train/val/test, khác
-cách mô tả 70/30 train/test trong dataset gốc vì local có thêm validation.
+The sensor channels describe measured motion; the activity labels are annotations aligned to sample indices. A label is not another sensor measurement, and a transition label does not imply that the six numeric channels encode a unique event boundary. Label alignment and sensor-time indexing are separate pieces of provenance. This distinction becomes important where a one-sample change to the alignment convention alters derived labels even though the raw sensor values remain unchanged.
 
-Overlap làm phát sinh phụ thuộc, nhưng không cho phép suy một hệ số tương
-quan bất kỳ hoặc effective sample size cụ thể. Confidence interval và
-resampling sau này cần theo subject/recording hoặc mô hình phụ thuộc được
-biện minh. Không coi hàng nghìn windows là hàng nghìn quan sát i.i.d. chỉ
-vì chúng là các row khác nhau.
+\section{W2-02: Window construction, duration, and overlap}
+The builder takes fixed-length windows of $W=128$ samples with stride $s=64$. For a recording of length $T$ and the convention that only complete windows are emitted, the window count is
+\[
+ n(T;W,s)=\begin{cases}0,&T<W,\\1+\left\lfloor\dfrac{T-W}{s}\right\rfloor,&T\ge W.\end{cases}
+\]
+This follows because the start indices are $0,s,2s,\ldots,qs$ with $qs+W\le T$; the largest admissible integer $q$ is $\lfloor(T-W)/s\rfloor$. Summing this count over the 61 recordings produces 17,453 windows. No window crosses from one recording into another: the start index restarts within each recording, and the unused trailing segment of each recording is not joined to the next file.
 
-\section{Vì sao dữ liệu này liên quan trực tiếp đến ECDR?}
-\subsection{Toán tử dịch và phần tín hiệu mới}
-\begin{definition}[Shift--append]
-Với $1\le s\le W$, đặt $S_sX=[X[:,s:W],0_{C\times s}]$ và
-$J_sU=[0_{C\times(W-s)},U]$. Phép chuyển window là
-\begin{equation}
- \mathcal T_s(X,U)=S_sX+J_sU=[X[:,s:W],U].
- \label{eq:transition}
-\end{equation}
-\end{definition}
-Ký hiệu $t$ đếm \emph{window}, nên window kế tiếp là $X_{t+1}$, không phải
-$X_{t+s}$. New wave $U_{t+1}$ có $s$ sample mới ở cuối recording stream.
+A window is
+\[
+ X_i[c,u]=x^{(r)}_{a_i+u,c},\quad c=0,\ldots,5,\quad u=0,\ldots,127,
+\]
+where $r$ identifies its recording and $a_i$ its start sample within that recording. At 50 samples per second, 128 sample intervals correspond to $128/50=2.56$ seconds under the dataset window-duration convention. The elapsed time from the first sample timestamp to the last is instead $(128-1)/50=2.54$ seconds because 127 inter-sample gaps separate 128 endpoints. Both numbers are correct for their stated interpretation; a duration claim must say whether it counts sample slots or endpoint separation. A stride of 64 samples is $64/50=1.28$ seconds, half the 2.56-second window duration.
 
-\begin{theorem}[Overlap chính xác]\label{th:overlap}
-Nếu hai window liên tiếp lấy từ cùng recording theo (\ref{eq:window}) thì
-\begin{equation}
- X_{t+1}[:,0:W-s]=X_t[:,s:W],\qquad
- X_{t+1}=\mathcal T_s(X_t,U_{t+1}).
-\end{equation}
-\end{theorem}
-\begin{proof}
-Tại vị trí $i<W-s$, window mới chứa sample $s[(t+1)s+i]$, bằng
-$s[ts+(i+s)]$ ở vị trí $i+s$ của window cũ. Các vị trí còn lại chính là
-$s$ sample chưa có trong window trước. Lập luận áp dụng cho từng kênh.
-\end{proof}
-Đây là kết quả cho mọi chuỗi dữ liệu, không cần giả định ``cùng activity''
-hoặc ``tín hiệu mượt''. Khi xuất hiện missing samples, đổi sampling grid
-hoặc đổi recording, quan hệ này phải được kiểm lại theo data contract.
+For adjacent windows of the same recording, $a_{i+1}=a_i+64$. The first window covers indices $a_i$ through $a_i+127$, while the next covers $a_i+64$ through $a_i+191$. Their shared raw indices are $a_i+64$ through $a_i+127$, exactly 64 samples. In tensor-local coordinates this identity is
+\[
+ X_i[c,64+q]=X_{i+1}[c,q],\qquad q=0,\ldots,63.
+\]
+Equivalently, write $X_{i+1}=[X_i[:,64:128],U_{i+1}]$, where $U_{i+1}\in\R^{6\times64}$ is the newly appended raw block. This shift--append identity specifies the raw input only; it does not claim reusable network activations or unchanged logits.
 
-\textbf{Đối chiếu data--math bằng dữ liệu lưu.} Kiểm read-only ngày
-28/10/2026 đọc toàn bộ tensor \code{windows.npz}: shape
-$(17453,6,128)$, dtype float32, $13403904$ scalar đều finite.
-Trên $17392$ cặp có cùng recording và \code{win_idx} liên tiếp, mọi bước
-start đều tăng 64. So sánh trực tiếp $6\times64=384$ tọa độ mỗi cặp cho
-$17392\times384=6678528$ phép so; tất cả bằng nhau, max absolute difference
-bằng 0. Check này xác nhận bridge chỉ số và overlap của corpus lưu, không
-chứng minh ý nghĩa vật lý, tính đúng của annotation, invariant prediction
-hoặc một certificate neural. Kết quả và source hashes ở
-\code{me/calculations.json}.
+The audit checked every eligible pair: 17,392 aligned adjacent pairs, all 64-by-6 shared values exactly equal in raw storage and, after applying the frozen normalization, exactly equal in normalized storage. This is a deterministic consequence of cutting overlapping windows from the same recording and applying the same fixed coordinatewise transform.
 
-\begin{figure}[htbp]\centering
-\begin{tikzpicture}[x=0.085cm,y=0.8cm,font=\small]
-\fill[gray!22] (0,1) rectangle (64,1.8);
-\fill[teal!28] (64,1) rectangle (128,1.8);
-\draw (0,1) rectangle (128,1.8);
-\draw (64,1)--(64,1.8);
-\node at (32,1.4){64 mẫu bị loại};
-\node at (96,1.4){64 mẫu overlap};
-\fill[teal!28] (0,-0.3) rectangle (64,0.5);
-\fill[orange!25] (64,-0.3) rectangle (128,0.5);
-\draw (0,-0.3) rectangle (128,0.5);
-\draw (64,-0.3)--(64,0.5);
-\node at (32,0.1){64 mẫu overlap};
-\node at (96,0.1){64 mẫu mới};
-\draw[-{Stealth},thick,teal] (96,0.95)--(32,0.55);
-\node[anchor=east] at (-2,1.4){$X_t$};
-\node[anchor=east] at (-2,0.1){$X_{t+1}$};
-\end{tikzpicture}
-\caption{Overlap là bằng nhau sau dịch chỉ số; mỗi ô biểu diễn cả sáu
-kênh. Bằng nhau theo alignment khác với cùng tọa độ trong vector 768 chiều.}
-\end{figure}
+The incoming portion of a stride-aligned next window has 64 samples per channel, hence $64\times6=384$ new scalar sensor values. In the frozen float32 tensor, this is $384\times4=1,536$ bytes, or 1.5 KiB. In float64 it is $384\times8=3,072$ bytes, or 3 KiB; the representation must accompany any memory estimate. The prior 64-sample overlap need not be reacquired if the system owns a valid raw ring buffer, but the complete six-channel float32 window contains 768 values (3,072 bytes). This byte count describes a tensor payload only; it excludes metadata, allocator alignment, copies and other process memory. The model forward may process the complete window even if the acquisition layer reuses prior samples.
 
-\subsection{Overlap không suy ra khoảng cách nhỏ}
-Đặt $P_sX=X[:,s:W]$, $Q_sX'=X'[:,0:W-s]$. Định lý trên cho
-$\norm{Q_sX_{t+1}-P_sX_t}_F=0$. Ngược lại
-\begin{equation}
- X_{t+1}-X_t=(S_s-I)X_t+J_sU_{t+1},
- \label{eq:delta}
-\end{equation}
-nên delta cùng tọa độ có thể lớn trên nhiều hoặc tất cả tọa độ.
+Exact coordinate overlap does not mean the two windows are numerically close at equal local coordinates. For $u=0,\ldots,127$, local coordinate $u$ in $X_i$ represents raw time $a_i+u$, while coordinate $u$ in $X_{i+1}$ represents $a_i+64+u$. Equal-local-coordinate comparison therefore contrasts different physical times. For a simple scalar ramp $x_t=t$, these two windows can share 64 exact physical samples at offset coordinates, yet $X_i[u]-X_{i+1}[u]=-64$ wherever both values exist at equal local index. The window tensors are not close in that coordinate comparison even though overlap identity holds exactly.
 
-\begin{example}[Khoảng cách lớn dù overlap đúng]
-Với một kênh, $W=4$, $s=2$, lấy $X=(0,0,M,M)$ và
-$U=(0,0)$. Khi đó $X'=(M,M,0,0)$ giữ đúng hai mẫu overlap nhưng
-$\norm{X'-X}_2=2|M|$, không bị chặn khi $M$ tăng. Cả overlap 50\% và
-aligned distance bằng 0 đều không suy ra ordinary distance nhỏ.
-\end{example}
-Với $|X_i|,|U_i|\le B$ thì có cận thô
-$\norm{X'-X}_2\le2B\sqrt{CW}$; đây là cận từ biên độ, không phải từ
-overlap. Cận không đảm bảo giữ decision nếu margin quá nhỏ.
+The audit's descriptive mean absolute difference at equal local coordinates was computed independently by channel. In raw stored units, values were 0.15258, 0.11625 and 0.10393 for accelerometer $x,y,z$, and 0.43151, 0.34394 and 0.25361 for gyroscope $x,y,z$. In normalized dimensionless coordinates the corresponding values were 0.37602, 0.28552, 0.29283 and 0.96399, 0.81642, 0.85550. These are temporal-shift comparisons over aligned pairs, not distances between the two overlapping physical regions. A pooled six-channel norm is intentionally omitted because acceleration and angular velocity have distinct physical units before standardization, and because a single norm would encode an additional scaling choice.
 
-\subsection{Từ data identity đến miền cần chứng nhận}
-Giữ $X_t$ đã biết và cho new wave biến thiên trong $\Uset_e$. Miền next
-window tự nhiên là
-\begin{equation}
- \Sset^{\rm wave}_e(X_t)=
- \{\mathcal T_s(X_t,U):U\in\Uset_e\}.
- \label{eq:wave-domain}
-\end{equation}
-Nếu $\Uset_e$ là box có nội điểm trong $\R^{C\times s}$ thì tập này có
-affine dimension $Cs=384$, thay vì 768. Điều đó giảm số biến tự do của
-\emph{miền}, không tự giảm độ phức tạp của mọi verifier hoặc bảo đảm bound
-chặt. Điểm center tự nhiên là $[X_t[:,s:W],\bar U]$, có thể xa $X_t$.
-Chứng nhận target class vẫn có thể là $h(X_t)$ dù $X_t$ không thuộc miền mới.
+The full audit inventory also records per-channel medians and 95th percentiles for this equal-local-coordinate statistic, as well as each pair's values, in the CSV and JSON. These are descriptive features of this recording set and windowing rule. They do not by themselves define an ECDR candidate region or prove a tolerance that preserves decisions.
 
-Nếu bổ sung overlap noise $E$ thì phải mở rộng miền thành
-$\mathcal T_s(X_t,U)+E$, với constraint của $E$ công bố rõ. Lợi ích 384
-biến chỉ giữ nguyên khi overlap thật sự cố định; một full-dimensional
-noise box có thể đưa affine dimension trở lại 768.
+\section{W2-03: Label policy and annotation alignment}
+Let $y^{(r)}_t$ denote the annotation class at raw sample $t$ when one is present. For a window, let $n_k$ be the number of its 128 raw annotation indices assigned to class $k$, for $k\in\{1,\ldots,12\}$. Let $n_0$ count unannotated or excluded samples, and let $n_{max}=\max_{k=1}^{12}n_k$. The current window policy distinguishes four cases.
+\begin{description}
+\item[Pure.] Exactly one activity class covers the full window: $n_k=128$ for one $k$. It receives that class label and policy tag \code{pure}.
+\item[Majority.] The dominant annotated class covers at least 60 percent of the full window: $n_{max}/128\ge0.6$. Because $0.6\times128=76.8$, an integer count must have at least 77 samples. The policy is \code{majority}, with the winning class ID.
+\item[Ambiguous.] The window contains annotation but no class meets the majority threshold; its policy tag is \code{ambiguous} and it is excluded from supervised K=12 training/evaluation.
+\item[Unlabeled.] No eligible activity annotation is available for the window under the builder's convention. The row is retained in the full stream with the \code{unlabeled} policy and does not enter supervised metrics.
+\end{description}
+The exact implementation controls tie behavior. A dominant-count rule that returns one class under a tie is not equivalent to a policy that rejects ties. For the accepted-majority set, any tie at the maximum would still need to satisfy the 77-of-128 threshold; two tied classes cannot each have 77 samples, so an accepted tie is arithmetically impossible. However, details of how the builder stores a dominant label for ambiguous rows do not make those rows supervised. Their inclusion is governed by the explicit policy tag as well as label value.
 
-\begin{table}[!htbp]\centering
-\caption{Data property dẫn đến nghĩa vụ toán học cụ thể.}
-\begin{tabularx}{\linewidth}{@{}YYY@{}}\toprule
-Data property & Suy ra được & Còn phải chứng minh\\\midrule
-Overlap cùng recording & Đẳng thức sau căn chỉnh & Decision invariance\\
-Chỉ $Cs$ giá trị mới & Wave-domain ít biến tự do & Bound/cost tốt hơn\\
-Chu kỳ chuyển động & Giả thuyết delta có cấu trúc & Miền bao phủ query và sound\\
-Cùng activity label & Quan hệ annotation & CNN agreement trên từng query\\
-Chuỗi liên tục & Có thể replay theo time order & Anchor lifecycle an toàn\\
-Nhiều đơn vị/kênh & Cần quy ước scale & Metric có ích cho certificate\\\bottomrule
-\end{tabularx}
-\end{table}
+The label uses a fixed denominator of 128 raw window positions for the 60 percent threshold. It is not a percentage of only annotated positions. For example, a window with 77 samples of class 4 and 51 samples from another annotation satisfies the majority rule for class 4. A window with 76 samples of class 4 and 52 samples from other classes does not; even though class 4 is dominant, it falls below the integer threshold and remains ambiguous. If unannotated positions occur, the full-window denominator remains the governing contract where implemented; one must not silently change to $n_{max}/(128-n_0)$.
 
-\subsection{Marginal coverage khác joint coverage trong không gian nhiều chiều}
-Một budget lấy quantile 90\% ở mỗi tọa độ không làm whole-window coverage
-tự bằng 90\%. Đặt $E_i=\{|\Delta_i|\le b_i\}$. Box membership là
-$\bigcap_{i=1}^dE_i$. Nếu \emph{biết} $\Pr(E_i^c)\le\alpha_i$ dưới một
-phân bố được khai báo thì union bound cho
-\begin{equation}
- \Pr\left(\bigcap_iE_i\right)\ge
- \max\left(0,1-\sum_i\alpha_i\right).
-\end{equation}
-\begin{proof}
-Phần bù của giao là hợp của các $E_i^c$; áp dụng
-$\Pr(\bigcup_iE_i^c)\le\sum_i\Pr(E_i^c)$ rồi lấy phần bù.
-\end{proof}
-Nếu thêm giả thiết independence và $\Pr(E_i)=q$ giống nhau thì joint
-coverage là $q^d$. Chẳng hạn, $0.9^{768}\approx7.2152\times10^{-36}$,
-$0.99^{768}\approx0.00044446$, $0.999^{768}\approx0.4638$.
-HAPT coordinates không được giả định độc lập; đây là ví dụ chỉ ra nguy cơ
-suy từ marginal sang joint, không phải ước lượng coverage HAPT. Empirical
-quantile trên train cũng không chứng minh population inequality
-$\Pr(E_i^c)\le\alpha_i$. Temporal correlation có thể làm joint coverage
-khác hẳn ví dụ independence, nên cấu trúc miền đáng nghiên cứu nhưng phải
-được chứng nhận theo decision margin riêng.
+The current frozen manifest has 10 fields per row and 17,453 rows. Reconstruction compared all ten fields, not only labels: recording and subject identity, window index, start/end coordinates, policy and class summary fields are part of the row-level trace. Split membership is not a manifest column; it is reconstructed and checked separately by joining on recording and window identity. In addition, the reconstructed raw tensor matched the frozen float32 tensor value for value. Passing a total count check alone would not detect a wrong row order, wrong label, changed subject assignment, or swapped start index; the full-row equality and split-join checks address these distinct failure modes.
 
-\section{Reference CNN như một đối tượng lý thuyết}
-\subsection{Hai cấp mô hình cần tách rõ}
-\textbf{Cấp tổng quát} giữ $F:\R^{768}\to\R^K$ deterministic và frozen.
-Các định lý margin, Lipschitz, domain và lifecycle không đòi classifier là
-GAP. Với schema HAPT đầy đủ, xét $K=12$, nhưng không có accuracy/latency mới
-được gán cho classifier 12 lớp.
+Annotation indexing remains a provenance limitation. The builder treats each labels-file start/end range as inclusive when assigning its annotation across raw samples, then slices those labels with the same zero-based positions used to form each sensor window. That convention yields the current manifest. A diagnostic one-sample shift in label indexing changes 98 window policy or label assignments. This proves the derived artifact is sensitive to a one-sample convention. It does not prove that the shifted result is more correct, and the public README does not establish the original annotation index origin clearly enough to resolve the choice. The proper status is “current implementation reproduced; upstream semantic index origin OPEN.”
 
-\textbf{Cấp chuyên biệt} để suy ra exact shift identities là chuỗi
-Conv1D valid, stride 1, dilation 1, ReLU, không pooling trung gian, sau đó
-GAP và affine head. Đây là giả thiết phân tích mới, không phải mô tả
-checkpoint cũ. Chọn ví dụ $6\to32\to64\to64$, kernels $5,3,3$, $K=12$.
+\section{W2-04: Splits, denominators, and class support}
+Subjects, not individual windows, define the frozen split boundary. The 30 subject IDs are divided into 17 train, 4 validation and 9 test subjects. Recordings map wholly to one split, and the subject groups are pairwise disjoint. This reduces direct participant leakage between those three partitions. It does not make windows within a partition independent: adjacent windows share half their raw samples, multiple recordings can belong to one person, and subjects may share population-level characteristics.
 
-\begin{table}[!htbp]\centering\small
-\caption{CNN valid--GAP minh họa cho lý thuyết, có bias, không BatchNorm.
-Một MAC là một phép nhân--cộng tích lũy; không phải phép đo runtime.}
-\label{tab:cnn}
-\begin{tabularx}{\linewidth}{@{}Yrrr@{}}\toprule
-Layer & Output $C\times T$ & Parameters & MAC/window\\\midrule
-Input & $6\times128$ &0&0\\
-Conv1 valid, $k=5$ + ReLU & $32\times124$ &992&119040\\
-Conv2 valid, $k=3$ + ReLU & $64\times122$ &6208&749568\\
-Conv3 valid, $k=3$ + ReLU & $64\times120$ &12352&1474560\\
-GAP & $64\times1$ &0&--\\
-Affine $64\to12$ & $12$ &780&768\\\midrule
-Tổng Conv + affine & &20332&2343936\\\bottomrule
-\end{tabularx}
-\end{table}
-Với layer $\ell$, $T_\ell=T_{\ell-1}-k_\ell+1$ và
-\begin{equation}
- P_\ell=C_\ell(C_{\ell-1}k_\ell+1),\qquad
- M_\ell=T_\ell C_\ell C_{\ell-1}k_\ell.
-\end{equation}
-Head có $K(d+1)$ parameters và $Kd$ MAC. Quy ước xấp xỉ $2$ FLOP/MAC cho
-phần Conv/head cho $4687872$ FLOP, chưa gồm bias, ReLU, GAP và memory traffic.
-GAP có $64(120-1)=7616$ phép cộng và 64 phép scale; ReLU so sánh trên
-$3968+7808+7680=19456$ activation. Số parameters không phụ thuộc batch.
+There are two denominators because the sequential stream keeps every window while supervised classification uses only pure and accepted-majority rows with one of the 12 class labels. The split counts reconcile as follows.
+\begin{center}\begin{tabular}{@{}lrrrr@{}}\toprule
+Split & Full stream & Supervised & Ambiguous excluded & Unlabeled excluded\\\midrule
+Train & 9,978 & 6,955 & 904 & 2,119\\
+Validation & 2,422 & 1,751 & 205 & 466\\
+Test & 5,053 & 3,572 & 479 & 1,002\\\midrule
+Total & 17,453 & 12,278 & 1,588 & 3,587\\\bottomrule
+\end{tabular}\end{center}
+Each row satisfies full stream = supervised + ambiguous + unlabeled. Across the entire tensor, policy totals are 10,361 pure, 1,917 majority, 1,588 ambiguous and 3,587 unlabeled, summing to 17,453. Therefore the supervised count is pure plus majority: $10,361+1,917=12,278$. Unlabeled and ambiguous rows remain part of the sequential stream, but do not supply a single accepted target for supervised analysis.
 
-\subsection{Vì sao không thể suy latency từ MAC hoặc overlap?}
-Runtime còn phụ thuộc kernel implementation, threads, dtype, memory access,
-batch size và overhead. Chỉ biết 50\% raw overlap không cho phép chia đôi
-MAC hay latency: feature receptive field, padding và head có thể khác.
-Week 3 sẽ chỉ ra, trong CNN ví dụ, RF cuối là 9 và có 56/120 feature
-positions overlap sau dịch 64. Đó là $46.67\%$, khác raw overlap 50\%.
+The selected model's train/validation/test class supports are:
+\begin{center}\small\begin{tabular}{@{}rP{4.6cm}rrr@{}}\toprule ID & Class & Train & Validation & Test\\\midrule
+1 & WALKING & 1,077 & 246 & 531\\
+2 & WALKING\_UPSTAIRS & 973 & 247 & 537\\
+3 & WALKING\_DOWNSTAIRS & 894 & 231 & 492\\
+4 & SITTING & 1,103 & 289 & 546\\
+5 & STANDING & 1,206 & 312 & 597\\
+6 & LAYING & 1,188 & 316 & 586\\
+7 & STAND\_TO\_SIT & 79 & 19 & 45\\
+8 & SIT\_TO\_STAND & 53 & 13 & 32\\
+9 & SIT\_TO\_LIE & 90 & 26 & 51\\
+10 & LIE\_TO\_SIT & 89 & 15 & 46\\
+11 & STAND\_TO\_LIE & 119 & 18 & 68\\
+12 & LIE\_TO\_STAND & 84 & 19 & 41\\\bottomrule\end{tabular}\end{center}
+Test support for the six basic activities ranges from 492 to 597, while transition support ranges from 32 to 68. The complete three-split support is retained in the machine-readable audit. An aggregate of 17,453 windows can look large, but it does not remove the sparse evidence for some transitions. The Week 1 authority records the transition-support quality gate as HOLD; this Week 2 count audit does not change that decision.
 
-Nếu dùng model khác, phải suy lại shape, RF và head dependency. Với
-Flatten--MLP, cùng feature ở vị trí khác có thể mang trọng số khác nên công
-thức GAP không áp trực tiếp. Với zero-padding, biên mới và biên cũ khác nhau;
-với pooling/stride, cần alignment; với BN ở training, output phụ thuộc batch.
-Đây là lý do ràng buộc kiến trúc phải xuất hiện trước chứng minh.
+\subsection{Historical majority-count discrepancy}
+The current source function \code{ecdr.data.audit_12_class_support}, reached through \code{scripts/ecdr_audit_support.py}, selects rows whose policy is in $\{\texttt{pure},\texttt{majority}\}$ and whose class ID matches the requested class. On the frozen manifest it yields supervised totals 6,955, 1,751 and 3,572. The pure-only totals are 5,878, 1,490 and 2,993. The historical file \code{data/ecdr_12_class_support.json} records values called majority of 7,859, 1,956 and 4,051.
 
-\subsection{Các đại lượng cần đo khi chọn reference sau này}
-Cho confusion matrix $C_{ij}$ với true class $i$, predicted class $j$,
-\begin{align}
- \mathrm{Accuracy}&=\frac{\sum_i C_{ii}}{\sum_{ij}C_{ij}},\\
- \mathrm{Precision}_k&=\frac{C_{kk}}{\sum_i C_{ik}},\qquad
- \mathrm{Recall}_k=\frac{C_{kk}}{\sum_j C_{kj}},\\
- F1_k&=\frac{2C_{kk}}{2C_{kk}+\mathrm{FP}_k+\mathrm{FN}_k},\qquad
- \mathrm{MacroF1}=\frac1K\sum_kF1_k.
-\end{align}
-Quy ước denominator 0 phải ghi rõ. Ground-truth accuracy khác
-$\Pr[\widehat h_{\rm ECDR}(X)=h(X)]$. Prediction agreement có thể cao trong
-khi cả hai sai ground truth. Latency phải ghi scope và hardware; số
-$251.1\,\mu$s của forward 6 lớp cũ chỉ xuất hiện trong Week 3 như một phép
-thay số sensitivity có nguồn, không là baseline đo của CNN lý thuyết mới.
+Those historical values exceed the current supervised totals by 904, 205 and 479. Those differences equal the current ambiguous counts in the corresponding splits. This numerical correspondence is an observed relation between two snapshots; it is not sufficient evidence that the historical generator included ambiguous rows, used a particular predicate, or intended a different label policy. The historical JSON has no run provenance or implementation record sufficient to decide how it was produced. It cannot be relabeled as current execution evidence, and its blocker field/name does not prove model acceptance. We preserve the mismatch as OPEN historical provenance rather than invent a cause. The exact current predicate and comparison are serialized in \code{data_support_comparison.json}.
 
+\section{W2-05: Train-only normalization and coordinate systems}
+For supervised training windows $\mathcal I_{tr}$, the frozen pipeline computes per-channel statistics over the window and time axes. With $N_{tr}=6,955$ supervised windows, define
+\[
+ \mu_c=\frac{1}{N_{tr}W}\sum_{i\in\mathcal I_{tr}}\sum_{t=0}^{127}X_i[c,t],\qquad
+ \sigma_c=\sqrt{\frac{1}{N_{tr}W}\sum_{i\in\mathcal I_{tr}}\sum_{t=0}^{127}(X_i[c,t]-\mu_c)^2}.
+\]
+The audit used float64 accumulation, stored statistics as float32, and applies the configured floor $\sigma_c^*=\max(\sigma_c,10^{-6})$. The normalized value is
+\[
+ Z_i[c,t]=\frac{X_i[c,t]-\mu_c}{\sigma_c^*},
+\]
+cast to float32 for the model input. Validation and test use these same training-derived numbers. They do not estimate their own means or standard deviations.
 
-\section*{Nguồn và cách tái kiểm}
-Nội dung theo bản chuẩn hóa Week 1--3 do người nghiên cứu cung cấp và các
-nguồn gốc trong bibliography. Các số data mô tả snapshot local theo policy
-đã ghi; mô hình lý thuyết không phải checkpoint triển khai cũ. Báo cáo tổng
-hợp trong cùng thư mục có đầy đủ bảng ký hiệu, provenance và các tuần còn
-lại. Phép tính số học được lưu trong \code{recompute.py} và
-\code{calculations.json}. Không có training hoặc benchmark ECDR mới.
+\begin{center}\begin{tabular}{@{}lrr@{}}\toprule Channel & Training mean & Training standard deviation\\\midrule
+Acceleration X & 0.8043609262 & 0.4057796597\\
+Acceleration Y & 0.0411366001 & 0.4071546793\\
+Acceleration Z & 0.0817700475 & 0.3549118936\\
+Gyroscope X & 0.0091355676 & 0.4476351142\\
+Gyroscope Y & $-0.0043975562$ & 0.4212706089\\
+Gyroscope Z & $-0.0071832035$ & 0.2964415252\\\bottomrule
+\end{tabular}\end{center}
+All six recomputed statistics match the saved \code{normalization.json} and selected-checkpoint metadata exactly. The preprocessing identity is \code{aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e}. The audit confirms the identity and arrays; it does not claim the statistics are a universal physical calibration.
 
-\begingroup\small
-\begin{thebibliography}{99}
-\bibitem{hapt} J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra.
-\emph{Smartphone-Based Recognition of Human Activities and Postural
-Transitions}. UCI Machine Learning Repository, 2015.
-DOI: \href{https://doi.org/10.24432/C54G7M}{10.24432/C54G7M}.
-Metadata và README local được đối chiếu ngày 28/10/2026.
+The train statistics are window-weighted, not unique-raw-time-weighted. If a raw sample occurs in $m_t$ overlapping supervised training windows, it contributes $m_t$ times to the sum above. For the 50-percent-overlap scheme, many interior samples occur in two adjacent windows, while boundary or excluded-window samples can occur zero or one time. This weighting follows the actual training loader and is part of the frozen preprocessing contract. Deduplicating shared raw indices would yield a different mean and variance and therefore a different model function.
 
-\bibitem{lmt} Y. Tsuzuku, I. Sato, M. Sugiyama.
-\emph{Lipschitz-Margin Training: Scalable Certification of Perturbation
-Invariance for Deep Neural Networks}. NeurIPS, 2018.
-\url{https://arxiv.org/abs/1802.04034}.
+Because normalization is a fixed shared affine map, exact shared raw overlap remains exact after normalization:
+\[
+ X_i[c,64+q]=X_{i+1}[c,q]\;\Longrightarrow\;
+ Z_i[c,64+q]=Z_{i+1}[c,q].
+\]
+This implication requires both windows to use the same channel constants and same arithmetic. It holds for the frozen transform audited here. It would not generally hold if each window independently estimated its own mean and scale.
 
-\bibitem{ibp} S. Gowal et al.
-\emph{On the Effectiveness of Interval Bound Propagation for Training
-Verifiably Robust Models}. arXiv:1810.12715, 2018.
-\url{https://arxiv.org/abs/1810.12715}.
+Normalization changes coordinate magnitudes but does not turn an arbitrary distance into a physically meaningful one. If a one-channel raw perturbation is $\delta x_c$, its normalized magnitude is $\delta z_c=\delta x_c/\sigma_c^*$. For example, using the stored acceleration-X standard deviation, a raw-coordinate change of 0.4057796597 stored units maps to approximately 1 normalized unit. The analogous one-standard-deviation raw change differs for every channel. This example illustrates units; it does not define an allowed perturbation radius or imply that such a change is behaviorally harmless.
 
-\bibitem{crown} H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel.
-\emph{Efficient Neural Network Robustness Certification with General
-Activation Functions}. NeurIPS, 2018.
-\url{https://arxiv.org/abs/1811.00866}.
+A separate function in \code{ecdr/preprocessing.py} accumulates float64, returns a float64 transform, defaults to $\sigma_{min}=10^{-5}$, and hashes a JSON contract (including channel names/dimensions) to a truncated 16-character identifier. The frozen Week 1 model path uses float32 stored statistics, floor $10^{-6}$, float32 normalized tensors, and a byte-based full SHA-256 preprocessing ID. Even if the floor is inactive for all six observed channel scales, the numeric/data-type and identity contracts differ. Equal values on this particular dataset would not make the two functions interchangeable for every input. Their IDs must not be compared as if generated from the same serialization rule, and a model checkpoint bound to one preprocessing identity cannot silently be paired with the other.
 
-\bibitem{lirpa} K. Xu et al.
-\emph{Automatic Perturbation Analysis for Scalable Certified Robustness
-and Beyond}. NeurIPS, 2020.
-\url{https://arxiv.org/abs/2002.12920}.
+\section{W2-06: Data-quality evidence and dependence}
+This unit examines what the windowing and annotation records permit us to say about data quality. It does not infer prediction quality. The adjacent-window audit distinguishes physical overlap identity from equal-local-coordinate change. The exact 64-sample shared region is identical in every eligible pair; comparing the same local coordinate in successive windows instead compares measurements 64 samples apart in the recording. Its per-channel mean absolute difference is reported in W2-02. Because acceleration and angular velocity have different raw units, those channelwise results remain separate and are not pooled into a physical norm.
 
-\bibitem{crownibp} H. Zhang et al.
-\emph{Towards Stable and Efficient Training of Verifiably Robust Neural
-Networks}. NeurIPS, 2019.
-\url{https://arxiv.org/abs/1906.06316}.
+The audit also computes within-recording, channelwise raw-sample correlations at lags 64 and 128. Mean correlations are 0.43783 and 0.36346, respectively. At lag 64, acceleration X/Y/Z are 0.72095/0.82400/0.77693, while gyroscope X/Y/Z are 0.14840/0.06063/0.09604. These are descriptive statistics over the audited recordings. They are not an independence test, a population model, or uncertainty intervals. In particular, the 50-percent shared raw input between adjacent windows is direct evidence that window rows cannot be treated as independent samples.
 
-\bibitem{betacrown} S. Wang et al.
-\emph{Beta-CROWN: Efficient Bound Propagation with Per-neuron Split
-Constraints for Neural Network Robustness Verification}. NeurIPS, 2021.
-\url{https://papers.neurips.cc/paper_files/paper/2021/hash/fac7fead96dafceaf80c1daffeae82a4-Abstract.html}.
+There are 30 subjects partitioned into non-overlapping train, validation, and test groups of 17, 4, and 9. Keeping subjects disjoint prevents the same identified participant from appearing in multiple partitions, but it does not establish that participants are independent draws from a specified target population. Recordings within a person and adjacent windows within a recording retain temporal and subject structure. For this reason, the study reports both stream and supervised denominators and descriptive class counts; it does not turn window totals into independent participant counts or use them to claim population confidence.
 
-\bibitem{montufar} G. Mont\'ufar, R. Pascanu, K. Cho, Y. Bengio.
-\emph{On the Number of Linear Regions of Deep Neural Networks}.
-NeurIPS, 2014.
-\url{https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a92d96e74617c3d2a-Abstract.html}.
+The basic-activity classes have 492--597 supervised test windows each, whereas transition classes have 32--68. This support imbalance is directly visible in the manifest-derived counts and is consistent with the existing Week 1 G2 quality status of HOLD. The present audit documents that status and its count basis; it does not revise the gate or attribute the imbalance to a cause. Further claims about annotation quality would require an authorized reference or adjudication procedure that is not present in these artifacts.
 
-\bibitem{streaminnc} C. Kechris, J. Dan, J. Miranda, D. Atienza.
-\emph{Don't Think It Twice: Exploit Shift Invariance for Efficient Online
-Streaming Inference of CNNs}. arXiv:2408.03223, 2024.
-\url{https://arxiv.org/abs/2408.03223}.
+\section{W2-07: Dataset provenance and reproducibility}
+The audit establishes exact local reconstruction: 122 sensor files plus the label file reproduce all values in the frozen window tensor and all ten manifest fields. This is a strong reproducibility result for the identified local builder and frozen artifacts. It does not independently validate the upstream meaning of every sample coordinate or label. The builder uses its current integer-index convention; shifting the annotation coordinates by one sample changes 98 window policy or label assignments. The audit demonstrates sensitivity to the convention, while the semantic origin intended by the upstream annotation source remains OPEN.
 
-\bibitem{tiny} Z. Huang, E. Baccelli.
-\emph{TinyD\'ej\`aVu: Smaller Memory Footprint \& Faster Inference on Sensor
-Data Streams with Always-On Microcontrollers}. arXiv:2512.09786, 2025.
-\url{https://arxiv.org/abs/2512.09786}. Tên theo metadata arXiv được tra
-28/10/2026; không nhập số benchmark của paper vào kết quả HAPT.
+A second unresolved record is the historical support snapshot \code{data/ecdr_12_class_support.json}. Its recorded majority totals are 7,859/1,956/4,051, whereas the current source predicate, applied to the frozen manifest, yields pure-plus-majority supervised totals 6,955/1,751/3,572. The excess is numerically equal to ambiguous counts 904/205/479 for the respective partitions. That relation is observed, but available provenance does not establish the historical generation rule or explain why the values differ. This study retains the discrepancy as OPEN instead of assigning an unverified cause.
 
-\bibitem{lipcache} Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar.
-\emph{LipCache: A Local Inference Proxy with Certified Caching for Edge
-Image Classification Service}. arXiv:2608.13144, 2026.
-\url{https://arxiv.org/abs/2608.13144}. Đối chiếu PDF v1 lưu local,
-đặc biệt phạm vi GuardNet/MainNet tại phần certification và system semantics.
-\end{thebibliography}
+For reproducibility, the audit source is \code{scripts/week2_data_audit.py}; its machine-readable receipt is \code{output/week2_foundations_20261103/data_audit.json}. Per-pair aligned overlap evidence is in \code{data_aligned_overlap_pairs.csv}; the support snapshot comparison is in \code{data_support_comparison.json}. The run recorded source and input hashes, timestamp, and environment. The source revision identified for this study is \code{633dc05a80511af4d4580cd985edd494cdc373ff} on \code{main}; that identifies the frozen baseline used by the audit, while this report edit is a later documentation change. Re-running the read-only audit can establish reproducibility against files present at rerun time, but cannot retroactively resolve missing upstream provenance.
 
-\endgroup
+\section{W2-08: Final data contract and handoff}
+The following contract is the data-side handoff to the companion CNN study. It records shape, ordering, units, identity, label eligibility, normalization, and stream semantics. The entry marked specified is a requirement for an integration boundary; it is not evidence that a runtime implementation already enforces it.
+
+{\small\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}P{2.65cm}P{6.2cm}P{6.1cm}@{}}\toprule
+Field & Frozen data contract & Evidence state / handoff rule\\\midrule\endhead
+Tensor shape and type & Stored raw windows $X$ and normalized windows $Z=N(X)$ each use float32 with shape $[6,128]$; batches are $[B,6,128]$. The CNN consumes $Z$, after applying the frozen transform exactly once. Values must be finite. & Shape, dtype, finiteness, and exact reconstruction VERIFIED for the audited frozen artifact. Reject malformed shape or nonfinite values at the future boundary; enforcement NOT IMPLEMENTED here.\\
+Channel order & \code{acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z}. & Source order VERIFIED. Preserve order when forming a model tensor.\\
+Rate and physical units & 50 Hz; acceleration is stored in multiples of $g$; gyroscope angular velocity in rad/s. & Local source contract VERIFIED; no unit conversion is performed in the audited path.\\
+Window rule & Complete windows of 128 samples, starts every 64 samples, independently within each recording; no cross-recording windows. & Source rule and artifact reconstruction VERIFIED. Window duration is 2.56 s by sample slots, endpoint separation 2.54 s; stride duration is 1.28 s.\\
+Recording identity & Every window remains associated with its recording and subject identifiers and split assignment. & Manifest/split reconstruction VERIFIED. A future streaming integration must reset window accumulation at recording boundary or explicit stream reset; runtime reset handling NOT IMPLEMENTED here.\\
+Label policy & Class IDs 1--12 in the locked order; pure windows and accepted majority windows with at least 77 of 128 samples assigned to the dominant class are supervised. Ambiguous and unlabeled rows remain in the stream but have no single accepted target. & Current local policy VERIFIED. Upstream annotation index origin and historical support provenance remain OPEN.\\
+Normalization & Statistics are computed only from 6,955 supervised training windows over window and time axes; float64 accumulation, float32 stored values, standard-deviation floor $10^{-6}$, then float32 output. Preprocessing ID: \code{aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e}. & Recomputed means, standard deviations, and ID VERIFIED against saved normalization and selected checkpoint metadata. Validation/test-specific fitting is excluded.\\
+Denominators & Full stream counts are train/validation/test 9,978/2,422/5,053. Supervised counts are 6,955/1,751/3,572; ambiguous and unlabeled counts remain separately recorded. & Counts VERIFIED against the manifest and current source predicate. Preserve both stream and supervised denominators in downstream analysis.\\
+Provenance and quality & Bind downstream artifacts to source revision, input hashes, builder, manifest, normalization ID, and audit receipt. Preserve the G2 transition-support HOLD and the open annotation/support provenance questions. & Existing receipts VERIFIED as file evidence. Formal annotation validity, representative-population status, and user acceptance are NOT ESTABLISHED.\\
+\bottomrule\end{longtable}}
+
+This handoff names recording-boundary reset and malformed-input rejection as required stream semantics, because windows must not cross recordings and downstream consumers need a well-formed tensor. Those behaviors are specification only in this document; this audit does not exercise or claim an implemented runtime reset, mask, fallback, or error path. Any mask supplied by an integration layer must retain its denominator and policy meaning rather than silently changing support counts. The data contract also does not define caching or certificate lifecycle; those are responsibilities of the separate system/model work.
+
+\section{Conclusions and evidence status}
+The study objective was to establish what data enter the frozen reference and whether the local source-to-artifact path can be reproduced. The reconstruction audit verifies the physical six-channel stream, 128/64 window coordinates, current label-policy behavior, subject-disjoint split counts, supervised support, and fixed train-only normalization. It also verifies that aligned shared samples match exactly across all 17,392 eligible adjacent pairs. The data tensor is therefore specified with a concrete shape, order, rate, units, recording identity, target eligibility, and preprocessing identity for handoff.
+
+The evidence does not settle whether the local annotation coordinate origin matches the upstream intended semantics; an offset changes 98 assignments. It does not explain the historical support snapshot discrepancy, certify transition data quality, or establish that the subjects represent a target deployment population. Overlapping windows and repeated subject measurements remain dependencies that must be reflected in any later statistical design. These are material limits on interpretation, even though local reconstruction itself is exact.
+
+The window-count formula, shifted-overlap identity, and the preservation of shared values by a fixed channelwise affine transform are DERIVED under the stated indexing and fixed-statistic assumptions. Their numerical realization is separately VERIFIED on the frozen corpus. A derivation over real coordinates and an executed array-equality check are different evidence.
+
+The completion ledger distinguishes verified local results from open or merely specified statements. CREATED means the report and receipts exist; VERIFIED means a named local check supports the claim; NOT ESTABLISHED means the available evidence cannot support it. No item is labeled ACCEPTED: acceptance requires review by an authorized person. The companion CNN report independently owns model architecture, operation counts, prediction reconstruction, accuracy and classwise performance, and margin analysis. This data report owns the input data contract and does not reproduce those model results.
+
+\begin{longtable}{@{}P{1.5cm}P{3.3cm}P{6.8cm}P{3.3cm}@{}}\toprule
+Unit & Data-study question & Result and evidence & Status\\\midrule\endhead
+W2-01 & What physical data exist? & 30 subjects, 61 recordings, 122 sensor files, six inertial channels at 50 Hz; 561 engineered features are distinct from the six-channel input. & VERIFIED local inventory\\
+W2-02 & How are windows formed? & 128 samples, stride 64; 17,453 float32 windows; 17,392 aligned pairs; exact rebuild and no boundary crossing. & VERIFIED reconstruction\\
+W2-03 & How are labels attached? & Pure, majority, ambiguous, and unlabeled policy; majority threshold 77/128; one-sample alternative changes 98 assignments. & Policy VERIFIED; origin OPEN\\
+W2-04 & How are data partitioned and counted? & Subject-disjoint 17/4/9 groups; stream and supervised counts reconcile; complete class support retained. & Counts VERIFIED; historical provenance OPEN; G2 HOLD\\
+W2-05 & How is scale set? & Train-only means/standard deviations, precision, floor, and full preprocessing ID reproduced exactly. & VERIFIED against frozen records\\
+W2-06 & What quality claims do dependencies allow? & Exact overlap, channelwise differences, lag summaries, and sparse transition support documented without independence or population claims. & Audit VERIFIED; inference bounded\\
+W2-07 & What provenance is reproducible? & Local tensor/manifest reconstruction and support comparison recorded with hashes; annotation origin and old support generation unresolved. & Local results VERIFIED; provenance OPEN\\
+W2-08 & What must the handoff preserve? & Shape/type, order, units/rate, window/reset boundary, label policy, normalization, denominators, and provenance contract specified. & Contract specified; runtime enforcement NOT IMPLEMENTED\\
+\bottomrule\end{longtable}
+
+From the repository root, the read-only data audit is reproduced with \code{.venv/bin/python scripts/week2_data_audit.py}. Its JSON records input hashes and runtime details. This command does not train or modify the model. The ledger reports data-study completion only; it makes no claim about CNN analysis or system-level acceptance.
 
 \end{document}

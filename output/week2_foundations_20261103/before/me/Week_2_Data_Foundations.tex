@@ -1,0 +1,545 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
+% XeLaTeX with fontspec natively handles Vietnamese UTF-8 without babel
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,longtable,tabularx,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
+\geometry{left=2.25cm,right=2.25cm,top=2.3cm,bottom=2.3cm,headheight=15pt}
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\definecolor{pale}{HTML}{E8F2F2}
+\hypersetup{colorlinks=true,linkcolor=ink,citecolor=teal,urlcolor=teal,
+ pdftitle={Week 2: Dữ liệu và quan hệ với ECDR},
+ pdfauthor={ECDR Research}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlist{nosep,leftmargin=1.5em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\vecop}{\operatorname{vec}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\ind}{\mathbf 1}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Sset}{\mathcal S}
+\newcommand{\Uset}{\mathcal U}
+\newtheorem{definition}{Định nghĩa}[section]
+\newtheorem{theorem}[definition]{Định lý}
+\newtheorem{proposition}[definition]{Mệnh đề}
+\newtheorem{lemma}[definition]{Bổ đề}
+\newtheorem{corollary}[definition]{Hệ quả}
+\theoremstyle{remark}
+\newtheorem{example}[definition]{Ví dụ}
+\newtheorem{remark}[definition]{Nhận xét}
+\renewcommand{\proofname}{Chứng minh}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{ECDR | Cơ sở nghiên cứu và lý thuyết}}
+\fancyhead[R]{\small Week 2}
+\fancyfoot[L]{\small 28/10/2026}
+\fancyfoot[R]{\thepage}
+\begin{document}
+\title{\textcolor{ink}{ECDR}\\[5pt]\Large Week 2: Dữ liệu và quan hệ với ECDR}
+\author{Báo cáo nghiên cứu lý thuyết}
+\date{28 tháng 10 năm 2026}
+\maketitle
+\noindent Bản tuần độc lập, trích từ báo cáo tổng hợp. Scope: lý thuyết mới
+theo brief của người nghiên cứu; không dùng implementation cũ làm nguồn
+định nghĩa phương pháp. Các tính toán minh họa không phải benchmark.
+\tableofcontents
+\clearpage
+\part{Week 2 --- Dữ liệu và quan hệ trực tiếp với bài toán}
+\section{Data specification: từ đại lượng vật lý đến tensor}
+\subsection{Nguồn, ý nghĩa và đơn vị}
+HAPT có raw inertial recordings và một nhánh vector đặc trưng được dựng sẵn.
+Trong hướng này, input là \emph{raw sensor window}, không phải vector
+561 features. Hồ sơ HAPT mô tả điện thoại đeo ở eo, 30 người, accelerometer
+ba trục và gyroscope ba trục lấy mẫu 50 Hz \cite{hapt}. Metadata của dataset
+là nguồn cho ý nghĩa vật lý; những con số trong raw file chỉ là phép đo
+biểu diễn các đại lượng đó.
+
+Đặt $\tau_n=n/f_s$, $f_s=50\,\mathrm{Hz}$. Một sample là
+\begin{equation}
+ s[n]=[a_x[n],a_y[n],a_z[n],\omega_x[n],\omega_y[n],\omega_z[n]]^\top
+ \in\R^6.
+ \label{eq:sample}
+\end{equation}
+Ba $a$ là gia tốc theo ba trục, đơn vị $g$; $1g=9.80665\,\mathrm{m/s^2}$.
+Ba $\omega$ là vận tốc góc, đơn vị $\mathrm{rad/s}$ theo README đi kèm.
+Raw acceleration có thể chứa thành phần trọng lực; không được gọi toàn bộ
+raw acc là body acceleration đã tách trọng lực nếu chưa áp phép tách đó.
+Tính căn chỉnh acc/gyro, thứ tự kênh và recording identity là một phần data
+contract.
+
+\begin{table}[!htbp]\centering
+\caption{Các cấp biểu diễn và vai trò của chúng.}
+\begin{tabularx}{\linewidth}{@{}p{2.3cm}p{3.1cm}Y@{}}\toprule
+Cấp & Không gian & Ý nghĩa trong ECDR\\\midrule
+Sample $s[n]$ & $\R^6$ & Một thời điểm; chưa đủ lịch sử để gọi là window\\
+Recording $S$ & $\R^{6\times T}$ & Chuỗi liên tục của một recording\\
+Window $X_t$ & $\R^{6\times128}$ & Một query của classifier\\
+Vector $x_t$ & $\R^{768}$ & Cùng dữ liệu theo một thứ tự flatten cố định\\
+New wave $U_t$ & $\R^{6\times64}$ & Mẫu mới đi vào khi dịch 64 bước\\
+Feature $H(X_t)$ & Phụ thuộc kiến trúc & Biểu diễn được mạng tính; khác raw data\\
+Region $\Sset_r$ & Tập con của input space & Tập query cần chứng nhận\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Windowing và phép đếm}
+Với recording có $T$ sample, đặt $W=128$, stride $s=64$ và chỉ tạo cửa sổ
+nằm trọn trong recording:
+\begin{equation}
+ X_t[:,i]=s[ts+i],\qquad i=0,\ldots,W-1,
+ \quad t=0,\ldots,n_T-1.
+ \label{eq:window}
+\end{equation}
+Các chỉ số đã được quy về zero-based. Nếu source annotation dùng quy ước
+khác, phải chuyển sang quy ước này trước khi gán nhãn.
+
+\begin{proposition}[Số window của một recording]\label{prop:count}
+Với $T\ge W$, số window stride $s$ là
+\begin{equation}
+ n_T=1+\left\lfloor\frac{T-W}{s}\right\rfloor.
+\end{equation}
+Nếu $T<W$ thì $n_T=0$.
+\end{proposition}
+\begin{proof}
+Điều kiện hợp lệ của start là $0\le ts$ và $ts+W\le T$. Vì $t$ nguyên không
+âm, $0\le t\le\lfloor(T-W)/s\rfloor$. Đếm các giá trị nguyên thu được công
+thức. Không nối recording nên tổng corpus là $\sum_r n_{T_r}$.
+\end{proof}
+Các phép quy đổi thời gian và dung lượng là
+\begin{align}
+ CW&=6\times128=768, & W/f_s&=2.56\,\mathrm{s},\\
+ s/f_s&=1.28\,\mathrm{s}, & 1-s/W&=50\%,\\
+ Cs&=384, & C(W-s)&=384.
+\end{align}
+Một tensor float32 window chứa $768\times4=3072$ byte, tức $3$ KiB, chưa
+gồm metadata hay allocator overhead. Nhịp tạo window sau warm-up là
+$f_s/s=0.78125$ window/s. Khoảng cách từ timestamp sample đầu đến sample
+cuối là $(W-1)/f_s=2.54$ s; cách gọi window 2.56 s dùng thời lượng $W$ chu
+kỳ lấy mẫu. Hai quy ước thời gian này cần được phân biệt.
+
+\subsection{Vector hóa không làm mất cấu trúc, nhưng có thể che cấu trúc}
+Chọn channel-major vectorization
+\begin{equation}
+ x_{cW+i}=X[c,i],\quad 0\le c<C,\quad0\le i<W.
+\end{equation}
+Phép này là song ánh tuyến tính giữa hai biểu diễn; $\norm{x}_2=\norm{X}_F$.
+Nếu chỉ đổi thứ tự bằng permutation $P$, $P^\top P=I$ nên norm Euclidean
+không đổi. Tuy nhiên, cấu trúc convolution và adjacency phải được chuyển
+cùng thứ tự. Việc viết $x\in\R^{768}$ không khiến 768 tọa độ độc lập về
+thống kê và cũng không biến mọi phương hướng perturbation thành có ý nghĩa
+vật lý.
+
+\section{Nhãn, preprocessing và tính hợp lệ của phép so sánh}
+\subsection{Nhãn hoạt động và nhãn window}
+Dataset có 12 nhãn, gồm sáu hoạt động cơ bản và sáu chuyển tư thế. Một nhãn
+đoạn $[a,b)$ nghĩa là sample $a,\ldots,b-1$ thuộc hoạt động đó. Đặt
+\begin{equation}
+ n_k(X)=\sum_{i=0}^{W-1}\ind\{\ell[ts+i]=k\},\quad
+ n_0(X)=W-\sum_{k=1}^{12}n_k(X),
+\end{equation}
+trong đó $0$ là chưa annotation, không phải lớp hoạt động thứ 13.
+Window pure nếu có $k$ sao cho $n_k=W$; unlabeled nếu $n_0=W$;
+majority nếu không pure và $\max_k n_k/W\ge0.6$; các window còn lại
+ambiguous. Với $W=128$, ngưỡng majority là $\lceil0.6\times128\rceil=77$
+sample. Mẫu số là toàn bộ 128 sample, không phải chỉ sample đã annotation.
+
+\begin{proposition}[Window pure nằm trong một span]
+Với span half-open $[a,b)$ và lưới start $ms$, số window nằm trọn trong
+span và recording dài $T$ là
+\begin{equation}
+ n_{[a,b)}=\max\left(0,
+ \left\lfloor\frac{\min(b-W,T-W)}s\right\rfloor
+ -\left\lceil\frac{\max(a,0)}s\right\rceil+1\right).
+\end{equation}
+\end{proposition}
+\begin{proof}
+Window nằm trọn khi $a\le ms$ và $ms+W\le b$, đồng thời
+$0\le ms\le T-W$. Lấy ceil ở cận dưới, floor ở cận trên và đếm số nguyên.
+\end{proof}
+Span ngắn hơn $W$ không có pure window. Điều này giải thích bằng cơ chế
+đếm vì sao chuyển tư thế ngắn có thể ít pure support. Tổng theo span chỉ
+đúng không đếm trùng nếu các span đã chuẩn hóa và không chồng lấn; hai span
+cùng nhãn liền nhau có thể cần hợp nhất trước khi đếm pure windows.
+
+\subsection{Phân bố lớp và giới hạn của hồ sơ dữ liệu hiện có}
+\begin{table}[!htbp]\centering\small
+\caption{Pure windows theo lớp trong artifact audit cũ. Đây là bảng mô tả
+local window policy; không phải phân bố population hoặc kết quả CNN 12 lớp.}
+\label{tab:classes}
+\begin{tabularx}{\linewidth}{@{}rYrrrr@{}}\toprule
+ID & Hoạt động & Train & Val & Test & Tổng\\\midrule
+1 & WALKING &965&221&474&1660\\
+2 & WALKING\_UPSTAIRS &814&205&449&1468\\
+3 & WALKING\_DOWNSTAIRS &734&189&394&1317\\
+4 & SITTING &991&261&484&1736\\
+5 & STANDING &1099&286&541&1926\\
+6 & LAYING &1090&288&532&1910\\
+7 & STAND\_TO\_SIT &19&5&15&39\\
+8 & SIT\_TO\_STAND &5&1&6&12\\
+9 & SIT\_TO\_LIE &36&16&25&77\\
+10 & LIE\_TO\_SIT &30&6&18&54\\
+11 & STAND\_TO\_LIE &65&7&40&112\\
+12 & LIE\_TO\_STAND &30&5&15&50\\\midrule
+ & Tổng 12 lớp &5878&1490&2993&10361\\
+ & Riêng 6 lớp cơ bản &5693&1450&2874&10017\\\bottomrule
+\end{tabularx}
+\end{table}
+Nguồn bảng: \code{data/g2_class_support.json}; các count đã được đếm lại
+từ manifest Parquet trong lượt biên soạn và khớp artifact. Tổng transition pure là
+$10361-10017=344$, chiếm khoảng $3.32\%$ pure corpus. Bảng mô tả phụ thuộc
+convention annotation/window được code cũ sử dụng; báo cáo không khẳng định
+đã xác nhận lại nguồn gốc zero-/one-based của annotation. Hướng lý thuyết
+mới dùng $K$ tổng quát, với $K=12$ cho schema đầy đủ. Kết quả của checkpoint
+6 lớp cũ không được chuyển thành bằng chứng về classifier 12 lớp.
+
+\begin{table}[!htbp]\centering
+\caption{Các denominator khác nhau trong snapshot local.}
+\begin{tabularx}{\linewidth}{@{}Yrrr@{}}\toprule
+Tập & Train & Val & Test\\\midrule
+Subjects &17&4&9\\
+Toàn bộ window &9978&2422&5053\\
+Pure 12 lớp &5878&1490&2993\\
+Pure 6 lớp &5693&1450&2874\\\bottomrule
+\end{tabularx}
+\end{table}
+Corpus local có $17453$ windows trên 61 recordings; các policy counts là
+$10361$ pure, $1917$ majority, $1588$ ambiguous, $3587$ unlabeled, tổng đúng
+$17453$. Con số 10929 instances trong metadata UCI thuộc nhánh đặc trưng
+được dựng sẵn, không phải số raw samples hay tổng windows của policy local.
+Các số audit được dẫn để mô tả data, không để chọn architecture lý thuyết.
+
+\subsection{Normalization và đơn vị của perturbation}
+Với mean $\mu_c$ và scale $\sigma_c>0$ fit chỉ trên train, đặt
+\begin{equation}
+ Z[c,i]=\frac{X[c,i]-\mu_c}{\sigma_c},\qquad
+ z=\mathcal P(x)=D_\sigma^{-1}(x-\mu).
+ \label{eq:norm}
+\end{equation}
+$D_\sigma$ lặp scale của từng kênh theo thời gian. Mean và scale không được
+fit lại trên từng query nếu certificate tham chiếu preprocessing cố định.
+Nếu dùng filter, resample, clipping hoặc gravity separation, chúng cũng
+phải nằm trong $\mathcal P$; filter có state phải được đưa vào state của
+bài toán, hoặc đầu vào chứng nhận phải là output filter đã cố định.
+
+\begin{proposition}[Biến đổi budget và metric]
+Với normalization affine cố định, raw diagonal budget $b^{\rm raw}$ tương
+đương normalized budget $b_i=b_i^{\rm raw}/\sigma_i$. Ngoài ra
+\begin{equation}
+ \norm{\mathcal P(x)-\mathcal P(x')}^2_2
+ =\sum_i\frac{(x_i-x'_i)^2}{\sigma_i^2}.
+\end{equation}
+\end{proposition}
+\begin{proof}
+Lấy hiệu hai vế của (\ref{eq:norm}), rồi chia từng bất đẳng thức
+$|x_i-x_i'|\le b_i^{\rm raw}$ cho $\sigma_i>0$. Bình phương và cộng cho
+công thức metric.
+\end{proof}
+Raw Euclidean distance cộng bình phương gia tốc và vận tốc góc có nhiều
+đơn vị. Giá trị của nó phụ thuộc scale đo. Normalization định nghĩa một
+metric có trọng số rõ ràng; nó không tự chứng minh metric này phù hợp với
+decision boundary. Tuyên bố ``features nằm trong $[-1,1]$'' của nhánh
+561 features không được mặc nhiên áp cho raw signals hoặc z-score.
+
+\subsection{Split và phụ thuộc giữa window}
+Vì adjacent windows dùng mẫu chung, random split theo window có thể đặt
+cùng raw sample vào train và test. Để đánh giá sang người khác, subject sets
+phải rời nhau; để replay, cần giữ recording/time order và reset state khi
+đổi recording. Snapshot local có 17/4/9 subjects cho train/val/test, khác
+cách mô tả 70/30 train/test trong dataset gốc vì local có thêm validation.
+
+Overlap làm phát sinh phụ thuộc, nhưng không cho phép suy một hệ số tương
+quan bất kỳ hoặc effective sample size cụ thể. Confidence interval và
+resampling sau này cần theo subject/recording hoặc mô hình phụ thuộc được
+biện minh. Không coi hàng nghìn windows là hàng nghìn quan sát i.i.d. chỉ
+vì chúng là các row khác nhau.
+
+\section{Vì sao dữ liệu này liên quan trực tiếp đến ECDR?}
+\subsection{Toán tử dịch và phần tín hiệu mới}
+\begin{definition}[Shift--append]
+Với $1\le s\le W$, đặt $S_sX=[X[:,s:W],0_{C\times s}]$ và
+$J_sU=[0_{C\times(W-s)},U]$. Phép chuyển window là
+\begin{equation}
+ \mathcal T_s(X,U)=S_sX+J_sU=[X[:,s:W],U].
+ \label{eq:transition}
+\end{equation}
+\end{definition}
+Ký hiệu $t$ đếm \emph{window}, nên window kế tiếp là $X_{t+1}$, không phải
+$X_{t+s}$. New wave $U_{t+1}$ có $s$ sample mới ở cuối recording stream.
+
+\begin{theorem}[Overlap chính xác]\label{th:overlap}
+Nếu hai window liên tiếp lấy từ cùng recording theo (\ref{eq:window}) thì
+\begin{equation}
+ X_{t+1}[:,0:W-s]=X_t[:,s:W],\qquad
+ X_{t+1}=\mathcal T_s(X_t,U_{t+1}).
+\end{equation}
+\end{theorem}
+\begin{proof}
+Tại vị trí $i<W-s$, window mới chứa sample $s[(t+1)s+i]$, bằng
+$s[ts+(i+s)]$ ở vị trí $i+s$ của window cũ. Các vị trí còn lại chính là
+$s$ sample chưa có trong window trước. Lập luận áp dụng cho từng kênh.
+\end{proof}
+Đây là kết quả cho mọi chuỗi dữ liệu, không cần giả định ``cùng activity''
+hoặc ``tín hiệu mượt''. Khi xuất hiện missing samples, đổi sampling grid
+hoặc đổi recording, quan hệ này phải được kiểm lại theo data contract.
+
+\textbf{Đối chiếu data--math bằng dữ liệu lưu.} Kiểm read-only ngày
+28/10/2026 đọc toàn bộ tensor \code{windows.npz}: shape
+$(17453,6,128)$, dtype float32, $13403904$ scalar đều finite.
+Trên $17392$ cặp có cùng recording và \code{win_idx} liên tiếp, mọi bước
+start đều tăng 64. So sánh trực tiếp $6\times64=384$ tọa độ mỗi cặp cho
+$17392\times384=6678528$ phép so; tất cả bằng nhau, max absolute difference
+bằng 0. Check này xác nhận bridge chỉ số và overlap của corpus lưu, không
+chứng minh ý nghĩa vật lý, tính đúng của annotation, invariant prediction
+hoặc một certificate neural. Kết quả và source hashes ở
+\code{me/calculations.json}.
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[x=0.085cm,y=0.8cm,font=\small]
+\fill[gray!22] (0,1) rectangle (64,1.8);
+\fill[teal!28] (64,1) rectangle (128,1.8);
+\draw (0,1) rectangle (128,1.8);
+\draw (64,1)--(64,1.8);
+\node at (32,1.4){64 mẫu bị loại};
+\node at (96,1.4){64 mẫu overlap};
+\fill[teal!28] (0,-0.3) rectangle (64,0.5);
+\fill[orange!25] (64,-0.3) rectangle (128,0.5);
+\draw (0,-0.3) rectangle (128,0.5);
+\draw (64,-0.3)--(64,0.5);
+\node at (32,0.1){64 mẫu overlap};
+\node at (96,0.1){64 mẫu mới};
+\draw[-{Stealth},thick,teal] (96,0.95)--(32,0.55);
+\node[anchor=east] at (-2,1.4){$X_t$};
+\node[anchor=east] at (-2,0.1){$X_{t+1}$};
+\end{tikzpicture}
+\caption{Overlap là bằng nhau sau dịch chỉ số; mỗi ô biểu diễn cả sáu
+kênh. Bằng nhau theo alignment khác với cùng tọa độ trong vector 768 chiều.}
+\end{figure}
+
+\subsection{Overlap không suy ra khoảng cách nhỏ}
+Đặt $P_sX=X[:,s:W]$, $Q_sX'=X'[:,0:W-s]$. Định lý trên cho
+$\norm{Q_sX_{t+1}-P_sX_t}_F=0$. Ngược lại
+\begin{equation}
+ X_{t+1}-X_t=(S_s-I)X_t+J_sU_{t+1},
+ \label{eq:delta}
+\end{equation}
+nên delta cùng tọa độ có thể lớn trên nhiều hoặc tất cả tọa độ.
+
+\begin{example}[Khoảng cách lớn dù overlap đúng]
+Với một kênh, $W=4$, $s=2$, lấy $X=(0,0,M,M)$ và
+$U=(0,0)$. Khi đó $X'=(M,M,0,0)$ giữ đúng hai mẫu overlap nhưng
+$\norm{X'-X}_2=2|M|$, không bị chặn khi $M$ tăng. Cả overlap 50\% và
+aligned distance bằng 0 đều không suy ra ordinary distance nhỏ.
+\end{example}
+Với $|X_i|,|U_i|\le B$ thì có cận thô
+$\norm{X'-X}_2\le2B\sqrt{CW}$; đây là cận từ biên độ, không phải từ
+overlap. Cận không đảm bảo giữ decision nếu margin quá nhỏ.
+
+\subsection{Từ data identity đến miền cần chứng nhận}
+Giữ $X_t$ đã biết và cho new wave biến thiên trong $\Uset_e$. Miền next
+window tự nhiên là
+\begin{equation}
+ \Sset^{\rm wave}_e(X_t)=
+ \{\mathcal T_s(X_t,U):U\in\Uset_e\}.
+ \label{eq:wave-domain}
+\end{equation}
+Nếu $\Uset_e$ là box có nội điểm trong $\R^{C\times s}$ thì tập này có
+affine dimension $Cs=384$, thay vì 768. Điều đó giảm số biến tự do của
+\emph{miền}, không tự giảm độ phức tạp của mọi verifier hoặc bảo đảm bound
+chặt. Điểm center tự nhiên là $[X_t[:,s:W],\bar U]$, có thể xa $X_t$.
+Chứng nhận target class vẫn có thể là $h(X_t)$ dù $X_t$ không thuộc miền mới.
+
+Nếu bổ sung overlap noise $E$ thì phải mở rộng miền thành
+$\mathcal T_s(X_t,U)+E$, với constraint của $E$ công bố rõ. Lợi ích 384
+biến chỉ giữ nguyên khi overlap thật sự cố định; một full-dimensional
+noise box có thể đưa affine dimension trở lại 768.
+
+\begin{table}[!htbp]\centering
+\caption{Data property dẫn đến nghĩa vụ toán học cụ thể.}
+\begin{tabularx}{\linewidth}{@{}YYY@{}}\toprule
+Data property & Suy ra được & Còn phải chứng minh\\\midrule
+Overlap cùng recording & Đẳng thức sau căn chỉnh & Decision invariance\\
+Chỉ $Cs$ giá trị mới & Wave-domain ít biến tự do & Bound/cost tốt hơn\\
+Chu kỳ chuyển động & Giả thuyết delta có cấu trúc & Miền bao phủ query và sound\\
+Cùng activity label & Quan hệ annotation & CNN agreement trên từng query\\
+Chuỗi liên tục & Có thể replay theo time order & Anchor lifecycle an toàn\\
+Nhiều đơn vị/kênh & Cần quy ước scale & Metric có ích cho certificate\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Marginal coverage khác joint coverage trong không gian nhiều chiều}
+Một budget lấy quantile 90\% ở mỗi tọa độ không làm whole-window coverage
+tự bằng 90\%. Đặt $E_i=\{|\Delta_i|\le b_i\}$. Box membership là
+$\bigcap_{i=1}^dE_i$. Nếu \emph{biết} $\Pr(E_i^c)\le\alpha_i$ dưới một
+phân bố được khai báo thì union bound cho
+\begin{equation}
+ \Pr\left(\bigcap_iE_i\right)\ge
+ \max\left(0,1-\sum_i\alpha_i\right).
+\end{equation}
+\begin{proof}
+Phần bù của giao là hợp của các $E_i^c$; áp dụng
+$\Pr(\bigcup_iE_i^c)\le\sum_i\Pr(E_i^c)$ rồi lấy phần bù.
+\end{proof}
+Nếu thêm giả thiết independence và $\Pr(E_i)=q$ giống nhau thì joint
+coverage là $q^d$. Chẳng hạn, $0.9^{768}\approx7.2152\times10^{-36}$,
+$0.99^{768}\approx0.00044446$, $0.999^{768}\approx0.4638$.
+HAPT coordinates không được giả định độc lập; đây là ví dụ chỉ ra nguy cơ
+suy từ marginal sang joint, không phải ước lượng coverage HAPT. Empirical
+quantile trên train cũng không chứng minh population inequality
+$\Pr(E_i^c)\le\alpha_i$. Temporal correlation có thể làm joint coverage
+khác hẳn ví dụ independence, nên cấu trúc miền đáng nghiên cứu nhưng phải
+được chứng nhận theo decision margin riêng.
+
+\section{Reference CNN như một đối tượng lý thuyết}
+\subsection{Hai cấp mô hình cần tách rõ}
+\textbf{Cấp tổng quát} giữ $F:\R^{768}\to\R^K$ deterministic và frozen.
+Các định lý margin, Lipschitz, domain và lifecycle không đòi classifier là
+GAP. Với schema HAPT đầy đủ, xét $K=12$, nhưng không có accuracy/latency mới
+được gán cho classifier 12 lớp.
+
+\textbf{Cấp chuyên biệt} để suy ra exact shift identities là chuỗi
+Conv1D valid, stride 1, dilation 1, ReLU, không pooling trung gian, sau đó
+GAP và affine head. Đây là giả thiết phân tích mới, không phải mô tả
+checkpoint cũ. Chọn ví dụ $6\to32\to64\to64$, kernels $5,3,3$, $K=12$.
+
+\begin{table}[!htbp]\centering\small
+\caption{CNN valid--GAP minh họa cho lý thuyết, có bias, không BatchNorm.
+Một MAC là một phép nhân--cộng tích lũy; không phải phép đo runtime.}
+\label{tab:cnn}
+\begin{tabularx}{\linewidth}{@{}Yrrr@{}}\toprule
+Layer & Output $C\times T$ & Parameters & MAC/window\\\midrule
+Input & $6\times128$ &0&0\\
+Conv1 valid, $k=5$ + ReLU & $32\times124$ &992&119040\\
+Conv2 valid, $k=3$ + ReLU & $64\times122$ &6208&749568\\
+Conv3 valid, $k=3$ + ReLU & $64\times120$ &12352&1474560\\
+GAP & $64\times1$ &0&--\\
+Affine $64\to12$ & $12$ &780&768\\\midrule
+Tổng Conv + affine & &20332&2343936\\\bottomrule
+\end{tabularx}
+\end{table}
+Với layer $\ell$, $T_\ell=T_{\ell-1}-k_\ell+1$ và
+\begin{equation}
+ P_\ell=C_\ell(C_{\ell-1}k_\ell+1),\qquad
+ M_\ell=T_\ell C_\ell C_{\ell-1}k_\ell.
+\end{equation}
+Head có $K(d+1)$ parameters và $Kd$ MAC. Quy ước xấp xỉ $2$ FLOP/MAC cho
+phần Conv/head cho $4687872$ FLOP, chưa gồm bias, ReLU, GAP và memory traffic.
+GAP có $64(120-1)=7616$ phép cộng và 64 phép scale; ReLU so sánh trên
+$3968+7808+7680=19456$ activation. Số parameters không phụ thuộc batch.
+
+\subsection{Vì sao không thể suy latency từ MAC hoặc overlap?}
+Runtime còn phụ thuộc kernel implementation, threads, dtype, memory access,
+batch size và overhead. Chỉ biết 50\% raw overlap không cho phép chia đôi
+MAC hay latency: feature receptive field, padding và head có thể khác.
+Week 3 sẽ chỉ ra, trong CNN ví dụ, RF cuối là 9 và có 56/120 feature
+positions overlap sau dịch 64. Đó là $46.67\%$, khác raw overlap 50\%.
+
+Nếu dùng model khác, phải suy lại shape, RF và head dependency. Với
+Flatten--MLP, cùng feature ở vị trí khác có thể mang trọng số khác nên công
+thức GAP không áp trực tiếp. Với zero-padding, biên mới và biên cũ khác nhau;
+với pooling/stride, cần alignment; với BN ở training, output phụ thuộc batch.
+Đây là lý do ràng buộc kiến trúc phải xuất hiện trước chứng minh.
+
+\subsection{Các đại lượng cần đo khi chọn reference sau này}
+Cho confusion matrix $C_{ij}$ với true class $i$, predicted class $j$,
+\begin{align}
+ \mathrm{Accuracy}&=\frac{\sum_i C_{ii}}{\sum_{ij}C_{ij}},\\
+ \mathrm{Precision}_k&=\frac{C_{kk}}{\sum_i C_{ik}},\qquad
+ \mathrm{Recall}_k=\frac{C_{kk}}{\sum_j C_{kj}},\\
+ F1_k&=\frac{2C_{kk}}{2C_{kk}+\mathrm{FP}_k+\mathrm{FN}_k},\qquad
+ \mathrm{MacroF1}=\frac1K\sum_kF1_k.
+\end{align}
+Quy ước denominator 0 phải ghi rõ. Ground-truth accuracy khác
+$\Pr[\widehat h_{\rm ECDR}(X)=h(X)]$. Prediction agreement có thể cao trong
+khi cả hai sai ground truth. Latency phải ghi scope và hardware; số
+$251.1\,\mu$s của forward 6 lớp cũ chỉ xuất hiện trong Week 3 như một phép
+thay số sensitivity có nguồn, không là baseline đo của CNN lý thuyết mới.
+
+
+\section*{Nguồn và cách tái kiểm}
+Nội dung theo bản chuẩn hóa Week 1--3 do người nghiên cứu cung cấp và các
+nguồn gốc trong bibliography. Các số data mô tả snapshot local theo policy
+đã ghi; mô hình lý thuyết không phải checkpoint triển khai cũ. Báo cáo tổng
+hợp trong cùng thư mục có đầy đủ bảng ký hiệu, provenance và các tuần còn
+lại. Phép tính số học được lưu trong \code{recompute.py} và
+\code{calculations.json}. Không có training hoặc benchmark ECDR mới.
+
+\begingroup\small
+\begin{thebibliography}{99}
+\bibitem{hapt} J. Reyes-Ortiz, D. Anguita, L. Oneto, X. Parra.
+\emph{Smartphone-Based Recognition of Human Activities and Postural
+Transitions}. UCI Machine Learning Repository, 2015.
+DOI: \href{https://doi.org/10.24432/C54G7M}{10.24432/C54G7M}.
+Metadata và README local được đối chiếu ngày 28/10/2026.
+
+\bibitem{lmt} Y. Tsuzuku, I. Sato, M. Sugiyama.
+\emph{Lipschitz-Margin Training: Scalable Certification of Perturbation
+Invariance for Deep Neural Networks}. NeurIPS, 2018.
+\url{https://arxiv.org/abs/1802.04034}.
+
+\bibitem{ibp} S. Gowal et al.
+\emph{On the Effectiveness of Interval Bound Propagation for Training
+Verifiably Robust Models}. arXiv:1810.12715, 2018.
+\url{https://arxiv.org/abs/1810.12715}.
+
+\bibitem{crown} H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, L. Daniel.
+\emph{Efficient Neural Network Robustness Certification with General
+Activation Functions}. NeurIPS, 2018.
+\url{https://arxiv.org/abs/1811.00866}.
+
+\bibitem{lirpa} K. Xu et al.
+\emph{Automatic Perturbation Analysis for Scalable Certified Robustness
+and Beyond}. NeurIPS, 2020.
+\url{https://arxiv.org/abs/2002.12920}.
+
+\bibitem{crownibp} H. Zhang et al.
+\emph{Towards Stable and Efficient Training of Verifiably Robust Neural
+Networks}. NeurIPS, 2019.
+\url{https://arxiv.org/abs/1906.06316}.
+
+\bibitem{betacrown} S. Wang et al.
+\emph{Beta-CROWN: Efficient Bound Propagation with Per-neuron Split
+Constraints for Neural Network Robustness Verification}. NeurIPS, 2021.
+\url{https://papers.neurips.cc/paper_files/paper/2021/hash/fac7fead96dafceaf80c1daffeae82a4-Abstract.html}.
+
+\bibitem{montufar} G. Mont\'ufar, R. Pascanu, K. Cho, Y. Bengio.
+\emph{On the Number of Linear Regions of Deep Neural Networks}.
+NeurIPS, 2014.
+\url{https://proceedings.neurips.cc/paper_files/paper/2014/hash/fa6f2a469cc4d61a92d96e74617c3d2a-Abstract.html}.
+
+\bibitem{streaminnc} C. Kechris, J. Dan, J. Miranda, D. Atienza.
+\emph{Don't Think It Twice: Exploit Shift Invariance for Efficient Online
+Streaming Inference of CNNs}. arXiv:2408.03223, 2024.
+\url{https://arxiv.org/abs/2408.03223}.
+
+\bibitem{tiny} Z. Huang, E. Baccelli.
+\emph{TinyD\'ej\`aVu: Smaller Memory Footprint \& Faster Inference on Sensor
+Data Streams with Always-On Microcontrollers}. arXiv:2512.09786, 2025.
+\url{https://arxiv.org/abs/2512.09786}. Tên theo metadata arXiv được tra
+28/10/2026; không nhập số benchmark của paper vào kết quả HAPT.
+
+\bibitem{lipcache} Z. Xiang, Y. Chen, F. Ying, B. Zhou, H. Zhao, S. Dustdar.
+\emph{LipCache: A Local Inference Proxy with Certified Caching for Edge
+Image Classification Service}. arXiv:2608.13144, 2026.
+\url{https://arxiv.org/abs/2608.13144}. Đối chiếu PDF v1 lưu local,
+đặc biệt phạm vi GuardNet/MainNet tại phần certification và system semantics.
+\end{thebibliography}
+
+\endgroup
+
+\end{document}

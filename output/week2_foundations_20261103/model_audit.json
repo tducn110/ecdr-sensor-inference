@@ -1,0 +1,818 @@
+{
+  "audit_executed_at_utc": "2026-11-03T00:21:32Z",
+  "audit_script_sha256": "66eb8d8c206d2c72079893a0abf2e66110e6f5a6df4ea1c9cce5f44312d0c81e",
+  "verified_check_names": [
+    "checkpoint_sha256_matches_selection",
+    "run_seed_epoch_class_order_match",
+    "normalization_arrays_match_checkpoint_exactly",
+    "normalization_preprocessing_id_matches",
+    "normalization_file_sha256_matches_checkpoint",
+    "test_row_ids_match_stored_prediction_artifact",
+    "stored_logits_allclose_atol_1e-5_rtol_1e-5",
+    "stored_argmax_predictions_exact_match",
+    "manifest_row_ids_predictions_and_class_names_exact_match",
+    "manifest_and_stored_margins_match_atol_1e-5_rtol_1e-5",
+    "stored_margins_match_fresh_top_two_logits_atol_1e-5_rtol_1e-5",
+    "manifest_margins_match_fresh_top_two_logits_atol_1e-5_rtol_1e-5",
+    "accuracy_macro_f1_and_confusion_match_evaluation_results",
+    "parameter_count_is_283692",
+    "leaf_module_count_is_15",
+    "mac_count_is_1172992",
+    "receptive_field_is_20_and_stride_is_4",
+    "batchnorm_eval_repeated_forward_is_deterministic"
+  ],
+  "verified_check_count": 18,
+  "input_sha256": {
+    "scripts/backbone.py": "0f26f8fe731de32a67eecef5eedbfbe88f13698d104454c41ef3bd5d7b4d5037",
+    "ecdr/data.py": "b3e004259517be0410f3bb03af7dd490bf2b738d12940cb14e760c345fccb278",
+    "scripts/week1_reference_pipeline.py": "1ef93101f658f8a18ebf19f0c8743ec5311ffe94933aee3505be6ec29a0be4d6",
+    "data/windows.npz": "1646061afa74266ac0fdd03b6f68af63327c7ab2f2a93db1f672e6177eb17900",
+    "data/window_manifest.parquet": "82f9a2875fa0b00b315b36d81f07ab1bc436ea078a2f8c491ec4206baf75413b",
+    "data/windows_with_split.parquet": "767dbe36f8a5a2b0b81cd2a5dd6873ab944a4460908f9052cd418b77799909f4",
+    "output/week1_closeout_20261102/reference/normalization.npz": "4c28d81c5ecc532057897002a595713a787faee0b39a4a7a1ba53d9a9286c622",
+    "output/week1_closeout_20261102/reference/test_predictions_manifest.csv": "1209ba118d552f6bbf99010f61d56482161d44695e0630a990d66c94a4b0fca3",
+    "output/week1_closeout_20261102/reference/test_predictions.npz": "1c5206f91e6bfb7c9f307972ed8d829fd35165a8dca0a65302517ec6288fa9fe",
+    "output/week1_closeout_20261102/reference/evaluation_results.json": "01c764f8072d9b6780d9ee47bd301860e2ef1982789afd8cddbe55176853f709"
+  },
+  "provenance": {
+    "run_id": "week1_ref_1793620216_9d6c1d85",
+    "selected_seed": 43,
+    "selected_epoch": 8,
+    "checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "expected_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "normalization_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+    "test_predictions_sha256": "1c5206f91e6bfb7c9f307972ed8d829fd35165a8dca0a65302517ec6288fa9fe",
+    "test_predictions_manifest_sha256": "1209ba118d552f6bbf99010f61d56482161d44695e0630a990d66c94a4b0fca3",
+    "evaluation_results_sha256": "01c764f8072d9b6780d9ee47bd301860e2ef1982789afd8cddbe55176853f709",
+    "config_sha256": "da82b2b4652856d6bccf9652fa0b24861e22800125d6ad52bf535c76a9893a40",
+    "selection_sha256": "e888b7ddd6bee230a6141dd5ab0192b11105cdf84750a1dc345bcf44424c0bbb"
+  },
+  "environment": {
+    "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+    "torch": "2.14.1+cpu",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "cpu_model": "Intel(R) Xeon(R) W-11855M CPU @ 3.20GHz",
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "torch_threads": 1
+  },
+  "class_names": [
+    "WALKING",
+    "WALKING_UPSTAIRS",
+    "WALKING_DOWNSTAIRS",
+    "SITTING",
+    "STANDING",
+    "LAYING",
+    "STAND_TO_SIT",
+    "SIT_TO_STAND",
+    "SIT_TO_LIE",
+    "LIE_TO_SIT",
+    "STAND_TO_LIE",
+    "LIE_TO_STAND"
+  ],
+  "input_shape_per_sample": [
+    6,
+    128
+  ],
+  "architecture": {
+    "name": "small_cnn_1d",
+    "conv_channels": [
+      32,
+      64,
+      64
+    ],
+    "conv_kernels": [
+      5,
+      3,
+      3
+    ],
+    "pool": "maxpool2",
+    "fc_hidden": 128,
+    "activation": "relu",
+    "batchnorm": true
+  },
+  "trainable_parameters": 283692,
+  "leaf_layers": [
+    {
+      "module": "conv.0",
+      "type": "Conv1d",
+      "input_shape": [
+        1,
+        6,
+        128
+      ],
+      "output_shape": [
+        1,
+        32,
+        128
+      ],
+      "trainable_parameters": 992,
+      "buffers": {}
+    },
+    {
+      "module": "conv.1",
+      "type": "BatchNorm1d",
+      "input_shape": [
+        1,
+        32,
+        128
+      ],
+      "output_shape": [
+        1,
+        32,
+        128
+      ],
+      "trainable_parameters": 64,
+      "buffers": {
+        "running_mean": {
+          "shape": [
+            32
+          ],
+          "dtype": "torch.float32"
+        },
+        "running_var": {
+          "shape": [
+            32
+          ],
+          "dtype": "torch.float32"
+        },
+        "num_batches_tracked": {
+          "shape": [],
+          "dtype": "torch.int64"
+        }
+      }
+    },
+    {
+      "module": "conv.2",
+      "type": "ReLU",
+      "input_shape": [
+        1,
+        32,
+        128
+      ],
+      "output_shape": [
+        1,
+        32,
+        128
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "conv.3",
+      "type": "MaxPool1d",
+      "input_shape": [
+        1,
+        32,
+        128
+      ],
+      "output_shape": [
+        1,
+        32,
+        64
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "conv.4",
+      "type": "Conv1d",
+      "input_shape": [
+        1,
+        32,
+        64
+      ],
+      "output_shape": [
+        1,
+        64,
+        64
+      ],
+      "trainable_parameters": 6208,
+      "buffers": {}
+    },
+    {
+      "module": "conv.5",
+      "type": "BatchNorm1d",
+      "input_shape": [
+        1,
+        64,
+        64
+      ],
+      "output_shape": [
+        1,
+        64,
+        64
+      ],
+      "trainable_parameters": 128,
+      "buffers": {
+        "running_mean": {
+          "shape": [
+            64
+          ],
+          "dtype": "torch.float32"
+        },
+        "running_var": {
+          "shape": [
+            64
+          ],
+          "dtype": "torch.float32"
+        },
+        "num_batches_tracked": {
+          "shape": [],
+          "dtype": "torch.int64"
+        }
+      }
+    },
+    {
+      "module": "conv.6",
+      "type": "ReLU",
+      "input_shape": [
+        1,
+        64,
+        64
+      ],
+      "output_shape": [
+        1,
+        64,
+        64
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "conv.7",
+      "type": "MaxPool1d",
+      "input_shape": [
+        1,
+        64,
+        64
+      ],
+      "output_shape": [
+        1,
+        64,
+        32
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "conv.8",
+      "type": "Conv1d",
+      "input_shape": [
+        1,
+        64,
+        32
+      ],
+      "output_shape": [
+        1,
+        64,
+        32
+      ],
+      "trainable_parameters": 12352,
+      "buffers": {}
+    },
+    {
+      "module": "conv.9",
+      "type": "BatchNorm1d",
+      "input_shape": [
+        1,
+        64,
+        32
+      ],
+      "output_shape": [
+        1,
+        64,
+        32
+      ],
+      "trainable_parameters": 128,
+      "buffers": {
+        "running_mean": {
+          "shape": [
+            64
+          ],
+          "dtype": "torch.float32"
+        },
+        "running_var": {
+          "shape": [
+            64
+          ],
+          "dtype": "torch.float32"
+        },
+        "num_batches_tracked": {
+          "shape": [],
+          "dtype": "torch.int64"
+        }
+      }
+    },
+    {
+      "module": "conv.10",
+      "type": "ReLU",
+      "input_shape": [
+        1,
+        64,
+        32
+      ],
+      "output_shape": [
+        1,
+        64,
+        32
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "head.0",
+      "type": "Flatten",
+      "input_shape": [
+        1,
+        64,
+        32
+      ],
+      "output_shape": [
+        1,
+        2048
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "head.1",
+      "type": "Linear",
+      "input_shape": [
+        1,
+        2048
+      ],
+      "output_shape": [
+        1,
+        128
+      ],
+      "trainable_parameters": 262272,
+      "buffers": {}
+    },
+    {
+      "module": "head.2",
+      "type": "ReLU",
+      "input_shape": [
+        1,
+        128
+      ],
+      "output_shape": [
+        1,
+        128
+      ],
+      "trainable_parameters": 0,
+      "buffers": {}
+    },
+    {
+      "module": "head.3",
+      "type": "Linear",
+      "input_shape": [
+        1,
+        128
+      ],
+      "output_shape": [
+        1,
+        12
+      ],
+      "trainable_parameters": 1548,
+      "buffers": {}
+    }
+  ],
+  "cost": {
+    "layers": [
+      {
+        "module": "conv.0",
+        "macs_per_sample": 122880,
+        "convention": "conv multiply-accumulates; excludes bias and BN/activation/pool"
+      },
+      {
+        "module": "conv.1",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.2",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.3",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.4",
+        "macs_per_sample": 393216,
+        "convention": "conv multiply-accumulates; excludes bias and BN/activation/pool"
+      },
+      {
+        "module": "conv.5",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.6",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.7",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.8",
+        "macs_per_sample": 393216,
+        "convention": "conv multiply-accumulates; excludes bias and BN/activation/pool"
+      },
+      {
+        "module": "conv.9",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "conv.10",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "head.0",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "head.1",
+        "macs_per_sample": 262144,
+        "convention": "linear multiply-accumulates; excludes bias"
+      },
+      {
+        "module": "head.2",
+        "macs_per_sample": 0,
+        "convention": "not counted"
+      },
+      {
+        "module": "head.3",
+        "macs_per_sample": 1536,
+        "convention": "linear multiply-accumulates; excludes bias"
+      }
+    ],
+    "total_macs_per_sample": 1172992,
+    "convention": "MAC=one multiply plus accumulation; counts convolution/linear only; excludes biases, BN, ReLU, max-pool, memory traffic and softmax"
+  },
+  "receptive_field": {
+    "derivation": "r_next = r + (k-1)*j; j_next=j*s, starting r=j=1; same-padding convolution; valid pool2",
+    "layers": [
+      {
+        "operation": "conv1",
+        "kernel": 5,
+        "stride": 1,
+        "receptive_field_samples": 5,
+        "input_jump_samples": 1
+      },
+      {
+        "operation": "pool1",
+        "kernel": 2,
+        "stride": 2,
+        "receptive_field_samples": 6,
+        "input_jump_samples": 2
+      },
+      {
+        "operation": "conv2",
+        "kernel": 3,
+        "stride": 1,
+        "receptive_field_samples": 10,
+        "input_jump_samples": 2
+      },
+      {
+        "operation": "pool2",
+        "kernel": 2,
+        "stride": 2,
+        "receptive_field_samples": 12,
+        "input_jump_samples": 4
+      },
+      {
+        "operation": "conv3",
+        "kernel": 3,
+        "stride": 1,
+        "receptive_field_samples": 20,
+        "input_jump_samples": 4
+      }
+    ],
+    "final_receptive_field_samples": 20,
+    "final_stride_samples": 4,
+    "sampling_rate_hz": 50,
+    "nominal_temporal_span_seconds": 0.4
+  },
+  "batchnorm_eval_deterministic": true,
+  "timing_ms": {
+    "device": "CPU",
+    "torch_threads": 1,
+    "batch_size": 1,
+    "warmups": 100,
+    "repeats": 1000,
+    "sample_input": "fixed first chronological test window after frozen normalization; model.eval(); resident tensor",
+    "p50": 0.15569349999999998,
+    "p95": 0.31107605,
+    "mean": 0.18919739900000002,
+    "scope": "forward only on resident pre-normalized tensor; excludes preprocessing, event logic, membership, fallback, data movement and I/O; environment-specific, not speedup evidence"
+  },
+  "candidate_region_status": "not computed; pointwise top-two logit margins are not region bounds or certification",
+  "architecture_parameter_comparison": {
+    "SmallCNN1D_K12": 283692,
+    "ECDRConv1DNet_K12": 20332,
+    "interpretation": "static parameter-count comparison only; distinct architecture/function; not a controlled accuracy or latency comparison"
+  },
+  "metrics": {
+    "global_test_windows": 5053,
+    "supervised_windows": 3572,
+    "stored_prediction_disagreement_count": 0,
+    "ground_truth_error_count": 391,
+    "stored_logits_max_abs_error": 0.0,
+    "stored_logits_allclose": true,
+    "manifest_predictions_exact_match": true,
+    "manifest_winning_margin_vs_stored_max_abs_error": 9.28955078194349e-07,
+    "stored_winning_margin_vs_fresh_max_abs_error": 0.0,
+    "manifest_winning_margin_vs_fresh_max_abs_error": 9.28955078194349e-07,
+    "evaluation_results_accuracy_match": true,
+    "evaluation_results_macro_f1_match": true,
+    "tolerance": {
+      "logit_atol": 1e-05,
+      "logit_rtol": 1e-05,
+      "normalization_atol": 0.0,
+      "normalization_rtol": 0.0
+    },
+    "metrics": {
+      "n": 3572,
+      "accuracy": 0.8905375139977604,
+      "macro_f1": 0.7762645087843447,
+      "per_class": [
+        {
+          "support": 531,
+          "predicted": 529,
+          "precision": 0.9603024574669187,
+          "recall": 0.9566854990583804,
+          "f1": 0.9584905660377359
+        },
+        {
+          "support": 537,
+          "predicted": 523,
+          "precision": 0.9330783938814532,
+          "recall": 0.9087523277467412,
+          "f1": 0.9207547169811321
+        },
+        {
+          "support": 492,
+          "predicted": 524,
+          "precision": 0.9236641221374046,
+          "recall": 0.983739837398374,
+          "f1": 0.952755905511811
+        },
+        {
+          "support": 546,
+          "predicted": 574,
+          "precision": 0.7996515679442509,
+          "recall": 0.8406593406593407,
+          "f1": 0.8196428571428571
+        },
+        {
+          "support": 597,
+          "predicted": 549,
+          "precision": 0.8797814207650273,
+          "recall": 0.8090452261306532,
+          "f1": 0.8429319371727748
+        },
+        {
+          "support": 586,
+          "predicted": 593,
+          "precision": 0.9831365935919055,
+          "recall": 0.9948805460750854,
+          "f1": 0.9889737065309585
+        },
+        {
+          "support": 45,
+          "predicted": 42,
+          "precision": 0.7619047619047619,
+          "recall": 0.7111111111111111,
+          "f1": 0.735632183908046
+        },
+        {
+          "support": 32,
+          "predicted": 27,
+          "precision": 0.7777777777777778,
+          "recall": 0.65625,
+          "f1": 0.711864406779661
+        },
+        {
+          "support": 51,
+          "predicted": 56,
+          "precision": 0.5892857142857143,
+          "recall": 0.6470588235294118,
+          "f1": 0.6168224299065421
+        },
+        {
+          "support": 46,
+          "predicted": 35,
+          "precision": 0.7714285714285715,
+          "recall": 0.5869565217391305,
+          "f1": 0.6666666666666667
+        },
+        {
+          "support": 68,
+          "predicted": 63,
+          "precision": 0.5714285714285714,
+          "recall": 0.5294117647058824,
+          "f1": 0.5496183206106869
+        },
+        {
+          "support": 41,
+          "predicted": 57,
+          "precision": 0.47368421052631576,
+          "recall": 0.6585365853658537,
+          "f1": 0.5510204081632653
+        }
+      ]
+    },
+    "confusion_matrix": [
+      [
+        508,
+        0,
+        22,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        16,
+        488,
+        15,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        3,
+        2,
+        11
+      ],
+      [
+        4,
+        2,
+        484,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        21,
+        0,
+        459,
+        57,
+        0,
+        1,
+        2,
+        1,
+        0,
+        5,
+        0
+      ],
+      [
+        0,
+        3,
+        0,
+        106,
+        483,
+        0,
+        1,
+        0,
+        1,
+        0,
+        2,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        583,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0
+      ],
+      [
+        1,
+        2,
+        0,
+        4,
+        1,
+        0,
+        32,
+        3,
+        1,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        2,
+        0,
+        1,
+        7,
+        0,
+        1,
+        21,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        6,
+        0,
+        0,
+        33,
+        0,
+        11,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        27,
+        1,
+        15
+      ],
+      [
+        0,
+        1,
+        1,
+        2,
+        0,
+        4,
+        2,
+        0,
+        20,
+        0,
+        36,
+        2
+      ],
+      [
+        0,
+        3,
+        2,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        5,
+        2,
+        27
+      ]
+    ],
+    "top_two_logit_margin": {
+      "definition": "largest logit minus second-largest logit; nonnegative, prediction confidence proxy, not a correctness guarantee",
+      "min": 0.00011348724365234375,
+      "p05": 0.4119945466518402,
+      "p25": 2.2641496658325195,
+      "median": 5.978243827819824,
+      "p75": 8.982769012451172,
+      "p95": 11.887640953063965,
+      "max": 21.468536376953125,
+      "zero_count": 0
+    }
+  }
+}

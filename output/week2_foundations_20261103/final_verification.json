@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "completed_at_utc": "2026-11-03T00:47:33.048537+00:00",
+  "date_local": "2026-11-03",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "repository": "/home/pro/Downloads/research",
+  "branch": "main",
+  "base_revision": "633dc05a80511af4d4580cd985edd494cdc373ff",
+  "initial_worktree": "clean",
+  "overall_status": "PASS",
+  "completion_scope": "Two independent Week 2 studies (Data Foundations and CNN Model Foundations), full 64-concept disposition audit, source-content review, reproducible evidence, verified LaTeX/PDF and README navigation; no formal certificate or external acceptance.",
+  "unit_status": {
+    "W2-01": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-02": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-03": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-04": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-05": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-06": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-07": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS",
+    "W2-08": "VERIFIED_WITH_DECLARED_RESEARCH_LIMITATIONS"
+  },
+  "executed_checks": {
+    "data_reconstruction": "PASS: 17,453 windows, all 10 manifest fields, 17,392 aligned overlap pairs",
+    "model_checks": {
+      "passed": 18,
+      "total": 18
+    },
+    "week1_preservation": {
+      "total_checks": 65,
+      "passed": 65,
+      "failed": 0
+    },
+    "pdf_build": "PASS: final logs contain no errors, warnings or overfull boxes",
+    "pdf_physical_pages": {
+      "01_DATA/03_Week_2_Data_Foundations.pdf": 13,
+      "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf": 16
+    },
+    "visual_review": "PASS: all 29 final pages rendered and visually inspected",
+    "wrapper_compile_from_root": "PASS",
+    "wrapper_compile_from_me": "PASS",
+    "wrapper_sync_preserves_canonical_sources_and_other_weeks": true,
+    "py_compile": "PASS: three new scripts and the changed generator",
+    "git_diff_check": "PASS",
+    "content_review": "PASS within declared source-content scope; corrected first-versus-final dense-layer attribution",
+    "legacy_concept_dispositions": {
+      "unique_items": 64,
+      "expected_items": 64,
+      "original_source_matches_base_revision": true,
+      "current_sections_resolve": true
+    }
+  },
+  "document_integrity_receipt": "output/week2_foundations_20261103/document_checks.json",
+  "delivery_manifest": "output/week2_foundations_20261103/delivery_manifest.json",
+  "protected_during_wrapper_sync": {
+    "00_OVERVIEW/02_Week_1_Project_Brief.tex": "5728770e7f697549f8ebc12a41840581491322082b8409a9889e8bc2bb905187",
+    "01_DATA/03_Week_2_Data_Foundations.tex": "9e3abf03da4c5d9125646b598691f355802974153bf732ea29c6244a6ef8275b",
+    "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex": "53ba8581063f4dd0ed1c1c047b78fca8ddf17cf71e5ba4aab55e1b997c5dae89",
+    "me/Week_3_Mathematical_Foundations.tex": "f9ff673d07c6245b66501d72308e3d9bd30733ec43ce04c2d2d1b6298ee690fc"
+  },
+  "frozen_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "primary_evidence": {
+    "output/week2_foundations_20261103/data_audit.json": "e50d8fc069ef6930f126d8c1b3ec7d32fc9ac320aba62b67daafdea3ab107f36",
+    "output/week2_foundations_20261103/model_audit.json": "40fb586b1231207fcccea5d0656f1ccf1e5b75759bc232f82eedd4d26bc9fbce",
+    "output/week2_foundations_20261103/week1_preservation_verification.json": "dda504d67e2aaeb1945325f8f6feadb15037297a894f9f72e3dc4b4dc0ecccc9",
+    "output/week2_foundations_20261103/visual_review.json": "c5b2364e3b37de0673d005a7f9ad4a9640dcf4e031ac141d01acc8f36bbe16ac",
+    "output/week2_foundations_20261103/concept_audit_64.csv": "b2c5757674c7f843d42450917349e365815e358471d3ae90ebea39662c6fcf62",
+    "output/week2_foundations_20261103/content_review.md": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99"
+  },
+  "research_limits": [
+    "Upstream annotation index origin remains unresolved; 98 offset-sensitive window assignments.",
+    "Historical class-support generating provenance remains unresolved: 13,866 broad rows versus 12,278 supervised rows.",
+    "G2 quality remains HOLD because transition classes are weakly supported.",
+    "No certified region, numerical-soundness proof, verified cache runtime, net end-to-end saving or energy benefit is established."
+  ],
+  "acceptance": "Not claimed"
+}

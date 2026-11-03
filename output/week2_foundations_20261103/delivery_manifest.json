@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-11-03T00:48:57.668351+00:00",
+  "repository_root": "/home/pro/Downloads/research",
+  "scope": "Week 2 delivery artifact inventory; hashes exclude document_checks.json and delivery_manifest.json themselves",
+  "artifacts": [
+    {
+      "path": "01_DATA/03_Week_2_Data_Foundations.tex",
+      "bytes": 39842,
+      "sha256": "9e3abf03da4c5d9125646b598691f355802974153bf732ea29c6244a6ef8275b"
+    },
+    {
+      "path": "01_DATA/03_Week_2_Data_Foundations.pdf",
+      "bytes": 108744,
+      "sha256": "90ebf2e324bbcde3d87b9be8c03fd37dd8f5003f6c4051418acd4f7701bbca9d"
+    },
+    {
+      "path": "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+      "bytes": 45428,
+      "sha256": "53ba8581063f4dd0ed1c1c047b78fca8ddf17cf71e5ba4aab55e1b997c5dae89"
+    },
+    {
+      "path": "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf",
+      "bytes": 283737,
+      "sha256": "02de3fb4c6ca0a07eb1407a6017ed540c0dd45b8292cbc0c1e822c42d4e57188"
+    },
+    {
+      "path": "output/week2_foundations_20261103/concept_audit_64.csv",
+      "bytes": 19908,
+      "sha256": "61270f8063a36d777996908973a19c6fdc3e4362ab99562dba6d33869010e29a"
+    },
+    {
+      "path": "output/week2_foundations_20261103/content_review.md",
+      "bytes": 8204,
+      "sha256": "245725383c99bf78c94876a01f92e54c3ecbd1faf5446e6a25e0a50bb4ec5d99"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5751,
+      "sha256": "daf4643af9ba41bc0f3c98b7d0ea25843fe5c0f96cb5288a10ede75d12991c8d"
+    },
+    {
+      "path": "01_DATA/README.md",
+      "bytes": 3938,
+      "sha256": "536bfda5069a9df212c281044bec0289bc657a9df575ff618fc3fb80c94af6a0"
+    },
+    {
+      "path": "02_MODEL/README.md",
+      "bytes": 4925,
+      "sha256": "04f57d7b8f29ea9b5eb708340a41d3640a3d6b890e7335be25d5abe48a6b51e4"
+    },
+    {
+      "path": "04_SYNTHESIS/README.md",
+      "bytes": 4652,
+      "sha256": "b2ef44aa8c9f26fcab62260e3039e24999df1e73183916a6c0f2550be2ac07bb"
+    },
+    {
+      "path": "me/README.md",
+      "bytes": 1480,
+      "sha256": "f54d5ad170ab1c35b7ab49e9cadb11b612c1e3776c47bfefee6d58a7b3d02ec2"
+    },
+    {
+      "path": "output/week2_foundations_20261103/README.md",
+      "bytes": 9430,
+      "sha256": "02e0c994bc5674cc101d852982b8c23777a1f50dc1341eb0f4f0e24e2ec69f93"
+    },
+    {
+      "path": "scripts/week2_data_audit.py",
+      "bytes": 16019,
+      "sha256": "12110e9b70745fcad13b85c8dc4ab38fed3fe8433ac2375a821c0718c2c94ac2"
+    },
+    {
+      "path": "scripts/week2_model_audit.py",
+      "bytes": 15490,
+      "sha256": "66eb8d8c206d2c72079893a0abf2e66110e6f5a6df4ea1c9cce5f44312d0c81e"
+    },
+    {
+      "path": "scripts/week2_verify_delivery.py",
+      "bytes": 30083,
+      "sha256": "da8e5cc78e111d7c76cca5b89f3952b67ddf7febe2547b745954ba5e995151c9"
+    },
+    {
+      "path": "me/build_sources.py",
+      "bytes": 7659,
+      "sha256": "0a3bbdfe01b0daa4d0a554cd3857556d4090fef21c7bda610d9fa5c65b781364"
+    },
+    {
+      "path": "me/Week_2_Data_Foundations.tex",
+      "bytes": 245,
+      "sha256": "4e187d33c0ce1650afbc90f2dc39c69eba67c355168915cfaf173b0a09d81cba"
+    },
+    {
+      "path": "output/week2_foundations_20261103/data_findings.md",
+      "bytes": 9993,
+      "sha256": "4884d74fefc2273bae4d62eb5265cddd9b9129a6382cd25097a9a15e7bfadc58"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_findings.md",
+      "bytes": 8838,
+      "sha256": "319d8bccdaab14953fd22689e9d867af65f52e4612c576a53e4fd06daf77fb29"
+    },
+    {
+      "path": "output/week2_foundations_20261103/data_audit.json",
+      "bytes": 25421,
+      "sha256": "e50d8fc069ef6930f126d8c1b3ec7d32fc9ac320aba62b67daafdea3ab107f36"
+    },
+    {
+      "path": "output/week2_foundations_20261103/data_support_comparison.json",
+      "bytes": 1164,
+      "sha256": "35316682c393e4bdfab44a1f39871a3a08781f92edaaa254a6befd869a312411"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_audit.json",
+      "bytes": 18493,
+      "sha256": "40fb586b1231207fcccea5d0656f1ccf1e5b75759bc232f82eedd4d26bc9fbce"
+    },
+    {
+      "path": "output/week2_foundations_20261103/week1_preservation_verification.json",
+      "bytes": 22182,
+      "sha256": "dda504d67e2aaeb1945325f8f6feadb15037297a894f9f72e3dc4b4dc0ecccc9"
+    },
+    {
+      "path": "output/week2_foundations_20261103/final_verification.json",
+      "bytes": 4447,
+      "sha256": "b2918f94d33d609d20bb568308d6ed5736aad713796bd4130fc7dee53983b012"
+    },
+    {
+      "path": "output/week2_foundations_20261103/visual_review.json",
+      "bytes": 6807,
+      "sha256": "c5b2364e3b37de0673d005a7f9ad4a9640dcf4e031ac141d01acc8f36bbe16ac"
+    },
+    {
+      "path": "output/week2_foundations_20261103/data_aligned_overlap_pairs.csv",
+      "bytes": 4605839,
+      "sha256": "4998fafadc020337e22bfc02b71c65c95ae78058949431f23ae7700039cbc444"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_confusion_matrix.csv",
+      "bytes": 602,
+      "sha256": "af64d034c6bd8c4d01a0fc3b32e1225d010d2396e48f2123d50ea415ef6b9a3a"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_layer_shapes.csv",
+      "bytes": 1331,
+      "sha256": "500c63d444914e9dd9f604b5ede8ceca15462df0428bddcd9487b0442e156bce"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_per_class_metrics.csv",
+      "bytes": 980,
+      "sha256": "133b59863806ff0b06d867867d21947d7e900ae836135d8ea75cb5e106a36fe6"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_supervised_test_rows.csv",
+      "bytes": 66998,
+      "sha256": "1d460b9c6d2e71e49a9973184523fce4d120e7016afb6592f091590d83b4f3ef"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_confusion_matrix.png",
+      "bytes": 133641,
+      "sha256": "e33f5c6e8df46484d3ba64a99703ec5521e71149e9808e3d99295c3774d2113c"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_top_two_margins.png",
+      "bytes": 38906,
+      "sha256": "f80a314945f82dedbc4d2d2f7c96a69440e82ad29154220c34101a0143ebaf4c"
+    },
+    {
+      "path": "output/week2_foundations_20261103/model_layer_macs.png",
+      "bytes": 56155,
+      "sha256": "509a1c17cfc9a2fd4957f72b212e568727434313e02f74ab556f1d6ac661c558"
+    }
+  ],
+  "excluded_outputs": [
+    "output/week2_foundations_20261103/document_checks.json",
+    "output/week2_foundations_20261103/delivery_manifest.json"
+  ]
+}

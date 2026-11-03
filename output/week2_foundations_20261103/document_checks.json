@@ -1,0 +1,1282 @@
+{
+  "schema_version": 1,
+  "started_at_utc": "2026-11-03T00:48:57.511467+00:00",
+  "completed_at_utc": "2026-11-03T00:48:57.668493+00:00",
+  "command": ".venv/bin/python scripts/week2_verify_delivery.py",
+  "environment": {
+    "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "pdftotext": "/usr/bin/pdftotext",
+    "pdfinfo": "/home/pro/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override/pdfinfo"
+  },
+  "pdf_page_counts_observed": {
+    "01_DATA/03_Week_2_Data_Foundations.pdf": 13,
+    "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf": 16
+  },
+  "pdf_page_count_policy": "positive page count is required; current page counts are recorded dynamically rather than hard-coded",
+  "identity_presence_audit": {
+    "01_DATA/03_Week_2_Data_Foundations.tex": {
+      "checkpoint_sha256": false,
+      "preprocessing_id": true
+    },
+    "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex": {
+      "checkpoint_sha256": true,
+      "preprocessing_id": true
+    },
+    "README.md": {
+      "checkpoint_sha256": false,
+      "preprocessing_id": false
+    },
+    "01_DATA/README.md": {
+      "checkpoint_sha256": false,
+      "preprocessing_id": false
+    },
+    "02_MODEL/README.md": {
+      "checkpoint_sha256": true,
+      "preprocessing_id": true
+    }
+  },
+  "markdown_link_results": [
+    {
+      "source": "README.md",
+      "target": "00_OVERVIEW/02_Week_1_Project_Brief.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "00_OVERVIEW/02_Week_1_Project_Brief.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "00_OVERVIEW/week1/SOURCE_OF_TRUTH.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "01_DATA/03_Week_2_Data_Foundations.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "01_DATA/03_Week_2_Data_Foundations.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/data_audit.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/model_audit.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/final_verification.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "07_G3_DOMAIN_CONTRACT.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/content_review.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/concept_audit_64.csv",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/before/",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week1_closeout_20261102/reference/selected_best.pt",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "output/week2_foundations_20261103/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "01_RQ_GAP.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "02_LITERATURE.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "05_READING_PLAN.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "06_REVIEW_PROTOCOL.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "01_DATA/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "README.md",
+      "target": "02_MODEL/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "03_Week_2_Data_Foundations.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "03_Week_2_Data_Foundations.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../00_OVERVIEW/week1/SOURCE_OF_TRUTH.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../output/week2_foundations_20261103/data_findings.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../output/week2_foundations_20261103/data_audit.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../output/week2_foundations_20261103/data_aligned_overlap_pairs.csv",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../output/week2_foundations_20261103/data_support_comparison.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../output/week2_foundations_20261103/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "01_03_DATA_AUDIT.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "02_G2_CLASS_DECISION.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "04_ECDR_Data_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "05_ECDR_Data_Analysis_VI.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "06_SUPP04_Autocorrelation.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "07_SUPP07_Statistical_Dependence.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "01_DATA/README.md",
+      "target": "../02_MODEL/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "01_ECDR_CNN_Model_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "01_ECDR_CNN_Model_Analysis_EN.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../01_DATA/03_Week_2_Data_Foundations.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/concept_audit_64.csv",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/content_review.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../scripts/backbone.py",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week1_closeout_20261102/reference/config.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week1_closeout_20261102/reference/selected_best.pt",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/model_audit.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/model_findings.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/model_per_class_metrics.csv",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/model_confusion_matrix.csv",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../ecdr/model.py",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "02_ECDR_CNN_Model_Analysis_VI.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "03_backbone_model.py",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "04_backbone_config.yaml",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "05_checkpoint_seed44_best.pt",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../output/week2_foundations_20261103/before/02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "02_MODEL/README.md",
+      "target": "../07_G3_DOMAIN_CONTRACT.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../01_DATA/03_Week_2_Data_Foundations.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../01_DATA/03_Week_2_Data_Foundations.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "Week_2_Data_Foundations.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../output/week2_foundations_20261103/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../00_OVERVIEW/02_Week_1_Project_Brief.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "../00_OVERVIEW/week1/",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "Week_1_Project_Brief.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "me/README.md",
+      "target": "ECDR_Weeks_1_2_3_Theory.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../01_DATA/03_Week_2_Data_Foundations.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../01_DATA/03_Week_2_Data_Foundations.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../01_DATA/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../02_MODEL/README.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../scripts/week2_data_audit.py",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../scripts/week2_model_audit.py",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "../../scripts/week2_verify_delivery.py",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "before/",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "content_review.md",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "concept_audit_64.csv",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "data_audit.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "model_audit_run.log",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "week1_preservation_verification.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "week1_preservation_verification.log",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "data_compile_final.log",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "model_compile_final.log",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "visual_review.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "document_checks.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "delivery_manifest.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    },
+    {
+      "source": "output/week2_foundations_20261103/README.md",
+      "target": "final_verification.json",
+      "exists": true,
+      "fragment_valid": true,
+      "status": "PASS"
+    }
+  ],
+  "checks": [
+    {
+      "name": "canonical_report_pair_files_exist",
+      "status": "PASS",
+      "expected": [
+        "01_DATA/03_Week_2_Data_Foundations.tex",
+        "01_DATA/03_Week_2_Data_Foundations.pdf",
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf"
+      ],
+      "actual": [
+        "01_DATA/03_Week_2_Data_Foundations.tex",
+        "01_DATA/03_Week_2_Data_Foundations.pdf",
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex",
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf"
+      ],
+      "evidence": {}
+    },
+    {
+      "name": "canonical_pdfs_have_positive_pages",
+      "status": "PASS",
+      "expected": "positive page counts",
+      "actual": {
+        "01_DATA/03_Week_2_Data_Foundations.pdf": 13,
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf": 16
+      },
+      "evidence": {
+        "observed_pages": {
+          "01_DATA/03_Week_2_Data_Foundations.pdf": 13,
+          "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.pdf": 16
+        },
+        "exact_page_count_is_not_a_gate": true
+      }
+    },
+    {
+      "name": "eight_week2_unit_ids_in_canonical_source",
+      "status": "PASS",
+      "expected": [
+        "W2-01",
+        "W2-02",
+        "W2-03",
+        "W2-04",
+        "W2-05",
+        "W2-06",
+        "W2-07",
+        "W2-08"
+      ],
+      "actual": [
+        "W2-01",
+        "W2-02",
+        "W2-03",
+        "W2-04",
+        "W2-05",
+        "W2-06",
+        "W2-07",
+        "W2-08"
+      ],
+      "evidence": {}
+    },
+    {
+      "name": "eight_week2_unit_ids_in_canonical_pdf_text",
+      "status": "PASS",
+      "expected": [
+        "W2-01",
+        "W2-02",
+        "W2-03",
+        "W2-04",
+        "W2-05",
+        "W2-06",
+        "W2-07",
+        "W2-08"
+      ],
+      "actual": [
+        "W2-01",
+        "W2-02",
+        "W2-03",
+        "W2-04",
+        "W2-05",
+        "W2-06",
+        "W2-07",
+        "W2-08"
+      ],
+      "evidence": {
+        "extraction": "pdftotext -layout"
+      }
+    },
+    {
+      "name": "model_math_markers_in_source",
+      "status": "PASS",
+      "expected": {
+        "parameters_283692": true,
+        "macs_1172992": true,
+        "receptive_field_20": true,
+        "feature_jump_4": true
+      },
+      "actual": {
+        "parameters_283692": true,
+        "macs_1172992": true,
+        "receptive_field_20": true,
+        "feature_jump_4": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "model_math_markers_in_pdf_text",
+      "status": "PASS",
+      "expected": {
+        "parameters_283692": true,
+        "macs_1172992": true,
+        "receptive_field_20": true,
+        "feature_jump_4": true
+      },
+      "actual": {
+        "parameters_283692": true,
+        "macs_1172992": true,
+        "receptive_field_20": true,
+        "feature_jump_4": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "reported_point_margin_min_p95_match_model_report",
+      "status": "PASS",
+      "expected": {
+        "model_source": {
+          "minimum_0.0001135": true,
+          "p95_11.88764": true
+        },
+        "model_pdf": {
+          "minimum_0.0001135": true,
+          "p95_11.88764": true
+        }
+      },
+      "actual": {
+        "model_source": {
+          "minimum_0.0001135": true,
+          "p95_11.88764": true
+        },
+        "model_pdf": {
+          "minimum_0.0001135": true,
+          "p95_11.88764": true
+        }
+      },
+      "evidence": {}
+    },
+    {
+      "name": "data_independent_objective_method_conclusion_source_and_pdf",
+      "status": "PASS",
+      "expected": {
+        "source": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        },
+        "pdf": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        }
+      },
+      "actual": {
+        "source": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        },
+        "pdf": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        }
+      },
+      "evidence": {}
+    },
+    {
+      "name": "model_independent_objective_method_conclusion_source_and_pdf",
+      "status": "PASS",
+      "expected": {
+        "source": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        },
+        "pdf": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        }
+      },
+      "actual": {
+        "source": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        },
+        "pdf": {
+          "objective": true,
+          "method": true,
+          "conclusion": true
+        }
+      },
+      "evidence": {}
+    },
+    {
+      "name": "data_input_contract_and_counts_in_source_and_pdf",
+      "status": "PASS",
+      "expected": {
+        "source": {
+          "window_count_17453": true,
+          "supervised_total_12278": true,
+          "aligned_pairs_17392": true,
+          "train_supervised_6955": true,
+          "majority_threshold_77_of_128": true,
+          "float32_contract": true,
+          "six_by_128_contract": true,
+          "four_label_policies": true
+        },
+        "pdf": {
+          "window_count_17453": true,
+          "supervised_total_12278": true,
+          "aligned_pairs_17392": true,
+          "train_supervised_6955": true,
+          "majority_threshold_77_of_128": true,
+          "float32_contract": true,
+          "six_by_128_contract": true,
+          "four_label_policies": true
+        }
+      },
+      "actual": {
+        "source": {
+          "window_count_17453": true,
+          "supervised_total_12278": true,
+          "aligned_pairs_17392": true,
+          "train_supervised_6955": true,
+          "majority_threshold_77_of_128": true,
+          "float32_contract": true,
+          "six_by_128_contract": true,
+          "four_label_policies": true
+        },
+        "pdf": {
+          "window_count_17453": true,
+          "supervised_total_12278": true,
+          "aligned_pairs_17392": true,
+          "train_supervised_6955": true,
+          "majority_threshold_77_of_128": true,
+          "float32_contract": true,
+          "six_by_128_contract": true,
+          "four_label_policies": true
+        }
+      },
+      "evidence": {}
+    },
+    {
+      "name": "data_report_does_not_duplicate_model_results",
+      "status": "PASS",
+      "expected": {
+        "no_model_confusion_counts": true,
+        "no_model_margin_distribution_values": true,
+        "no_model_cost_or_receptive_field_values": true
+      },
+      "actual": {
+        "no_model_confusion_counts": true,
+        "no_model_margin_distribution_values": true,
+        "no_model_cost_or_receptive_field_values": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "data_and_model_contract_boundaries_present",
+      "status": "PASS",
+      "expected": {
+        "data_title_and_final_contract": true,
+        "model_title_and_input_contract": true,
+        "data_points_to_model_study": true,
+        "model_points_to_data_contract": true
+      },
+      "actual": {
+        "data_title_and_final_contract": true,
+        "model_title_and_input_contract": true,
+        "data_points_to_model_study": true,
+        "model_points_to_data_contract": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "required_full_identity_ids_in_data_model_sources_and_model_readme",
+      "status": "PASS",
+      "expected": {
+        "01_DATA/03_Week_2_Data_Foundations.tex": {
+          "preprocessing_id": true
+        },
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex": {
+          "checkpoint_sha256": true,
+          "preprocessing_id": true
+        },
+        "02_MODEL/README.md": {
+          "checkpoint_sha256": true,
+          "preprocessing_id": true
+        }
+      },
+      "actual": {
+        "01_DATA/03_Week_2_Data_Foundations.tex": {
+          "checkpoint_sha256": false,
+          "preprocessing_id": true
+        },
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex": {
+          "checkpoint_sha256": true,
+          "preprocessing_id": true
+        },
+        "README.md": {
+          "checkpoint_sha256": false,
+          "preprocessing_id": false
+        },
+        "01_DATA/README.md": {
+          "checkpoint_sha256": false,
+          "preprocessing_id": false
+        },
+        "02_MODEL/README.md": {
+          "checkpoint_sha256": true,
+          "preprocessing_id": true
+        }
+      },
+      "evidence": {
+        "data_requires_preprocessing_id_only": true,
+        "model_requires_checkpoint_and_preprocessing_ids": true
+      }
+    },
+    {
+      "name": "no_truncated_known_checkpoint_or_preprocessing_ids",
+      "status": "PASS",
+      "expected": "any mentioned known ID is full length",
+      "actual": {
+        "01_DATA/03_Week_2_Data_Foundations.tex": [],
+        "02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex": [],
+        "README.md": [],
+        "01_DATA/README.md": [],
+        "02_MODEL/README.md": []
+      },
+      "evidence": {}
+    },
+    {
+      "name": "open_annotation_historical_provenance_and_g2_hold_in_data_source",
+      "status": "PASS",
+      "expected": {
+        "annotation_origin_open": true,
+        "historical_provenance_open": true,
+        "g2_hold": true
+      },
+      "actual": {
+        "annotation_origin_open": true,
+        "historical_provenance_open": true,
+        "g2_hold": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "open_annotation_historical_provenance_and_g2_hold_in_data_pdf",
+      "status": "PASS",
+      "expected": {
+        "annotation_origin_open": true,
+        "historical_provenance_open": true,
+        "g2_hold": true
+      },
+      "actual": {
+        "annotation_origin_open": true,
+        "historical_provenance_open": true,
+        "g2_hold": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "data_audit_required_assertions_pass",
+      "status": "PASS",
+      "expected": {
+        "raw_rebuilt_windows_exact": true,
+        "raw_rebuilt_manifest_exact": true,
+        "shape_is_17453x6x128": true,
+        "stream_split_denominators": true,
+        "subject_disjoint_17_4_9": true,
+        "supervised_support_6955_1751_3572": true,
+        "one_sample_assignment_delta_98": true,
+        "normalization_matches_checkpoint": true,
+        "data_audit_script_sha_matches_current_source": true,
+        "aligned_overlap_pairs_17392_raw_and_normalized_exact": true
+      },
+      "actual": {
+        "raw_rebuilt_windows_exact": true,
+        "raw_rebuilt_manifest_exact": true,
+        "shape_is_17453x6x128": true,
+        "stream_split_denominators": true,
+        "subject_disjoint_17_4_9": true,
+        "supervised_support_6955_1751_3572": true,
+        "one_sample_assignment_delta_98": true,
+        "normalization_matches_checkpoint": true,
+        "data_audit_script_sha_matches_current_source": true,
+        "aligned_overlap_pairs_17392_raw_and_normalized_exact": true
+      },
+      "evidence": {}
+    },
+    {
+      "name": "model_audit_required_assertions_pass",
+      "status": "PASS",
+      "expected": {
+        "all_required_named_checks_present": true,
+        "verified_count_matches_names": true,
+        "audit_script_sha_matches_current_source": true,
+        "parameter_count_283692": true,
+        "mac_count_1172992": true,
+        "receptive_field_and_jump_20_4": true,
+        "stored_logits_exact_and_argmax_zero_disagreement": true,
+        "margin_min_p95_and_max_match_reported_artifact": true
+      },
+      "actual": {
+        "all_required_named_checks_present": true,
+        "verified_count_matches_names": true,
+        "audit_script_sha_matches_current_source": true,
+        "parameter_count_283692": true,
+        "mac_count_1172992": true,
+        "receptive_field_and_jump_20_4": true,
+        "stored_logits_exact_and_argmax_zero_disagreement": true,
+        "margin_min_p95_and_max_match_reported_artifact": true
+      },
+      "evidence": {
+        "required_named_checks": [
+          "batchnorm_eval_repeated_forward_is_deterministic",
+          "checkpoint_sha256_matches_selection",
+          "leaf_module_count_is_15",
+          "mac_count_is_1172992",
+          "manifest_margins_match_fresh_top_two_logits_atol_1e-5_rtol_1e-5",
+          "manifest_row_ids_predictions_and_class_names_exact_match",
+          "normalization_arrays_match_checkpoint_exactly",
+          "normalization_file_sha256_matches_checkpoint",
+          "normalization_preprocessing_id_matches",
+          "parameter_count_is_283692",
+          "receptive_field_is_20_and_stride_is_4",
+          "run_seed_epoch_class_order_match",
+          "stored_argmax_predictions_exact_match",
+          "stored_logits_allclose_atol_1e-5_rtol_1e-5",
+          "test_row_ids_match_stored_prediction_artifact"
+        ],
+        "verified_check_count": 18,
+        "margin_min": 0.00011348724365234375,
+        "margin_p95": 11.887640953063965,
+        "margin_max": 21.468536376953125
+      }
+    },
+    {
+      "name": "week1_preservation_receipt_65_of_65_pass",
+      "status": "PASS",
+      "expected": {
+        "overall_status": "PASS",
+        "total_checks": 65,
+        "passed": 65,
+        "failed": 0
+      },
+      "actual": {
+        "total_checks": 65,
+        "passed": 65,
+        "failed": 0
+      },
+      "evidence": {
+        "receipt": "output/week2_foundations_20261103/week1_preservation_verification.json"
+      }
+    },
+    {
+      "name": "final_generated_verification_receipt_passes",
+      "status": "PASS",
+      "expected": {
+        "overall_status": "PASS"
+      },
+      "actual": {
+        "overall_status": "PASS"
+      },
+      "evidence": {
+        "receipt": "output/week2_foundations_20261103/final_verification.json"
+      }
+    },
+    {
+      "name": "markdown_relative_links_and_local_fragments_resolve",
+      "status": "PASS",
+      "expected": "all local links resolve and Markdown fragments exist",
+      "actual": [],
+      "evidence": {
+        "markdown_files_checked": [
+          "README.md",
+          "01_DATA/README.md",
+          "02_MODEL/README.md",
+          "me/README.md",
+          "output/week2_foundations_20261103/README.md"
+        ],
+        "local_links_checked": 92,
+        "external_links_skipped_without_network": true,
+        "pending_receipt_links": 0
+      }
+    },
+    {
+      "name": "64_concept_audit_unique_expected_ids",
+      "status": "PASS",
+      "expected": {
+        "count": 64,
+        "unique": true,
+        "ids": [
+          "P01",
+          "P02",
+          "P03",
+          "P04",
+          "P05",
+          "P06",
+          "P07",
+          "P08",
+          "C01",
+          "C02",
+          "C03",
+          "C04",
+          "C05",
+          "C06",
+          "C07",
+          "C08",
+          "C09",
+          "C10",
+          "C11",
+          "C12",
+          "C13",
+          "C14",
+          "C15",
+          "C16",
+          "C17",
+          "C18",
+          "C19",
+          "C20",
+          "C21",
+          "C22",
+          "C23",
+          "C24",
+          "C25",
+          "C26",
+          "C27",
+          "C28",
+          "C29",
+          "C30",
+          "C31",
+          "C32",
+          "C33",
+          "C34",
+          "C35",
+          "C36",
+          "C37",
+          "C38",
+          "C39",
+          "C40",
+          "C41",
+          "C42",
+          "C43",
+          "C44",
+          "C45",
+          "C46",
+          "C47",
+          "C48",
+          "C49",
+          "C50",
+          "C51",
+          "C52",
+          "C53",
+          "C54",
+          "C55",
+          "C56"
+        ]
+      },
+      "actual": {
+        "exists": true,
+        "row_count": 64,
+        "unique_count": 64,
+        "ids_match": true
+      },
+      "evidence": {
+        "csv": "output/week2_foundations_20261103/concept_audit_64.csv"
+      }
+    },
+    {
+      "name": "content_review_artifact_exists",
+      "status": "PASS",
+      "expected": true,
+      "actual": true,
+      "evidence": {
+        "path": "output/week2_foundations_20261103/content_review.md"
+      }
+    },
+    {
+      "name": "manifest_excludes_its_own_outputs",
+      "status": "PASS",
+      "expected": "document_checks.json and delivery_manifest.json are not hashed",
+      "actual": true,
+      "evidence": {}
+    }
+  ],
+  "pending": [],
+  "overall_status": "PASS"
+}

@@ -1,46 +1,33 @@
-# TẦNG 1: NỀN TẢNG DỮ LIỆU & XỬ LÝ TÍN HIỆU (TIER 1 - DATA & SIGNALS)
+# HAPT data foundations — current Week 2
 
-> **Mục tiêu của Tầng 1**:  
-> Nắm vững cấu trúc tập dữ liệu UCI HAPT (61 recordings, 12 classes, 30 subjects), hiểu rõ lý do cắt bỏ các lớp chuyển tiếp để chỉ tập trung vào 6 lớp cơ bản `pure-only`, phát hiện sự sụp đổ của giả định i.i.d. do hiện tượng tự tương quan cực cao ($r \approx 0.985$), và làm quen với các script audit dữ liệu.
+Start with [Report A: HAPT Data Foundations](03_Week_2_Data_Foundations.tex) ([PDF](03_Week_2_Data_Foundations.pdf)). This independent English data study is aligned with the [frozen Week 1 K=12 contract](../00_OVERVIEW/week1/SOURCE_OF_TRUTH.md). Its eight units cover physical signals, windowing, labels, subject splits/support, normalization, dependence/quality, provenance, and the final data contract. It hands a defined normalized tensor and label/stream semantics to the separate [CNN Model Foundations study](../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex); that report owns architecture, prediction metrics and certification obligations.
 
----
+## Verified input contract
 
-## 1. Trình Tự Đọc Tuyến Tính (Step-by-Step Reading Path)
+- HAPT raw accelerometer and gyroscope recordings: six channels, 50 Hz, 30 subjects, 61 recordings. Acceleration is in g; angular velocity in rad/s. The 561-feature tables are a separate dataset representation.
+- Input windows are float32 `6 × 128`, stride 64, with no cross-recording slices. All 17,453 stored windows and ten manifest fields were rebuilt exactly; all 17,392 within-recording aligned overlaps match.
+- Supervised policy is **K=12, pure or majority with dominant count / 128 ≥ 0.6**. This produces 12,278 examples across all splits. The historical K=6 pure-only choice is not the current reference.
+- Full stream train/validation/test: **9,978 / 2,422 / 5,053**. Supervised: **6,955 / 1,751 / 3,572**. Subject groups are disjoint, **17 / 4 / 9**.
+- Normalization is fit only on the 6,955 supervised training windows, pooling window/time axes with float64 accumulation, storing float32 means/scales, clipping std at `1e-6`, and producing float32 inputs. Shared raw samples receive repeated weight when they occur in selected overlapping windows.
 
-1. [`01_03_DATA_AUDIT.md`](01_03_DATA_AUDIT.md):  
-   - **Nói cái gì**: Báo cáo kiểm toán dữ liệu UCI HAPT, lịch sử phát hiện và đính chính lỗi script 05 (lỗi index dòng khiến 98.2% cặp đọc nhầm exp01).  
-   - **Đọc xong hiểu được**: Cấu trúc phân chia tập train/val/test theo người dùng (disjoint subjects) và số lượng cửa sổ chuẩn.
-2. [`02_G2_CLASS_DECISION.md`](02_G2_CLASS_DECISION.md):  
-   - **Nói cái gì**: Quyết định chiến lược: Đóng băng tập dữ liệu ở 6 lớp tĩnh/động cơ bản (`K=6 pure-only`).  
-   - **Đọc xong hiểu được**: Lý do loại bỏ 6 lớp chuyển tiếp thế đứng (postural transitions) vì số lượng mẫu quá ít ($<2\%$), không đủ hỗ trợ chứng nhận an toàn.
-3. [`03_Week_2_Data_Foundations.pdf`](03_Week_2_Data_Foundations.pdf) ([Mã nguồn TeX](03_Week_2_Data_Foundations.tex)):  
-   - **Nói cái gì**: Báo cáo học thuật Tuần 2: Phân tích cửa sổ thời gian 128 điểm mẫu, bước trượt 64 điểm (overlap 50%) và hình học chuẩn hóa.  
-   - **Đọc xong hiểu được**: Đẳng thức overlap $X'[:, 0:64] = X[:, 64:128]$ và cơ chế căn chỉnh tọa độ.
-4. [`04_ECDR_Data_Analysis_EN.pdf`](04_ECDR_Data_Analysis_EN.pdf) ([Bản tiếng Việt](05_ECDR_Data_Analysis_VI.pdf)):  
-   - **Nói cái gì**: Báo cáo phân tích dữ liệu chuyên sâu 28 trang: Phân tích 4 độ đo vật lý, hình học elip biến dạng dưới chuẩn hóa z-score.  
-   - **Đọc xong hiểu được**: Độ phủ thực tế của PCA và tại sao Explained Variance không đồng nghĩa với Residual Bound.
-5. [`06_SUPP04_Autocorrelation.pdf`](06_SUPP04_Autocorrelation.pdf) ([Mã nguồn TeX](06_SUPP04_Autocorrelation.tex)):  
-   - **Nói cái gì**: Chuyên đề tự tương quan (SUPP-04): Công thức Pearson, ACF, và phản ví dụ dốc tuyến tính.  
-   - **Đọc xong hiểu được**: Tại sao tín hiệu cảm biến liên tục có tương quan lag-1 cực cao ($r \approx 0.985$) nhưng hai cửa sổ overlap 50% vẫn có thể mang nhãn khác nhau.
-6. [`07_SUPP07_Statistical_Dependence.pdf`](07_SUPP07_Statistical_Dependence.pdf) ([Mã nguồn TeX](07_SUPP07_Statistical_Dependence.tex)):  
-   - **Nói cái gì**: Chuyên đề phụ thuộc thống kê (SUPP-07): Tại sao giả định i.i.d. thất bại, hiện tượng lạm phát phương sai $\times 65$.  
-   - **Đọc xong hiểu được**: Cách áp dụng Block Bootstrap để ước lượng khoảng tin cậy chuẩn xác cho chuỗi thời gian phụ thuộc.
+## Evidence and reproduction
 
----
+[Data findings](../output/week2_foundations_20261103/data_findings.md), [machine-readable audit](../output/week2_foundations_20261103/data_audit.json), [all aligned pairs](../output/week2_foundations_20261103/data_aligned_overlap_pairs.csv), and [historical support comparison](../output/week2_foundations_20261103/data_support_comparison.json) record the executed 3 November 2026 analysis.
 
-## 2. Các Script Kiểm Toán Dữ Liệu Có Thể Chạy Ngay
-- [`script_01_fetch_hapt.py`](script_01_fetch_hapt.py): Kiểm tra dữ liệu raw gốc UCI HAPT trong [`data_dir`](data_dir).
-- [`script_02_validate_raw.py`](script_02_validate_raw.py): Xác thực tính toàn vẹn các tệp raw signal.
-- [`script_03_build_windows.py`](script_03_build_windows.py): Cắt cửa sổ 128 mẫu trượt 64 mẫu.
-- [`script_04_audit_splits.py`](script_04_audit_splits.py): Kiểm toán phân chia tập train/val/test theo người dùng.
-- [`script_05_audit_temporal_events.py`](script_05_audit_temporal_events.py): Đo đạc độ tương quan và overlap chuỗi thời gian.
-- [`script_06_audit_class_support.py`](script_06_audit_class_support.py): Đo đạc số lượng mẫu cho 12 lớp.
-- [`script_06b_corr_semantics.py`](script_06b_corr_semantics.py): Tính toán ma trận tự tương quan ngữ nghĩa.
+```bash
+.venv/bin/python scripts/week2_data_audit.py
+```
 
----
+The command reads raw HAPT and frozen artifacts and fails if required consistency assertions fail. It does not regenerate the frozen corpus or train a model. See the [Week 2 closeout](../output/week2_foundations_20261103/README.md) for final document QA.
 
-## 3. Tiêu Chí Nghiệm Thu Tầng 1 (Exit Criteria)
-- [x] Hiểu cấu trúc 6 kênh cảm biến và 2.874 pure test windows.
-- [x] Hiểu lý do toán học và kỹ thuật của việc chọn $K=6$ thay vì $K=12$.
-- [x] Nắm vững hiện tượng tự tương quan và thất bại của i.i.d.
-- [x] Sẵn sàng chuyển tiếp sang **[Tầng 2: Kiến Trúc Học Sâu & Mô Hình CNN](../02_model_cnn/README.md)**.
+## Limitations retained explicitly
+
+The original annotation index origin is unresolved; changing by one sample changes 98 policy/label assignments. The historical class-support JSON does not reproduce the current source predicate: its broad total is 13,866 versus 12,278 supervised. The difference equals ambiguous support, but the artifact's generating provenance is not established. Transition undersupport keeps G2 HOLD. Overlap and within-subject dependence prohibit treating all windows as independent participants or interpreting descriptive windowwise intervals as population guarantees.
+
+`ecdr/preprocessing.py` has a distinct float64/default-floor/identity contract. It is not a drop-in identity match for the selected reference normalizer.
+
+## Historical source shelf
+
+[Earlier data audit](01_03_DATA_AUDIT.md), [K=6 class decision](02_G2_CLASS_DECISION.md), [data analysis EN](04_ECDR_Data_Analysis_EN.tex), [data analysis VI](05_ECDR_Data_Analysis_VI.tex), [autocorrelation supplement](06_SUPP04_Autocorrelation.tex), and [dependence supplement](07_SUPP07_Statistical_Dependence.tex) remain useful historical or conceptual material. Their K=6 choices, old metrics and gate labels do not replace the current K=12 contract. Original numbered scripts are historical audit entry points; use the new Week 2 script for this frozen reproduction.
+
+Continue to the [current model entry point](../02_MODEL/README.md).

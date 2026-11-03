@@ -1,0 +1,35 @@
+{
+  "source": "data/ecdr_12_class_support.json",
+  "meaning": "historical support snapshot; current source scripts/ecdr_audit_support.py calls ecdr.data.audit_12_class_support, whose majority predicate includes only label_policy in pure/majority and matching class ID. The stored historical counts do not reproduce that current predicate on this frozen manifest, so historical artifact provenance/predicate cannot be confirmed from the artifact alone.",
+  "current_source_predicate": "split == selected split AND label_policy in {pure, majority} AND label_majority == class_id",
+  "current_source_majority_train_val_test": {
+    "train": 6955,
+    "val": 1751,
+    "test": 3572
+  },
+  "pure_train_val_test": {
+    "train": 5878,
+    "val": 1490,
+    "test": 2993
+  },
+  "majority_train_val_test": {
+    "train": 7859,
+    "val": 1956,
+    "test": 4051
+  },
+  "current_supervised_train_val_test": {
+    "train": 6955,
+    "val": 1751,
+    "test": 3572
+  },
+  "observed_ambiguous_train_val_test": {
+    "train": 904,
+    "val": 205,
+    "test": 479
+  },
+  "historical_majority_matches_current_source": {
+    "train": false,
+    "val": false,
+    "test": false
+  }
+}

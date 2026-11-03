@@ -3,7 +3,9 @@
 
 Canonical Week 1 authority is owned by 00_OVERVIEW/02_Week_1_Project_Brief.tex.
 This script extracts the canonical Week 1 body to 00_OVERVIEW/week1/brief_body.tex
-for combined master / compat wrappers, and extracts Week 2 & 3 from master.
+for combined master / compat wrappers. Week 2 has its own canonical source in
+01_DATA; its compatibility wrapper must never be regenerated from the old master.
+Only the historical Week 3 extract still comes from that master.
 """
 from pathlib import Path
 import argparse
@@ -54,6 +56,11 @@ def parse_args(argv=None):
         description="Extract standalone weekly LaTeX reports and sync canonical extracts."
     )
     parser.add_argument(
+        "--week2-only",
+        action="store_true",
+        help="Sync only the Week 2 compatibility wrapper from its canonical 01_DATA source; preserve other weeks.",
+    )
+    parser.add_argument(
         "--week1-only",
         action="store_true",
         help="Sync generated Week 1 body extract from canonical authority and return before legacy Week 2/3 extraction.",
@@ -61,8 +68,31 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
+def sync_week2_wrapper() -> None:
+    canonical = ROOT.parent / "01_DATA" / "03_Week_2_Data_Foundations.tex"
+    if not canonical.is_file():
+        raise FileNotFoundError(f"Authoritative Week 2 source missing: {canonical}")
+    wrapper = ROOT / "Week_2_Data_Foundations.tex"
+    content = (
+        "% GENERATED compatibility wrapper. Edit 01_DATA/03_Week_2_Data_Foundations.tex.\n"
+        "\\IfFileExists{01_DATA/03_Week_2_Data_Foundations.tex}{%\n"
+        "  \\input{01_DATA/03_Week_2_Data_Foundations.tex}%\n"
+        "}{%\n"
+        "  \\input{../01_DATA/03_Week_2_Data_Foundations.tex}%\n"
+        "}\n"
+    )
+    if not wrapper.exists() or wrapper.read_text(encoding="utf-8") != content:
+        wrapper.write_text(content, encoding="utf-8")
+        print(f"Updated {wrapper} to reference canonical Week 2 source.")
+
+
 def main(argv=None) -> None:
     args = parse_args(argv)
+    if args.week1_only and args.week2_only:
+        raise ValueError("Choose only one of --week1-only and --week2-only")
+    if args.week2_only:
+        sync_week2_wrapper()
+        return
 
     # 1. Sync generated Week 1 extract from authoritative canonical source
     canonical_file = ROOT.parent / "00_OVERVIEW" / "02_Week_1_Project_Brief.tex"
@@ -73,7 +103,8 @@ def main(argv=None) -> None:
         print("Week 1 body sync complete (--week1-only requested; returning before legacy Week 2/3 extraction).")
         return
 
-    # 2. Extract Week 2 & Week 3 from monolithic master (Week 1 explicitly skipped)
+    sync_week2_wrapper()
+    # 2. Extract only historical Week 3 from monolithic master.
     MASTER = ROOT / "ECDR_Weeks_1_2_3_Theory.tex"
     text = MASTER.read_text(encoding="utf-8")
     preamble = text.split(r"\begin{document}", 1)[0]
@@ -87,6 +118,9 @@ def main(argv=None) -> None:
         3: ("Week_3_Mathematical_Foundations", "Week 3: Cơ sở toán học của ECDR"),
     }
     for week, (stem, title) in titles.items():
+        if week == 2:
+            print(f"Skipping {stem}.tex (canonical Week 2 wrapper preserved)")
+            continue
         if week == 1:
             # Preserve canonical Week 1 owned 00_OVERVIEW/02_Week_1_Project_Brief.tex
             # and existing me/Week_1_Project_Brief.tex compatibility wrapper; never regenerate or overwrite.

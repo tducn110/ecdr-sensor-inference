@@ -1,43 +1,41 @@
-# TẦNG 2: KIẾN TRÚC MÔ HÌNH HỌC SÂU 1D-CNN (TIER 2 - DEEP LEARNING MODEL)
+# SmallCNN1D model foundations — current Week 2
 
-> **Mục tiêu của Tầng 2**:  
-> Bóc tách kiến trúc mô hình học sâu `SmallCNN1D` từ nguyên lý đầu: Hiểu rõ từng tầng tích chập Conv1d, BatchNorm, MaxPool, Flatten, Linear; kiểm tra 282.918 tham số; đối chiếu số lượng phép nhân cộng (MACs) và độ trễ thực tế trên CPU (~0.24ms) để làm cơ sở cho bài toán tiết kiệm năng lượng.
+Read [Report B: SmallCNN1D Model Foundations](01_ECDR_CNN_Model_Analysis_EN.tex) ([PDF](01_ECDR_CNN_Model_Analysis_EN.pdf)) after the independent [Report A: HAPT Data Foundations](../01_DATA/03_Week_2_Data_Foundations.tex). This model study has its own objective, source/inference-audit method, rationale for 1D CNN, full layer equations and tensor trace, resource accounting, all twelve class metrics, confusion matrix, point-margin analysis, conclusion and model contract for Week 3. The [64-concept audit](../output/week2_foundations_20261103/concept_audit_64.csv) and [content review](../output/week2_foundations_20261103/content_review.md) record the full disposition of the former theoretical exposition.
 
----
+## Current frozen reference
 
-## 1. Trình Tự Đọc Tuyến Tính (Step-by-Step Reading Path)
+The implementation is [scripts/backbone.py:SmallCNN1D](../scripts/backbone.py), instantiated using the [K=12 run configuration](../output/week1_closeout_20261102/reference/config.json). The class's default and the older loader helpers are historical K=6 behavior; the frozen K=12 pipeline supplies the explicit class count and its own locked supervised selection.
 
-1. [`01_ECDR_CNN_Model_Analysis_EN.pdf`](01_ECDR_CNN_Model_Analysis_EN.pdf) ([Bản tiếng Việt](02_ECDR_CNN_Model_Analysis_VI.pdf)):  
-   - **Nói cái gì**: Bóc tách chi tiết mô hình CNN qua 64 concepts: Receptive field, MACs, FLOPs, bộ nhớ và các đẳng thức toán học.  
-   - **Đọc xong hiểu được**: Tại sao các tầng MaxPool gây khó khăn cho việc chứng nhận hình thức và cách tính toán chi phí inference.
-2. [`03_backbone_model.py`](03_backbone_model.py):  
-   - **Nói cái gì**: Mã nguồn PyTorch định nghĩa lớp `SmallCNN1D`: Conv1d `6→32→64→64`, BatchNorm, ReLU, 2 MaxPool, Flatten 2048, Linear 128, Linear 6.  
-   - **Đọc xong hiểu được**: Dòng chảy tensor từ $(B, 6, 128)$ thành $(B, 6)$ logits.
-3. [`04_backbone_config.yaml`](04_backbone_config.yaml):  
-   - **Nói cái gì**: Tệp cấu hình siêu tham số huấn luyện (learning rate, batch size, optimizer, seeds).  
-   - **Đọc xong hiểu được**: Thiết lập thí nghiệm chuẩn của Gate G2.
-4. [`05_checkpoint_seed44_best.pt`](05_checkpoint_seed44_best.pt):  
-   - **Nói cái gì**: Trọng số mô hình đã huấn luyện tốt nhất được chọn bằng validation (Seed 44).  
-   - **Đọc xong hiểu được**: Điểm đóng băng của mô hình (Frozen Reference).
-5. [`06_g2_model_summary.json`](06_g2_model_summary.json) & [`07_g2_cpu_latency.json`](07_g2_cpu_latency.json):  
-   - **Nói cái gì**: Artifacts ghi nhận số lượng tham số (282.918) và phân phối độ trễ CPU batch=1 (mean 0.2511 ms, p50 0.2357 ms).  
-   - **Đọc xong hiểu được**: Cột mốc thời gian cơ sở $\tau_{\text{backbone}}$ mà phương pháp reuse cần vượt qua.
-6. [`08_g2_metrics.json`](08_g2_metrics.json) & [`10_confusion_matrix.png`](10_confusion_matrix.png):  
-   - **Nói cái gì**: Độ chính xác và ma trận nhầm lẫn của mô hình: Test Macro-F1 $0.9354$ trên 2.874 pure windows.  
-   - **Đọc xong hiểu được**: Khả năng phân loại thực tế của mô hình nền.
+| Stage | Output shape excluding batch | Trainable parameters |
+| --- | --- | ---: |
+| Conv 6→32, k5, p2 + BN + ReLU | 32 × 128 | 1,056 |
+| MaxPool2 | 32 × 64 | 0 |
+| Conv 32→64, k3, p1 + BN + ReLU | 64 × 64 | 6,336 |
+| MaxPool2 | 64 × 32 | 0 |
+| Conv 64→64, k3, p1 + BN + ReLU | 64 × 32 | 12,480 |
+| Flatten → Linear 2048→128 + ReLU | 128 | 262,272 |
+| Linear 128→12 | 12 logits | 1,548 |
+| **Total** | **12 logits** | **283,692** |
 
----
+Run `week1_ref_1793620216_9d6c1d85` selected seed **43**, epoch **8**, by validation macro-F1. The [selected checkpoint](../output/week1_closeout_20261102/reference/selected_best.pt) has SHA-256 `8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1`. Preprocessing ID is `aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e`.
 
-## 2. Các Script Huấn Luyện & Đo Độ Trễ Có Thể Thực Thi
-- [`script_07_count_params.py`](script_07_count_params.py): Đếm chính xác từng tham số của từng tầng trong mô hình.
-- [`script_08_train_backbone.py`](script_08_train_backbone.py): Script huấn luyện mô hình SmallCNN1D trên 3 hạt giống (42, 43, 44).
-- [`script_09_evaluate_backbone.py`](script_09_evaluate_backbone.py): Đánh giá mô hình và vẽ ma trận nhầm lẫn.
-- [`script_10_profile_inference.py`](script_10_profile_inference.py): Đo đạc độ trễ inference forward trên CPU.
+## Executed Week 2 verification
 
----
+The [model audit](../output/week2_foundations_20261103/model_audit.json) and [findings](../output/week2_foundations_20261103/model_findings.md) reproduce all **5,053** test-stream logits exactly in the recorded CPU environment, with **0/5,053** argmax differences against stored outputs. Ground-truth metrics use **3,572** supervised windows: **3,181 correct**, accuracy **0.8905375**, macro-F1 **0.7762645**. [Per-class metrics](../output/week2_foundations_20261103/model_per_class_metrics.csv) and [confusion counts](../output/week2_foundations_20261103/model_confusion_matrix.csv) preserve all twelve classes.
 
-## 3. Tiêu Chí Nghiệm Thu Tầng 2 (Exit Criteria)
-- [x] Nắm rõ cấu trúc mạng SmallCNN1D và 282.918 tham số.
-- [x] Hiểu mốc độ trễ cơ sở $\tau_{\text{backbone}} \approx 0.24\text{ms}$.
-- [x] Xác định checkpoint `backbone_best.pt` là thực thể bất biến.
-- [x] Sẵn sàng chuyển tiếp sang **[Tầng 3: Lý Thuyết Toán Học & Chứng Nhận An Toàn](../03_math_certification/README.md)**.
+The executed graph has 15 leaf modules, an interior final-feature receptive field of **20 samples** and feature jump **4**. Conv/Linear arithmetic totals **1,172,992 MACs/window**, excluding bias additions, BN, ReLU, pooling, memory traffic and framework overhead. Counts do not predict latency.
+
+```bash
+.venv/bin/python scripts/week2_model_audit.py
+```
+
+The audit performs inference, not training. Its CPU timing uses batch one, one thread, 100 warmups and 1,000 repetitions of one fixed resident normalized input. The JSON records actual run values. It is forward-only, not complete reference-path latency, ECDR cost, an energy measurement or proof of speedup. See the [closeout](../output/week2_foundations_20261103/README.md) for verified report builds and exact evidence hashes.
+
+## Model boundaries and historical artifacts
+
+- [ecdr/model.py:ECDRConv1DNet](../ecdr/model.py) is the distinct valid-convolution/ReLU/GAP model with **20,332 parameters** at K=12. Its GAP cancellation identities do not apply to this BN/Pool/Flatten–MLP reference. Its separate preprocessing contract must not be substituted by matching output width alone.
+- The old [Vietnamese companion](02_ECDR_CNN_Model_Analysis_VI.tex), [copied model source](03_backbone_model.py), [K=6 config](04_backbone_config.yaml), [seed-44 checkpoint](05_checkpoint_seed44_best.pt), numbered G2 metrics, plots and training/profile scripts remain historical artifacts. Their **282,918 parameters**, **2,874 pure test windows** and roughly **0.24 ms** K=6 latency are not current K=12 evidence.
+- The previous English GAP exposition is preserved in the [before-edit snapshot](../output/week2_foundations_20261103/before/02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex).
+- G2 quality remains **HOLD** because transition support is weak. Pointwise winning margins, repeatable inference and adjacent prediction agreement do not constitute a whole-region certificate.
+
+The next mathematical stage must bound **all eleven competing class margins over the declared region**, verify conservative membership, preserve model/preprocessing/anchor/domain identity, justify floating-point soundness and define reset/fallback behavior. The [domain contract](../07_G3_DOMAIN_CONTRACT.md) is a starting specification; it is not an implemented verifier for this reference.

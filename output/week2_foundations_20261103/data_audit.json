@@ -1,0 +1,515 @@
+{
+  "raw_rebuilt_windows_exact": true,
+  "raw_rebuilt_manifest_exact": true,
+  "window_shape": [
+    17453,
+    6,
+    128
+  ],
+  "window_dtype": "float32",
+  "finite_values": true,
+  "window_stride": 64,
+  "window_length": 128,
+  "recordings": 61,
+  "subjects": 30,
+  "label_policy_counts": {
+    "pure": 10361,
+    "unlabeled": 3587,
+    "majority": 1917,
+    "ambiguous": 1588
+  },
+  "split_stream_denominators": {
+    "train": 9978,
+    "val": 2422,
+    "test": 5053
+  },
+  "split_supervised_support": {
+    "train": {
+      "stream_n": 9978,
+      "supervised_n": 6955,
+      "excluded_ambiguous": 904,
+      "excluded_unlabeled": 2119,
+      "by_class": [
+        {
+          "id": 1,
+          "n": 1077,
+          "subjects": 17
+        },
+        {
+          "id": 2,
+          "n": 973,
+          "subjects": 17
+        },
+        {
+          "id": 3,
+          "n": 894,
+          "subjects": 17
+        },
+        {
+          "id": 4,
+          "n": 1103,
+          "subjects": 17
+        },
+        {
+          "id": 5,
+          "n": 1206,
+          "subjects": 17
+        },
+        {
+          "id": 6,
+          "n": 1188,
+          "subjects": 17
+        },
+        {
+          "id": 7,
+          "n": 79,
+          "subjects": 17
+        },
+        {
+          "id": 8,
+          "n": 53,
+          "subjects": 17
+        },
+        {
+          "id": 9,
+          "n": 90,
+          "subjects": 17
+        },
+        {
+          "id": 10,
+          "n": 89,
+          "subjects": 17
+        },
+        {
+          "id": 11,
+          "n": 119,
+          "subjects": 17
+        },
+        {
+          "id": 12,
+          "n": 84,
+          "subjects": 17
+        }
+      ]
+    },
+    "val": {
+      "stream_n": 2422,
+      "supervised_n": 1751,
+      "excluded_ambiguous": 205,
+      "excluded_unlabeled": 466,
+      "by_class": [
+        {
+          "id": 1,
+          "n": 246,
+          "subjects": 4
+        },
+        {
+          "id": 2,
+          "n": 247,
+          "subjects": 4
+        },
+        {
+          "id": 3,
+          "n": 231,
+          "subjects": 4
+        },
+        {
+          "id": 4,
+          "n": 289,
+          "subjects": 4
+        },
+        {
+          "id": 5,
+          "n": 312,
+          "subjects": 4
+        },
+        {
+          "id": 6,
+          "n": 316,
+          "subjects": 4
+        },
+        {
+          "id": 7,
+          "n": 19,
+          "subjects": 4
+        },
+        {
+          "id": 8,
+          "n": 13,
+          "subjects": 4
+        },
+        {
+          "id": 9,
+          "n": 26,
+          "subjects": 4
+        },
+        {
+          "id": 10,
+          "n": 15,
+          "subjects": 3
+        },
+        {
+          "id": 11,
+          "n": 18,
+          "subjects": 3
+        },
+        {
+          "id": 12,
+          "n": 19,
+          "subjects": 4
+        }
+      ]
+    },
+    "test": {
+      "stream_n": 5053,
+      "supervised_n": 3572,
+      "excluded_ambiguous": 479,
+      "excluded_unlabeled": 1002,
+      "by_class": [
+        {
+          "id": 1,
+          "n": 531,
+          "subjects": 9
+        },
+        {
+          "id": 2,
+          "n": 537,
+          "subjects": 9
+        },
+        {
+          "id": 3,
+          "n": 492,
+          "subjects": 9
+        },
+        {
+          "id": 4,
+          "n": 546,
+          "subjects": 9
+        },
+        {
+          "id": 5,
+          "n": 597,
+          "subjects": 9
+        },
+        {
+          "id": 6,
+          "n": 586,
+          "subjects": 9
+        },
+        {
+          "id": 7,
+          "n": 45,
+          "subjects": 9
+        },
+        {
+          "id": 8,
+          "n": 32,
+          "subjects": 9
+        },
+        {
+          "id": 9,
+          "n": 51,
+          "subjects": 9
+        },
+        {
+          "id": 10,
+          "n": 46,
+          "subjects": 9
+        },
+        {
+          "id": 11,
+          "n": 68,
+          "subjects": 9
+        },
+        {
+          "id": 12,
+          "n": 41,
+          "subjects": 9
+        }
+      ]
+    }
+  },
+  "subject_counts_by_split": {
+    "train": 17,
+    "val": 4,
+    "test": 9
+  },
+  "subject_disjoint": true,
+  "recordings_single_split": true,
+  "row_count_17453": true,
+  "expected_full_stream_split_counts": {
+    "train": 9978,
+    "val": 2422,
+    "test": 5053
+  },
+  "raw_label_rows": 1214,
+  "raw_label_assignment_sample_total_inclusive_ranges": 815614,
+  "one_sample_coordinate_shift_changed_window_policy_or_label_assignments": 98,
+  "raw_label_boundary_convention_caveat": "Builder assigns labels with plabel[start:end+1] using integer coordinates directly. The one-sample alternate convention changes 98 window policy/label assignments; this audit does not claim which upstream coordinate convention is semantically intended.",
+  "normalization": {
+    "train_supervised_n": 6955,
+    "recomputed_mean": [
+      0.8043609261512756,
+      0.04113660007715225,
+      0.08177004754543304,
+      0.009135567583143711,
+      -0.004397556185722351,
+      -0.007183203473687172
+    ],
+    "recomputed_std": [
+      0.4057796597480774,
+      0.4071546792984009,
+      0.3549118936061859,
+      0.44763511419296265,
+      0.42127060890197754,
+      0.29644152522087097
+    ],
+    "stored_mean": [
+      0.8043609261512756,
+      0.04113660007715225,
+      0.08177004754543304,
+      0.009135567583143711,
+      -0.004397556185722351,
+      -0.007183203473687172
+    ],
+    "stored_std": [
+      0.4057796597480774,
+      0.4071546792984009,
+      0.3549118936061859,
+      0.44763511419296265,
+      0.42127060890197754,
+      0.29644152522087097
+    ],
+    "mean_exact": true,
+    "std_exact": true,
+    "stored_preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+    "checkpoint_seed": 43,
+    "checkpoint_best_epoch": 8,
+    "checkpoint_best_val_macro_f1": 0.8467852532052668,
+    "checkpoint_norm_matches_saved_json": true,
+    "checkpoint_preprocessing_id_matches": true,
+    "scope": "train-only supervised rows, axes (N,time), float64 accumulation -> float32, std floor 1e-6"
+  },
+  "overlap": {
+    "aligned_pair_count": 17392,
+    "raw_abs_distance_mean": 0.0,
+    "raw_abs_distance_median": 0.0,
+    "raw_abs_distance_p95": 0.0,
+    "raw_exact_equal_pairs": 17392,
+    "normalized_abs_distance_mean": 0.0,
+    "same_local_coordinate_mae_by_channel": {
+      "acc_x": {
+        "raw_mean_abs_distance_mean": 0.15258234146519875,
+        "raw_mean_abs_distance_median": 0.1072862446308136,
+        "raw_mean_abs_distance_p95": 0.4738373681902888,
+        "normalized_mean_abs_distance_mean": 0.37602264616358255,
+        "normalized_mean_abs_distance_median": 0.2643953263759613,
+        "normalized_mean_abs_distance_p95": 1.1677209019660957
+      },
+      "acc_y": {
+        "raw_mean_abs_distance_mean": 0.11625245798789448,
+        "raw_mean_abs_distance_median": 0.1083170585334301,
+        "raw_mean_abs_distance_p95": 0.30189889669418335,
+        "normalized_mean_abs_distance_mean": 0.28552406301573385,
+        "normalized_mean_abs_distance_median": 0.26603417098522186,
+        "normalized_mean_abs_distance_p95": 0.741484522819519
+      },
+      "acc_z": {
+        "raw_mean_abs_distance_mean": 0.10392824382021708,
+        "raw_mean_abs_distance_median": 0.09047851338982582,
+        "raw_mean_abs_distance_p95": 0.28540637046098716,
+        "normalized_mean_abs_distance_mean": 0.2928282932163942,
+        "normalized_mean_abs_distance_median": 0.25493232905864716,
+        "normalized_mean_abs_distance_p95": 0.804161196947098
+      },
+      "gyro_x": {
+        "raw_mean_abs_distance_mean": 0.43151418965610483,
+        "raw_mean_abs_distance_median": 0.3577677756547928,
+        "raw_mean_abs_distance_p95": 1.262229907512665,
+        "normalized_mean_abs_distance_mean": 0.9639864617288447,
+        "normalized_mean_abs_distance_median": 0.7992398142814636,
+        "normalized_mean_abs_distance_p95": 2.8197740077972417
+      },
+      "gyro_y": {
+        "raw_mean_abs_distance_mean": 0.34393532464902216,
+        "raw_mean_abs_distance_median": 0.30766013264656067,
+        "raw_mean_abs_distance_p95": 0.9250079393386841,
+        "normalized_mean_abs_distance_mean": 0.8164237360762909,
+        "normalized_mean_abs_distance_median": 0.730314701795578,
+        "normalized_mean_abs_distance_p95": 2.1957571506500244
+      },
+      "gyro_z": {
+        "raw_mean_abs_distance_mean": 0.2536063308639703,
+        "raw_mean_abs_distance_median": 0.22581611573696136,
+        "raw_mean_abs_distance_p95": 0.6663668781518941,
+        "normalized_mean_abs_distance_mean": 0.855502044644047,
+        "normalized_mean_abs_distance_median": 0.7617560625076294,
+        "normalized_mean_abs_distance_p95": 2.2478863358497634
+      }
+    },
+    "recording_channel_lag64_correlation_mean": 0.4378251792392477,
+    "recording_channel_lag64_correlation_by_channel": {
+      "acc_x": 0.7209469172510494,
+      "acc_y": 0.8239961966475727,
+      "acc_z": 0.7769306184107752,
+      "gyro_x": 0.1484006573970677,
+      "gyro_y": 0.060632436181325355,
+      "gyro_z": 0.09604424954769561
+    },
+    "recording_channel_lag128_correlation_mean": 0.3634568637467757,
+    "recording_channel_lag128_correlation_by_channel": {
+      "acc_x": 0.6633873503863419,
+      "acc_y": 0.767109296960119,
+      "acc_z": 0.6696881301661999,
+      "gyro_x": 0.04302990990176937,
+      "gyro_y": 0.024610826575636006,
+      "gyro_z": 0.012915668490588068
+    },
+    "interpretation": "the aligned 64-sample overlap is exactly shared input; same-local-coordinate adjacent windows differ. Lag correlations are descriptive across within-recording sensor samples. Overlapping windows are dependent; these summaries are not iid evidence or confidence intervals."
+  },
+  "source_hashes": {
+    "scripts/03_build_windows.py": "a99f857a194b54410d5b99a628352f4163306780d66e1fc4f4d07643019f072f",
+    "scripts/ecdr_audit_support.py": "2e12ebe2df844ce5925e1013d2cfbd7425c6c47cce17729ecbe5d54fb5e6932a",
+    "ecdr/data.py": "b3e004259517be0410f3bb03af7dd490bf2b738d12940cb14e760c345fccb278",
+    "ecdr/preprocessing.py": "891e6b695057be3b219a27c2fcc3746748d7c0d33f8fed793e08f42c6f898d2e",
+    "data/hapt/RawData/labels.txt": "1949f448935cf0b5f914405b7111c65e7cdc0427ab517710a04ece7d7dec934e",
+    "data/windows.npz": "1646061afa74266ac0fdd03b6f68af63327c7ab2f2a93db1f672e6177eb17900",
+    "data/window_manifest.parquet": "82f9a2875fa0b00b315b36d81f07ab1bc436ea078a2f8c491ec4206baf75413b",
+    "data/windows_with_split.parquet": "767dbe36f8a5a2b0b81cd2a5dd6873ab944a4460908f9052cd418b77799909f4",
+    "output/week1_closeout_20261102/reference/normalization.npz": "4c28d81c5ecc532057897002a595713a787faee0b39a4a7a1ba53d9a9286c622",
+    "output/week1_closeout_20261102/reference/selected_best.pt": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "data/hapt/RawData/acc_exp01_user01.txt": "75b2be56e5aaf0476cf7ecb6c53cc48093dafb490f98ec6f5ae21b466a32f97c",
+    "data/hapt/RawData/acc_exp02_user01.txt": "4d2d252ae1749e49148516fdb8fbc858ca475cbed3e8e4530dd078ca93e08b20",
+    "data/hapt/RawData/acc_exp03_user02.txt": "98aa73a7a0bf5059f646c0a52bf067f00d80d4f2b699ff2fef3dd661f5b8d136",
+    "data/hapt/RawData/acc_exp04_user02.txt": "86fba4a4b9d1a317e65045494c7dda3f6fcd1cf740781a872876d7b455eb8878",
+    "data/hapt/RawData/acc_exp05_user03.txt": "1fabf6544f10df337bdf15c153d1ec6debd922bb5da439afe27b0eab638e0b07",
+    "data/hapt/RawData/acc_exp06_user03.txt": "d334f1134a47e9b817d8b251fe14cf4c94ab56f1a21ddf5876b436d0f3cec80c",
+    "data/hapt/RawData/acc_exp07_user04.txt": "f839f3c3b76aa772c2b502fdafe0ce8e04caad9bdcc4a8ddc9d400ff477d576c",
+    "data/hapt/RawData/acc_exp08_user04.txt": "bf876ebd0f87cc07e2fdfd9812cc5a2e2b85933306376f3a6c8d55f39d0c97f6",
+    "data/hapt/RawData/acc_exp09_user05.txt": "3854c09a84a24e54047f7193f67549c0adf2c5eedafb291530bd20f59390a3a0",
+    "data/hapt/RawData/acc_exp10_user05.txt": "6b7d07798654a3d3f319cb3c283094f3ec617238f6a0fc29024d831fab4738c0",
+    "data/hapt/RawData/acc_exp11_user06.txt": "0f9e2f5320b850518702d75d2f74554e5555ec9a678283948ba0d45a8dbfe0f9",
+    "data/hapt/RawData/acc_exp12_user06.txt": "94dd60be7001aad6f1872d1f1463aa4252f090d1850ee5e28336cd815ed7c206",
+    "data/hapt/RawData/acc_exp13_user07.txt": "28b54d815cd6d6935069e04a22e54833f6d95360d3ba318f28edc4a8f3a6bdc0",
+    "data/hapt/RawData/acc_exp14_user07.txt": "cbfd55cc2cb661cb12c5f14231f6adf9487f03175a9d0a6fbeae1ca92240d1c3",
+    "data/hapt/RawData/acc_exp15_user08.txt": "5e6a0306d7f21cae424a53307a616fe6686dca68f5fe5a1f525358958d8e10b6",
+    "data/hapt/RawData/acc_exp16_user08.txt": "dcc3486adfc0dffb4472d5cfc4190c9d2d2fce9b8f6c61075ac1066646358a25",
+    "data/hapt/RawData/acc_exp17_user09.txt": "cf39125d3351bd61a1331041e81bfd66c20a037d17baba00a3a34a38609df743",
+    "data/hapt/RawData/acc_exp18_user09.txt": "168595dc9864f890446e9ebf7790e113c4e869124655f986c57d2e7fc33c6544",
+    "data/hapt/RawData/acc_exp19_user10.txt": "a081d13d40f981995e59d400eef08c857ea019fbf559155a2b76da56dae616d6",
+    "data/hapt/RawData/acc_exp20_user10.txt": "59cc39ed6448a394dae27b784dcdf646fcdb105b0320d2b5e6b38cbf43b42cd3",
+    "data/hapt/RawData/acc_exp21_user10.txt": "23f03a8726e610f645053e15fe078fc4fda7bc6c1e9d1a28d06c8b06d9ab4382",
+    "data/hapt/RawData/acc_exp22_user11.txt": "30d580192eda9570cd4cb0de30cf2b7bbbe7db64aa1c54191d8f8c15a270d585",
+    "data/hapt/RawData/acc_exp23_user11.txt": "dde7e3f57a283dbc0160167988efaa7b90a03be59558d363c5d2b86d5722cea9",
+    "data/hapt/RawData/acc_exp24_user12.txt": "26f0ff34a590647f03122fb5d0ab803010d638be0a3817818d87bb3084b8ac75",
+    "data/hapt/RawData/acc_exp25_user12.txt": "25f65698976bade4df9a7051758d26d0dcb21d5d5e31917b3f1edae3de64ebcd",
+    "data/hapt/RawData/acc_exp26_user13.txt": "1573716d31330d88e4ebcd7b91a75313ec52e7d62f5070b4b149baaf09b125dc",
+    "data/hapt/RawData/acc_exp27_user13.txt": "e778cfd4871214e8e4faf0a8ee1c82e95b8ac11a99286b01630ad292fafe3da5",
+    "data/hapt/RawData/acc_exp28_user14.txt": "dc43fc577a781911ec62bb61b1d91c67038870974fe87ce89f74e8fa156c5c28",
+    "data/hapt/RawData/acc_exp29_user14.txt": "0e9a01ffb46919a33c8e6a9939865b666460687121a952ce687e70b8d9112afa",
+    "data/hapt/RawData/acc_exp30_user15.txt": "456c3e8c6d5f29615cc3eb75961eb38f60b04440af379ddef7434ad1d997d314",
+    "data/hapt/RawData/acc_exp31_user15.txt": "aad1ae5558582691780997f0b1e073647c43f848121c6c2c396b5d5b5729e600",
+    "data/hapt/RawData/acc_exp32_user16.txt": "20ff537129c511f8818082e816360724cfc21f4447a96a11a213db69d7e83ad7",
+    "data/hapt/RawData/acc_exp33_user16.txt": "5d5197beebc0f4d1c866c2b53be982829dddc72b699237e430cd98779cafbbba",
+    "data/hapt/RawData/acc_exp34_user17.txt": "5cbad59e7b77eabcd4fced12691959915562c7ba27538227ca97f35018fcdff5",
+    "data/hapt/RawData/acc_exp35_user17.txt": "d54c5d47b1b63f7896b003f62164d205c3646fa5bb685b39b5ab2f36333ff0a7",
+    "data/hapt/RawData/acc_exp36_user18.txt": "43992d858c45f01b2a7270e296dedf511649b7808cbfae6c51e697b79f4dd281",
+    "data/hapt/RawData/acc_exp37_user18.txt": "db7bf49d1c0dfe6b25248c66a96f8826f50e3e0fba5ad6cfd5f33d0e51a6343e",
+    "data/hapt/RawData/acc_exp38_user19.txt": "8cfc95e736ef06c97225ad3d3becfea0b8d57b93e81fcc753c063c97ba8b16dd",
+    "data/hapt/RawData/acc_exp39_user19.txt": "392db3bf1a0274cd8006a07b930cc6f0171c54b1f232f1cbf01cb8ae0b23d624",
+    "data/hapt/RawData/acc_exp40_user20.txt": "af0c5e6539521bba27100dcf253d5c01fb671e38576c7430fe434bc203dcc2d5",
+    "data/hapt/RawData/acc_exp41_user20.txt": "c6497551b9fd040738ee9523029f7899e96ab57e3a07d4a370aa552a5e7a9d1b",
+    "data/hapt/RawData/acc_exp42_user21.txt": "9e4d5c9dff1c98fcbae8475b80f41e2f84c7f13eea6c490e35d1dbdc0e5a211b",
+    "data/hapt/RawData/acc_exp43_user21.txt": "5235c5e3db2bcaa0825a674a9ede0678e65d758a1152c2a7f8c1917332f9e9e9",
+    "data/hapt/RawData/acc_exp44_user22.txt": "b92210d6b41faa4d15d42123f22670e0027c90fb890fedf22bb9d33e88441dfc",
+    "data/hapt/RawData/acc_exp45_user22.txt": "5ccafc3c1b7eec85e205e06d8b1246a41e2d9105dc9cd40735664f9460a7fac2",
+    "data/hapt/RawData/acc_exp46_user23.txt": "ae82bfa6c66dfd658371d4d43733415658361f50c56f5c4043d5c87994950cde",
+    "data/hapt/RawData/acc_exp47_user23.txt": "8a0e869c3e085b3aef5509d47d85724dd95daed632e33456b9bf431068397e71",
+    "data/hapt/RawData/acc_exp48_user24.txt": "40b274de71914e5b5fc36ebc8fd03d66c7a403215df065dd94214f18326c4f72",
+    "data/hapt/RawData/acc_exp49_user24.txt": "6e169af5ebf204a2f5e6e0a267caa3ab6df80fad6aaab332281893a6a2735db0",
+    "data/hapt/RawData/acc_exp50_user25.txt": "d4d47566300c81c7f348d1f687493904df40f7adc300200ecaf83ed2f3ebca63",
+    "data/hapt/RawData/acc_exp51_user25.txt": "11b60409f30af2ba4b188289ed5cc7196eae4052efb30e8f29389706db0f63ee",
+    "data/hapt/RawData/acc_exp52_user26.txt": "dac9370ce4c2f508fee7c5f6b9bd20e298cd2b8bdd05c054bad36695944e8932",
+    "data/hapt/RawData/acc_exp53_user26.txt": "11f86a484eb51da181d718d5fc67cc82c7b979a2e5daf4535207026872dd3596",
+    "data/hapt/RawData/acc_exp54_user27.txt": "2d7a393ec162ad2675050a95541e145acb504a09fcb7fbe65a5eb994376967db",
+    "data/hapt/RawData/acc_exp55_user27.txt": "a7a11e66f072f0b7d20064240b50711f39496cc5e0d5de078c43156b5bb9963f",
+    "data/hapt/RawData/acc_exp56_user28.txt": "d14fee9f9e1c4bfb5ef907f6d80fe8120d101c1586d8774fd605ec6b248f3eb2",
+    "data/hapt/RawData/acc_exp57_user28.txt": "5945c75f9f6d6f769d5a20e4939706ea966aa9b47a027c704ad0c440ae6dafd7",
+    "data/hapt/RawData/acc_exp58_user29.txt": "c63cdb2850f54362c587ca9e9a8674220c9e85eddc3b53f2440277c7a6698574",
+    "data/hapt/RawData/acc_exp59_user29.txt": "c08645b6f492919f8e46e91436c22497b0c4b08b56c232e15bde766d173cf82f",
+    "data/hapt/RawData/acc_exp60_user30.txt": "9f3a3a058ec3940cc9647331db0c09c5e38197afb3eeb2ce5693ccac5964fbc5",
+    "data/hapt/RawData/acc_exp61_user30.txt": "05ef1ac0a18a6123d82e025295e28548dc9a79fecc495dd076f7012befbb4fc3",
+    "data/hapt/RawData/gyro_exp01_user01.txt": "e3d203af14d765b110a4cdeb37b96c75ab709d576526a4ab91053099dc5ee4dd",
+    "data/hapt/RawData/gyro_exp02_user01.txt": "e4527e33fd5e403c8e632585fd640b19804ab63b6a582e1dc9356363a7ac750f",
+    "data/hapt/RawData/gyro_exp03_user02.txt": "fc7f157c1c18123b3dd4d2e9e202222ce219b80d0440925d538e3dc48471a386",
+    "data/hapt/RawData/gyro_exp04_user02.txt": "11587ef81a4075b0a1b2e2f59e72cba46fd9705452bebc7e6ecbbac5aea52fbc",
+    "data/hapt/RawData/gyro_exp05_user03.txt": "7b25c1cdc2a100d943d70987b4f2e55108595a6872620d9b1b8c3143468c76fa",
+    "data/hapt/RawData/gyro_exp06_user03.txt": "f99f1d95b8a4b5f1d849635734ebc5d93c04fbcf465e16d194ee134ea3a9f058",
+    "data/hapt/RawData/gyro_exp07_user04.txt": "8c3affc2e0b8241041efeeae2a7a0de21503bfaced8f8506c6bd8322bda48612",
+    "data/hapt/RawData/gyro_exp08_user04.txt": "785885bc804b5ab14d768b9c5b0ea8a7a62ac5ee433071c638c3d61b1912b79e",
+    "data/hapt/RawData/gyro_exp09_user05.txt": "01b77e54c371187022bc70c53821ab634f2c2fcbae1808ac8952f90fd7837364",
+    "data/hapt/RawData/gyro_exp10_user05.txt": "08e81b7c5d41f5bb0c638d6822bb3b2c54ef090ab5c9cb4e722867115c7c6503",
+    "data/hapt/RawData/gyro_exp11_user06.txt": "fefb41aa45bee20657c1beb2034221e136acd1c99785c2f53c1bdc97225e72ac",
+    "data/hapt/RawData/gyro_exp12_user06.txt": "162bfa0619df23bde93cba417e3d79f066cf4c03f6b95d46740e195f21abe7fb",
+    "data/hapt/RawData/gyro_exp13_user07.txt": "5210579528dc95c1ee7c10f1f8d197f98492d84d43db731d4e8a29207f556871",
+    "data/hapt/RawData/gyro_exp14_user07.txt": "ec838e32897a44a20acc7ee6db6962e01e99fbbb615f51bf5a5dfcdc27c972a5",
+    "data/hapt/RawData/gyro_exp15_user08.txt": "d2e3ae0f1092a53fe9f2ec04705c01dc2b84278fed3bac4865bdf36bf9fb72a5",
+    "data/hapt/RawData/gyro_exp16_user08.txt": "c88f125b38ff4e79cf411a14e084cb0a2e9c292eff5ee878e9b9d530c463ae7a",
+    "data/hapt/RawData/gyro_exp17_user09.txt": "730f60f5df86593f7c9847115e77d3f591d53286452a769c749f1cce7bd1c5f1",
+    "data/hapt/RawData/gyro_exp18_user09.txt": "30253ba7737ed0a995ba290d0c3311df2998251d89e57c4f2eaff4e26423aa9e",
+    "data/hapt/RawData/gyro_exp19_user10.txt": "630960b99657d32578da5cf27857723092e54faa9790e27d6920eab20e98d472",
+    "data/hapt/RawData/gyro_exp20_user10.txt": "299f9dc1290643b809700e62a821738358df0f746ce41521e75ff3a2df88f19f",
+    "data/hapt/RawData/gyro_exp21_user10.txt": "98d46444a3d15c7c57ac267427fec39896de0bec9496a5c836e6f27d74ad2b10",
+    "data/hapt/RawData/gyro_exp22_user11.txt": "fd629cd84346b95046e52d7bf495e145d1132b4d868ae20e0fef3af7782914b5",
+    "data/hapt/RawData/gyro_exp23_user11.txt": "13a3e39e6f02aedb9f9f5f14ed53a5e2d43aa2d768774f09bcb6b45280f8cdc9",
+    "data/hapt/RawData/gyro_exp24_user12.txt": "24f43dcb9780aced77f6c901598d7b5cdfa2efb3f51c70068dd8f8b38159785d",
+    "data/hapt/RawData/gyro_exp25_user12.txt": "27cba399c7e266829afad1dabb0b6f69deb6dc062a02d654ee3b2cd4c2882fbc",
+    "data/hapt/RawData/gyro_exp26_user13.txt": "decae0826d91756ea1d6a898ad174ab3ba5c4057aeb55bd8b4ccecd83d0731ef",
+    "data/hapt/RawData/gyro_exp27_user13.txt": "da1569186e95c784165d3af491969264396969e77163d97f34713227c14e7846",
+    "data/hapt/RawData/gyro_exp28_user14.txt": "c66681e6e05981cb39451d6fedeb9145c62b9f342d95f7e6f72b5460cb53b87c",
+    "data/hapt/RawData/gyro_exp29_user14.txt": "78515a90daca217d85315c4e92cb86f9554dae84d09fbd0b434cbc4f51e17939",
+    "data/hapt/RawData/gyro_exp30_user15.txt": "73ab13c8f5ad73a69a4e130eeb3b6eb81fa8551f6d7007bf0869f8d5e57594b8",
+    "data/hapt/RawData/gyro_exp31_user15.txt": "cbb585702684e5d2265da6e3d84d68017d4ebf326e4754db8319870f35b8db33",
+    "data/hapt/RawData/gyro_exp32_user16.txt": "f9177be50b50c1c8764879702d31fdbefe7173aedf938099ca53c429933ec3f4",
+    "data/hapt/RawData/gyro_exp33_user16.txt": "f7296942da9587e396003682821110085b73bc6c8c38f4cba01042c70cfdc0ce",
+    "data/hapt/RawData/gyro_exp34_user17.txt": "49b36a53a8d8e5785f88252798dcbd49e6dee2cbf283d905b541eae90c384483",
+    "data/hapt/RawData/gyro_exp35_user17.txt": "e9555195d6971df3359d839f46488106b16776ca1a2dd296d76295184a74e04b",
+    "data/hapt/RawData/gyro_exp36_user18.txt": "a862e31b75dbac24ba083d4bfcafc601c42463bbf0173e88a539b4c55303f869",
+    "data/hapt/RawData/gyro_exp37_user18.txt": "f4b6e4338c19c8cd420652b636c369d50f165c3862c2323bc143ba0f96ab860b",
+    "data/hapt/RawData/gyro_exp38_user19.txt": "225e3c15337bba86d38031ddc287e2304e63ca1dd6964a072565bc19345b192b",
+    "data/hapt/RawData/gyro_exp39_user19.txt": "400f155d8a8d76120f226c024d0f71bbc175fd3ad17dd72616f0a10fdb52fc02",
+    "data/hapt/RawData/gyro_exp40_user20.txt": "369d6a30045b22aaade3706b126dc45bee02c256f7002aabe10ba5b3396fb2f8",
+    "data/hapt/RawData/gyro_exp41_user20.txt": "ad97589b215224ecc486265bc8be08aa1d24efd9de69de0e570031664cec1064",
+    "data/hapt/RawData/gyro_exp42_user21.txt": "ccf9b99f6c2f65b42cd02c0a7fd06a2a9692c56e3435aa0d0ed854a7e8069684",
+    "data/hapt/RawData/gyro_exp43_user21.txt": "a2aa98436eea463b8758ea7fd33db4c0cfe8e299b06de9481c95da90badc41c1",
+    "data/hapt/RawData/gyro_exp44_user22.txt": "97279b9f3ccb18e2de1b799cbf4a3d5c80e34d20f1733424d556103a188c30cf",
+    "data/hapt/RawData/gyro_exp45_user22.txt": "db2648c4c45e63afe8340121809de8ae61aa561739ae9dffb753fdb89e42fad6",
+    "data/hapt/RawData/gyro_exp46_user23.txt": "22437fce7740ad68f5a3b5a7869d30d93496a56626af40c2cbe69b8d0fa74053",
+    "data/hapt/RawData/gyro_exp47_user23.txt": "5a27dfbf548ed87ce26ce574387a839d5f43f584464650e20897e83d434f48dd",
+    "data/hapt/RawData/gyro_exp48_user24.txt": "d83adc1545701dbb108d5861e58460c4a897b9dacc0d7a97a783feb56841e195",
+    "data/hapt/RawData/gyro_exp49_user24.txt": "ff5aa45f813df654c0a16b72bba28f583b11f43f7daaa775d2df67959dc49ae4",
+    "data/hapt/RawData/gyro_exp50_user25.txt": "22a10b5802a97053b222ccbd8078e5559e0673392c5dbdf8141202052017a269",
+    "data/hapt/RawData/gyro_exp51_user25.txt": "f5964634deb74080483c4a893f7b0f92f34c99ebc3fac321fe4420327c5e2345",
+    "data/hapt/RawData/gyro_exp52_user26.txt": "4d310e758b7206f42545dd39dee1a69f0e13245a29444e7643cf5b38354823d2",
+    "data/hapt/RawData/gyro_exp53_user26.txt": "dab5a3590ad526ce332af849c2d3abd7a83e35ec6c52f45e6c258656c323f66b",
+    "data/hapt/RawData/gyro_exp54_user27.txt": "516587e3911d7feccb3236217741f08ace1ad9a6537234d2bcfd3740cf7a76d5",
+    "data/hapt/RawData/gyro_exp55_user27.txt": "2a1b79f6169050fd31c0a37a0d0111b70c6c3c6b026d7cf3b9c188187f1f3580",
+    "data/hapt/RawData/gyro_exp56_user28.txt": "a0fec3141e5c6736caa16fbfef4b8690ca088225d2215c4a6fa6758fb9097a6a",
+    "data/hapt/RawData/gyro_exp57_user28.txt": "d570aeb1f48700297b576a46989e6ebcb4cbae6ef27c5ffcaa0d53cef0c5b3bb",
+    "data/hapt/RawData/gyro_exp58_user29.txt": "905134d9f365b152e7f25324d948823b91b92060ad232b177103b8e77b6eca6c",
+    "data/hapt/RawData/gyro_exp59_user29.txt": "a8378e0bfff69d3f3065c2256a5430d4b60214ebdb4a2f5aa18a68adeca824bb",
+    "data/hapt/RawData/gyro_exp60_user30.txt": "9e1133004fb2448d49b89d86d8119125e6d5e5bf1e860d8bdfb17b7c6b397bf1",
+    "data/hapt/RawData/gyro_exp61_user30.txt": "bc134b72694f9e028de0a6d43797bb52ace86e1dd6ff59f3c850983e3ba58df9"
+  },
+  "execution": {
+    "started_at_utc": "2026-11-03T00:12:50.705734+00:00",
+    "completed_at_utc": "2026-11-03T00:12:55.448379+00:00",
+    "python": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "torch": "2.14.1+cpu",
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "script_sha256": "12110e9b70745fcad13b85c8dc4ab38fed3fe8433ac2375a821c0718c2c94ac2"
+  },
+  "evidence_boundary": "This audit was executed now; Week 1 receipts/checkpoints are stored artifacts. No model inference, retraining, certificate, or statistical CI was executed/generated."
+}

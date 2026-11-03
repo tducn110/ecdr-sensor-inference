@@ -1,6 +1,6 @@
 # TẦNG 4: TỔNG HỢP, NGHIỆM THU & BÀI BÁO KHOA HỌC (TIER 4 - SYNTHESIS & GATES)
 
-> **Current Week 1 authority:** [canonical English source](../00_OVERVIEW/02_Week_1_Project_Brief.tex). The combined report and generated PDFs are derivatives; removed web presentation folders are preserved only as cleanup history, and Week 2/3 sections remain historical synthesis until their owning revisions are complete.
+> **Current authorities:** [Week 1 brief](../00_OVERVIEW/02_Week_1_Project_Brief.tex), [Week 2 HAPT/data foundations](../01_DATA/03_Week_2_Data_Foundations.tex), and [Week 2 CNN Model Foundations](../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex). The combined report below retains historical Week 2/3 synthesis; its K=6/GAP choices, metrics and gate labels do not supersede the standalone authorities. Week 2 now has a [verified closeout](../output/week2_foundations_20261103/README.md); G2 quality remains HOLD, and formal certification/net savings remain open. Older acceptance checkboxes below describe a historical snapshot, not current gate acceptance.
 
 > **Mục tiêu của Tầng 4**:  
 > Đứng ở góc độ nhà nghiên cứu tổng thể và thẩm định viên (Auditor): Tổng hợp toàn bộ kết quả từ 3 tuần nghiên cứu, đối chiếu với tiêu chí nghiêm ngặt của từng Gate G0 đến G6 trong `GATES.md`, theo dõi tiến độ chuẩn **TrustMeBro** trong `TMB.md`, tham khảo các bài báo quốc tế tiền nhiệm (`papers/`), và chuẩn bị xuất bản bài báo khoa học chính thức.

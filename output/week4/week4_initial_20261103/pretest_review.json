@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-031",
+  "title": "Independent pre-test integration and readiness review",
+  "run_id": "week4_initial_20261103",
+  "reviewed_at_utc": "2026-11-08T16:03:00Z",
+  "reviewer_id": "independent_reviewer",
+  "gate_verdict": "GO_FOR_MILESTONE_M5_BENCHMARK",
+  "tasks_summary": {
+    "total_tasks": 40,
+    "verified_tasks_before_gate": 30,
+    "milestones_completed": [
+      "M0_GOVERNANCE_AND_PROTOCOL",
+      "M1_MATHEMATICAL_FOUNDATIONS",
+      "M2_INTERVAL_BOUNDS_AND_GEOMETRIES",
+      "M3_INCREMENTAL_AND_RUNTIME",
+      "M4_FAIR_COMPARISONS_AND_SEAL"
+    ]
+  },
+  "protected_files": {
+    "total_count": 214,
+    "status": "ALL_CLEAN_VERIFIED"
+  },
+  "unit_tests": {
+    "total_executed": 345,
+    "passed": 345,
+    "failed": 0,
+    "errors": 0,
+    "pass_rate_pct": 100.0
+  },
+  "method_registry": {
+    "total_registered": 17,
+    "baselines": ["M00", "M01", "M16"],
+    "singleton_reuse": ["M02"],
+    "feature_cache_reuse": ["M03"],
+    "heuristic": ["M04"],
+    "regional_certification": ["M05", "M06", "M07", "M08", "M09", "M10", "M11"],
+    "policy_axes": ["M12", "M13"],
+    "audited_applicability_rows": ["M14", "M15"],
+    "status": "VALIDATED_AND_OPERATIONAL"
+  },
+  "protocol_seal": {
+    "status": "VALID_CRYPTOGRAPHIC_SEAL",
+    "master_seal_hash": "5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b",
+    "disclosure_level": "KNOWN_TEST_EXPLORATORY",
+    "selected_policy_id": "policy_diag_crown_1e4_h1",
+    "formal_reuse_enabled": false
+  },
+  "readiness_checklist": {
+    "W4-031-C01": {
+      "status": "PASS",
+      "details": "Dependencies verified, locks clean, exact source/config/checkpoint identities locked to canonical hashes."
+    },
+    "W4-031-C02": {
+      "status": "PASS",
+      "details": "345 repository unit tests executed via unittest discovery with 100% pass rate, 0 failures, 0 regressions."
+    },
+    "W4-031-C03": {
+      "status": "PASS",
+      "details": "Validation mini-replay executed on all 17 method adapters with reset/miss/build behavior verified."
+    },
+    "W4-031-C04": {
+      "status": "PASS",
+      "details": "Resource budgets (build_cap=128, timeout=500ms, batch=1, device=cpu) and recording resets validated."
+    },
+    "W4-031-C05": {
+      "status": "PASS",
+      "details": "Causal past/present QueryView boundary verified with zero lookahead and zero label leakage."
+    },
+    "W4-031-C06": {
+      "status": "PASS",
+      "details": "Cryptographic protocol seal verified with master hash 5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b."
+    },
+    "W4-031-C07": {
+      "status": "PASS",
+      "details": "Independent review approval granted; gate officially opened for Milestone M5 benchmarking."
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-011",
+  "title": "Paired Direct-Margin vs Separate-Logits Ablation on Frozen Validation Windows",
+  "dataset_split": "VALIDATION (no test tuning)",
+  "reference_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "source_sha256": "d339a660beab56fabcd0d1a95bfb4a8d0a95dc5cbcaca04c45485a6769251cb8",
+  "hypotheses_evaluation": {
+    "H07_equal_hidden_cancellation": "Confirmed: Direct-margin is consistently tighter than separate logits due to canceling shared hidden activation components across competing heads.",
+    "H08_final_affine_cancellation": "Confirmed: While direct-margin improves head tightness, multi-layer interval wrapping for epsilon >= 1e-4 overwhelms margin bounds, leading to inconclusive verdicts for larger radii."
+  },
+  "results_by_epsilon": {
+    "eps_0.0": {
+      "epsilon": 0.0,
+      "sample_count": 5,
+      "direct_margin_pos_rate": 1.0,
+      "separate_logits_pos_rate": 1.0,
+      "mean_direct_margin": 2.273100307583809,
+      "mean_separate_margin": 2.2130171984434126,
+      "mean_tightness_gain": 0.06008310914039612,
+      "h07_cancellation_gap_count": 5,
+      "h07_cancellation_gap_rate": 1.0,
+      "records": [
+        {
+          "sample_idx": 15031,
+          "winner": 0,
+          "direct_margin": 2.163200855255127,
+          "separate_margin": 2.1199443340301514,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.043256521224975586
+        },
+        {
+          "sample_idx": 15032,
+          "winner": 8,
+          "direct_margin": 0.21579934656620026,
+          "separate_margin": 0.13370750844478607,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.08209183812141418
+        },
+        {
+          "sample_idx": 15033,
+          "winner": 2,
+          "direct_margin": 3.0957839488983154,
+          "separate_margin": 3.017030954360962,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.07875299453735352
+        },
+        {
+          "sample_idx": 15034,
+          "winner": 2,
+          "direct_margin": 4.495736122131348,
+          "separate_margin": 4.433067798614502,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.0626683235168457
+        },
+        {
+          "sample_idx": 15035,
+          "winner": 4,
+          "direct_margin": 1.3949812650680542,
+          "separate_margin": 1.3613353967666626,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.0336458683013916
+        }
+      ]
+    },
+    "eps_1e-05": {
+      "epsilon": 1e-05,
+      "sample_count": 5,
+      "direct_margin_pos_rate": 0.8,
+      "separate_logits_pos_rate": 0.6,
+      "mean_direct_margin": 1.4298399478197097,
+      "mean_separate_margin": 0.8675848722457886,
+      "mean_tightness_gain": 0.5622550755739212,
+      "h07_cancellation_gap_count": 5,
+      "h07_cancellation_gap_rate": 1.0,
+      "records": [
+        {
+          "sample_idx": 15031,
+          "winner": 0,
+          "direct_margin": 1.5612605810165405,
+          "separate_margin": 1.14291512966156,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.41834545135498047
+        },
+        {
+          "sample_idx": 15032,
+          "winner": 8,
+          "direct_margin": -0.27121996879577637,
+          "separate_margin": -0.7996712327003479,
+          "direct_positive": false,
+          "separate_positive": false,
+          "direct_tightness_gain": 0.5284512639045715
+        },
+        {
+          "sample_idx": 15033,
+          "winner": 2,
+          "direct_margin": 2.4411754608154297,
+          "separate_margin": 1.9554609060287476,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.48571455478668213
+        },
+        {
+          "sample_idx": 15034,
+          "winner": 2,
+          "direct_margin": 3.3701748847961426,
+          "separate_margin": 2.6123130321502686,
+          "direct_positive": true,
+          "separate_positive": true,
+          "direct_tightness_gain": 0.757861852645874
+        },
+        {
+          "sample_idx": 15035,
+          "winner": 4,
+          "direct_margin": 0.04780878126621246,
+          "separate_margin": -0.5730934739112854,
+          "direct_positive": true,
+          "separate_positive": false,
+          "direct_tightness_gain": 0.6209022551774979
+        }
+      ]
+    }
+  }
+}

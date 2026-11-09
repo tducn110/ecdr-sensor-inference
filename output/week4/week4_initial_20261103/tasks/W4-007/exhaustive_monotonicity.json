@@ -1,0 +1,91 @@
+{
+  "numpy_version": "2.4.6",
+  "constants": {
+    "mean": [
+      0.8043609261512756,
+      0.04113660007715225,
+      0.08177004754543304,
+      0.009135567583143711,
+      -0.004397556185722351,
+      -0.007183203473687172
+    ],
+    "std": [
+      0.4057796597480774,
+      0.4071546792984009,
+      0.3549118936061859,
+      0.44763511419296265,
+      0.42127060890197754,
+      0.29644152522087097
+    ]
+  },
+  "values_per_channel": 4278190080,
+  "channels": [
+    {
+      "channel": 0,
+      "mean": 0.8043609261512756,
+      "std": 0.4057796597480774,
+      "values_checked": 4278190080,
+      "monotonicity_violations": 0,
+      "nan_outputs": 0,
+      "inf_outputs": 23100236,
+      "first_violation": null,
+      "elapsed_s": 17.8
+    },
+    {
+      "channel": 1,
+      "mean": 0.04113660007715225,
+      "std": 0.4071546792984009,
+      "values_checked": 4278190080,
+      "monotonicity_violations": 0,
+      "nan_outputs": 0,
+      "inf_outputs": 23007960,
+      "first_violation": null,
+      "elapsed_s": 35.1
+    },
+    {
+      "channel": 2,
+      "mean": 0.08177004754543304,
+      "std": 0.3549118936061859,
+      "values_checked": 4278190080,
+      "monotonicity_violations": 0,
+      "nan_outputs": 0,
+      "inf_outputs": 26513914,
+      "first_violation": null,
+      "elapsed_s": 51.8
+    },
+    {
+      "channel": 3,
+      "mean": 0.009135567583143711,
+      "std": 0.44763511419296265,
+      "values_checked": 4278190080,
+      "monotonicity_violations": 0,
+      "nan_outputs": 0,
+      "inf_outputs": 20291364,
+      "first_violation": null,
+      "elapsed_s": 68.1
+    },
+    {
+      "channel": 4,
+      "mean": -0.004397556185722351,
+      "std": 0.42127060890197754,
+      "values_checked": 4278190080,
+      "monotonicity_violations": 0,
+      "nan_outputs": 0,
+      "inf_outputs": 22060656,
+      "first_violation": null,
+      "elapsed_s": 84.5
+    },
+    {
+      "channel": 5,
+      "mean": -0.007183203473687172,
+      "std": 0.29644152522087097,
+      "values_checked": 4278190080,
+      "monotonicity_violations": 0,
+      "nan_outputs": 0,
+      "inf_outputs": 30437794,
+      "first_violation": null,
+      "elapsed_s": 101.0
+    }
+  ],
+  "all_channels_monotone": true
+}

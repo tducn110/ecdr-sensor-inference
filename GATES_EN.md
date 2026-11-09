@@ -1,9 +1,15 @@
 # GATES.md — Research Evidence Gates (English)
 
-> Current 2026-11-03 authority: [GATES.md](GATES.md). Frozen K=12 G2 is HOLD;
-> G3 actual-graph implementation is PARTIAL, executable numerical soundness NOT
-> ESTABLISHED and formal reuse disabled. Historical K=6 PASS below is not a
-> current K=12 status. [Week 3 evidence](output/week3_certification_20261103/).
+> Current 2026-11-09 authority: [GATES.md](GATES.md) and [04_SYNTHESIS/week4/CLOSEOUT.md](04_SYNTHESIS/week4/CLOSEOUT.md).
+> Following Week 4 execution, all 40 engineering tasks (M0–M7) are **VERIFIED**.
+> Current gate status summary:
+> - **G0:** PASS (Historical literature baseline).
+> - **G1:** COMPLETE_WITH_REVISIONS / PASS (Historical dataset foundations).
+> - **G2:** HOLD_CONDITIONAL (Frozen SmallCNN1D $K=12$ model verified: 89.05% Acc, 0.7763 Macro-F1 on test; transition classes remain weakly supported).
+> - **G3:** FALSIFIED_STREAMING for useful streaming reuse ($R=0$ useful hits across certified methods M05–M13 due to continuous sensor drift/noise; H19 falsified). Soundness preserved via fail-closed fallback ($D_{\text{all}}=0$, 100% agreement with baseline M00).
+> - **G4:** FALSIFIED_CPU for runtime acceleration. Incremental re-computation (M03) achieves 100% adjacent reuse ($R=5,034$) but tensor slicing/stitching overhead yields speed ratio $0.1775\times$ vs M00 (H14 falsified). Regional verifiers yield speed ratios $\le 0.76\times$.
+> - **G5:** NOT_ESTABLISHED / FALSIFIED for net CPU speedup ($0/17$ methods achieve net speedup; H24 trilemma conjunction failed).
+> - **G6:** VERIFIED / CREATED as reproducible research artifact (Full IEEE-style Report A and Explained Report B compiled to PDF, tested against 367 regression tests, bitwise-verified).
 
 
 > **Current Week 1 scope (2026-11-02):** The executed run `week1_ref_1793620216_9d6c1d85` provides a verified SmallCNN1D K=12 baseline: seed 43 at epoch 8, 17 internal checks passed, 89.0538% supervised test accuracy and 77.6265% macro-F1 on 3,572 windows. This verifies the baseline execution; formal certification and net savings remain pending Week3/G5 evidence. The historical gate body below remains preserved.

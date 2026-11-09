@@ -1,0 +1,82 @@
+{
+  "schema_version": "w4.incremental.review.v1",
+  "task_id": "W4-021",
+  "date": "2026-11-08",
+  "gate_verdict": "STRICT_ELIGIBLE_FOR_PROFILE",
+  "identity_binding": {
+    "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+    "cache_schedule_version": "w4.incremental.schedule.v2",
+    "min_conv_slice_out_len": 2,
+    "incremental_source_sha256": "be1a25cd408165ce346171fc0ea05e9b17bf03d625a10dd0c21afde3fc7fbb3f",
+    "schedule_doc_sha256": "b5cd3a6428f55beec997a13ee1c6a83db5522782cb49b8d5fa9e70e214e82983",
+    "checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e"
+  },
+  "evidence_levels": {
+    "universal_real_algebra": {
+      "status": "DERIVED",
+      "summary": "Exact stagewise interval proof over R under frozen eval BN and stride-aligned MaxPool."
+    },
+    "universal_cross_backend_float32": {
+      "status": "NOT_ESTABLISHED",
+      "summary": "Falsified in general when BLAS switches kernel reduction order (e.g. L_out=1 sgemv vs L_out>=2 sgemm).",
+      "counterexample_l_out_1_max_abs_err": 8.940696716308594e-08
+    },
+    "finite_bitwise_equality": {
+      "status": "VERIFIED_FINITE_AND_KERNEL_LOCKED",
+      "all_stages_and_logits_bitwise_equal": true,
+      "val_incremental_steps": 2414,
+      "test_incremental_steps": 5034,
+      "val_max_abs_error": 0.0,
+      "test_max_abs_error": 0.0
+    },
+    "decision_agreement": {
+      "status": "VERIFIED_FINITE",
+      "winner_disagreements": 0
+    }
+  },
+  "probes": {
+    "kernel_reduction_order_probe": {
+      "global_row_id": 15031,
+      "l_out_1_sgemv_max_abs_err": 8.940696716308594e-08,
+      "l_out_2_sgemm_max_abs_err": 0.0
+    },
+    "near_tie_probe": {
+      "val_min_margin_witness": {
+        "global_row_id": 17355,
+        "recording_id": "61",
+        "step_idx": 199,
+        "margin_top1_top2": 0.009168386459350586,
+        "logit_max_abs_err": 0.0,
+        "winner_agreed": true
+      },
+      "test_min_margin_witness": {
+        "global_row_id": 13358,
+        "recording_id": "48",
+        "step_idx": 236,
+        "margin_top1_top2": 0.00011396408081054688,
+        "logit_max_abs_err": 0.0,
+        "winner_agreed": true
+      }
+    },
+    "boundary_probe": {
+      "pair_global_row_ids": [
+        15031,
+        15032
+      ],
+      "conv3_left_boundary_j0_1_err_if_reused": 2.0772619247436523,
+      "conv3_interior_j2_13_err": 0.0,
+      "conv3_right_boundary_j14_15_err_if_reused": 1.1436961889266968
+    },
+    "bn_setting_probe": {
+      "global_row_id": 15031,
+      "bn_train_mode_partial_vs_full_max_abs_err": 2.259925365447998,
+      "engine_rejects_bn_train_mode": true
+    }
+  },
+  "non_conflation": {
+    "produces_regional_certificate": false,
+    "is_skipped_decision_reuse": false,
+    "requires_independent_reviewer": true
+  }
+}

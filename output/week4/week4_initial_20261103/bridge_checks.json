@@ -1,0 +1,67 @@
+{
+  "schema_version": "w4.bridge_checks.v1",
+  "task_id": "W4-009",
+  "date": "2026-11-08",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "total_checks": 2,
+  "confident_sample_positive": true,
+  "near_tie_control_rejected": true,
+  "checks": [
+    {
+      "sample_name": "val_window_0_confident",
+      "global_row_id": 15031,
+      "predicted_class": 0,
+      "point_bridge": {
+        "status": "VALIDATED_POSITIVE",
+        "is_positive": true,
+        "min_lower_margin": 2.1199443340301514,
+        "lower_margins": [
+          10.25086498260498,
+          2.1199443340301514,
+          6.704923152923584,
+          6.368054389953613,
+          4.473577976226807,
+          4.761239528656006,
+          11.081875801086426,
+          2.184056520462036,
+          9.714158058166504,
+          2.811974048614502,
+          4.4756855964660645
+        ]
+      },
+      "perturbed_eps1e-6_bridge": {
+        "status": "VALIDATED_POSITIVE",
+        "is_positive": true,
+        "min_lower_margin": 2.0217792987823486
+      }
+    },
+    {
+      "sample_name": "test_near_tie_control",
+      "global_row_id": 13358,
+      "predicted_class": 3,
+      "point_bridge": {
+        "status": "VALIDATED_INCONCLUSIVE",
+        "is_positive": false,
+        "min_lower_margin": -0.030193330720067024,
+        "lower_margins": [
+          8.977002143859863,
+          11.556654930114746,
+          10.395761489868164,
+          -0.030193330720067024,
+          6.969642162322998,
+          6.369793891906738,
+          7.052216529846191,
+          8.893858909606934,
+          8.428704261779785,
+          9.264394760131836,
+          9.275979995727539
+        ]
+      },
+      "perturbed_eps1e-6_bridge": {
+        "status": "VALIDATED_INCONCLUSIVE",
+        "is_positive": false,
+        "min_lower_margin": -0.09039498120546341
+      }
+    }
+  ]
+}

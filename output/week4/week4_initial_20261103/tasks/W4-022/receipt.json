@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-022",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/certificates.py",
+    "tests/test_week4_certificates.py"
+  ],
+  "started_at_utc": "2026-11-08T13:11:58Z",
+  "completed_at_utc": "2026-11-08T13:17:05Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_certificates.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.18,
+      "summary": "8/8 certificate tests passed: strict positive margin predicate, complete identity binding without mutable aliases, anti-spoofing rejection of untrusted claims, fixed-anchor immutability on hits, explicit failure reason codes, adversarial tampering checks, and closure on ineligible profile"
+    },
+    {
+      "command": ".venv/bin/python ecdr/week4/certificates.py --generate-review --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.16,
+      "summary": "Generated output/week4/week4_initial_20261103/certificate_lifecycle_review.md"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 8.15,
+      "summary": "All 276/276 tests passed across entire test suite"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/certificates.py",
+      "sha256": "86df244b95f4e66f9b3edfd56de054d1e2ecdb2f38aa974d8bdd9bf80ebde60a"
+    },
+    {
+      "path": "tests/test_week4_certificates.py",
+      "sha256": "a1c91ab2771dfe3f059d35d2a6a2c5c55382a2df885e8ba6178a3968b18a7805"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/certificate_lifecycle_review.md",
+      "sha256": "d515f18e7d00ede8dfa473624fba18776f20b0bdd895d1085d74ec9fff599886"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-022-C01",
+      "status": "PASS",
+      "evidence": "CertificateIssuer enforces strict positive validated margin predicate (min(lower_margins) > 0.0, ties and negative rejected), requires NumericalStatus.VALIDATED_FLOAT32_ENCLOSURE, checks numerical gate clearance, and validates anchor receipt provenance via ReferenceOwner.validate_receipt. Verified by test_c01_strict_issuance_predicate_and_positive_margin."
+    },
+    {
+      "requirement_id": "W4-022-C02",
+      "status": "PASS",
+      "evidence": "Binds complete immutable identity tuple: reference_identity_id, checkpoint_sha256, preprocessing_id, graph_id, anchor hashes, 11 distinct competitors, max_age, and domain. Lower margins and endpoints stored as immutable float tuples, preventing mutable tensor aliasing. Verified by test_c02_identity_binding_and_no_mutable_aliases."
+    },
+    {
+      "requirement_id": "W4-022-C03",
+      "status": "PASS",
+      "evidence": "Anti-spoofing gate: caller-provided status flags and claims are rejected unless backed by authentic receipt signatures and validated BoundResult instances. Conditional bounds cannot be upgraded to certificates. Verified by test_c03_anti_spoofing_untrusted_claims."
+    },
+    {
+      "requirement_id": "W4-022-C04",
+      "status": "PASS",
+      "evidence": "Fixed-anchor immutability (H15, H16): on domain hit, anchor center, step, domain boundaries, and expiry are completely unchanged. Re-centering drift is mathematically precluded. Verified by test_c04_fixed_anchor_immutability_and_hits."
+    },
+    {
+      "requirement_id": "W4-022-C05",
+      "status": "PASS",
+      "evidence": "ImmutableCertificateStore implements explicit fail-closed reason codes: MISSING_CERTIFICATE, EXPIRED_CERTIFICATE, WRONG_RECORDING, STEP_GAP, OUTSIDE_DOMAIN, IDENTITY_MUTATION, and NONFINITE_INPUT. Verified by test_c05_explicit_store_failure_reason_codes."
+    },
+    {
+      "requirement_id": "W4-022-C06",
+      "status": "PASS",
+      "evidence": "Adversarial test suite verifies rejection of tampered receipts, cross-model checkpoint mutations, missing competitors (10 instead of 11), out-of-domain anchors, and tie margins. Verified by test_c06_adversarial_tampering_and_tie_rejection."
+    },
+    {
+      "requirement_id": "W4-022-C07",
+      "status": "PASS",
+      "evidence": "When numerical capability gate is closed or profile is unsupported, formal certificate issuance is strictly disabled (formal_issuance_enabled = False), precluding unauthorized formal reuse. Verified by test_c07_ineligible_numerical_profile_closes_issuance."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H15/H16: Fixed-anchor immutability prevents decision-boundary drift over continuous streaming sequences.",
+    "Confirms H18: Bounded max_age ensures finite horizon verification without stale certificate pollution.",
+    "Confirms H22/H23: Requiring validated float32 enclosures prevents false certificates on near-tie samples."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Certificates are valid exclusively within the designated recording stream and bounded by max_age (default 10 steps).",
+    "Formal reuse is permitted only when backed by an active, unexpired certificate matching current model provenance."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

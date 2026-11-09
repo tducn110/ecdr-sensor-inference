@@ -1,0 +1,160 @@
+--- /home/pro/.gemini/antigravity/brain/f2b0ef2e-7072-42c3-98ce-edfa2493e0b2/scratch/reference.py.before_w4007	2026-11-08 10:39:25.272283551 +0700
++++ ecdr/week4/reference.py	2026-11-08 10:39:45.851965923 +0700
+@@ -67,6 +67,127 @@
+     return hashlib.sha256(str((arr.shape, arr.dtype.str)).encode() + arr.tobytes()).hexdigest()
+ 
+ 
++class NormalizationConstants:
++    """Owned, read-only copy of the frozen float32 per-channel mean/std.
++
++    The constants are verified against the Week 1 preprocessing ID at
++    construction. Arrays are private copies; accessors hand out fresh read-only
++    copies so callers cannot alias or mutate the frozen values.
++    """
++
++    __slots__ = ("_mean", "_std", "_preprocessing_id")
++
++    def __init__(self, mean: np.ndarray, std: np.ndarray) -> None:
++        m = np.array(mean, dtype=np.float32, copy=True)
++        s = np.array(std, dtype=np.float32, copy=True)
++        if m.shape != (6,) or s.shape != (6,):
++            raise ValueError(f"mean/std must have shape (6,), got {m.shape}, {s.shape}")
++        if not (np.all(np.isfinite(m)) and np.all(np.isfinite(s))):
++            raise ValueError("mean/std must be finite")
++        if np.any(s <= 0.0):
++            raise ValueError("std must be strictly positive (required for monotone division)")
++        m.flags.writeable = False
++        s.flags.writeable = False
++        self._mean = m
++        self._std = s
++        self._preprocessing_id = _preprocessing_id(m, s)
++
++    @property
++    def preprocessing_id(self) -> str:
++        return self._preprocessing_id
++
++    @property
++    def mean(self) -> np.ndarray:
++        out = self._mean.copy()
++        out.flags.writeable = False
++        return out
++
++    @property
++    def std(self) -> np.ndarray:
++        out = self._std.copy()
++        out.flags.writeable = False
++        return out
++
++
++def execute_normalization(x32: np.ndarray, constants: NormalizationConstants) -> np.ndarray:
++    """The frozen executable normalization: float32 subtract, then float32 divide.
++
++    Single source of truth shared by ``ReferenceOwner.normalize`` and the
++    enclosure below. Each step is one elementwise, correctly rounded IEEE-754
++    float32 operation (no FMA, no reduction) with the same per-channel constants.
++    Raises ValueError (before returning anything) on bad shape/dtype or if the
++    result is non-finite (normalization overflow).
++    """
++    x = np.asarray(x32)
++    if x.dtype != np.float32:
++        raise ValueError(f"executable normalization requires float32 input, got {x.dtype}")
++    if x.shape != (6, 128):
++        raise ValueError(f"raw window must have shape (6, 128), got {x.shape}")
++    if not np.all(np.isfinite(x)):
++        raise ValueError("raw window contains non-finite values")
++    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
++        norm = ((x - constants._mean[:, None]) / constants._std[:, None]).astype(np.float32)
++    if not np.all(np.isfinite(norm)):
++        raise ValueError("normalization produced non-finite values")
++    out = np.ascontiguousarray(norm)
++    out.flags.writeable = False
++    return out
++
++
++def _raw_endpoints_to_float32(name: str, values: Any) -> Tuple[np.ndarray, np.ndarray]:
++    """Return (original float64 view, float32 round-to-nearest conversion); reject overflow."""
++    a = np.asarray(values)
++    if a.dtype.kind != "f":
++        raise ValueError(f"{name} must be a floating-point array, got dtype {a.dtype}")
++    if a.shape != (6, 128):
++        raise ValueError(f"{name} must have shape (6, 128), got {a.shape}")
++    if not np.all(np.isfinite(a)):
++        raise ValueError(f"{name} contains non-finite values")
++    a64 = a.astype(np.float64)
++    with np.errstate(over="ignore"):
++        a32 = a64.astype(np.float32)
++    if not np.all(np.isfinite(a32)):
++        raise ValueError(f"{name}: float32 conversion overflow")
++    return a64, a32
++
++
++def enclose_normalization(
++    raw_lower: Any,
++    raw_upper: Any,
++    constants: NormalizationConstants,
++) -> Tuple[np.ndarray, np.ndarray]:
++    """Exact enclosure of the executable normalization over a raw coordinate box.
++
++    Claim (for every raw real x with lower <= x <= upper, coordinatewise):
++        N_hat(fl32(x)) is in [N_hat(fl32(lower)), N_hat(fl32(upper))]
++    where N_hat(t) = fl32(fl32(t - mean_c) / std_c) is the frozen executable.
++
++    Proof sketch: fl32 (round-to-nearest) is monotone non-decreasing; for fixed
++    mean_c, t -> t - mean_c is increasing and its correctly rounded float32 value
++    is monotone non-decreasing; for fixed std_c > 0, u -> u / std_c likewise.
++    A composition of monotone non-decreasing maps is monotone, so the image of a
++    coordinate interval lies between the images of its endpoints. No rounding
++    error term is needed because the endpoints are evaluated by the *same*
++    executable sequence.
++
++    Premises (not proved here, listed in the receipt): the executing NumPy build
++    implements float32 subtract/divide as correctly rounded elementwise IEEE-754
++    operations (no fusion, no flush-to-zero change of ordering); constants are
++    the verified frozen values; std > 0. Raw-conversion overflow, inverted
++    endpoints, bad shape/dtype and non-finite normalized endpoints raise
++    ValueError (fail closed). The returned arrays are read-only float32.
++    """
++    lo64, lo32 = _raw_endpoints_to_float32("raw_lower", raw_lower)
++    hi64, hi32 = _raw_endpoints_to_float32("raw_upper", raw_upper)
++    if np.any(lo64 > hi64):
++        raise ValueError("raw_lower must be <= raw_upper coordinatewise")
++    n_lo = execute_normalization(lo32, constants)
++    n_hi = execute_normalization(hi32, constants)
++    if np.any(n_lo > n_hi):  # impossible if the monotonicity premise holds
++        raise ValueError("monotone normalization premise violated by this backend")
++    return n_lo, n_hi
++
++
+ def _graph_signature(model: nn.Module) -> str:
+     if type(model) is not SmallCNN1D:
+         raise UnsupportedGraphError("only the actual SmallCNN1D forward graph is supported")
+@@ -285,15 +406,21 @@
+         if not np.all(np.isfinite(x)):
+             raise ValueError("raw window contains non-finite values")
+ 
+-        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+-            norm = ((x - self._mean[:, None]) / self._std[:, None]).astype(np.float32)
+-
+-        if not np.all(np.isfinite(norm)):
+-            raise ValueError("normalization produced non-finite values")
++        return execute_normalization(x, self.normalization_constants())
+ 
+-        norm = np.ascontiguousarray(norm)
+-        norm.flags.writeable = False
+-        return norm
++    def normalization_constants(self) -> NormalizationConstants:
++        """Owned copy of the frozen mean/std, re-verified against the frozen preprocessing ID."""
++        if (
++            self._mean.dtype != np.float32
++            or self._std.dtype != np.float32
++            or _preprocessing_id(self._mean, self._std) != self._identity.preprocessing_id
++        ):
++            raise IdentityError("Preprocessing arrays mutated or changed dtype")
++        return NormalizationConstants(self._mean, self._std)
++
++    def enclose_normalization(self, raw_lower: Any, raw_upper: Any) -> Tuple[np.ndarray, np.ndarray]:
++        """Enclose the frozen executable normalization over a raw coordinate box."""
++        return enclose_normalization(raw_lower, raw_upper, self.normalization_constants())
+ 
+     def infer(
+         self,

@@ -1,0 +1,217 @@
+{
+  "schema_version": "w4.operator_capabilities.v1",
+  "task_id": "W4-008",
+  "date": "2026-11-08",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "total_operators_audited": 15,
+  "all_operators_real_valid": true,
+  "all_operators_executable_enclosure": true,
+  "operators": [
+    {
+      "layer_name": "conv.0",
+      "operator_kind": "Conv1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": 30,
+      "error_bound_formula": "gamma_{n+1} * (|W| |X| + |b|) + subnormal_padding",
+      "max_accumulation_error_estimate": 1.8477474022012632e-06,
+      "supported_attributes": {
+        "stride": 1,
+        "dilation": 1,
+        "groups": 1,
+        "padding": 2
+      }
+    },
+    {
+      "layer_name": "conv.1",
+      "operator_kind": "BatchNorm1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "gamma_4 * (|X| |alpha| + |beta_eff| + |mu alpha| + |beta|) + subnormal",
+      "max_accumulation_error_estimate": 2.384186359449949e-07,
+      "supported_attributes": {
+        "affine": true,
+        "eps": 1e-05,
+        "training_eval_mode": true
+      }
+    },
+    {
+      "layer_name": "conv.2",
+      "operator_kind": "ReLU",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (exact non-expansive float32)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "inplace": false
+      }
+    },
+    {
+      "layer_name": "conv.3",
+      "operator_kind": "MaxPool1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (exact pairwise float32 max)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "kernel_size": 2,
+        "stride": 2,
+        "padding": 0,
+        "ceil_mode": false
+      }
+    },
+    {
+      "layer_name": "conv.4",
+      "operator_kind": "Conv1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": 96,
+      "error_bound_formula": "gamma_{n+1} * (|W| |X| + |b|) + subnormal_padding",
+      "max_accumulation_error_estimate": 5.781683970889162e-06,
+      "supported_attributes": {
+        "stride": 1,
+        "dilation": 1,
+        "groups": 1,
+        "padding": 1
+      }
+    },
+    {
+      "layer_name": "conv.5",
+      "operator_kind": "BatchNorm1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "gamma_4 * (|X| |alpha| + |beta_eff| + |mu alpha| + |beta|) + subnormal",
+      "max_accumulation_error_estimate": 2.384186359449949e-07,
+      "supported_attributes": {
+        "affine": true,
+        "eps": 1e-05,
+        "training_eval_mode": true
+      }
+    },
+    {
+      "layer_name": "conv.6",
+      "operator_kind": "ReLU",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (exact non-expansive float32)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "inplace": false
+      }
+    },
+    {
+      "layer_name": "conv.7",
+      "operator_kind": "MaxPool1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (exact pairwise float32 max)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "kernel_size": 2,
+        "stride": 2,
+        "padding": 0,
+        "ceil_mode": false
+      }
+    },
+    {
+      "layer_name": "conv.8",
+      "operator_kind": "Conv1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": 192,
+      "error_bound_formula": "gamma_{n+1} * (|W| |X| + |b|) + subnormal_padding",
+      "max_accumulation_error_estimate": 1.1503828778204571e-05,
+      "supported_attributes": {
+        "stride": 1,
+        "dilation": 1,
+        "groups": 1,
+        "padding": 1
+      }
+    },
+    {
+      "layer_name": "conv.9",
+      "operator_kind": "BatchNorm1d",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "gamma_4 * (|X| |alpha| + |beta_eff| + |mu alpha| + |beta|) + subnormal",
+      "max_accumulation_error_estimate": 2.384186359449949e-07,
+      "supported_attributes": {
+        "affine": true,
+        "eps": 1e-05,
+        "training_eval_mode": true
+      }
+    },
+    {
+      "layer_name": "conv.10",
+      "operator_kind": "ReLU",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (exact non-expansive float32)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "inplace": false
+      }
+    },
+    {
+      "layer_name": "head.0",
+      "operator_kind": "Flatten",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (channel-major reshape)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "start_dim": 1,
+        "end_dim": -1
+      }
+    },
+    {
+      "layer_name": "head.1",
+      "operator_kind": "Linear",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": 2048,
+      "error_bound_formula": "gamma_{n+1} * (|W| |X| + |b|) + subnormal_padding",
+      "max_accumulation_error_estimate": 0.00012214483468331493,
+      "supported_attributes": {
+        "in_features": 2048,
+        "out_features": 128,
+        "bias": true
+      }
+    },
+    {
+      "layer_name": "head.2",
+      "operator_kind": "ReLU",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": null,
+      "error_bound_formula": "0.0 (exact non-expansive float32)",
+      "max_accumulation_error_estimate": 0.0,
+      "supported_attributes": {
+        "inplace": false
+      }
+    },
+    {
+      "layer_name": "head.3",
+      "operator_kind": "Linear",
+      "real_valid": true,
+      "executable_bridge_status": "VALIDATED_FLOAT32_ENCLOSURE",
+      "dot_product_length": 128,
+      "error_bound_formula": "gamma_{n+1} * (|W| |X| + |b|) + subnormal_padding",
+      "max_accumulation_error_estimate": 7.689058297188302e-06,
+      "supported_attributes": {
+        "in_features": 128,
+        "out_features": 12,
+        "bias": true
+      }
+    }
+  ]
+}

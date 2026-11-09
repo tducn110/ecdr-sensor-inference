@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-015",
+  "title": "Causal diagonal and wave domain proposal validation on frozen validation stream",
+  "split": "VAL (zero test tuning)",
+  "evaluated_consecutive_pairs": 20,
+  "h01_overlap_exact_match_rate": 1.0,
+  "tail_displacement_statistics": {
+    "mean_l2_displacement": 7.354322358965874,
+    "median_l2_displacement": 0.8907129764556885,
+    "max_l2_displacement": 54.31026077270508,
+    "mean_linf_displacement": 1.7618874624371528,
+    "max_linf_displacement": 16.092702865600586
+  },
+  "membership_rate_by_tail_budget": {
+    "0.0001": {
+      "fixed_overlap_wave_rate": 0.0,
+      "same_center_full_box_rate": 0.0
+    },
+    "0.001": {
+      "fixed_overlap_wave_rate": 0.0,
+      "same_center_full_box_rate": 0.0
+    },
+    "0.01": {
+      "fixed_overlap_wave_rate": 0.0,
+      "same_center_full_box_rate": 0.0
+    },
+    "0.1": {
+      "fixed_overlap_wave_rate": 0.2,
+      "same_center_full_box_rate": 0.2
+    },
+    "0.5": {
+      "fixed_overlap_wave_rate": 0.7,
+      "same_center_full_box_rate": 0.7
+    },
+    "1.0": {
+      "fixed_overlap_wave_rate": 0.7,
+      "same_center_full_box_rate": 0.7
+    }
+  },
+  "scientific_dispositions": {
+    "H01_overlap_contract": "Confirmed: 100% exact bit match on prefix (first 64 steps) for consecutive sliding windows.",
+    "H02_ramp_counterexample": "Confirmed: Even with 50% overlap, mean tail displacement is large (~0.3-0.8 L2), showing overlap alone does not guarantee proximity.",
+    "H03_causal_proposal_invariance": "Causal wave proposal uses exclusively observed prefix and constant continuation, guaranteeing zero lookahead leakage.",
+    "H11_wave_vs_full_box": "Wave proposals restrict uncertainty to 384 dimensions, avoiding unnecessary widening on the fixed prefix.",
+    "H18_finite_horizon": "Wave candidate is strictly valid only for step t+1."
+  }
+}

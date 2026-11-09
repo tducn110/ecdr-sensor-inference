@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-013",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "clean",
+  "execution_source_tree_id": "local_v1",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "configs/week4/requirements-verifier.in",
+    "configs/week4/requirements-verifier.lock",
+    "scripts/week4_probe.py"
+  ],
+  "started_at_utc": "2026-11-08T14:03:00.000000+00:00",
+  "completed_at_utc": "2026-11-08T14:05:40.000000+00:00",
+  "environment_profile_id": "env_local_py311_torch214_cpu",
+  "protocol_sha256": "3cb49a42531d0b54378877bcce945761a2936e788ad7208cfd4957e841b528b9",
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/week4_probe.py --help",
+      "exit_code": 0,
+      "purpose": "Verify probe CLI interface"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_probe.py lirpa --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "purpose": "Execute auto-LiRPA capability probe on native 1D and singleton-height 2D surrogate"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "configs/week4/requirements-verifier.in",
+      "sha256": "46d3ea5aa0a26a87f237ecfe98bc5eca1bcf3519c8adc6e226e141b3fd6de3a5"
+    },
+    {
+      "path": "configs/week4/requirements-verifier.lock",
+      "sha256": "7429af43e948aafd11864395ca2b545711dc91f51753a823f5143eda2f7ff5e7"
+    },
+    {
+      "path": "scripts/week4_probe.py",
+      "sha256": "1a0d29109977dc414e34239631e18c89e1918867c6188fd60d8e981aeda085d7"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/lirpa_environment.json",
+      "sha256": "b79a510ec9903fc480e0d207f09d619b17c36f900875ce78206d0f00900882cc"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/lirpa_operator_probe.json",
+      "sha256": "43b4848fe6da8685365d22a79916bbc3ee1ddf298f27f93bbfacf4aa8c199d2e"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "code": "W4-013-C01",
+      "file": "scripts/week4_probe.py",
+      "symbol": "probe_environment_metadata",
+      "status": "VERIFIED",
+      "notes": "Extracted installed metadata for Python 3.11, PyTorch 2.14.1+cpu, and auto-LiRPA 0.8.0, identifying version contract violation."
+    },
+    {
+      "code": "W4-013-C02",
+      "file": "configs/week4/requirements-verifier.in",
+      "symbol": "requirements-verifier.in",
+      "status": "VERIFIED",
+      "notes": "Pinned requirements and lock specification for the isolated verifier environment without mutating .venv."
+    },
+    {
+      "code": "W4-013-C03",
+      "file": "scripts/week4_probe.py",
+      "symbol": "run_operator_probe",
+      "status": "VERIFIED",
+      "notes": "Native 1D graph conversion failed due to auto-LiRPA pooling.py IndexError in pads attribute; full traceback captured."
+    },
+    {
+      "code": "W4-013-C04",
+      "file": "scripts/week4_probe.py",
+      "symbol": "SingletonHeightCNN",
+      "status": "VERIFIED",
+      "notes": "Mapped Conv1d, BatchNorm1d, MaxPool1d, ReLU, Flatten, and Linear attributes into 2D singleton-height equivalent."
+    },
+    {
+      "code": "W4-013-C05",
+      "file": "scripts/week4_probe.py",
+      "symbol": "surrogate_equivalence_report",
+      "status": "VERIFIED",
+      "notes": "Sampled logits max abs diff is 0.0, but IEEE-754 universal float32 equivalence across BLAS routines remains unproven."
+    },
+    {
+      "code": "W4-013-C06",
+      "file": "scripts/week4_probe.py",
+      "symbol": "probe_report",
+      "status": "VERIFIED",
+      "notes": "Separated conversion setup time (21.6ms) from per-build bound times (IBP: ~3-8ms, CROWN: ~427-1661ms)."
+    },
+    {
+      "code": "W4-013-C07",
+      "file": "output/week4/week4_initial_20261103/lirpa_operator_probe.json",
+      "symbol": "probes",
+      "status": "VERIFIED",
+      "notes": "Reported outcomes separately: Native 1D FAILED (zero synthetic bounds), 2D surrogate CONDITIONAL_DIAGNOSTIC."
+    }
+  ],
+  "protected_hash_check": {
+    "status": "CLEAN",
+    "verified_count": 214
+  },
+  "scientific_dispositions": [
+    {
+      "hypothesis": "H09",
+      "verdict": "CONFIRMED",
+      "evidence": "auto-LiRPA fails natively on 1D convolution/pooling graphs due to assumptions in operator pads indexing. 2D surrogate is mathematically equivalent in R but unproven in IEEE-754."
+    },
+    {
+      "hypothesis": "H21",
+      "verdict": "CONFIRMED",
+      "evidence": "CROWN per-bound runtime (~427ms) exceeds the streaming deadline (20ms) by more than 20x, confirming unviability for real-time per-window certified inference."
+    },
+    {
+      "hypothesis": "H22",
+      "verdict": "CONFIRMED",
+      "evidence": "Version contract mismatch: auto-LiRPA 0.8.0 requires torch<2.12.0 whereas runtime uses torch 2.14.1+cpu."
+    }
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Native 1D auto-LiRPA bound execution is completely unsupported without monkey-patching or third-party library source modifications.",
+    "2D surrogate bounds are diagnostic only and cannot be used as formal execution certificates for the 1D frozen reference."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED"
+}

@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-020",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/incremental.py",
+    "tests/test_week4_incremental.py"
+  ],
+  "started_at_utc": "2026-11-08T04:17:03Z",
+  "completed_at_utc": "2026-11-08T04:20:30Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_incremental.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 3.53,
+      "summary": "12/12 unit tests passed: cold start, reset idempotence, sequential streaming bitwise match, full Flatten-MLP head, precondition fallbacks, MAC reporting, anti-aliasing, validation streaming"
+    },
+    {
+      "command": ".venv/bin/python tests/test_week4_incremental.py --generate-report",
+      "exit_code": 0,
+      "elapsed_seconds": 6.80,
+      "summary": "Generated incremental_validation.json on 2,422 validation windows across 8 recordings (2,414 incremental passes, max logit error = 0.0, 0 winner disagreements)"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 6.02,
+      "summary": "223/223 tests passed across all test suites (no regressions)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 1.05,
+      "summary": "Preflight PASSED; 214/214 protected files clean"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/incremental.py",
+      "sha256": "be1a25cd408165ce346171fc0ea05e9b17bf03d625a10dd0c21afde3fc7fbb3f"
+    },
+    {
+      "path": "tests/test_week4_incremental.py",
+      "sha256": "91a2607f3a0437fd13c4f88b5a3e0eef103035d5fa845b1bf203e9298cf154ba"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/incremental_validation.json",
+      "sha256": "cd13737f166fbb70af445f9e771252e71edbda54ea87e52703a5158da6f1eff4"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-020-C01",
+      "status": "PASS",
+      "evidence": "ActualK12IncrementalEngine (alias IncrementalEngine) maintains IncrementalState with owned detached copies of x_raw, x_norm, h1, p1, h2, p2, h3, logits, step_idx, recording_id, query_row_id, model_id, preprocessing_id, environment_profile_id, and supports QueryView. First call runs mode 'full'; reset() clears cache idempotently and forces next call to run full. Verified by test_c01_cold_start_and_query_view_support and test_c01_reset_is_idempotent_and_forces_full."
+    },
+    {
+      "requirement_id": "W4-020-C02",
+      "status": "PASS",
+      "evidence": "True stagewise partial recomputation (_forward_stages_partial) across all 5 stages per W4-019 schedule: Conv1 reuses 60/128 (recomputes 2 left + 66 right), Pool1 reuses 30/64 (recomputes 1 left + 33 right), Conv2 reuses 28/64 (recomputes 2 left + 34 right), Pool2 reuses 14/32 (recomputes 1 left + 17 right), Conv3 reuses 12/32 (recomputes 2 left + 18 right). Bitwise max difference across all 5 stages and logits is 0.0. Verified by test_c02_sequential_incremental_all_stages_bitwise_match."
+    },
+    {
+      "requirement_id": "W4-020-C03",
+      "status": "PASS",
+      "evidence": "Channel-major Flatten -> Linear128 -> ReLU -> Linear12 head is always completely evaluated without any GAP delta approximation. Logits match direct reference inference bitwise (max error 0.0) with 0 winner disagreements. Verified by test_c03_complete_mlp_head_evaluation."
+    },
+    {
+      "requirement_id": "W4-020-C04",
+      "status": "PASS",
+      "evidence": "Rigorous fail-closed preconditions enforced before incremental reuse: raw AND normalized overlap match (down to 1 ULP), shift==64, step_idx == last_step + 1, recording_id match, finite data, BN eval mode, and ReferenceOwner identity. Any violation safely triggers fallback to mode 'full'. Verified by test_c04_one_ulp_overlap_perturbation_triggers_fallback, test_c04_step_gap_repeat_and_backward_trigger_fallback, test_c04_recording_change_triggers_fallback, test_c04_invalid_shift_rejected."
+    },
+    {
+      "requirement_id": "W4-020-C05",
+      "status": "PASS",
+      "evidence": "Execution mode ('full' vs 'incremental'), stage_reused_columns, stage_recomputed_columns, reused_scalars (768) / recomputed_scalars (1280), logits, prediction, and exact stagewise MAC counts reported (Conv MACs: 532,224 vs 909,312 = 41.47% reduction; Total MACs: 795,904 vs 1,172,992 = 32.15% reduction; is_skipped_decision_reuse = False). Verified by test_c05_execution_reporting_stagewise_macs."
+    },
+    {
+      "requirement_id": "W4-020-C06",
+      "status": "PASS",
+      "evidence": "Strict anti-aliasing enforced: caller mutating input array or output dict cannot alter internal state. Invalid input (non-finite or wrong shape) raises ValueError and leaves cache state untouched. Reset is idempotent. Verified by test_c06_anti_aliasing_caller_mutations and test_c06_invalid_inputs_preserve_cache_state."
+    },
+    {
+      "requirement_id": "W4-020-C07",
+      "status": "PASS",
+      "evidence": "Empirical validation on all 2,422 validation windows (2,414 incremental passes, 99.67% coverage) and 5,053 test windows (5,034 incremental passes, 99.62% coverage): max error across all 5 stages and logits = 0.0, 0 winner disagreements. Documented in incremental_validation.json and verified by test_c07_validation_dataset_streaming_equivalence."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H12/H13/H20: Incremental feature reuse is practically viable and delivers 100% bitwise exact equivalence (0.0 error, 0 winner disagreements) across continuous sensor streams.",
+    "Confirms H14/H22: Complete MLP head recomputation preserves theoretical soundness and speedup (~29% total MAC reduction) without unproved logit-delta shortcuts."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Incremental speedup applies strictly to continuous recording sessions with 50% overlap; isolated or non-contiguous windows require full forward passes.",
+    "Hardware latency reduction depends on CPU BLAS memory bandwidth and tensor slice assembly efficiency; full latency benchmark is deferred to M5 (W4-033)."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

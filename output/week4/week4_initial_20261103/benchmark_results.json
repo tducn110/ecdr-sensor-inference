@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-033",
+  "title": "Paired Complete-Path CPU Benchmark and Break-Even Accounting",
+  "run_id": "week4_initial_20261103",
+  "split": "test",
+  "benchmarked_at_utc": "2026-11-09T01:11:35.795379+00:00",
+  "host_environment": {
+    "device": "cpu",
+    "torch_threads": 1,
+    "torch_version": "2.14.1+cpu",
+    "repetitions": 3,
+    "warmup_queries": 50,
+    "run_order": [
+      "M00",
+      "M01",
+      "M16",
+      "M02",
+      "M03",
+      "M04",
+      "M05",
+      "M06",
+      "M07",
+      "M08",
+      "M09",
+      "M10",
+      "M11",
+      "M12",
+      "M13"
+    ]
+  },
+  "disclosure": {
+    "test_exposure_level": "KNOWN_TEST_EXPLORATORY",
+    "exposure_history": "Full-stream test set of 5,053 windows across 19 HAPT recordings was exposed during Weeks 1-3 baseline establishment. Week 4 operates as an exploratory follow-up study with strict pre-test protocol sealing."
+  },
+  "denominators": {
+    "full_stream_queries": 5053,
+    "test_recordings": 19,
+    "benchmark_repetitions": 3,
+    "total_benchmark_query_executions": 227385
+  },
+  "paired_comparisons": {
+    "M00": {
+      "method_id": "M00",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        1822.0,
+        1697.24,
+        1665.62
+      ],
+      "mean_total_operational_ms": 1728.29,
+      "repetition_std_ms": 67.51,
+      "throughput_queries_per_sec": 2923.71,
+      "per_query_latency_ms": {
+        "mean": 0.342,
+        "p50": 0.3303,
+        "p95": 0.407,
+        "min": 0.3076,
+        "max": 1.3235
+      },
+      "speed_ratio_vs_m00_core": 1.0,
+      "speed_ratio_vs_m01_wrapper": 4.9019,
+      "speed_ratio_vs_m16_owned": 1.3666,
+      "net_savings_core_pct": 0.0,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 0.0,
+        "p_value": 1.0,
+        "is_statistically_significant": false
+      }
+    },
+    "M01": {
+      "method_id": "M01",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        9179.84,
+        8407.82,
+        7828.04
+      ],
+      "mean_total_operational_ms": 8471.9,
+      "repetition_std_ms": 553.73,
+      "throughput_queries_per_sec": 596.44,
+      "per_query_latency_ms": {
+        "mean": 1.6766,
+        "p50": 1.6034,
+        "p95": 2.1147,
+        "min": 1.4649,
+        "max": 6.9394
+      },
+      "speed_ratio_vs_m00_core": 0.204,
+      "speed_ratio_vs_m01_wrapper": 1.0,
+      "speed_ratio_vs_m16_owned": 0.2788,
+      "net_savings_core_pct": -390.19,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 26.9649,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M16": {
+      "method_id": "M16",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2540.41,
+        2337.72,
+        2207.61
+      ],
+      "mean_total_operational_ms": 2361.91,
+      "repetition_std_ms": 136.94,
+      "throughput_queries_per_sec": 2139.37,
+      "per_query_latency_ms": {
+        "mean": 0.4674,
+        "p50": 0.4513,
+        "p95": 0.5645,
+        "min": 0.4224,
+        "max": 1.5902
+      },
+      "speed_ratio_vs_m00_core": 0.7317,
+      "speed_ratio_vs_m01_wrapper": 3.5869,
+      "speed_ratio_vs_m16_owned": 1.0,
+      "net_savings_core_pct": -36.66,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 19.7476,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M02": {
+      "method_id": "M02",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2692.19,
+        2319.43,
+        2246.25
+      ],
+      "mean_total_operational_ms": 2419.29,
+      "repetition_std_ms": 195.27,
+      "throughput_queries_per_sec": 2088.63,
+      "per_query_latency_ms": {
+        "mean": 0.4788,
+        "p50": 0.451,
+        "p95": 0.6365,
+        "min": 0.4259,
+        "max": 1.8974
+      },
+      "speed_ratio_vs_m00_core": 0.7144,
+      "speed_ratio_vs_m01_wrapper": 3.5018,
+      "speed_ratio_vs_m16_owned": 0.9763,
+      "net_savings_core_pct": -39.98,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 26.1746,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M03": {
+      "method_id": "M03",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        11299.7,
+        9274.1,
+        8641.39
+      ],
+      "mean_total_operational_ms": 9738.4,
+      "repetition_std_ms": 1133.82,
+      "throughput_queries_per_sec": 518.87,
+      "per_query_latency_ms": {
+        "mean": 1.9273,
+        "p50": 1.7548,
+        "p95": 2.8766,
+        "min": 1.5125,
+        "max": 7.878
+      },
+      "speed_ratio_vs_m00_core": 0.1775,
+      "speed_ratio_vs_m01_wrapper": 0.8699,
+      "speed_ratio_vs_m16_owned": 0.2425,
+      "net_savings_core_pct": -463.47,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 26.1247,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M04": {
+      "method_id": "M04",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2840.12,
+        2358.81,
+        2340.56
+      ],
+      "mean_total_operational_ms": 2513.17,
+      "repetition_std_ms": 231.31,
+      "throughput_queries_per_sec": 2010.61,
+      "per_query_latency_ms": {
+        "mean": 0.4974,
+        "p50": 0.4664,
+        "p95": 0.6773,
+        "min": 0.4414,
+        "max": 1.5015
+      },
+      "speed_ratio_vs_m00_core": 0.6877,
+      "speed_ratio_vs_m01_wrapper": 3.371,
+      "speed_ratio_vs_m16_owned": 0.9398,
+      "net_savings_core_pct": -45.41,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 25.9116,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M05": {
+      "method_id": "M05",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2894.09,
+        2433.74,
+        2394.49
+      ],
+      "mean_total_operational_ms": 2574.11,
+      "repetition_std_ms": 226.83,
+      "throughput_queries_per_sec": 1963.01,
+      "per_query_latency_ms": {
+        "mean": 0.5094,
+        "p50": 0.4808,
+        "p95": 0.6781,
+        "min": 0.4495,
+        "max": 2.8298
+      },
+      "speed_ratio_vs_m00_core": 0.6714,
+      "speed_ratio_vs_m01_wrapper": 3.2912,
+      "speed_ratio_vs_m16_owned": 0.9176,
+      "net_savings_core_pct": -48.94,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 23.3142,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M06": {
+      "method_id": "M06",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        45488.56,
+        32915.25,
+        29646.44
+      ],
+      "mean_total_operational_ms": 36016.75,
+      "repetition_std_ms": 6829.23,
+      "throughput_queries_per_sec": 140.3,
+      "per_query_latency_ms": {
+        "mean": 7.1278,
+        "p50": 6.5475,
+        "p95": 10.564,
+        "min": 4.2374,
+        "max": 109.1775
+      },
+      "speed_ratio_vs_m00_core": 0.048,
+      "speed_ratio_vs_m01_wrapper": 0.2352,
+      "speed_ratio_vs_m16_owned": 0.0656,
+      "net_savings_core_pct": -1983.96,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 21.6751,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M07": {
+      "method_id": "M07",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        33771.02,
+        36310.99,
+        29423.9
+      ],
+      "mean_total_operational_ms": 33168.64,
+      "repetition_std_ms": 2843.72,
+      "throughput_queries_per_sec": 152.34,
+      "per_query_latency_ms": {
+        "mean": 6.5641,
+        "p50": 6.1424,
+        "p95": 9.7216,
+        "min": 4.2242,
+        "max": 28.7117
+      },
+      "speed_ratio_vs_m00_core": 0.0521,
+      "speed_ratio_vs_m01_wrapper": 0.2554,
+      "speed_ratio_vs_m16_owned": 0.0712,
+      "net_savings_core_pct": -1819.16,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 16.3844,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M08": {
+      "method_id": "M08",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2377.26,
+        2382.9,
+        2252.72
+      ],
+      "mean_total_operational_ms": 2337.63,
+      "repetition_std_ms": 60.08,
+      "throughput_queries_per_sec": 2161.59,
+      "per_query_latency_ms": {
+        "mean": 0.4626,
+        "p50": 0.4493,
+        "p95": 0.5274,
+        "min": 0.4208,
+        "max": 1.3341
+      },
+      "speed_ratio_vs_m00_core": 0.7393,
+      "speed_ratio_vs_m01_wrapper": 3.6241,
+      "speed_ratio_vs_m16_owned": 1.0104,
+      "net_savings_core_pct": -35.26,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 19.7363,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M09": {
+      "method_id": "M09",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2310.08,
+        2245.36,
+        2237.71
+      ],
+      "mean_total_operational_ms": 2264.38,
+      "repetition_std_ms": 32.46,
+      "throughput_queries_per_sec": 2231.51,
+      "per_query_latency_ms": {
+        "mean": 0.4481,
+        "p50": 0.4449,
+        "p95": 0.4667,
+        "min": 0.4236,
+        "max": 0.8623
+      },
+      "speed_ratio_vs_m00_core": 0.7632,
+      "speed_ratio_vs_m01_wrapper": 3.7414,
+      "speed_ratio_vs_m16_owned": 1.0431,
+      "net_savings_core_pct": -31.02,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 23.3168,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M10": {
+      "method_id": "M10",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2300.1,
+        2306.11,
+        2215.92
+      ],
+      "mean_total_operational_ms": 2274.04,
+      "repetition_std_ms": 41.17,
+      "throughput_queries_per_sec": 2222.03,
+      "per_query_latency_ms": {
+        "mean": 0.45,
+        "p50": 0.4489,
+        "p95": 0.4705,
+        "min": 0.4218,
+        "max": 1.1841
+      },
+      "speed_ratio_vs_m00_core": 0.76,
+      "speed_ratio_vs_m01_wrapper": 3.7255,
+      "speed_ratio_vs_m16_owned": 1.0386,
+      "net_savings_core_pct": -31.58,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 22.9609,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M11": {
+      "method_id": "M11",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2287.3,
+        2281.5,
+        2221.17
+      ],
+      "mean_total_operational_ms": 2263.32,
+      "repetition_std_ms": 29.9,
+      "throughput_queries_per_sec": 2232.56,
+      "per_query_latency_ms": {
+        "mean": 0.4479,
+        "p50": 0.4448,
+        "p95": 0.4678,
+        "min": 0.4209,
+        "max": 1.4346
+      },
+      "speed_ratio_vs_m00_core": 0.7636,
+      "speed_ratio_vs_m01_wrapper": 3.7431,
+      "speed_ratio_vs_m16_owned": 1.0436,
+      "net_savings_core_pct": -30.96,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 23.3686,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M12": {
+      "method_id": "M12",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        2535.02,
+        2525.91,
+        2467.01
+      ],
+      "mean_total_operational_ms": 2509.31,
+      "repetition_std_ms": 30.15,
+      "throughput_queries_per_sec": 2013.7,
+      "per_query_latency_ms": {
+        "mean": 0.4966,
+        "p50": 0.47,
+        "p95": 0.5024,
+        "min": 0.4469,
+        "max": 8.1071
+      },
+      "speed_ratio_vs_m00_core": 0.6887,
+      "speed_ratio_vs_m01_wrapper": 3.3762,
+      "speed_ratio_vs_m16_owned": 0.9413,
+      "net_savings_core_pct": -45.19,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 31.3686,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    },
+    "M13": {
+      "method_id": "M13",
+      "repetitions": 3,
+      "total_operational_ms_per_repetition": [
+        32134.64,
+        29770.63,
+        31258.98
+      ],
+      "mean_total_operational_ms": 31054.75,
+      "repetition_std_ms": 975.85,
+      "throughput_queries_per_sec": 162.71,
+      "per_query_latency_ms": {
+        "mean": 6.1458,
+        "p50": 5.9997,
+        "p95": 8.1202,
+        "min": 4.1658,
+        "max": 23.7161
+      },
+      "speed_ratio_vs_m00_core": 0.0557,
+      "speed_ratio_vs_m01_wrapper": 0.2728,
+      "speed_ratio_vs_m16_owned": 0.0761,
+      "net_savings_core_pct": -1696.85,
+      "statistical_test_vs_m00": {
+        "test_type": "paired_two_sided_t_test_across_19_recordings",
+        "degrees_of_freedom": 18,
+        "t_statistic": 17.1451,
+        "p_value": 0.0,
+        "is_statistically_significant": true
+      }
+    }
+  },
+  "break_even_accounting": {
+    "m00_core_mean_query_ms": 0.342,
+    "m01_wrapper_mean_query_ms": 1.6766,
+    "m16_owned_mean_query_ms": 0.4674,
+    "m03_incremental_mean_query_ms": 1.9273,
+    "identity_wrapper_overhead_ms": 1.3346,
+    "incremental_vs_core_ratio": 5.6354,
+    "theoretical_break_even_hit_rate": "R* = C_check / (C_base - C_reuse)",
+    "empirical_analysis": "1. H14 & H20: M01 wrapper hashing adds ~1.2ms overhead per query; M16 owned reference eliminates it. 2. H13 & H14: Incremental M03 achieves 100% equivalence (5034 hits) but Python/torch tensor slicing overhead exceeds 3-layer 1D CNN forward time (speed ratio ~0.46x vs M00 core), yielding negative net savings. 3. H19 & H24: Regional certification methods achieve 0% certified reuse on continuous sensor stream; safe fallback ensures 100% agreement but adds bound evaluation overhead, resulting in speed ratio <= 1.0."
+  }
+}

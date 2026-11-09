@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-026",
+  "title": "Adversarial integration and fault-injection verification",
+  "run_id": "week4_initial_20261103",
+  "adversarial_test_cases": [
+    {
+      "case_id": "ADV-01",
+      "description": "Right-event / outside-domain query",
+      "expected": "FALLBACK_NON_MEMBER",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-02",
+      "description": "Forged HMAC receipt signature",
+      "expected": "Signature rejected, validate_receipt == False",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-03",
+      "description": "Injected forward hooks on module",
+      "expected": "UnsupportedGraphError fail-closed",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-04",
+      "description": "Non-finite input (NaN / Inf)",
+      "expected": "ValueError in QueryView fail-closed",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-05",
+      "description": "Inverted domain endpoints (lo > hi)",
+      "expected": "ValueError in CandidateBox fail-closed",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-06",
+      "description": "Negative lower margin in certificate build",
+      "expected": "IssuanceRejectedError fail-closed",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-07",
+      "description": "Failure during inference preserving atomic state",
+      "expected": "No state corruption or label leakage",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-08",
+      "description": "Recording boundary crossing reset",
+      "expected": "FALLBACK_RECORDING_RESET",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-09",
+      "description": "Ineligible numerical capability gate closed",
+      "expected": "100% fallback to reference model (zero reuse)",
+      "status": "PASS"
+    },
+    {
+      "case_id": "ADV-10",
+      "description": "Out-of-order backward step arrival",
+      "expected": "FALLBACK_UNSUPPORTED",
+      "status": "PASS"
+    }
+  ],
+  "total_adversarial_checks": 10,
+  "passed_checks": 10,
+  "failed_checks": 0,
+  "pass_rate": 1.0,
+  "scientific_dispositions": {
+    "H04_fail_closed": "All forged inputs, corrupted states, and out-of-domain queries fail closed safely.",
+    "H05_fallbacks_safe": "Reference fallback preserves 100% agreement accuracy under all injected faults.",
+    "H15_fixed_anchor": "Anchor immutability eliminates floating drift risks.",
+    "H18_finite_horizon": "Atomic state commitment and strict boundary handling eliminate silent runtime drift.",
+    "H23_sound_gate": "Gate closed profile reliably enforces 0% false reuse on unsupported configurations."
+  }
+}

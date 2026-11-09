@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-034",
+  "title": "Attributable Memory Components and Membership Complexity",
+  "run_id": "week4_initial_20261103",
+  "measured_at_utc": "2026-11-09T01:18:48.584493+00:00",
+  "reference_float32_tensor_payload": {
+    "parameter_bytes": 1134768,
+    "buffer_bytes": 1304,
+    "total_tensor_payload_bytes": 1136072
+  },
+  "bound_snapshot_float64_tensor_payload": {
+    "parameter_bytes": 2269536,
+    "buffer_bytes": 2584,
+    "total_tensor_payload_bytes": 2272120
+  },
+  "process_memory_environment": {
+    "process_peak_rss_kb": 446088,
+    "process_rss_scope": "Includes Python runtime, PyTorch backend, and frozen HAPT dataset arrays. Not attributable to adapter cache.",
+    "gpu_memory_bytes": null,
+    "gpu_memory_reason": "Host CPU environment; GPU acceleration not used or claimed.",
+    "energy_joules": null,
+    "energy_reason": "Hardware power/RAPL instrumentation not isolated or available in sandbox.",
+    "dynamic_workspace_rss_delta": null,
+    "dynamic_workspace_reason": "Process memory allocator heap fragmentation prevents sub-millisecond dynamic RSS delta attribution."
+  },
+  "method_memory_profiles": {
+    "M00": {
+      "method_id": "M00",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 1136072,
+      "adapter_python_bytes": 1113,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 1113,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M01": {
+      "method_id": "M01",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1307,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 1307,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M02": {
+      "method_id": "M02",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1533,
+      "state_cache_payload_bytes": 3080,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 4613,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M03": {
+      "method_id": "M03",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 12465,
+      "state_cache_payload_bytes": 3584,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 16049,
+      "coordinates_read": 384,
+      "amortization_scope": "per_window_stream"
+    },
+    "M04": {
+      "method_id": "M04",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1586,
+      "state_cache_payload_bytes": 6664,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 8250,
+      "coordinates_read": 384,
+      "amortization_scope": "per_window_stream"
+    },
+    "M05": {
+      "method_id": "M05",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 8909,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 15053,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M06": {
+      "method_id": "M06",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 11940,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 18084,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M07": {
+      "method_id": "M07",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 11705,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 17849,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M08": {
+      "method_id": "M08",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1460123,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 1466267,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M09": {
+      "method_id": "M09",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1460411,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 1466555,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M10": {
+      "method_id": "M10",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1459976,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 1466120,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M11": {
+      "method_id": "M11",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 1460238,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 1466382,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M12": {
+      "method_id": "M12",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 11769,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 17913,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M13": {
+      "method_id": "M13",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 11815,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 6144,
+      "total_attributable_cache_bytes": 17959,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    },
+    "M14": {
+      "method_id": "M14",
+      "execution_status": "AUDITED_UNSUPPORTED",
+      "unsupported_reason": "Evaluates LipCache proxy framework (Xiang et al. 2026) under exact published semantics. Audited in W4-029: requires separate GuardNet training (out of frozen scope) and certificate holds only on GuardNet side (Remark 5.2), not MainNet.",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 0,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 0,
+      "coordinates_read": 0,
+      "amortization_scope": "none"
+    },
+    "M15": {
+      "method_id": "M15",
+      "execution_status": "AUDITED_UNSUPPORTED",
+      "unsupported_reason": "Formal audit of StreamiNNC (Kechris et al. 2024) and TinyDejaVu (Huang et al. 2026) architectural and runtime prerequisites. Completed in W4-029: excluded from performance ranking.",
+      "baseline_owned_model_bytes": 0,
+      "adapter_python_bytes": 0,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 0,
+      "coordinates_read": 0,
+      "amortization_scope": "none"
+    },
+    "M16": {
+      "method_id": "M16",
+      "execution_status": "EXECUTED",
+      "baseline_owned_model_bytes": 1136072,
+      "adapter_python_bytes": 1514,
+      "state_cache_payload_bytes": 0,
+      "certificate_payload_bytes": 0,
+      "total_attributable_cache_bytes": 1514,
+      "coordinates_read": 768,
+      "amortization_scope": "per_query"
+    }
+  },
+  "membership_microbenchmark": {
+    "full_768_coordinate_box": {
+      "coordinates_checked": 768,
+      "worst_case_complexity": "Theta(m)",
+      "mean_latency_ns": 1434.6,
+      "p50_latency_ns": 1409.0,
+      "p95_latency_ns": 1457.0,
+      "early_rejection_comment": "Early rejection terminates on first failing coordinate; worst-case containment requires evaluating all m=768 dimensions."
+    },
+    "tail_384_fixed_prefix": {
+      "coordinates_checked": 768,
+      "worst_case_complexity": "Theta(m)",
+      "mean_latency_ns": 3696.6,
+      "p50_latency_ns": 3644.0,
+      "p95_latency_ns": 3781.1,
+      "early_rejection_comment": "Prefix match must be verified prior to tail evaluation; total dimensions checked remain Theta(m)."
+    },
+    "latent_pca_k16": {
+      "coordinates_checked": 384,
+      "latent_dimensions": 16,
+      "worst_case_complexity": "Theta(m * k)",
+      "mean_latency_ns": 2951.9,
+      "p50_latency_ns": 2903.0,
+      "p95_latency_ns": 2996.1,
+      "early_rejection_comment": "Projection V^T(x - mu) evaluates all m=384 inputs before latent bounds check."
+    },
+    "residual_norm_check": {
+      "coordinates_checked": 384,
+      "worst_case_complexity": "Theta(m)",
+      "mean_latency_ns": 4628.9,
+      "p50_latency_ns": 4544.0,
+      "p95_latency_ns": 4996.0,
+      "early_rejection_comment": "L_infinity residual requires max-absolute coordinate deviation across tail."
+    }
+  }
+}

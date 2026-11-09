@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-014",
+  "title": "CROWN adapter capability and variant specification",
+  "crown_variant": "analytic_backward",
+  "bound_opts": {
+    "conv_mode": "matrix"
+  },
+  "surrogate_architecture": "SingletonHeightCNN (Conv2d, BatchNorm2d, MaxPool2d)",
+  "setup_ms": 109.89396899822168,
+  "conversion_status": "PASS",
+  "numerical_status": "CONDITIONAL_REAL_ARITHMETIC",
+  "formal_reuse_eligibility": "DISABLED: Surrogate 2D real-algebra equivalent but float32 BLAS equivalence unproven; runtime exceeds streaming deadline.",
+  "per_epsilon_positive_rates": {
+    "0.0001": {
+      "crown_direct": 1.0,
+      "crown_sep": 1.0,
+      "lirpa_ibp": 0.3,
+      "actual_ibp": 0.3
+    },
+    "0.001": {
+      "crown_direct": 0.8,
+      "crown_sep": 0.7,
+      "lirpa_ibp": 0.0,
+      "actual_ibp": 0.0
+    },
+    "0.01": {
+      "crown_direct": 0.0,
+      "crown_sep": 0.0,
+      "lirpa_ibp": 0.0,
+      "actual_ibp": 0.0
+    }
+  },
+  "mean_latency_ms": {
+    "crown_direct": 892.4373994993706,
+    "crown_sep": 928.6814993664544,
+    "actual_ibp": 7.3223633667415315
+  }
+}

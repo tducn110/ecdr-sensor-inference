@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-033",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (clean 214 protected files)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? configs/week4/",
+    "?? ecdr/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? scripts/week4_tasks.py",
+    "?? tests/"
+  ],
+  "claimed_write_paths": [
+    "scripts/week4_run.py",
+    "tests/test_week4_accounting.py"
+  ],
+  "started_at_utc": "2026-11-08T17:01:56Z",
+  "completed_at_utc": "2026-11-09T01:12:00Z",
+  "environment_profile_id": "week4_initial_20261103",
+  "protocol_sha256": "2ff87705e8a7c782a4a0be256017a861ee0e58ba8ad337610ff7200bdd11dead",
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/week4_run.py benchmark --run-id week4_initial_20261103 --split test --sealed-policy output/week4/week4_initial_20261103/selected_policy.json --repetitions 3 --warmup-queries 50",
+      "exit_code": 0,
+      "purpose": "Paired complete-path CPU benchmark executing 227,385 query evaluations across 3 repetitions and 15 methods"
+    },
+    {
+      "command": ".venv/bin/python -m unittest tests/test_week4_accounting.py",
+      "exit_code": 0,
+      "purpose": "Comprehensive accounting unit test suite verifying W4-032 and W4-033 requirements (11/11 tests passing)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check",
+      "exit_code": 0,
+      "purpose": "Protected files audit check verifying integrity of 214 protected files (clean)"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "scripts/week4_run.py",
+      "sha256": "91030a31b055724ca595e911ae74fc5c1aaa83c2b20d0dd959ae038f55c3701e",
+      "description": "Implemented run_benchmark function, paired statistical calculations, break-even accounting, and benchmark CLI subcommand."
+    },
+    {
+      "path": "tests/test_week4_accounting.py",
+      "sha256": "a9766debe1234c53420de5ee918095efb14799fb40350cc9adfb567d15becf0c",
+      "description": "Added test cases test_w4_033_c01 through c07 covering thread isolation, input equivalence, warmup separation, trace schema, paired speed ratios, and break-even premises."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/timing_trace.csv",
+      "sha256": "c18479b9a1eecdbab9fefc5dc62a64a011fc2530347edc51ee46ea916864b302",
+      "description": "Fine-grained per-query timing trace recording 227,385 rows across 3 repetitions, 15 methods, and 5,053 queries."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/benchmark_results.json",
+      "sha256": "110bca5456a720066942625b3c8c6a6265069765dd1aa6a56d5cfdf48deb8368",
+      "description": "Comprehensive benchmark report containing paired comparisons vs M00/M01/M16, p50/p95, paired t-tests, and empirical break-even accounting."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-033-C01",
+      "status": "PASS",
+      "evidence": "Executed benchmark under strict single-thread CPU isolation (torch.set_num_threads(1)) with declared run order and logged environment profile. Verified by test_w4_033_c01_host_and_thread_isolation."
+    },
+    {
+      "requirement_id": "W4-033-C02",
+      "status": "PASS",
+      "evidence": "M00 core, M01 wrapper, M16 owned, and candidate methods evaluated using identical pre-allocated RAM-resident QueryView instances at batch=1, matching exact output contracts and timing scopes. Verified by test_w4_033_c02_same_ram_inputs_and_contract."
+    },
+    {
+      "requirement_id": "W4-033-C03",
+      "status": "PASS",
+      "evidence": "Cold-start setup and 50 warmup queries executed and reset before the operational measurement loop. Amortization horizon declared across the 5,053-query stream. Verified by test_w4_033_c03_warmup_and_cold_start_separation."
+    },
+    {
+      "requirement_id": "W4-033-C04",
+      "status": "PASS",
+      "evidence": "Measured complete-path query execution without omitting fallback forward execution, anchor computation, or cache state updates. No double-counting of baseline inference. Verified by test_w4_033_c04_c05_timing_trace_columns_and_timer_isolation."
+    },
+    {
+      "requirement_id": "W4-033-C05",
+      "status": "PASS",
+      "evidence": "Isolated timer strictly around adapter.process_query(qv) using time.perf_counter_ns(). Excluded disk CSV logging, dataframe indexing, and shadow reference validation from operational query latency. Verified by test_w4_033_c04_c05_timing_trace_columns_and_timer_isolation."
+    },
+    {
+      "requirement_id": "W4-033-C06",
+      "status": "PASS",
+      "evidence": "Reported per-repetition total ms, repetition std, throughput (qps), and per-query mean, p50, p95, min, max latencies. Computed speed ratios strictly as ratio of paired operational totals. Recorded honest negative scientific results: M03 incremental speed ratio 0.1775x vs M00 (net savings -463.38%), M01 wrapper 0.2040x vs M00, M05-M13 regional certifications <= 0.69x vs M00. Verified by test_w4_033_c06_c07_paired_speed_ratios_and_break_even."
+    },
+    {
+      "requirement_id": "W4-033-C07",
+      "status": "PASS",
+      "evidence": "Documented break-even model R* = C_check / (C_base - C_reuse) and compared theoretical premises with empirical trace realities. Incremental M03 achieves 100% hits (5,034) but tensor slicing cost (C_check + C_reuse = 1.93ms) exceeds baseline forward (0.34ms). Regional methods achieve 0% certified hits (H19) and fail-closed fallback incurs bound checking overhead. Verified by test_w4_033_c06_c07_paired_speed_ratios_and_break_even."
+    }
+  ],
+  "limitations": [
+    "Single-thread CPU benchmark results are hardware-dependent and specific to SmallCNN1D K=12 on CPU. GPU or dedicated hardware accelerators may alter break-even trade-offs.",
+    "Certified regional methods (M05-M13) produce speed ratios <= 1.0 due to vanishing coverage under streaming perturbations (H19), accurately reflecting negative scientific results."
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-029",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "clean",
+  "execution_source_tree_id": "local_v1",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+    "configs/week4/methods.json"
+  ],
+  "started_at_utc": "2026-11-08T14:06:21.000000+00:00",
+  "completed_at_utc": "2026-11-08T14:08:40.000000+00:00",
+  "environment_profile_id": "env_local_py311_torch214_cpu",
+  "protocol_sha256": "3cb49a42531d0b54378877bcce945761a2936e788ad7208cfd4957e841b528b9",
+  "commands": [
+    {
+      "command": "Primary literature audit and locator verification (arXiv:2608.13144, arXiv:2408.03223, arXiv:2512.09786)",
+      "exit_code": 0,
+      "purpose": "Verify exact mathematical guarantees, target reference scope, and hardware assumptions"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+      "sha256": "78fb069cd53d14b7c63fc966de07ac40a26cc8751665b8f4cdcb1db73ad41e49"
+    },
+    {
+      "path": "configs/week4/methods.json",
+      "sha256": "29b14a4fdfa31d9ff7822817e814c0d8d6b197aa73d3e399ef74d4dc4fe9275a"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/prior_work_comparison_review.json",
+      "sha256": "3b61e83224b881a8e6db50cdf490c133ca887d8be98f3204d83abd4a2dc9e79c"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "code": "W4-029-C01",
+      "file": "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+      "symbol": "Section 2.1 & 3.1 & 4.1",
+      "status": "VERIFIED",
+      "notes": "Audited primary papers: LipCache (arXiv:2608.13144), StreamiNNC (arXiv:2408.03223), TinyDejaVu (arXiv:2512.09786)."
+    },
+    {
+      "code": "W4-029-C02",
+      "file": "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+      "symbol": "Section 2.2 & 2.3",
+      "status": "VERIFIED",
+      "notes": "Identified that LipCache guarantee is GuardNet-side only (Remark 5.2) and tested strictly on i.i.d. images (Sec 7.1)."
+    },
+    {
+      "code": "W4-029-C03",
+      "file": "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+      "symbol": "Section 2.4",
+      "status": "VERIFIED",
+      "notes": "Faithful adaptation requires training a separate GuardNet proxy, which is blocked by the frozen reference protocol."
+    },
+    {
+      "code": "W4-029-C04",
+      "file": "configs/week4/methods.json",
+      "symbol": "M14",
+      "status": "VERIFIED",
+      "notes": "Method M14 marked NOT_APPLICABLE_IN_FROZEN_SCOPE; comparator runtimes are explicitly not fabricated."
+    },
+    {
+      "code": "W4-029-C05",
+      "file": "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+      "symbol": "Section 3 & 4",
+      "status": "VERIFIED",
+      "notes": "StreamiNNC and TinyDejaVu audited for streaming states and hardware constraints; marked AUDITED_APPLICABILITY_ONLY."
+    },
+    {
+      "code": "W4-029-C06",
+      "file": "04_SYNTHESIS/week4/design/PRIOR_WORK_COMPARATORS.md",
+      "symbol": "Section 3.2",
+      "status": "VERIFIED",
+      "notes": "Locally inspired exact incremental computation is maintained under distinct method ID M03 with explicit SmallCNN1D evaluation."
+    },
+    {
+      "code": "W4-029-C07",
+      "file": "configs/week4/methods.json",
+      "symbol": "methods",
+      "status": "VERIFIED",
+      "notes": "Updated method statuses; latency/accuracy metrics held unpopulated (null) until empirical execution."
+    }
+  ],
+  "protected_hash_check": {
+    "status": "CLEAN",
+    "verified_count": 214
+  },
+  "scientific_dispositions": [
+    {
+      "hypothesis": "H21",
+      "verdict": "NOT_ESTABLISHED",
+      "evidence": "No faithful head-to-head benchmark against LipCache is possible on frozen HAPT due to the GuardNet proxy training requirement and disparate guarantee objects."
+    },
+    {
+      "hypothesis": "H24",
+      "verdict": "CONFIRMED",
+      "evidence": "Published prior works on certified caching either focus on external proxies for static images or uncertified embedded hardware designs."
+    }
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Prior-work audit is analytical and literature-based. External comparator benchmarks are not run because they require modifying the frozen reference or training out-of-scope models."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED"
+}

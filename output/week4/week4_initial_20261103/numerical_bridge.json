@@ -1,0 +1,36 @@
+{
+  "schema_version": "w4.numerical_bridge.v1",
+  "task_id": "W4-009",
+  "date": "2026-11-08",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "reference_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "target_model": "SmallCNN1D(num_classes=12)",
+  "numerical_status": "VALIDATED_FLOAT32_ENCLOSURE",
+  "supported_margin_methods": [
+    "separate_logits",
+    "direct_head_difference"
+  ],
+  "safe_margin_predicate": "min_{j != c*} lower_margin_j > 0.0",
+  "confident_witness": {
+    "global_row_id": 15031,
+    "predicted_class": 0,
+    "point_lower_margin": 2.1199443340301514,
+    "point_is_positive": true
+  },
+  "near_tie_witness": {
+    "global_row_id": 13358,
+    "recording_id": "48",
+    "step_idx": 236,
+    "top1_class": 3,
+    "runner_up_class": 8,
+    "executable_margin": 0.00011350000000032168,
+    "point_lower_bound": -0.030193330720067024,
+    "point_is_positive": false,
+    "note": "Conservative fail-closed rejection: executable margin (1.13e-4) is smaller than accumulated multi-layer Higham bound (~0.03), correctly yielding VALIDATED_INCONCLUSIVE without false positive certification."
+  },
+  "interval_wrapping_diagnostic": {
+    "finding": "High dynamic range expansion across 3 Conv and 2 Linear layers causes interval bounds to widen rapidly for epsilon >= 1e-4, explaining the 0% coverage of regional IBP certification on continuous streams.",
+    "theoretical_hypothesis_disposition": "Confirms H05/H06/H08: Sound float32 bridge exists and preserves decision on point inputs, but regional radius collapses due to interval wrapping."
+  }
+}

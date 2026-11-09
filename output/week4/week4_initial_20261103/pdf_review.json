@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-039",
+  "title": "Final PDF Compilation, Visual Render Verification, and Provenance Binding",
+  "run_id": "week4_initial_20261103",
+  "compiled_at_utc": "2026-11-09T01:31:50Z",
+  "compiler_environment": {
+    "engine": "pdfTeX 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian)",
+    "bibtex_version": "BibTeX 0.99d",
+    "render_tool": "pdftoppm 24.08.0",
+    "render_dpi": 150
+  },
+  "documents": [
+    {
+      "id": "REPORT_A",
+      "title": "Early Certified Decision Reuse (ECDR) for Streaming Inference: Implementation, Formal Verification, and Empirical Evaluation on Sensor Time Series",
+      "source_path": "04_SYNTHESIS/week4/reports/Week_4_Implementation_and_Evaluation.tex",
+      "pdf_path": "04_SYNTHESIS/week4/reports/Week_4_Implementation_and_Evaluation.pdf",
+      "pdf_sha256": "a3b692e44211e891541497d6481289416e0d08addc1f325237517dae986756ab",
+      "total_pages": 5,
+      "page_render_hashes": [
+        {"page": 1, "sha256": "121cc0d1af21e032ae416ed85fb9933e503b7490e062319e2cb03e9c4c58c4ea"},
+        {"page": 2, "sha256": "5d844631f56d39e6a386edda1bf45ccc9d3e97432dfbf67afa793e7065fc4a43"},
+        {"page": 3, "sha256": "8b440b9b9aa2a67aae3eee47f32e087b20cd2df3074655a337cc998e1cceef9f"},
+        {"page": 4, "sha256": "acdb00475bae4d6d4a8079d3855281afa6e7de29911ceb056d2fd0c5db65585d"},
+        {"page": 5, "sha256": "5a65e0e80f80db5716b32248ad1cb9d25aadbcb401c732a40f913b9fce6b85bb"}
+      ],
+      "visual_inspection_verdict": "PASSED_CLEAN",
+      "layout_checks": {
+        "missing_glyphs": false,
+        "undefined_references": false,
+        "citation_errors": false,
+        "table_clipping": false,
+        "equation_overflow": false
+      }
+    },
+    {
+      "id": "REPORT_B",
+      "title": "Demystifying Early Certified Decision Reuse (ECDR): A First-Principles Conceptual Guide and Mechanism Analysis",
+      "source_path": "04_SYNTHESIS/week4/reports/Week_4_Explained.tex",
+      "pdf_path": "04_SYNTHESIS/week4/reports/Week_4_Explained.pdf",
+      "pdf_sha256": "59c71087cf56c6ac2fa4bd51f79d56af416f45838735d4a6294fbe0f6b719615",
+      "total_pages": 6,
+      "page_render_hashes": [
+        {"page": 1, "sha256": "06b49499450a5072edd53840408a1f5e2fc7060abe3f976b9b28ddf62ad6fa5c"},
+        {"page": 2, "sha256": "0fcd69d01f56bcc6a8775463497e1958eb9ed67099eb7154d7b130b49e010b41"},
+        {"page": 3, "sha256": "84dc77101d4c6e956c2f79cb285d685772ac4f8eabf38e5085562d4ce9d9027f"},
+        {"page": 4, "sha256": "be6c0a34f99ebbf86e550329adb2da995120c6e152baadae7d6ca3d01d77bc16"},
+        {"page": 5, "sha256": "7e611d4be1a88c4c7376d9d8e83fb3207e19c055aae756046fe47042149e103c"},
+        {"page": 6, "sha256": "661403a51d088701dde001b9569a103b576623e07b2e70b0815107c0d955b529"}
+      ],
+      "visual_inspection_verdict": "PASSED_CLEAN",
+      "layout_checks": {
+        "missing_glyphs": false,
+        "undefined_references": false,
+        "citation_errors": false,
+        "table_clipping": false,
+        "equation_overflow": false
+      }
+    }
+  ],
+  "compile_logs_dir": "output/week4/week4_initial_20261103/report_compile_logs/"
+}

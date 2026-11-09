@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-040",
+  "title": "Repository Final State and Baseline Preservation Audit",
+  "run_id": "week4_initial_20261103",
+  "verified_at_utc": "2026-11-09T01:39:29.785803+00:00",
+  "protected_files_count": 214,
+  "protected_files_status": "CLEAN",
+  "master_seal_hash": "5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b",
+  "frozen_reference_model": "SmallCNN1D (K=12, 283692 parameters, Float32)",
+  "reference_checkpoint_sha256": "69b828d8b67f1ee56de33d1eb11bdf85f9cb558b877ee784841dbb80b2d6a5bf",
+  "data_manifests": {
+    "window_manifest_parquet": "data/window_manifest.parquet",
+    "windows_with_split_parquet": "data/windows_with_split.parquet",
+    "windows_npz": "data/windows.npz",
+    "normalization_npz": "data/normalization.npz"
+  },
+  "preservation_guarantee": "Zero modifications made to Weeks 1-3 baseline assets, historical GAP models, or frozen normalization parameters."
+}

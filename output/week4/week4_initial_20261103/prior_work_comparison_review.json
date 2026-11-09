@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-029",
+  "title": "Prior-work faithful applicability and comparator audit review",
+  "run_id": "week4_initial_20261103",
+  "completed_at_utc": "2026-11-08T14:08:00Z",
+  "audited_works": [
+    {
+      "name": "LipCache",
+      "method_id": "M14",
+      "primary_source": {
+        "title": "LipCache: A Local Inference Proxy with Certified Caching for Edge Image Classification Service",
+        "authors": ["Zhengzhe Xiang", "Yinlin Chen", "Fuli Ying", "Binbin Zhou", "Hailiang Zhao", "Schahram Dustdar"],
+        "year": 2026,
+        "eprint": "arXiv:2608.13144v1",
+        "url": "https://arxiv.org/abs/2608.13144",
+        "pages": 21
+      },
+      "guarantee_target": {
+        "statement": "Certificate guarantees decision invariance of the edge GuardNet proxy only.",
+        "exact_quote_remark_5_2": "theoretical certificate of LipCache is on the GuardNet side, not on the MainNet side",
+        "mainnet_decision_preservation": "EXPLICITLY_EXCLUDED",
+        "project_reference_target_match": "FAIL: Project requires certified decision preservation of frozen SmallCNN1D reference, not an external proxy."
+      },
+      "workload_and_data_domain": {
+        "evaluated_tasks": ["CIFAR-10", "Tiny-ImageNet", "SVHN"],
+        "data_structure": "i.i.d. image classification queries",
+        "streaming_applicability": "UNVERIFIED: Section 7.1 acknowledges temporal redundancy, concept drift, and consecutive-frame reuse in streaming as future work."
+      },
+      "adaptation_prerequisites": [
+        "Requires training a separate 1D Lipschitz-bounded GuardNet proxy network.",
+        "Requires calibration of empirical GuardNet-MainNet agreement thresholds.",
+        "Requires relaxing the formal guarantee from exact reference preservation to heuristic proxy agreement."
+      ],
+      "disposition": "NOT_APPLICABLE_IN_FROZEN_SCOPE",
+      "reasons": [
+        "Training a new GuardNet proxy violates the frozen reference protocol (W4-001/002).",
+        "GuardNet certificate does not transfer to the frozen SmallCNN1D MainNet.",
+        "Image speedup (up to 1.65x) cannot be soundly transferred to 1D sensor time-series with 50% temporal overlap."
+      ]
+    },
+    {
+      "name": "StreamiNNC",
+      "method_id": "M15",
+      "sub_item": "streaminnc",
+      "primary_source": {
+        "title": "Don't Think It Twice: Efficient Inference on Streaming Data via Incremental CNN Computation",
+        "authors": ["Christos Kechris et al."],
+        "year": 2024,
+        "eprint": "arXiv:2408.03223",
+        "url": "https://arxiv.org/abs/2408.03223"
+      },
+      "guarantee_target": {
+        "statement": "Algebraically exact feature map reuse for sliding window CNN inference.",
+        "mainnet_decision_preservation": "EXACT (when padding caveats are handled)"
+      },
+      "workload_and_data_domain": {
+        "evaluated_tasks": ["Streaming audio and sensory workloads"],
+        "data_structure": "Shifted windows with arbitrary strides"
+      },
+      "adaptation_prerequisites": [
+        "Handling zero-padding border distortion in multi-layer convolutions.",
+        "Tensors must maintain unpadded feature columns across temporal window shifts."
+      ],
+      "relationship_to_ecdr": "Directly motivated project method M03 (Exact incremental computation, W4-019..W4-021).",
+      "disposition": "AUDITED_APPLICABILITY_ONLY",
+      "reasons": [
+        "Paper implementation uses a different code base and hardware abstraction.",
+        "Conceptual principles are already absorbed into ECDR M03, which is evaluated natively on SmallCNN1D.",
+        "Excluded from external comparator ranking to prevent duplicate or fabricated benchmarks."
+      ]
+    },
+    {
+      "name": "TinyDejaVu",
+      "method_id": "M15",
+      "sub_item": "tinydejavu",
+      "primary_source": {
+        "title": "TinyDejaVu: Smaller RAM and Faster Inference with Neural Networks on MCUs for Sensor Data Streams",
+        "authors": ["Huang", "Baccelli"],
+        "year": 2026,
+        "eprint": "arXiv:2512.09786v2",
+        "url": "https://arxiv.org/abs/2512.09786v2"
+      },
+      "guarantee_target": {
+        "statement": "SRAM reduction and execution acceleration on microcontrollers via circular activation buffering.",
+        "mainnet_decision_preservation": "EXACT (in fixed-point / integer MCU kernels)"
+      },
+      "workload_and_data_domain": {
+        "evaluated_tasks": ["Embedded microcontroller (ARM Cortex-M) sensor inference"],
+        "data_structure": "Real-time streaming samples on bare-metal MCU"
+      },
+      "adaptation_prerequisites": [
+        "Low-level memory management using CMSIS-NN or bare-metal C circular buffers.",
+        "Target platform must have extreme memory constraints (SRAM < 256KB)."
+      ],
+      "disposition": "AUDITED_APPLICABILITY_ONLY",
+      "reasons": [
+        "Incompatible runtime target: ECDR evaluates float32 CPU PyTorch on Linux x86_64, whereas TinyDejaVu targets microcontroller SRAM optimization.",
+        "Excluded from performance ranking."
+      ]
+    }
+  ],
+  "scientific_hypothesis_disposition": {
+    "hypothesis": "H21",
+    "statement": "ECDR beats LipCache in practice on streaming HAPT.",
+    "verdict": "NOT_ESTABLISHED",
+    "scientific_rationale": "Direct head-to-head benchmarking against LipCache is not feasible within the frozen reference protocol. LipCache certificates apply only to the GuardNet proxy and its evaluation is restricted to i.i.d. image classification without consecutive streaming overlap. Fabricating an artificial HAPT LipCache proxy would violate the frozen scope without providing a mathematically faithful comparator. Therefore, no claim of superiority over LipCache can be established."
+  }
+}

@@ -1,0 +1,18 @@
+method_id,method_name,category,soundness_guarantee,useful_streaming_coverage,low_cost_net_speedup,h24_conjunction_satisfied,failure_mechanism
+M00,Frozen full core,baseline,True,False,False,False,Baseline comparator: Does not attempt streaming reuse (Coverage=False).
+M01,Full equivalent wrapper,baseline_wrapper,True,False,False,False,Baseline comparator: Does not attempt streaming reuse (Coverage=False).
+M02,Exact input replay,singleton_reuse,True,False,False,False,Vanishing coverage: Continuous floating-point sensor windows never match identical bitwise raw values.
+M03,Exact incremental computation,feature_cache_reuse,True,True,False,False,Overhead failure: 100% coverage achieved (5034 hits) but Python/torch tensor slicing overhead exceeds baseline forward pass (0.18x speed ratio).
+M04,Heuristic reuse,heuristic,False,False,False,False,Soundness failure: Heuristic reuse violates decision invariance guarantee.
+M05,Global Lipschitz cache,regional_certification,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M06,IBP diagonal box,regional_certification,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M07,IBP fixed-overlap wave,regional_certification,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M08,Correlated candidate via coordinate hull,control_ablation,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M09,Native correlated bounds,regional_certification,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M10,CROWN diagonal,regional_certification,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M11,CROWN wave/correlated,regional_certification,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M12,Fixed-anchor policy control,policy_axis,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M13,Finite-horizon policy control,policy_axis,True,False,False,False,Vanishing coverage (H19): Mathematical certificates yield 0 useful streaming hits; bound evaluation overhead causes speed ratio <= 1.0.
+M14,Faithful LipCache comparator,prior_work_comparator,False,False,False,False,AUDITED_UNSUPPORTED: Method not applicable or not implementable on continuous HAPT streaming.
+M15,Prior-work applicability only,applicability_audit,False,False,False,False,AUDITED_UNSUPPORTED: Method not applicable or not implementable on continuous HAPT streaming.
+M16,OWNED_REFERENCE baseline,secondary_baseline,True,False,False,False,Baseline comparator: Does not attempt streaming reuse (Coverage=False).

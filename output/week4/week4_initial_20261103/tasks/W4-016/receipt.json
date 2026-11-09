@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-016",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "clean",
+  "execution_source_tree_id": "local_v1",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "ecdr/week4/domains.py",
+    "tests/test_week4_affine_domains.py",
+    "04_SYNTHESIS/week4/design/AFFINE_DOMAIN.md"
+  ],
+  "started_at_utc": "2026-11-08T14:27:09.000000+00:00",
+  "completed_at_utc": "2026-11-08T14:31:00.000000+00:00",
+  "environment_profile_id": "env_local_py311_torch214_cpu",
+  "protocol_sha256": "3cb49a42531d0b54378877bcce945761a2936e788ad7208cfd4957e841b528b9",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_affine_domains.py -v",
+      "exit_code": 0,
+      "purpose": "Verify W4-016 checklist items C01-C07 on PCA affine-tail domain"
+    },
+    {
+      "command": ".venv/bin/python ecdr/week4/domains.py --fit-affine --validate-affine --run-id week4_initial_20261103 --num-pairs 50",
+      "exit_code": 0,
+      "purpose": "Fit PCA on train split and validate affine domain & outer box on validation split"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/domains.py",
+      "sha256": "74ab4868025bd9d4806ffbc1eeead258a34f958d8188aada80025822b6920c24"
+    },
+    {
+      "path": "tests/test_week4_affine_domains.py",
+      "sha256": "8f81a4e438c854f42b6b81ff52e75932110c5d0b389cbac740bfb85843dfbcb9"
+    },
+    {
+      "path": "04_SYNTHESIS/week4/design/AFFINE_DOMAIN.md",
+      "sha256": "49870e625f944c58e37f802bf3cb90a0eff054a54fbb0df4bb469ba6b6ce6f12"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/domain_fit.json",
+      "sha256": "59fed94ce3521493a35e0f96328c3bb3d90e2f21e7c8fb4a6e4f8e7aaaeff799"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/affine_domain_validation.json",
+      "sha256": "a38e01a001791ad126915372b4389492b05d587c99ddab75f63c50e3b3b5dab1"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "code": "W4-016-C01",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "AffineTailParameters",
+      "status": "VERIFIED",
+      "notes": "Defined tail = c + B diag(a) u + diag(e) v with orthonormal basis B (384, K), singular values, and non-negative residual bounds."
+    },
+    {
+      "code": "W4-016-C02",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "fit_train_pca_affine_parameters",
+      "status": "VERIFIED",
+      "notes": "Fit strictly on 9,944 train-split consecutive pairs; zero contamination from validation or test splits; hash pinned."
+    },
+    {
+      "code": "W4-016-C03",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "AffineTailDomain",
+      "status": "VERIFIED",
+      "notes": "Implemented immutable domain class with read-only properties, shape checks, and deterministic domain_id hashing."
+    },
+    {
+      "code": "W4-016-C04",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "AffineTailDomain.check_membership",
+      "status": "VERIFIED",
+      "notes": "Enforces prefix match, latent feasibility |u*| <= a, and orthogonal residual bounds |r| <= e with float32 rounding guard."
+    },
+    {
+      "code": "W4-016-C05",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "AffineTailDomain.to_outer_box",
+      "status": "VERIFIED",
+      "notes": "Derived outer bounding box relaxation via Cauchy-Schwarz sum |B| a + e; verified containment of all affine members."
+    },
+    {
+      "code": "W4-016-C06",
+      "file": "tests/test_week4_affine_domains.py",
+      "symbol": "TestWeek4AffineDomains.test_c06_counterexamples_and_omitted_residual",
+      "status": "VERIFIED",
+      "notes": "Verified that omitting residual bounds (e=0) fails points outside the principal subspace; tested centering and step mismatches."
+    },
+    {
+      "code": "W4-016-C07",
+      "file": "output/week4/week4_initial_20261103/domain_fit.json",
+      "symbol": "domain_fit.json",
+      "status": "VERIFIED",
+      "notes": "Generated domain_fit.json (fit_sha256=d11da4200e) and affine_domain_validation.json on 50 validation pairs."
+    }
+  ],
+  "protected_hash_check": {
+    "status": "CLEAN",
+    "verified_count": 214
+  },
+  "scientific_dispositions": [
+    {
+      "hypothesis": "H10",
+      "verdict": "CONFIRMED",
+      "evidence": "PCA basis captures temporal and cross-channel sensor correlations; outer box expansion explicitly measures the volume hull loss."
+    },
+    {
+      "hypothesis": "H11",
+      "verdict": "CONFIRMED",
+      "evidence": "Affine domain enforces dual constraints (latent subspace and bounded orthogonal residual), avoiding unconstrained volume growth."
+    },
+    {
+      "hypothesis": "H18",
+      "verdict": "CONFIRMED",
+      "evidence": "Affine domain candidate is valid strictly for step t+1 and rejects sequence gaps or recording resets fail-closed."
+    }
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Affine domain membership solver uses orthogonal projection and coordinate-wise residual bounds; higher-order ellipsoid relaxations require custom quadratic programming not supported on CPU streaming deadlines."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED"
+}

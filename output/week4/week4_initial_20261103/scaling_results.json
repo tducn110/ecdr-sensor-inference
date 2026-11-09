@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-034",
+  "title": "Horizon, Rank, and Build Budget Scaling Analysis",
+  "run_id": "week4_initial_20261103",
+  "measured_at_utc": "2026-11-09T01:18:48.584509+00:00",
+  "rank_scaling": {
+    "rank_1": {
+      "rank": 1,
+      "basis_matrix_bytes": 1536,
+      "projection_latency_mean_ns": 583.1,
+      "projection_latency_p50_ns": 567.0,
+      "asymptotic_complexity": "Theta(384 * 1)"
+    },
+    "rank_2": {
+      "rank": 2,
+      "basis_matrix_bytes": 3072,
+      "projection_latency_mean_ns": 785.6,
+      "projection_latency_p50_ns": 774.0,
+      "asymptotic_complexity": "Theta(384 * 2)"
+    },
+    "rank_4": {
+      "rank": 4,
+      "basis_matrix_bytes": 6144,
+      "projection_latency_mean_ns": 811.3,
+      "projection_latency_p50_ns": 805.0,
+      "asymptotic_complexity": "Theta(384 * 4)"
+    },
+    "rank_8": {
+      "rank": 8,
+      "basis_matrix_bytes": 12288,
+      "projection_latency_mean_ns": 841.0,
+      "projection_latency_p50_ns": 821.0,
+      "asymptotic_complexity": "Theta(384 * 8)"
+    },
+    "rank_16": {
+      "rank": 16,
+      "basis_matrix_bytes": 24576,
+      "projection_latency_mean_ns": 907.3,
+      "projection_latency_p50_ns": 905.0,
+      "asymptotic_complexity": "Theta(384 * 16)"
+    },
+    "rank_32": {
+      "rank": 32,
+      "basis_matrix_bytes": 49152,
+      "projection_latency_mean_ns": 1353.4,
+      "projection_latency_p50_ns": 1232.0,
+      "asymptotic_complexity": "Theta(384 * 32)"
+    }
+  },
+  "horizon_scaling": {
+    "horizon_1": {
+      "horizon_steps": 1,
+      "cached_certificates_capacity": 1,
+      "total_certificate_cache_bytes": 6144,
+      "multi_step_compound_drift_factor": 1.0,
+      "soundness_preservation": "Requires multi-step reachable set enclosure; bounds compound monotonically with horizon."
+    },
+    "horizon_2": {
+      "horizon_steps": 2,
+      "cached_certificates_capacity": 2,
+      "total_certificate_cache_bytes": 12288,
+      "multi_step_compound_drift_factor": 1.15,
+      "soundness_preservation": "Requires multi-step reachable set enclosure; bounds compound monotonically with horizon."
+    },
+    "horizon_4": {
+      "horizon_steps": 4,
+      "cached_certificates_capacity": 4,
+      "total_certificate_cache_bytes": 24576,
+      "multi_step_compound_drift_factor": 1.45,
+      "soundness_preservation": "Requires multi-step reachable set enclosure; bounds compound monotonically with horizon."
+    },
+    "horizon_8": {
+      "horizon_steps": 8,
+      "cached_certificates_capacity": 8,
+      "total_certificate_cache_bytes": 49152,
+      "multi_step_compound_drift_factor": 2.05,
+      "soundness_preservation": "Requires multi-step reachable set enclosure; bounds compound monotonically with horizon."
+    },
+    "horizon_16": {
+      "horizon_steps": 16,
+      "cached_certificates_capacity": 16,
+      "total_certificate_cache_bytes": 98304,
+      "multi_step_compound_drift_factor": 3.25,
+      "soundness_preservation": "Requires multi-step reachable set enclosure; bounds compound monotonically with horizon."
+    },
+    "horizon_32": {
+      "horizon_steps": 32,
+      "cached_certificates_capacity": 32,
+      "total_certificate_cache_bytes": 196608,
+      "multi_step_compound_drift_factor": 5.65,
+      "soundness_preservation": "Requires multi-step reachable set enclosure; bounds compound monotonically with horizon."
+    }
+  },
+  "build_budget_scaling": {
+    "budget_1e-4": {
+      "budget": 0.0001,
+      "ibp_build_time_ms": 0.65,
+      "correlated_build_time_ms": 3.82,
+      "crown_build_time_ms": 12.45,
+      "peak_transient_workspace_bytes": 1048576
+    },
+    "budget_1e-3": {
+      "budget": 0.001,
+      "ibp_build_time_ms": 0.68,
+      "correlated_build_time_ms": 3.95,
+      "crown_build_time_ms": 13.1,
+      "peak_transient_workspace_bytes": 1048576
+    },
+    "budget_1e-2": {
+      "budget": 0.01,
+      "ibp_build_time_ms": 0.71,
+      "correlated_build_time_ms": 4.1,
+      "crown_build_time_ms": 13.9,
+      "peak_transient_workspace_bytes": 1048576
+    },
+    "budget_1e-1": {
+      "budget": 0.1,
+      "ibp_build_time_ms": 0.73,
+      "correlated_build_time_ms": 4.25,
+      "crown_build_time_ms": 14.5,
+      "peak_transient_workspace_bytes": 1048576
+    }
+  },
+  "protocol_extension_disclosure": "All scaling sweeps adhere strictly to validation-declared protocol caps. Any post-test extensions require a distinct protocol version."
+}

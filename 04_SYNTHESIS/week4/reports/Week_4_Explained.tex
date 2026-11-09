@@ -1,0 +1,249 @@
+\documentclass[11pt,article]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\geometry{margin=1in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=teal,
+    citecolor=teal,
+    urlcolor=teal
+}
+
+\theoremstyle{definition}
+\newtheorem{toyexample}{Toy Example}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\title{\textbf{Demystifying Early Certified Decision Reuse (ECDR):\\A First-Principles Conceptual Guide and Mechanism Analysis}}
+\author{\textbf{Antigravity Autonomous Research Team}\\Project Run ID: \texttt{week4\_initial\_20261103}}
+\date{November 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Early Certified Decision Reuse (ECDR) explores whether temporal redundancy in streaming time series can be exploited to skip neural network inference with mathematical guarantees. While theoretical formulations suggest that certified decision regions could yield substantial energy and latency savings, empirical evaluations frequently report negative results. This report provides a pedagogical, first-principles examination of ECDR for sensor streaming. We systematically unpack the fundamental mechanics of streaming sliding windows, interval bound propagation, linear relaxation, incremental feature reuse, and numerical silicon boundaries. Through six concrete, self-contained toy examples, we illustrate why intuitive optimizations often fail on real-world edge hardware: how interval dependency cancellation inflates bounds, why correlation projection collapses under continuous drift, how tensor manipulation overhead destroys incremental speedups, and why floating-point rounding necessitates outward verification. Finally, we map all 24 project hypotheses to their underlying mathematical and physical root causes.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction and Theoretical Intuition}
+
+Consider an edge device monitoring human physical activity or industrial machinery via continuous sensor streams. At each step, a sliding window of length $W$ shifts by stride $s$ (e.g., $W=128$, $s=64$). Because the sensor readings overlap by 50\%, consecutive windows appear nearly identical to the naked eye.
+
+The core motivation of Early Certified Decision Reuse (ECDR) is simple:
+\begin{quote}
+\textit{``If the current sensor window $x$ is sufficiently close to the previous window $x_0$, and the neural network made decision $y$ at $x_0$, can we prove that the network must still predict $y$ at $x$ without executing the full neural network?''}
+\end{quote}
+
+While this idea is intuitive, turning it into a deployable system exposes severe theoretical, numerical, and systems-level hurdles. This document serves as a companion to the formal evaluation report (\texttt{Week\_4\_Implementation\_and\_Evaluation.tex}), explaining the core concepts, toy models, failure modes, and reproduction steps from first principles.
+
+\section{Core Definitions, Tensor Shapes, and System Notations}
+
+\begin{definition}[Streaming Time Series Window]
+Let $C=6$ denote the physical sensor channels (triaxial acceleration and triaxial gyroscope) and $W=128$ denote temporal sampling steps. A raw query window is a tensor:
+\begin{equation}
+X_{\text{raw}} \in \mathbb{R}^{6 \times 128}.
+\end{equation}
+Flattened in canonical row-major order, it forms an ambient input vector $x \in \mathbb{R}^{m}$ of dimension $m = C \times W = 768$.
+\end{definition}
+
+\begin{definition}[Coordinate Spaces]
+\begin{itemize}
+    \item \textbf{Raw Sensor Space} ($\mathbb{R}^{768}$): Unprocessed sensor values with physical units (m/s$^2$, rad/s).
+    \item \textbf{Normalized Executable Space} ($\mathbb{R}^{768}$): Preprocessed inputs standardized using channel-wise parameters:
+    \begin{equation}
+    z_{c, t} = \frac{x_{c, t} - \mu_c}{\sigma_c}, \quad \mu \in \mathbb{R}^6, \; \sigma \in \mathbb{R}^6_{>0}.
+    \end{equation}
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Direct 11-Margin Output Specification]
+For a neural network classifier $f: \mathbb{R}^{768} \to \mathbb{R}^{12}$ with predicted class $y = \arg\max_k f_k(x_0)$, the 11 pairwise margins relative to competing classes $j \neq y$ are defined by the linear contrast matrix $C \in \mathbb{R}^{11 \times 12}$:
+\begin{equation}
+M_j(x) = f_y(x) - f_j(x), \quad \forall j \in \{1,\dots,12\} \setminus \{y\}.
+\end{equation}
+Decision invariance on a domain $\mathcal{D}$ holds if and only if:
+\begin{equation}
+\min_{x \in \mathcal{D}} M_j(x) > 0, \quad \forall j \neq y.
+\end{equation}
+\end{definition}
+
+\section{First-Principles Toy Examples and Failure Modes}
+
+To understand why ECDR behaves as observed in Week 4, we examine six worked toy models illustrating the underlying physical and mathematical mechanisms.
+
+\subsection{Toy Example 1: The Dependency Loss of Interval Bound Propagation}
+\begin{toyexample}[The Interval Cancellation Defect]
+Consider a scalar input $x \in [0, 1]$. Suppose an intermediate layer computes the difference:
+\begin{equation}
+h(x) = x - x.
+\end{equation}
+Analytically, $h(x) = 0$ for all $x$, so the true output range is $[0, 0]$.
+
+However, in standard Interval Bound Propagation (IBP), every occurrence of a variable is treated as an independent source of uncertainty:
+\begin{equation}
+[\underline{h}, \bar{h}] = [\underline{x}, \bar{x}] - [\underline{x}, \bar{x}] = [0, 1] - [0, 1] = [0 - 1, 1 - 0] = [-1, 1].
+\end{equation}
+The computed interval has width 2, whereas the true width is 0. 
+
+In a multi-layer network (\texttt{SmallCNN1D}), this wrapping effect compounds across 3 convolutional layers, 3 batch normalizations, and 2 linear layers. The conservative interval bounds rapidly blow up, leading to the failure of IBP to certify true invariant boxes (explaining \textbf{H07}).
+\end{toyexample}
+
+\subsection{Toy Example 2: Correlated Domains and Axis-Aligned Hull Loss}
+\begin{toyexample}[Coordinate Hull Bloat]
+Suppose two sensor coordinates $x_1$ and $x_2$ are perfectly correlated in human walking motion:
+\begin{equation}
+x_2 = x_1, \quad x_1 \in [-1, 1].
+\end{equation}
+The true domain is a 1-dimensional line segment of length $2\sqrt{2}$ in $\mathbb{R}^2$. Its 2-dimensional volume is 0.
+
+If a certification engine cannot natively propagate correlated zonotopes or linear factors, it must overapproximate the segment with its axis-aligned bounding box:
+\begin{equation}
+\text{Box} = [-1, 1] \times [-1, 1].
+\end{equation}
+The area of the box is $2 \times 2 = 4$. By enclosing the line segment in a box, the verifier admits spurious corner points such as $(1, -1)$ and $(-1, 1)$ where $x_1 - x_2 = \pm 2$, which may violate the margin specification even though the physical system never visits these states. This explains why coordinate hull conversions (\textbf{M08}) degrade certification performance relative to native propagation (\textbf{H11}).
+\end{toyexample}
+
+\subsection{Toy Example 3: Receptive Field Mapping in Incremental 1D CNNs}
+\begin{toyexample}[Receptive Field and Boundary Dependencies]
+Consider a 1D convolution with kernel size $K=3$, stride $S=1$, and padding $P=1$.
+Let the input sequence be $[x_0, x_1, \dots, x_N]$.
+The $j$-th output neuron depends on input indices:
+\begin{equation}
+\text{RF}(j) = \{j-1, j, j+1\}.
+\end{equation}
+When the input window shifts by 50\% ($s = W/2$), the internal feature maps can be partitioned into:
+\begin{enumerate}
+    \item \textbf{Unchanged Core Features}: Positions whose full receptive field falls entirely within the overlapping sample interval.
+    \item \textbf{Boundary Features}: Positions whose receptive field straddles the boundary between old and new samples.
+    \item \textbf{New Features}: Positions whose receptive field depends exclusively on newly arrived sensor samples.
+\end{enumerate}
+For \texttt{SmallCNN1D}, exactly 12 out of 16 feature columns at the pooling outputs are shared across adjacent windows (\textbf{H13}). However, to compute the final 12-class decision, these 12 shared columns must be extracted and stitched with 4 newly evaluated columns before feeding the Flatten-Linear head.
+\end{toyexample}
+
+\subsection{Toy Example 4: The Fallacy of Re-Centering Without Re-Proving}
+\begin{toyexample}[Catastrophic Drift on Unverified Anchors]
+Suppose at time $t=0$, we establish an invariant ball $\mathcal{B}(x_0, r)$ around anchor $x_0$, with true prediction $y=1$.
+At $t=1$, a new input $x_1$ arrives with $\|x_1 - x_0\| = 0.8r$.
+Because $x_1 \in \mathcal{B}(x_0, r)$, the system correctly reuses decision $y=1$.
+
+Now, suppose the system naively ``re-centers'' the certificate around $x_1$ without re-evaluating the neural network margins:
+\begin{equation}
+\text{New Ball} = \mathcal{B}(x_1, r).
+\end{equation}
+At $t=2$, input $x_2$ arrives with $\|x_2 - x_1\| = 0.8r$.
+The distance from the original verified anchor $x_0$ is now:
+\begin{equation}
+\|x_2 - x_0\| \le \|x_2 - x_1\| + \|x_1 - x_0\| = 1.6r > r.
+\end{equation}
+Because $x_2$ lies outside the original verified ball, the true neural network prediction at $x_2$ could be $y=2$. Re-centering without computing a fresh margin proof causes unbounded certificate drift, falsifying hypothesis \textbf{H15}.
+\end{toyexample}
+
+\subsection{Toy Example 5: Floating-Point Boundary Inversion}
+\begin{toyexample}[The 1-ULP Violation]
+Let $a = 1.0 \times 10^7$ and $b = 1.0$.
+In IEEE 754 single-precision floating-point arithmetic ($\mathbb{F}_{32}$ with 24-bit significand):
+\begin{equation}
+\text{float32}(a + b) = \text{float32}(10000001.0) = 10000000.0.
+\end{equation}
+Because $1.0$ is smaller than $\frac{1}{2}\text{ULP}(10^7)$, the addition rounds down to $a$, and the perturbation $b$ is lost entirely.
+
+Conversely, if a certified margin lower bound evaluates to $+1 \times 10^{-7}$ in real arithmetic, evaluating it in Float32 with round-to-nearest mode can round down to $0.0$ or a negative number. Hence, a mathematical proof on $\mathbb{R}$ is unsound on silicon unless outwards directed rounding ($\text{nextafter}$) is enforced (explaining \textbf{H22}).
+\end{toyexample}
+
+\subsection{Toy Example 6: Break-Even Economics on Modern CPUs}
+\begin{toyexample}[The Slicing Overhead Paradox]
+Let $C_{\text{base}}$ be the cost of a full neural network forward pass.
+Let $C_{\text{check}}$ be the cost of checking whether a query satisfies the reuse condition.
+Let $C_{\text{reuse}}$ be the cost of retrieving or assembling the reused decision.
+Let $R$ denote the fraction of queries where reuse is accepted (hit rate).
+
+The expected query latency is:
+\begin{equation}
+C_{\text{avg}} = C_{\text{check}} + R \cdot C_{\text{reuse}} + (1 - R) \cdot C_{\text{base}}.
+\end{equation}
+For reuse to be profitable ($C_{\text{avg}} < C_{\text{base}}$), the hit rate must exceed the break-even threshold:
+\begin{equation}
+R > R^* = \frac{C_{\text{check}}}{C_{\text{base}} - C_{\text{reuse}}}.
+\end{equation}
+\textbf{The Empirical Reality in Week 4}:
+\begin{itemize}
+    \item Direct Forward Pass ($C_{\text{base}}$): $\approx 0.34$ ms (highly optimized, fused BLAS GEMM kernels).
+    \item Incremental Feature Slicing and Concatenation ($C_{\text{check}} + C_{\text{reuse}}$): $\approx 1.93$ ms.
+\end{itemize}
+Because $C_{\text{reuse}} > C_{\text{base}}$, the denominator $C_{\text{base}} - C_{\text{reuse}}$ is \textbf{negative}.
+Thus, no hit rate $R \in [0, 1]$ can ever achieve speedup. Even with 100\% reuse ($R=1.0$), incremental computation is $5.6\times$ slower than the direct forward pass! This explains the negative result of \textbf{H14}.
+\end{toyexample}
+
+\section{Deconstruction of the 24 Project Hypotheses}
+
+Table~\ref{tab:mapping} provides a conceptual mapping linking all 24 project hypotheses to their underlying mathematical principles, physical realities, and empirical findings.
+
+\begin{table*}[t]
+\centering
+\caption{Conceptual Deconstruction and Theoretical Mapping for Hypotheses H01--H24.}
+\label{tab:mapping}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{clll}
+\toprule
+\textbf{ID} & \textbf{Hypothesis Focus} & \textbf{Theoretical / Mathematical Mechanism} & \textbf{Empirical Manifestation in Week 4} \\
+\midrule
+H01 & Shift Overlap & Discrete index translation on identical recording stream & Bitwise feature equality verified across 5,034 test pairs. \\
+H02 & Overlap vs Distance & High-frequency derivative energy across time window & 50\% overlap exhibits large coordinate displacement ($\Delta > 1.0$). \\
+H03 & Activity Label Oracle & Intra-class variance and transitional boundaries & Model switches prediction 10$\to$8 under identical activity label. \\
+H04 & Local Invariance & Topological continuity of compositions of continuous functions & Non-empty open ball exists around query, but practical radius is tiny. \\
+H05 & Output Margins & Convex separation theorem in logit space & Margins $>0$ guarantee invariance on $\mathbb{R}$; Float32 needs bridge. \\
+H06 & Lipschitz Ball & Global spectral norm bound on concatenated weight matrices & Spectral constant $L_{\text{global}}$ is conservative, yielding $R=0$ streaming hits. \\
+H07 & IBP Completeness & Interval arithmetic dependency loss & Wrapping effect accumulates over 8 layers, losing true invariant bounds. \\
+H08 & Direct Margins & Direct linear projection vs separate interval differences & Matrix contrast $C \in \mathbb{R}^{11 \times 12}$ prevents logit subtraction cancellation. \\
+H09 & CROWN Cost & Dual simplex relaxation complexity $\mathcal{O}(L \cdot m^2)$ & CROWN linear relaxation is tighter than IBP but $18\times$ slower to build. \\
+H10 & PCA Margin Alignment & Principal components maximize variance, not classification margins & Data variance directions do not coincide with decision boundary normals. \\
+H11 & Structured Domains & High-dimensional geometry and volume scaling & Ellipsoidal hulls fail to increase coverage over continuous sensor drift ($R=0$). \\
+H12 & Wave Coordinate Reduction & Linear projection onto fixed prefix sub-manifold & Free variables reduced from 768 to 384 for adjacent chronological windows. \\
+H13 & Feature Equivalence & Deterministic convolution on identical input slice & Intermediate activations match exactly at 12 shared temporal steps. \\
+H14 & Incremental CPU Speedup & Memory bandwidth vs compute bound on compact networks & Tensor slicing overhead (1.93 ms) exceeds fused CNN forward pass (0.34 ms). \\
+H15 & Anchor Re-Centering & Triangle inequality error compounding & Unverified anchor shifts cause unbounded drift and misclassifications. \\
+H16 & Fixed Anchor Soundness & Stationary domain invariance theorem & Soundness strictly preserved as long as anchor query remains immutable. \\
+H17 & Horizon Reachable Sets & Multi-step perturbation expansion & Bounding boxes grow exponentially with horizon, collapsing coverage for $H \ge 2$. \\
+H18 & Membership Complexity & Coordinate-access lower bound in $m$ dimensions & Containment requires checking all $m$ dimensions in worst-case ($\Theta(m)$). \\
+H19 & Soundness vs Coverage & Lebesgue measure of verifiable region vs sensor variance & Mathematically sound certified regions cover 0\% of streaming queries ($R=0$). \\
+H20 & Coverage vs Speedup & Amortized overhead and memory access cost & 100\% hit rate fails to produce net speedup due to bookkeeping latency. \\
+H21 & Comparator Hierarchy & Architectural and runtime compatibility boundaries & Direct baseline M00 is fastest; LipCache audited unsupported on continuous stream. \\
+H22 & Numerical Bridge & Floating-point directed rounding and machine epsilon & Float32 raw execution suffers 1-ULP boundary violations without interval rounding. \\
+H23 & Temporal Event Names & Coarse semantic labels vs continuous trajectory distributions & Single event name encompasses diverse physical motions and target classes. \\
+H24 & The ECDR Trilemma & Multi-objective Pareto frontier collapse & Zero of 17 methods achieve Soundness $\land$ Coverage $\land$ Net Speedup. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\section{Exact Reproducibility Walkthrough}
+
+All findings in this research are fully deterministic and reproducible using the provided codebase.
+For the exact step-by-step reproduction instructions, CLI flags, expected artifact hashes, and virtual environment specifications, please refer to the accompanying documentation:
+\begin{center}
+\fbox{\texttt{04\_SYNTHESIS/week4/reports/REPRODUCE.md}}
+\end{center}
+
+\section{Summary and Lessons for Edge AI Research}
+
+The Week 4 evaluation of ECDR offers profound lessons for the edge machine learning community:
+\begin{enumerate}
+    \item \textbf{Arithmetic Savings $\neq$ Latency Savings}: In software frameworks running on modern CPU caches, memory fragmentation and tensor allocation dominate execution time. Reducing arithmetic operations by 50\% does not yield speedup if memory access patterns are disrupted.
+    \item \textbf{Negative Results Are Valuable Science}: Confirming that incremental inference on SmallCNN1D is slower than direct execution (H14), and that formal bounds exhibit vanishing coverage on raw sensor streams (H19), prevents wasteful deployment of flawed edge optimizations.
+    \item \textbf{The Baseline Is Hard to Beat}: A small, highly optimized, fused 1D CNN running directly on modern hardware remains the gold standard for latency, reliability, and deterministic execution.
+\end{enumerate}
+
+\end{document}

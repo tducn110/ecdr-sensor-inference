@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-011",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/bounds.py",
+    "tests/test_week4_bounds.py"
+  ],
+  "started_at_utc": "2026-11-08T13:00:56Z",
+  "completed_at_utc": "2026-11-08T13:06:40Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_bounds.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.46,
+      "summary": "7/7 bounds tests passed: BoundEngine receipt binding & 11 competitor integrity, validated vs ordinary-float path separation, paired direct-margin vs separate-logits, H07/H08 cancellation & wrapping verification, fail-closed invalid inputs, execution timings without duplicate inference, and validation ablation"
+    },
+    {
+      "command": ".venv/bin/python ecdr/week4/bounds.py --generate-reports --run-id week4_initial_20261103 --num-val-samples 30",
+      "exit_code": 0,
+      "elapsed_seconds": 2.50,
+      "summary": "Generated output/week4/week4_initial_20261103/ibp_capability.json and direct_margin_ablation_validation.json across 30 validation windows"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week3_math.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.02,
+      "summary": "6/6 historical counterexample tests re-verified"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 7.21,
+      "summary": "All 268/268 tests passed across entire test suite"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.53,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/bounds.py",
+      "sha256": "f24f190b31bf265ef54ed6670141ece46198a21e9724c84e0b87c831d8c1b2be"
+    },
+    {
+      "path": "tests/test_week4_bounds.py",
+      "sha256": "503199bd9609fbe95e4736195ed45ef41000385b88a5ac8b670a8616564f1973"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/ibp_capability.json",
+      "sha256": "b3e941a0d918b24275b1a2f7ac25953448c905b861c3d4f961042a6416f6d794"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/direct_margin_ablation_validation.json",
+      "sha256": "f09f1fc1216745161608c9a0d2d43a96ca9192ad18245f95eb83703f5aa96e63"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-011-C01",
+      "status": "PASS",
+      "evidence": "BoundEngine binds to ReferenceOwner and TrustedAnchorReceipt. Targets class c* = receipt.winner and enforces exactly 11 competitor classes j in 0..11, j != c*, without duplicates. Verified by test_c01_bound_engine_receipt_binding_and_competitor_integrity."
+    },
+    {
+      "requirement_id": "W4-011-C02",
+      "status": "PASS",
+      "evidence": "Implemented actual-graph IBP through SmallCNN1D (15 layers). Separates NumericalMode.VALIDATED (using Higham backward error bounds and outward rounding, yielding NumericalStatus.VALIDATED_FLOAT32_ENCLOSURE) from NumericalMode.ORDINARY_FLOAT (standard float64 operations yielding NumericalStatus.NOT_ESTABLISHED). Verified by test_c02_separation_of_validated_and_ordinary_float_paths."
+    },
+    {
+      "requirement_id": "W4-011-C03",
+      "status": "PASS",
+      "evidence": "Computes paired MarginMethod.DIRECT_MARGIN (fused Wc - Wj) and MarginMethod.SEPARATE_LOGITS from identical hidden box activations and perturbation budgets. Preserves full 11-competitor vectors in BoundResult.lower_margins. Verified by test_c03_paired_direct_margin_and_separate_logits."
+    },
+    {
+      "requirement_id": "W4-011-C04",
+      "status": "PASS",
+      "evidence": "Ablation across 30 validation windows confirmed H07 and H08: at eps=1e-4, direct_margin achieves 70% positive rate vs 3% for separate_logits (mean margin gain +4.4209, 30/30 windows tighter) due to canceling shared hidden features. At eps=1e-3, multi-layer interval wrapping causes margin collapse to 0% positive rate, confirming that IBP is an incomplete relaxation without claiming completeness. Verified by test_c04_h07_equal_hidden_cancellation_and_h08_wrapping."
+    },
+    {
+      "requirement_id": "W4-011-C05",
+      "status": "PASS",
+      "evidence": "Fail-closed input rejection: raises ProfileMismatchError on non-canonical profiles, StaleAnchorError on checkpoint/preprocessing mismatch, UnsupportedDomainError on inverted endpoints (lo > hi), and NonFiniteBoundError on NaN/Inf inputs. Distinguishes inconclusive bounds from concrete counterexamples. Verified by test_c05_rejection_of_invalid_inputs_fail_closed."
+    },
+    {
+      "requirement_id": "W4-011-C06",
+      "status": "PASS",
+      "evidence": "Recorded bound_ms, total_ms, method_id, and source hashes in BoundResult and capability artifacts. Reuses supplied TrustedAnchorReceipt to avoid duplicate anchor inference. Verified by test_c06_timings_metadata_and_no_duplicate_inference."
+    },
+    {
+      "requirement_id": "W4-011-C07",
+      "status": "PASS",
+      "evidence": "Evaluated ablation strictly on frozen validation split windows (windows_with_split.parquet, split='val') across eps in {0.0, 1e-5, 1e-4, 1e-3}. Zero test set evaluation or tuning. Verified by test_c07_validation_split_ablation_and_artifacts."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H04/H05: Actual-graph IBP provides a mathematically sound lower bound on competitor margins under Higham backward error bounds.",
+    "Confirms H07: Direct-margin eliminates equal-hidden pessimism, retaining 70% positive coverage at eps=1e-4 where separate logits collapses to 3%.",
+    "Confirms H08/H09: Multi-layer interval wrapping causes margin collapse at eps=1e-3, confirming IBP incompleteness without false counterexample claims."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Actual-graph IBP is an incomplete relaxation; margin collapse at epsilon >= 1e-3 is an artifact of interval wrapping across 3 convolutional layers.",
+    "Certified regional reuse requires tighter bounding methods (e.g. CROWN in W4-014 or correlation-preserving bounds in W4-017)."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

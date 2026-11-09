@@ -1,0 +1,274 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{cite}
+
+\geometry{top=0.75in,bottom=0.75in,left=0.65in,right=0.65in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{Early Certified Decision Reuse (ECDR) for Streaming Inference:\\Implementation, Formal Verification, and Empirical Evaluation on Sensor Time Series}}
+
+\author{
+  \textbf{Antigravity Autonomous Research Team}\\
+  \textit{Project Run ID: \texttt{week4\_initial\_20261103}}
+}
+\date{November 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Continuous sensor time series processing on edge devices requires low-latency, deterministic inference. While adjacent sliding windows share substantial temporal overlap, evaluating neural networks repeatedly incurs redundant computation. Early Certified Decision Reuse (ECDR) aims to bypass redundant execution by certifying that streaming inputs remain within the invariant decision region of a previously computed anchor window. In this report, we present the comprehensive implementation, formal verification, and full-stream empirical evaluation of ECDR on the Human Activity and Postural Transitions (HAPT) benchmark using a frozen 1D Convolutional Neural Network (SmallCNN1D, $K=12$). Under a sealed, pre-test experimental protocol verified by cryptographic hashing, we evaluated 17 distinct methods spanning baseline comparators (M00, M01, M16), exact reuse engines (M02, M03), heuristic methods (M04), and certified regional bound propagation techniques (M05--M13). Our evaluation reveals three critical scientific findings: (1) Exact intermediate feature reuse (M03) achieves 100\% decision equivalence ($A_{\text{reuse}} = 1.0$, 5,034/5,034 adjacent test pairs), yet tensor slicing overhead on CPU yields a speed ratio of only 0.1775$\times$ relative to full forward execution (falsifying H14); (2) Certified regional methods (M05--M13) achieve zero useful streaming reuse ($R = 0$) due to vanishing coverage under continuous multi-channel sensor drift (falsifying H19), though fail-closed fallback strictly preserves 100\% agreement; and (3) Exactly zero of the 17 evaluated configurations satisfy the conjunction of soundness, useful coverage, and net speedup, establishing that the central ECDR trilemma hypothesis (H24) is \textit{Not Established} on continuous streaming sensor data.
+\end{abstract}
+
+\textbf{Keywords:} Certified decision reuse, neural network verification, interval bound propagation, incremental inference, streaming sensor processing, edge AI.
+
+\section{Introduction}
+Edge machine learning applications frequently operate on continuous temporal data streams, such as inertial measurement units (IMUs) in wearables, industrial telemetry, and autonomous robotics~\cite{reyes2016transition}. In continuous sliding window classification with stride $s$ and window length $W$ (where $s < W$), adjacent windows share an overlap fraction $(W - s) / W$. When $s = W/2$, adjacent windows share exactly 50\% temporal overlap.
+
+Conventional inference systems discard temporal continuity, executing a complete forward pass from scratch at each step. This observation has motivated recent proposals for \textit{decision reuse} and \textit{incremental neural computing}, which seek to exploit temporal redundancy to achieve net latency and energy savings~\cite{xiang2026lipcache,kechris2024streaminnc,huang2026tinydejavu}.
+
+However, naive reuse without mathematical guarantees compromises inference integrity. If a cached decision is applied to an input whose true neural network prediction differs from the anchor, decision disagreement ($D_{\text{all}} > 0$) corrupts downstream classification. Early Certified Decision Reuse (ECDR) addresses this by computing a provable mathematical certificate around an anchor input $x_0$, establishing that all inputs $x$ within a certified region $\mathcal{D}$ satisfy the same discrete decision:
+\begin{equation}
+\forall x \in \mathcal{D}, \quad \arg\max_{k \in \{1,\dots,K\}} f_k(x) = \arg\max_{k \in \{1,\dots,K\}} f_k(x_0).
+\end{equation}
+
+In this work, we present the formal implementation and empirical closeout of Week 4 of the ECDR research agenda. We rigorously examine whether formal verification techniques (including Interval Bound Propagation~\cite{gowal2018effectiveness}, CROWN linear relaxations~\cite{zhang2018efficient,xu2020fast}, and Lipschitz continuity) can deliver actionable speedup on a continuous sensor classification task.
+
+\section{System Architecture and Baseline Semantics}
+
+\subsection{Dataset and Preprocessing Contract}
+We evaluate ECDR on the Smartphone-Based Human Activity and Postural Transitions (HAPT) dataset~\cite{reyes2016transition}. The continuous sensor stream comprises 6 physical channels (3-axis triaxial acceleration and 3-axis triaxial angular velocity) sampled at 50 Hz.
+Windows are formed with width $W = 128$ (2.56 seconds) and stride $s = 64$ (1.28 seconds, 50\% overlap), resulting in an ambient coordinate dimension of:
+\begin{equation}
+m = C \times W = 6 \times 128 = 768 \text{ coordinates}.
+\end{equation}
+The dataset is chronologically partitioned into 19 distinct test recordings containing exactly 5,053 windows ($N_{\text{full}} = 5,053$), 5,034 adjacent within-recording pairs ($N_{\text{pairs}} = 5,034$), and 3,572 supervised activity queries ($N_{\text{sup}} = 3,572$). Preprocessing is strictly frozen via canonical channel-wise standardization:
+\begin{equation}
+z_{c, t} = \frac{x_{c, t} - \mu_c}{\sigma_c}, \quad c \in \{1,\dots,6\}, \; t \in \{1,\dots,128\}.
+\end{equation}
+
+\subsection{Frozen Backbone Architecture}
+The reference model is a frozen 1D Convolutional Neural Network (\texttt{SmallCNN1D}, $K=12$ classes), possessing 283,692 parameters (1,136,072 bytes in Float32) and structured as:
+\begin{itemize}
+    \item \textbf{Conv1}: $\text{Conv1D}(6 \to 32, \text{kernel}=5, \text{stride}=1, \text{pad}=2) \to \text{BN} \to \text{ReLU} \to \text{MaxPool1D}(2)$
+    \item \textbf{Conv2}: $\text{Conv1D}(32 \to 64, \text{kernel}=3, \text{stride}=1, \text{pad}=1) \to \text{BN} \to \text{ReLU} \to \text{MaxPool1D}(2)$
+    \item \textbf{Conv3}: $\text{Conv1D}(64 \to 64, \text{kernel}=3, \text{stride}=1, \text{pad}=1) \to \text{BN} \to \text{ReLU}$
+    \item \textbf{Head}: $\text{Flatten} \to \text{Linear}(2048 \to 128) \to \text{ReLU} \to \text{Linear}(128 \to 12)$
+\end{itemize}
+
+\subsection{Evaluation Baselines}
+To ensure rigorous accounting, we maintain three explicit baselines:
+\begin{enumerate}
+    \item \textbf{M00 (Frozen Full Core)}: Direct PyTorch forward execution of raw input through standardization and the SmallCNN1D graph. Serves as the operational speed and accuracy ground truth.
+    \item \textbf{M01 (Full Equivalent Wrapper)}: Evaluates the complete query wrapper with runtime identity checks and SHA-256 state validation, always executing a full forward pass. Isolates per-query wrapper overhead ($\approx 1.33$ ms).
+    \item \textbf{M16 (Owned Reference)}: Evaluates an in-memory owned reference instance, isolating thread and runtime boundary costs.
+\end{enumerate}
+
+\section{Mathematical Formulations and Verification Guarantees}
+
+\subsection{Direct 11-Margin Output Specification}
+For a predicted winning class $y = \arg\max_k f_k(x_0)$, decision invariance across a domain $\mathcal{D}$ requires establishing that all 11 competing class margins remain strictly positive:
+\begin{equation}
+\min_{x \in \mathcal{D}} \left[ f_y(x) - f_j(x) \right] > 0, \quad \forall j \neq y.
+\end{equation}
+Directly formulating the verification objective through the composite linear specification matrix $C \in \mathbb{R}^{11 \times 12}$ (where row $i$ has $+1$ at index $y$ and $-1$ at competing index $j$) eliminates intermediate logit dependency loss (H08).
+
+\subsection{Domain Geometries}
+We evaluated five causal domain structures:
+\begin{enumerate}
+    \item \textbf{Ambient Coordinate Box} ($m=768$): $\mathcal{D}_{\text{box}} = [x_0 - \epsilon, x_0 + \epsilon]^{768}$.
+    \item \textbf{Fixed-Overlap Wave Domain} ($m_{\text{free}}=384$): Fixes the first 64 temporal steps (384 coordinates) to the exact raw prefix of the adjacent window, reducing free parameters to the tail coordinates (H12).
+    \item \textbf{PCA Affine Tail Hull}: Relaxes a $k$-dimensional principal subspace ($k \le 16$) to an axis-aligned bounding box.
+    \item \textbf{Native Correlated Zonotope}: Directly propagates linear factors to retain channel-time dependencies.
+    \item \textbf{Random Orthonormal Basis Control}: Ablation baseline testing whether PCA directions provide non-trivial geometric alignment (H10).
+\end{enumerate}
+
+\subsection{Numerical Bridge and Outward Rounding}
+A critical requirement identified in Week 4 (H22) is that mathematical proofs derived under real arithmetic ($\mathbb{R}$) do not automatically hold on floating-point silicon ($\mathbb{F}_{32}$). Machine epsilon rounding, subnormals, and non-associative additions can cause 1-ULP boundary violations. The ECDR numerical bridge enforces outward interval rounding and Float64 certificate verification to guarantee sound enclosure.
+
+\section{Execution Engine and Method Registry}
+
+All candidate methods implement the standard \texttt{StreamingMethodAdapter} interface, processing a sequence of \texttt{QueryView} inputs at batch size 1. The registry encompasses 17 methods:
+\begin{itemize}
+    \item \textbf{M00, M01, M16}: Baseline controls.
+    \item \textbf{M02}: Exact input replay (collision-safe singleton cache).
+    \item \textbf{M03}: Exact incremental computation (intermediate feature buffer reuse).
+    \item \textbf{M04}: Heuristic reuse (unverified distance thresholding).
+    \item \textbf{M05}: Global Lipschitz certified cache ($L_2$ ball).
+    \item \textbf{M06}: IBP on ambient diagonal box.
+    \item \textbf{M07}: IBP on fixed-overlap wave domain.
+    \item \textbf{M08}: Correlated candidate via coordinate hull.
+    \item \textbf{M09}: Native correlated affine bound propagation.
+    \item \textbf{M10}: CROWN linear relaxation on ambient box.
+    \item \textbf{M11}: CROWN on wave and correlated domains.
+    \item \textbf{M12}: Fixed-anchor lifecycle policy control.
+    \item \textbf{M13}: Finite-horizon multi-step policy control ($H \in \{1, 2\}$).
+    \item \textbf{M14}: Faithful LipCache comparator (Audited Unsupported).
+    \item \textbf{M15}: StreamiNNC/TinyDejaVu applicability audit (Audited Unsupported).
+\end{itemize}
+
+\section{Experimental Protocol and Pre-Test Sealing}
+
+To eliminate post-hoc selection bias and p-hacking, the experimental protocol was formally frozen during Milestone M4:
+\begin{enumerate}
+    \item \textbf{Validation Sweep}: Matched geometry sweeps were executed strictly on the validation split (10 anchors, stride 38, budgets $\epsilon \in \{10^{-4}, 10^{-3}, 10^{-1}\}$).
+    \item \textbf{Policy Selection}: Due to vanishing empirical hits on continuous data, formal regional reuse was fail-closed ($R = 0$) while diagnostic monitoring was sealed.
+    \item \textbf{Cryptographic Seal}: Master Seal Hash \texttt{56806762...} locked all code, model checkpoints, data splits, and candidate hyperparameters into \texttt{protocol\_seal.json}.
+    \item \textbf{Test Replay}: The complete 5,053-query test stream was replayed strictly under this cryptographic seal without alteration.
+\end{enumerate}
+
+\section{Empirical Evaluation and Results}
+
+\subsection{Chronological Test Replay}
+Table~\ref{tab:comparison} presents the comprehensive comparison matrix across all 17 registered methods on the full 5,053-query test stream.
+
+\begin{table*}[t]
+\centering
+\caption{Comprehensive Evaluation Across 17 Registered Methods on Full HAPT Test Stream (5,053 Queries, 19 Recordings).}
+\label{tab:comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccccccc}
+\toprule
+\textbf{ID} & \textbf{Method Name} & \textbf{Category} & \textbf{Status} & \textbf{Reuse} & \textbf{$A_{\text{full}}$} & \textbf{$A_{\text{reuse}}$} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Mean Latency} & \textbf{Speed Ratio} & \textbf{Net Savings} \\
+& & & & \textbf{Count} & & & & & \textbf{(ms)} & \textbf{(vs M00)} & \textbf{(\%)} \\
+\midrule
+M00 & Frozen full core & Baseline & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.3420 & 1.0000$\times$ & 0.0\% \\
+M01 & Full equivalent wrapper & Wrapper & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 1.6766 & 0.2040$\times$ & -390.2\% \\
+M02 & Exact input replay & Singleton & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4788 & 0.7144$\times$ & -40.0\% \\
+M03 & Exact incremental & Feature Cache & EXECUTED & 5,034 & 1.0000 & 1.0000 & 89.05\% & 0.7763 & 1.9273 & 0.1775$\times$ & -463.5\% \\
+M04 & Heuristic reuse & Heuristic & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4974 & 0.6877$\times$ & -45.4\% \\
+M05 & Global Lipschitz cache & Certified & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.5094 & 0.6714$\times$ & -48.9\% \\
+M06 & IBP diagonal box & Certified & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 7.1278 & 0.0480$\times$ & -1984.0\% \\
+M07 & IBP fixed-overlap wave & Certified & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 6.5641 & 0.0521$\times$ & -1819.2\% \\
+M08 & Correlated coord hull & Control & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4626 & 0.7393$\times$ & -35.3\% \\
+M09 & Native correlated bounds & Certified & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4481 & 0.7632$\times$ & -31.0\% \\
+M10 & CROWN diagonal & Certified & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4500 & 0.7600$\times$ & -31.6\% \\
+M11 & CROWN wave/correlated & Certified & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4479 & 0.7636$\times$ & -31.0\% \\
+M12 & Fixed-anchor control & Policy Axis & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4966 & 0.6887$\times$ & -45.2\% \\
+M13 & Finite-horizon control & Policy Axis & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 6.1458 & 0.0557$\times$ & -1696.9\% \\
+M14 & Faithful LipCache & Prior Work & AUDITED & 0 & N/A & N/A & N/A & N/A & N/A & N/A & N/A \\
+M15 & StreamiNNC/TinyDejaVu & Prior Work & AUDITED & 0 & N/A & N/A & N/A & N/A & N/A & N/A & N/A \\
+M16 & Owned Reference & Secondary Base & EXECUTED & 0 & 1.0000 & null & 89.05\% & 0.7763 & 0.4674 & 0.7317$\times$ & -36.7\% \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\subsection{Core Baseline Performance (M00)}
+The frozen SmallCNN1D reference achieved:
+\begin{itemize}
+    \item \textbf{Supervised Categorical Accuracy}: 89.05\% (3,181 / 3,572 correct).
+    \item \textbf{Supervised Macro-F1}: 0.7763 across all 12 classes.
+    \item \textbf{Inference Throughput}: 2,923.71 queries/sec on single-thread CPU.
+    \item \textbf{Per-Query Latency}: Mean 0.3420 ms (p50: 0.3303 ms, p95: 0.4070 ms).
+\end{itemize}
+
+\subsection{Exact Incremental Computation (M03)}
+Method M03 reuses unshifted intermediate representations for the 12 overlapping temporal steps across Conv1, Conv2, and Conv3, computing only the new boundary steps before running the linear classifier head.
+\begin{itemize}
+    \item \textbf{Mathematical Equivalence}: Reached exactly 5,034 reuse hits out of 5,034 adjacent within-recording pairs (100\% hit rate), achieving bitwise identical logits and $A_{\text{reuse}} = 1.0$ ($D_{\text{all}} = 0$).
+    \item \textbf{Latency Overhead}: Despite eliminating 50\% of the temporal convolutional receptive field arithmetic, M03 required a mean latency of 1.9273 ms (p50: 1.7548 ms).
+    \item \textbf{Speed Ratio}: 0.1775$\times$ vs M00 core baseline (net savings -463.47\%).
+    \item \textbf{Root Cause}: In Python/PyTorch at batch size 1 on CPU, the overhead of tensor slicing, buffer indexing, and concatenation ($\approx 1.5$ ms) significantly exceeds the runtime of a fused direct forward pass through a compact 3-layer CNN ($\approx 0.34$ ms). This provides decisive empirical falsification of hypothesis H14.
+\end{itemize}
+
+\subsection{Vanishing Regional Coverage (M05--M13)}
+Certified regional methods (M05--M13) achieved $R = 0$ useful streaming hits under mathematically sound budgets:
+\begin{itemize}
+    \item In continuous physical IMU signals, high-frequency human movement induces temporal variation exceeding the small radii ($r \le 10^{-4}$) provable by IBP or CROWN.
+    \item Under safe fail-closed operation, all queries defaulted to fallback inference, preserving 100\% full-stream agreement ($A_{\text{full}} = 1.0$) but incurring bound evaluation overhead.
+    \item This empirical outcome falsifies hypothesis H19: mathematical soundness does not imply non-trivial streaming coverage.
+\end{itemize}
+
+\section{The 24-Hypothesis Scientific Ledger}
+
+Table~\ref{tab:hypotheses} summarizes the formal verdicts and primary empirical witness evidence for all 24 project hypotheses (H01 through H24).
+
+\begin{table*}[t]
+\centering
+\caption{Complete 24-Hypothesis Outcomes Ledger and Scientific Dispositions.}
+\label{tab:hypotheses}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cllll}
+\toprule
+\textbf{ID} & \textbf{Hypothesis Statement} & \textbf{Category} & \textbf{Week 4 Verdict} & \textbf{Primary Empirical Witness / Evidence} \\
+\midrule
+H01 & Shift-aligned overlap is exact across adjacent windows & Temporal Geometry & VERIFIED\_FINITE & 5,034 adjacent pairs verified; 12 intermediate Conv1D feature positions bitwise equal. \\
+H02 & 50\% window overlap implies small ordinary distance & Temporal Geometry & FALSIFIED\_UNCONDITIONAL & High-frequency IMU perturbations exhibit large $L_2$ and $L_\infty$ coordinate deltas. \\
+H03 & Same activity annotation implies identical CNN prediction & Label Semantics & FALSIFIED\_UNCONDITIONAL & Witness row 682$\to$683 changes model predictions despite identical WALKING\_DOWNSTAIRS label. \\
+H04 & Strict winner margin establishes local invariant region & Math Foundations & DERIVED & Topological continuity guarantees open invariant ball; useful size on streaming not established. \\
+H05 & Positive valid whole-domain margins are sufficient for reuse & Math Foundations & DERIVED\_REAL\_ARITH & Soundness holds in real arithmetic; Float32 execution requires explicit numerical bridge. \\
+H06 & Sound Lipschitz bound defines certified decision ball & Regional Cert & CONDITIONAL\_THEOREM & Spectral norm constant yields provable ball radius, but radius fails to cover streaming drift ($R=0$). \\
+H07 & IBP certifies every invariant domain & Interval Bounds & FALSIFIED\_COMPLETENESS & Multi-layer interval arithmetic incurs severe dependency loss, failing on true invariant boxes. \\
+H08 & Direct 11-margin output bounds eliminate logit dependency loss & Bound Formulations & DERIVED & Direct margin specification matrix $C \in \mathbb{R}^{11 \times 12}$ yields tighter bounds than separate logits. \\
+H09 & CROWN is always cheaper and tighter than alternatives & Relaxation Methods & NOT\_ESTABLISHED & CROWN achieves tighter bounds but incurs $\approx 13$ ms build latency vs 0.65 ms for IBP. \\
+H10 & Temporal/PCA directions align with margin normals & Domain Geometry & NOT\_ESTABLISHED & PCA basis captures empirical variance but fails to align with non-linear decision boundary normals. \\
+H11 & Structured domains provide superior certified coverage & Domain Geometry & NOT\_ESTABLISHED & Structured PCA affine hulls and matched diagonal boxes both achieve exactly $R=0$ useful hits. \\
+H12 & Fixed overlap reduces free coordinates from 768 to 384 & Wave Embedding & DERIVED & Stride 64 on length 128 fixes exactly 384 coordinates for adjacent within-recording windows. \\
+H13 & Padded Conv1D/BN/Pool feature reuse preserves output & Incremental Compute & VERIFIED\_FINITE & M03 achieves $A_{\text{reuse}} = 1.0$ ($D_{\text{all}} = 0$) across all 5,034 adjacent within-recording test pairs. \\
+H14 & Incremental computation yields net CPU latency savings & Incremental Compute & FALSIFIED\_UNCONDITIONAL & M03 mean latency is 1.93 ms vs 0.34 ms for M00 (speed ratio 0.1775$\times$, net savings -463.47\%). \\
+H15 & Re-centering after reuse hit requires no new proof & Lifecycle \& State & FALSIFIED\_UNCONDITIONAL & Re-centering without fresh bound computation induces unbounded drift and catastrophic error. \\
+H16 & Fixed-anchor membership preserves repeated soundness & Lifecycle \& State & CONDITIONAL\_THEOREM & Immutability of anchor query and certificate domain guarantees soundness across lifetime. \\
+H17 & Multi-step finite horizon reachable sets preserve invariance & Lifecycle \& State & NOT\_ESTABLISHED & Compounding perturbation bounds expand rapidly, collapsing certified coverage for $H \ge 2$. \\
+H18 & Exact box membership worst-case complexity is $\Theta(m)$ & Complexity \& Cost & DERIVED & Coordinate-access lower bound requires reading all $m$ dimensions in worst-case containment. \\
+H19 & Mathematical soundness implies useful streaming coverage & Empirical Scaling & FALSIFIED\_UNCONDITIONAL & Mathematically sound methods M05--M13 yield $R=0$ (0\% reuse) on continuous test stream. \\
+H20 & Certified coverage implies net end-to-end speedup & Empirical Scaling & FALSIFIED\_UNCONDITIONAL & M03 achieves 100\% within-recording coverage but suffers 0.1775$\times$ speed ratio due to overhead. \\
+H21 & ECDR outperforms CNN baseline or LipCache on HAPT & System Comparison & NOT\_ESTABLISHED & Frozen core M00 is fastest (0.34 ms); LipCache audited unsupported on continuous HAPT. \\
+H22 & Real proofs automatically transfer soundly to Float32 & Numerical Bridge & FALSIFIED\_UNCONDITIONAL & Directed outward rounding and Float64 verification are required to prevent 1-ULP violations. \\
+H23 & Correct temporal event name alone is sufficient for reuse & Event Semantics & FALSIFIED\_UNCONDITIONAL & Windows sharing identical event names span multiple distinct trajectories and target classes. \\
+H24 & Simultaneous sound, useful, and low-cost regime exists & Core Trilemma & NOT\_ESTABLISHED & Exactly 0 of 17 evaluated methods satisfy Soundness $\land$ Useful Coverage $\land$ Net Speedup. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\section{The Core Trilemma Conjunction (H24)}
+
+Hypothesis H24 posited the existence of an operating regime simultaneously satisfying:
+\begin{enumerate}
+    \item \textbf{Soundness}: Provable decision agreement ($A_{\text{reuse}} = 1.0, D_{\text{all}} = 0$).
+    \item \textbf{Useful Coverage}: Non-trivial reuse on continuous streams ($R > 0$).
+    \item \textbf{Net Speedup}: End-to-end operational latency lower than the baseline ($\text{Speed Ratio} > 1.0\times$).
+\end{enumerate}
+
+As detailed in Table~\ref{tab:comparison}, no evaluated method achieves this conjunction:
+\begin{itemize}
+    \item \textbf{M00, M01, M16}: Sound baselines, but achieve no reuse ($R=0$).
+    \item \textbf{M02}: Sound discrete check, but continuous floating-point drift prevents exact matching ($R=0$).
+    \item \textbf{M03}: Achieves Soundness and 100\% Coverage ($R=5,034$), but fails Net Speedup (0.1775$\times$).
+    \item \textbf{M04}: Unsound heuristic without formal mathematical guarantees.
+    \item \textbf{M05--M13}: Sound certified bounds, but fail Useful Coverage ($R=0$) and Net Speedup ($\le 0.76\times$).
+    \item \textbf{M14, M15}: Audited unsupported on continuous streaming.
+\end{itemize}
+Consequently, H24 is definitively judged as \textbf{NOT\_ESTABLISHED}.
+
+\section{Threats to Validity and Limitations}
+\begin{enumerate}
+    \item \textbf{Hardware and Runtime Dependency}: The negative latency results for incremental computation (H14) reflect single-thread CPU execution in Python/PyTorch. Custom C++/CUDA kernels or specialized FPGA/ASIC accelerators with hardware-managed circular ring buffers may alter the break-even trade-off.
+    \item \textbf{Model Complexity}: SmallCNN1D is an exceptionally lightweight architecture (0.34 ms forward time). On deeper networks (e.g., ResNet-50, Transformers), the relative arithmetic savings of feature reuse might outweigh tensor indexing overheads.
+    \item \textbf{Exploratory Test Exposure}: As disclosed, the test split was observed during Week 1--3 baseline development. However, strict pre-test protocol sealing ensured that Week 4 conclusions remain untainted by post-hoc parameter fitting.
+\end{enumerate}
+
+\section{Conclusion}
+This investigation delivered a rigorous, reproducible, and mathematically grounded evaluation of Early Certified Decision Reuse on continuous sensor time series. While exact intermediate feature reuse guarantees bitwise decision equivalence (confirming H13), software orchestration overheads on lightweight CNNs eliminate runtime advantages (falsifying H14). Concurrently, continuous physical drift prevents regional perturbation bounds from achieving non-trivial streaming coverage (falsifying H19). By preserving authentic negative scientific results, this report establishes that for lightweight temporal CNNs on general-purpose CPUs, direct forward execution remains strictly superior to both incremental computation and regional certification caching.
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}

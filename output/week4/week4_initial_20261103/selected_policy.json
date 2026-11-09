@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-030",
+  "title": "Validation Selected Execution Policy",
+  "run_id": "week4_initial_20261103",
+  "selected_at_utc": "2026-11-08T16:01:34.069179+00:00",
+  "selection_verdict": "NONE_ELIGIBLE_FORMAL_REUSE_ZERO_HIT",
+  "selected_policy_id": "policy_diag_crown_1e4_h1",
+  "domain_family": "diagonal_box",
+  "backend": "crown",
+  "budget": 0.0001,
+  "finite_horizon": 1,
+  "cooldown_steps": 0,
+  "build_cap_per_recording": 128,
+  "identity_mode": "OWNED_GENERATION",
+  "formal_reuse_enabled": false,
+  "fallback_mode": "FALLBACK_REFERENCE",
+  "metrics_on_validation": {
+    "candidate_proposals_count": 20,
+    "conditional_positive_count": 0,
+    "joint_member_count": 0,
+    "eligible_hit_count": 0,
+    "disagreement_count": 0,
+    "mean_build_ms": 0.0
+  },
+  "scientific_justification": "Validation sweep confirms H06/H19: no candidate policy achieves positive certified reuse with sound numerical enclosure on continuous HAPT sensor stream. formal_reuse_enabled is set to False to guarantee 100% operational baseline decision equivalence."
+}

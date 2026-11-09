@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-023",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/runtime.py",
+    "tests/test_week4_runtime.py"
+  ],
+  "started_at_utc": "2026-11-08T14:31:52Z",
+  "completed_at_utc": "2026-11-08T14:45:30Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_runtime.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.75,
+      "summary": "5/5 runtime tests passed: strict QueryView contract, conjunction of capability and certificate, single reference forward on miss, atomic commit fail-closed on non-finite, expiration and cooldown, recording boundary reset, and gate closed profile"
+    },
+    {
+      "command": "PYTHONPATH=. .venv/bin/python ecdr/week4/runtime.py --validate-runtime --run-id week4_initial_20261103 --num-queries 100",
+      "exit_code": 0,
+      "elapsed_seconds": 5.0,
+      "summary": "Generated output/week4/week4_initial_20261103/runtime_validation.json with 100% reference agreement accuracy"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 32.31,
+      "summary": "All 309/309 tests passed across entire test suite"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/runtime.py",
+      "sha256": "b7f4edcebaa67bf0f2623cafbe1a2cfa54bc4ee44632a93767c995fff1a52c41"
+    },
+    {
+      "path": "tests/test_week4_runtime.py",
+      "sha256": "ab44c8ed31aa9703bafdd819ec0280f9181546d9010c432d31a89358a89352f0"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/runtime_validation.json",
+      "sha256": "ebd30cf2fa51e4e5bd253aebab6500e02cf04d0d13f918498801da06b7a87b4b"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-023-C01",
+      "status": "PASS",
+      "evidence": "StreamingRuntimeExecutor accepts only QueryView instances and rejects non-QueryView objects with InvalidQueryError. Uses only observable window coordinates without future leakage or labels. Verified by test_c01_queryview_input_contract_and_nonfinite_rejection."
+    },
+    {
+      "requirement_id": "W4-023-C02",
+      "status": "PASS",
+      "evidence": "Formal reuse requires conjunction of formal_reuse_enabled (cleared by numerical capability gate), active certificate validity, identity match, and validated domain membership. Verified by test_c02_and_c03_miss_single_forward_and_atomic_issuance."
+    },
+    {
+      "requirement_id": "W4-023-C03",
+      "status": "PASS",
+      "evidence": "On miss or fallback, reference.infer() is called exactly once (build_attempts == 1, forward executed once). TrustedAnchorReceipt is issued and verified before building a certificate. Rejects arbitrary caller logits. Verified by test_c02_and_c03_miss_single_forward_and_atomic_issuance."
+    },
+    {
+      "requirement_id": "W4-023-C04",
+      "status": "PASS",
+      "evidence": "Atomic state commit occurs only after successful output; non-finite inputs raise ValueError in QueryView and leave executor state completely uncommitted. Verified by test_c01_queryview_input_contract_and_nonfinite_rejection."
+    },
+    {
+      "requirement_id": "W4-023-C05",
+      "status": "PASS",
+      "evidence": "RuntimeCounters tracks total_queries, reused_certified_count, fallback_reference_count, fallback_non_member_count, fallback_expired_count, fallback_recording_reset_count, fallback_gate_closed_count, fallback_unsupported_count, build_attempts, build_successes, build_failures, and latency. Verified by test_c05_and_c06_expiration_and_cooldown."
+    },
+    {
+      "requirement_id": "W4-023-C06",
+      "status": "PASS",
+      "evidence": "Certificates expire strictly after anchor_step + max_age. Cooldown prevents continuous failed re-build attempts. Parameters are fixed from configuration, not tuned by online ground truth. Verified by test_c05_and_c06_expiration_and_cooldown."
+    },
+    {
+      "requirement_id": "W4-023-C07",
+      "status": "PASS",
+      "evidence": "Replay stream validation achieves 100% decision agreement with reference full forward on all queries. Recording stream resets atomically invalidate certificates. Gate-closed profile forces 100% fallback to reference model (0 reuse). Verified by test_c07_recording_boundary_reset_and_gate_closed_profile and test_c07_validation_ablation_and_artifact."
+    }
+  ],
+  "scientific_dispositions": {
+    "H03_zero_lookahead": "CONFIRMED: QueryView contract strictly binds observable window inputs; no future prediction or label leakage.",
+    "H05_fallbacks_safe": "CONFIRMED: Trusted fallback on miss guarantees 100.0% agreement with reference model full forward inference.",
+    "H15_fixed_anchor": "CONFIRMED: Immutability enforced; anchor coordinates and bounding boxes remain fixed during certificate reuse hits.",
+    "H16_expiration_enforced": "CONFIRMED: Certificates expire deterministically upon reaching anchor_step + max_age.",
+    "H18_finite_horizon": "CONFIRMED: Atomic state commit and fail-closed error handling ensure consistent runtime state."
+  },
+  "limitations": [
+    "Current runtime validation uses diagonal coordinate boxes; correlated PCA domains from W4-016 will be integrated in downstream benchmark tasks W4-025/W4-027.",
+    "Streaming reuse rate with coordinate boxes on raw sensor windows is low (near 0%) as expected from H08/H10 without domain expansion."
+  ]
+}

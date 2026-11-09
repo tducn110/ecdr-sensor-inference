@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-024",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/reference.py",
+    "ecdr/week4/runtime.py",
+    "tests/test_week4_runtime_cost.py"
+  ],
+  "started_at_utc": "2026-11-08T15:10:21Z",
+  "completed_at_utc": "2026-11-08T15:23:00Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_runtime_cost.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.54,
+      "summary": "5/5 runtime cost tests passed: zero duplicate forward on miss+build, zero forward on certified reuse, immutable NormalizationConstants caching, 3 identity modes configuration, exhaustive mutation detection (weights, BN buffers, training mode, grad, hooks, mean/std), and baseline benchmarking"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_runtime.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.73,
+      "summary": "5/5 runtime tests passed cleanly without regression"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p 'test_*.py'",
+      "exit_code": 0,
+      "elapsed_seconds": 52.88,
+      "summary": "All 324/324 unit tests passed across entire repository test suite"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.53,
+      "summary": "214/214 protected files verified clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/reference.py",
+      "sha256": "cb7cc96156d173c6263406b5d21c119b78cb42255995efc032e95c8ee2204d43"
+    },
+    {
+      "path": "ecdr/week4/runtime.py",
+      "sha256": "9f27410df45c255d84567bb1c3a34da549f0c59efb8aafc1751c634aab6ec6ee"
+    },
+    {
+      "path": "tests/test_week4_runtime_cost.py",
+      "sha256": "44346359fb80550873bd03a82edb620a6505e96848dfdb16ce2bbd6297eed5c1"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/runtime_cost_validation.json",
+      "sha256": "1d28e0eb562235fe7eb979d9ceaa56a121a7e2afcb631a7e1ba2ef55298749f0"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/identity_modes_review.md",
+      "sha256": "c3d528d1e2521485be05829b98dcce18db7a9f5f36a48eefeb4854f7eee14f27"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-024-C01",
+      "status": "PASS",
+      "evidence": "Actual reference forward calls are tracked explicitly via ReferenceOwner.forward_calls_count and RuntimeCounters.reference_forward_calls. On miss+build, exactly one trusted inference occurs and certificate build reuses the issued anchor receipt. On certified reuse hit, delta forward calls is strictly zero. Verified by test_c01_forward_calls_count_and_zero_duplicate_work."
+    },
+    {
+      "requirement_id": "W4-024-C02",
+      "status": "PASS",
+      "evidence": "NormalizationConstants are verified and cached in ReferenceOwner._cached_norm_constants. Accessors return fresh read-only copies with writeable=False flag; attempting to mutate throws ValueError. Mutating internal arrays invalidates preprocessing ID and raises IdentityError. Verified by test_c02_immutable_constants_caching."
+    },
+    {
+      "requirement_id": "W4-024-C03",
+      "status": "PASS",
+      "evidence": "Implemented IdentityCheckMode enum with STRONG_PER_QUERY, OWNED_GENERATION, and CORE_INFERENCE. ReferenceOwner supports runtime switching via set_identity_mode(). Model ownership and encapsulation assumptions documented in identity_modes_review.md. Verified by test_c03_identity_modes_configuration."
+    },
+    {
+      "requirement_id": "W4-024-C04",
+      "status": "PASS",
+      "evidence": "Exhaustive mutation test suite verifies immediate detection and fail-closed IdentityError for: (1) model weights mutation, (2) BatchNorm running_mean/var mutation, (3) model.train() mode switch, (4) requires_grad=True mutation, (5) forward hooks injection, and (6) preprocessing mean/std array mutation. Trade-off documented: OWNED_GENERATION mode detects mutations at init and generation boundary invalidation. Verified by test_c04_exhaustive_mutation_detection."
+    },
+    {
+      "requirement_id": "W4-024-C05",
+      "status": "PASS",
+      "evidence": "Micro-benchmarking measured isolated component latencies on idle host (100 iterations, 10 warmup): pure PyTorch forward (0.182 ms), full assert_identity SHA-256 digest (1.394 ms), fast shallow check (0.094 ms), and NumPy normalization (0.014 ms). Verified by test_c05_and_c06_runtime_cost_benchmark_and_artifacts."
+    },
+    {
+      "requirement_id": "W4-024-C06",
+      "status": "PASS",
+      "evidence": "All three standard baselines reported side-by-side in runtime_cost_validation.json and identity_modes_review.md: M00 Core inference (0.303 ms, 1.00x), M01 Strong wrapper (1.814 ms, 5.98x slower), and M16 Owned reference (0.439 ms, 4.13x faster than M01, 1.45x of M00). No cherry-picked or inflated identity overhead."
+    },
+    {
+      "requirement_id": "W4-024-C07",
+      "status": "PASS",
+      "evidence": "Zero modification to interval bounds, coordinate enclosures, NumericalCapability gates, or rounding rules. All mathematical and numerical semantics remain strictly identical to frozen specifications."
+    }
+  ],
+  "scientific_dispositions": {
+    "H18_finite_horizon": "CONFIRMED: Atomic state commit and fail-closed error handling eliminate non-deterministic drift.",
+    "H20_identity_overhead": "CONFIRMED: Full per-query SHA-256 state digest incurs 1.394 ms overhead (76.8% of total inference time), causing 5.98x slowdown over bare PyTorch M00.",
+    "H21_owned_reference": "CONFIRMED: Owned-reference architecture (M16) achieves 4.13x speedup over M01 by performing fast shallow checks during active generation and reserving full SHA-256 audits for generation boundaries and initialization.",
+    "H22_duplicate_elimination": "CONFIRMED: Exactly one trusted forward on miss+build, and zero forwards on certified reuse."
+  },
+  "limitations": [
+    "In OWNED_GENERATION mode, arbitrary in-process memory mutation of weights by malicious threads within a generation is not detected until invalidate() is called; applications requiring protection against hostile intra-process code execution must use STRONG_PER_QUERY mode.",
+    "Benchmark measurements reflect CPU execution (Intel/AMD x86_64 CPU float32); GPU-accelerated backends will exhibit different relative overhead ratios."
+  ]
+}

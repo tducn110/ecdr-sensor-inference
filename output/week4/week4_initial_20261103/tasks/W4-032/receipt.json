@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-032",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (clean 214 protected files)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? configs/week4/",
+    "?? ecdr/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? scripts/week4_tasks.py",
+    "?? tests/"
+  ],
+  "claimed_write_paths": [
+    "scripts/week4_run.py",
+    "tests/test_week4_accounting.py"
+  ],
+  "started_at_utc": "2026-11-08T16:12:56Z",
+  "completed_at_utc": "2026-11-08T16:28:00Z",
+  "environment_profile_id": "week4_initial_20261103",
+  "protocol_sha256": "2ff87705e8a7c782a4a0be256017a861ee0e58ba8ad337610ff7200bdd11dead",
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/week4_run.py replay --run-id week4_initial_20261103 --split test --sealed-policy output/week4/week4_initial_20261103/selected_policy.json",
+      "exit_code": 0,
+      "purpose": "Full chronological test stream replay executing 5,053 queries across 15 runnable methods and shadow reference"
+    },
+    {
+      "command": ".venv/bin/python -m unittest tests/test_week4_accounting.py",
+      "exit_code": 0,
+      "purpose": "Comprehensive unit test suite for W4-032 accounting, denominators, strata, and trace contract (6/6 tests passing)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check",
+      "exit_code": 0,
+      "purpose": "Preflight audit check verifying integrity of 214 protected files (clean)"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "scripts/week4_run.py",
+      "sha256": "8b68d3ed752e50fd866eb18e8badd1175001a6dfc6ab4d1010cfe0c81d656d50",
+      "description": "Implemented run_replay function, classify_stratum, compute_macro_f1, and replay CLI subcommand."
+    },
+    {
+      "path": "tests/test_week4_accounting.py",
+      "sha256": "6e212adc0da53dee186f666ccf7ae9a9fa7ca44d7c23e732efb6b8000f523072",
+      "description": "Exhaustive unit test suite covering W4-032-C01 through C07 requirements."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/replay_trace.csv",
+      "sha256": "05155c850be56d78b86d906fba7d339f770747ee5450edee1dffb6a3237e532f",
+      "description": "Full per-query operational trace recording 75,795 rows with status, timing, agreement, reuse, stratum, and ground-truth."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/replay_results.json",
+      "sha256": "c3d262e8f7ed8639fb6708f1765ff9d5ed012db2d327f4f22741d96ec13c50f7",
+      "description": "Summary report aggregating performance, denominators, strata counts, agreement, accuracy, macro-F1, and timing per method."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/method_execution_status.json",
+      "sha256": "e3789d115043bd5bb171de5f8cedf06b7bde263c77d5060d017a61d77baa8b02",
+      "description": "Execution status registry for all 17 registered methods (15 EXECUTED, 2 AUDITED_UNSUPPORTED)."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-032-C01",
+      "status": "PASS",
+      "evidence": "Verified cryptographic protocol seal before test split load. Recorded KNOWN_TEST_EXPLORATORY exposure disclosure in replay_results.json without claiming untouched confirmation. Verified by test_w4_032_c01_seal_and_test_disclosure."
+    },
+    {
+      "requirement_id": "W4-032-C02",
+      "status": "PASS",
+      "evidence": "Replayed stream in exact chronological order (sorted by exp, win_idx) with recording resets. Evaluated exactly 5,053 windows, 19 recordings, and 5,034 adjacent within-recording pairs. Verified by test_w4_032_c02_exact_denominators_and_chronology."
+    },
+    {
+      "requirement_id": "W4-032-C03",
+      "status": "PASS",
+      "evidence": "Logged query-level trace in replay_trace.csv with 17 mandatory columns (global_row_id, recording_id, step_idx, method_id, action, event, reason, predicted_class, reference_class, is_agreement, is_reuse, is_formal_reuse, is_singleton_reuse, is_regional_reuse, stratum, ground_truth_label, elapsed_ms). Verified by test_w4_032_c03_c04_trace_columns_and_shadow_reference."
+    },
+    {
+      "requirement_id": "W4-032-C04",
+      "status": "PASS",
+      "evidence": "Shadow reference (M00) evaluated outside per-method operational timers. Achieved 100% decision agreement between M00, M01, M03 against reference forward. Verified by test_w4_032_c03_c04_trace_columns_and_shadow_reference."
+    },
+    {
+      "requirement_id": "W4-032-C05",
+      "status": "PASS",
+      "evidence": "Recorded separate counters for R, D_reuse, D_fallback, D_all, A_reuse, and A_full. Enforced null A_reuse when R=0. Evaluated supervised activity metrics (Accuracy: 89.05%, Macro-F1: 0.7763) strictly on 3,572 labeled queries joined post-decision. Verified by test_w4_032_c05_separate_accounting_and_null_rule."
+    },
+    {
+      "requirement_id": "W4-032-C06",
+      "status": "PASS",
+      "evidence": "Reported exact strata counts: 2,874 pure-basic, 119 pure-transition, 579 majority-mixed, 479 ambiguous, 1,002 unlabeled (sum = 5,053). Verified by test_w4_032_c06_strata_classification_and_counts."
+    },
+    {
+      "requirement_id": "W4-032-C07",
+      "status": "PASS",
+      "evidence": "Distinguished exact singleton replay (M02), incremental feature reuse (M03: R=5034, D_all=0, A_reuse=1.0), and regional certification (M05-M13). Retained all 17 registered methods in method_execution_status.json (15 EXECUTED, 2 AUDITED_UNSUPPORTED). Verified by test_w4_032_c07_methods_status_retention."
+    }
+  ],
+  "scientific_dispositions": {
+    "H01_singleton_coverage": "Exact input replay (M02) achieves R=0 on continuous sensor stream without duplicate windows.",
+    "H03_operational_baseline": "Frozen core M00 achieves 89.05% accuracy and 0.7763 macro-F1 on 3,572 supervised test queries in 6.00s.",
+    "H04_soundness": "All executed methods maintain zero disagreements against frozen reference (A_full = 1.0).",
+    "H08_linear_relaxation": "Linear relaxation methods maintain sound failure reasons under tight sensor thresholds.",
+    "H10_sensor_correlation": "Sensor correlations dominate coordinate boxes, resulting in 0% regional reuse on raw coordinate envelopes.",
+    "H13_incremental_equivalence": "Exact incremental computation (M03) achieves 100% decision and logit equivalence across all 5,034 adjacent sliding pairs.",
+    "H15_lifecycle": "Fixed-anchor and finite-horizon lifecycles preserve zero-drift guarantee across full 19 recordings.",
+    "H19_vanishing_coverage": "Confirms H19 on test stream: regional coordinate certification collapses to R=0; safe fallback protects decision equivalence.",
+    "H21_comparators": "Prior work M14 (LipCache) and M15 (StreamiNNC/TinyDejaVu) retained with audited unsupported disposition.",
+    "H24_causal_contract": "All queries replayed strictly in causal chronological order with zero lookahead or label leakage."
+  }
+}

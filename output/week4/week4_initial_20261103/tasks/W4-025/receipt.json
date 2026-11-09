@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-025",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/domains.py",
+    "ecdr/week4/certificates.py",
+    "ecdr/week4/runtime.py",
+    "tests/test_week4_horizon.py",
+    "04_SYNTHESIS/week4/design/HORIZON.md"
+  ],
+  "started_at_utc": "2026-11-08T15:23:01Z",
+  "completed_at_utc": "2026-11-08T15:30:15Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_horizon.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.34,
+      "summary": "7/7 finite horizon tests passed: shift-append recurrence for h=1 (384 free) and h=2 (768 free), mathematical enclosure soundness, no-drift fixed anchor certificate binding, bound sufficiency, volume contrast, adversarial drift witness & step gap rejection, and validation ablation"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p 'test_week4_*.py' -v",
+      "exit_code": 0,
+      "elapsed_seconds": 38.54,
+      "summary": "All 238/238 Week 4 specialized unit tests passed cleanly"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.53,
+      "summary": "214/214 protected files verified clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/domains.py",
+      "sha256": "bce85b8509b5a67f64c1b2abe289feffe62e5ca8e76cb45c682d130d7f458cae"
+    },
+    {
+      "path": "tests/test_week4_horizon.py",
+      "sha256": "93e82649f043b310d52b1c4776c691255fceaf544692a083b42b30b4292db17a"
+    },
+    {
+      "path": "04_SYNTHESIS/week4/design/HORIZON.md",
+      "sha256": "fda9e60627ba27b1624379e70bc55a89131e87a3b56b5415f6d3f794c48eb899"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/horizon_validation.json",
+      "sha256": "709e4554bb94fe0f0da1948a3c0bd31172fc3e87612ead7871078708a23c6646"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-025-C01",
+      "status": "PASS",
+      "evidence": "Implemented FiniteHorizonDomain with shift-append recurrence: for h=1, window is [Z0[:, 64:], V1] with 384 fixed prefix coordinates and 384 free tail coordinates; for h=2, after two stride-64 steps, the entire window is replaced by [V1, V2] with 768 free coordinates. Verified by test_c01_shift_append_recurrence_and_dimensions."
+    },
+    {
+      "requirement_id": "W4-025-C02",
+      "status": "PASS",
+      "evidence": "Mathematical sound enclosure established for all admitted states: [P, L1] <= Z1 <= [P, U1] for h=1, and product-set outer relaxation [L1, L2] <= Z2 <= [U1, U2] for h=2. Verified by test_c02_mathematical_enclosure_soundness."
+    },
+    {
+      "requirement_id": "W4-025-C03",
+      "status": "PASS",
+      "evidence": "Certificate binds fixed anchor coordinates and anchor_step. On hit reuse, anchor_step is NOT updated and age is NOT reset. Certificate deterministically expires when current_step > anchor_step + max_age, forcing reference fallback. Verified by test_c03_certificate_binding_and_no_drift_expiry."
+    },
+    {
+      "requirement_id": "W4-025-C04",
+      "status": "PASS",
+      "evidence": "All 11 lower margin bounds must remain strictly positive for certificate issuance. Horizons h >= 3 are explicitly unsupported and fail closed with HORIZON_EXCEEDED. Verified by test_c04_bound_sufficiency_and_unsupported_horizon_fail_closed."
+    },
+    {
+      "requirement_id": "W4-025-C05",
+      "status": "PASS",
+      "evidence": "Contrast analysis proves structured wave domain restricts uncertainty to a 384-dimensional submanifold with zero prefix width, eliminating 2^384 volume expansion compared to isotropic 768-dimensional box. Verified by test_c05_wave_vs_full_box_comparison."
+    },
+    {
+      "requirement_id": "W4-025-C06",
+      "status": "PASS",
+      "evidence": "Adversarial drift witness demonstrates that floating-anchor / re-centering policies permit cumulative label corruption, whereas our strict No-Drift fixed anchor policy deterministically expires and forces reference fallback, preserving 100% decision agreement. Out-of-order step arrivals trigger FALLBACK_UNSUPPORTED. Verified by test_c06_adversarial_drift_witness_and_step_gaps."
+    },
+    {
+      "requirement_id": "W4-025-C07",
+      "status": "PASS",
+      "evidence": "Dimension growth measured (h1=384, h2=768, 2.0x ratio). Empirical reachability evaluated on 50 consecutive triplets of HAPT validation split (100% h1 prefix match, 100% consecutive chain, 0% anchor overlap at h2). Artifact output/week4/week4_initial_20261103/horizon_validation.json generated. Verified by test_c07_validation_ablation_and_artifact."
+    }
+  ],
+  "scientific_dispositions": {
+    "H12_matched_geometry": "CONFIRMED: Finite-horizon domain matches physical sensor dynamics: 50% overlap at h=1, full displacement at h=2.",
+    "H15_fixed_anchor": "CONFIRMED: Fixed anchor invariant eliminates cumulative floating drift.",
+    "H16_deterministic_expiry": "CONFIRMED: Expiry at anchor_step + max_age guarantees timely fallback to trusted model.",
+    "H17_step_specific_enclosure": "CONFIRMED: Outer product-set box preserves sound enclosure across multi-step sequences.",
+    "H19_fail_closed_geometry": "CONFIRMED: Unsupported horizons (h>=3), non-causal queries, and stream boundary crossings fail closed."
+  },
+  "limitations": [
+    "At h=2, the outer box enclosure uses the product set T1 x T2, which ignores cross-step temporal auto-correlation between V1 and V2, resulting in conservative outer volume relaxation.",
+    "Horizons h >= 3 are not certified because over-approximation accumulation causes LiRPA lower margins to become non-positive on HAPT sensor dynamics."
+  ]
+}

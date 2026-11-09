@@ -1,0 +1,16 @@
+# configs/week4/requirements-verifier.lock
+# Lock file snapshot for isolated verifier environment evaluation
+# Generated for Week 4 Task W4-013 probe verification
+
+appdirs==1.4.4
+auto-lirpa==0.8.0
+graphviz==0.21
+numpy==2.4.6
+packaging==26.0
+torch==2.14.1+cpu
+tqdm==4.67.3
+
+# Metadata Note on Version Conflict:
+# auto-LiRPA 0.8.0 metadata strictly requires torch<2.12.0,>=2.0.0.
+# The host PyTorch build installed is 2.14.1+cpu, violating the upstream version contract.
+# JIT script deprecation warnings are emitted during tracing.

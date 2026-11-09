@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-012",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/bounds.py",
+    "tests/test_week4_lipschitz.py",
+    "04_SYNTHESIS/week4/design/LIPSCHITZ.md"
+  ],
+  "started_at_utc": "2026-11-08T13:32:38Z",
+  "completed_at_utc": "2026-11-08T13:37:10Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_lipschitz.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.20,
+      "summary": "7/7 lipschitz tests passed: operator norm declarations & 11 competitor constants, BN scaling & Pool norm factors, radius boundary & collapse on near-tie control, CONDITIONAL_REAL_ARITHMETIC status tagging, one-time caching bound to identity, analytic power iteration on synthetic matrix with no GAP imports, and H06/H19 scientific evaluation"
+    },
+    {
+      "command": ".venv/bin/python -c \"from ecdr.week4.bounds import generate_lipschitz_capability_report; print(generate_lipschitz_capability_report())\"",
+      "exit_code": 0,
+      "elapsed_seconds": 0.35,
+      "summary": "Generated output/week4/week4_initial_20261103/lipschitz_capability.json"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 7.59,
+      "summary": "All 283/283 tests passed across entire test suite"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/bounds.py",
+      "sha256": "15298930530c71e811091343284efedf2a6315ca2ec172541d67b01ea44815c3"
+    },
+    {
+      "path": "tests/test_week4_lipschitz.py",
+      "sha256": "dd0009c5415d33d3b39e6f201378f1d7c8c2f07e3f62121043258fe0a17c1d1b"
+    },
+    {
+      "path": "04_SYNTHESIS/week4/design/LIPSCHITZ.md",
+      "sha256": "6b490b89da298f9e069b0c91ddc160dda21ba46a7ad0913809108af7f0a360ef"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/lipschitz_capability.json",
+      "sha256": "782d4b0453241893e27464612942fca1d189aaba8455808a7b180e9d7b029ae0"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-012-C01",
+      "status": "PASS",
+      "evidence": "LIPSCHITZ.md §2 and bounds.py derive exact Euclidean operator norms for all 15 layers of SmallCNN1D: Conv (via adjoint power iteration), BN (max scaling), Pool (factor <= 1.0), Flatten (isometry), Linear1 (spectral norm), and Linear2 (pairwise Euclidean difference norms ||Wc - Wj||_2). Preserves full 12x12 matrix with 11 non-target competitor constants. Verified by test_c01_operator_norm_declarations_and_pairwise_constants."
+    },
+    {
+      "requirement_id": "W4-012-C02",
+      "status": "PASS",
+      "evidence": "BatchNorm eval scaling verified as max |gamma/sqrt(var+eps)| for each BN layer (3.0539, 3.1434, 3.1684). MaxPool norm factor proved <= 1.0 under L2. Global upper bound used exclusively without local gradient approximations. Verified by test_c02_bn_scaling_and_pool_norm_factor."
+    },
+    {
+      "requirement_id": "W4-012-C03",
+      "status": "PASS",
+      "evidence": "Diagonal L[c, c] = 0.0 handled. On near-tie control witness row 13358 (margin 1.13487e-4), certified radius R2 = Delta / L collapses to 2.26e-7, yielding CONDITIONAL_INCONCLUSIVE for any practical perturbation. Point domain (r2=0) on confident sample yields CONDITIONAL_POSITIVE. Verified by test_c03_boundary_near_zero_margins_and_radius_collapse."
+    },
+    {
+      "requirement_id": "W4-012-C04",
+      "status": "PASS",
+      "evidence": "Numerical status strictly recorded as CONDITIONAL_REAL_ARITHMETIC. Bounds are derived under real-arithmetic spectral theory and cannot be upgraded to formal float32 certificates. Verified by test_c04_numerical_status_conditional_scope."
+    },
+    {
+      "requirement_id": "W4-012-C05",
+      "status": "PASS",
+      "evidence": "LipschitzConstants computed once via compute_smallcnn1d_lipschitz_constants, cached on BoundEngine, and bound to ReferenceOwner.identity_id and checkpoint_sha256. Per-query evaluation is O(1). Verified by test_c05_one_time_constant_setup_and_caching."
+    },
+    {
+      "requirement_id": "W4-012-C06",
+      "status": "PASS",
+      "evidence": "Power iteration verified on analytic 1x1 synthetic convolution layer matching exact closed-form eigenvalue. Verified zero imports or reuse of obsolete GAP model constants from ecdr.certified_adaptive. Verified by test_c06_analytic_power_iteration_and_no_gap_model_imports."
+    },
+    {
+      "requirement_id": "W4-012-C07",
+      "status": "PASS",
+      "evidence": "LIPSCHITZ.md §5 and lipschitz_capability.json confirm H06 and H19: global Lipschitz constant L ~ 500 severely compresses certified radii (R <= 0.007 for Delta=2.0). Since physical inter-window displacements on HAPT streams exceed 0.2, global Lipschitz yields 0% singleton reuse. Verified by test_c07_h06_and_h19_scientific_evaluation."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H06: Global Lipschitz constants (~500) derived from product of spectral norms are highly conservative, compressing certified radii below useful physical thresholds.",
+    "Confirms H19: Certified singletons have virtually zero future coverage in continuous sensor streams due to physical displacement exceeding R_safe by multiple orders of magnitude.",
+    "Confirms H21: Historical constants from simplified GAP models do not apply to SmallCNN1D.",
+    "Confirms H22: Lipschitz bounds operate under real-arithmetic conditional semantics."
+  ],
+  "limitations": [
+    "Global Lipschitz bounds provide fast O(1) evaluation but suffer from severe over-conservatism (L ~ 500).",
+    "Designated as CONDITIONAL_REAL_ARITHMETIC baseline for comparison against IBP and CROWN; cannot issue formal float32 certificates."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

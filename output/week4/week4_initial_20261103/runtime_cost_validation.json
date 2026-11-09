@@ -1,0 +1,28 @@
+{
+  "task": "W4-024",
+  "benchmark_iterations": 100,
+  "component_latencies_ms": {
+    "pure_pytorch_forward": 0.16022611998778302,
+    "full_assert_identity_digest": 1.1860340400016867,
+    "fast_shallow_check": 0.09479173997533508,
+    "numpy_normalization": 0.014681710017612204
+  },
+  "identity_mode_latencies_ms": {
+    "M00_core_inference": 0.3249155400044401,
+    "M01_strong_wrapper": 1.6227223400346702,
+    "M16_owned_reference": 0.4215391799880308
+  },
+  "overhead_metrics": {
+    "M01_assert_fraction_of_infer_pct": 73.08915461016865,
+    "M01_to_M00_slowdown_ratio": 4.994289716067428,
+    "M16_to_M00_slowdown_ratio": 1.2973807900424532,
+    "M16_speedup_over_M01_ratio": 3.849517238423118
+  },
+  "conclusions": {
+    "duplicate_work_eliminated": true,
+    "zero_forward_on_certified_reuse": true,
+    "threat_model_tradeoff_documented": true,
+    "strong_mode_uncompromised_zero_trust": true,
+    "owned_mode_in_process_encapsulation": true
+  }
+}

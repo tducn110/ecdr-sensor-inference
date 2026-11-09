@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-021",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "04_SYNTHESIS/week4/design/INCREMENTAL_REVIEW.md",
+    "tests/test_week4_incremental_gate.py"
+  ],
+  "started_at_utc": "2026-11-08T04:54:36Z",
+  "completed_at_utc": "2026-11-08T05:04:30Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_incremental_gate.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.30,
+      "summary": "7/7 gate tests passed: sgemm (L_out>=2) vs sgemv (L_out=1) kernel probe, 4-level evidence separation, near-tie real & synthetic probes, boundary & BN train-mode probes, anti-spoofing & hash invalidation, forward_strict fallback & reviewer gate"
+    },
+    {
+      "command": ".venv/bin/python tests/test_week4_incremental_gate.py --generate-report",
+      "exit_code": 0,
+      "elapsed_seconds": 0.31,
+      "summary": "Generated incremental_review.json with STRICT_ELIGIBLE_FOR_PROFILE verdict bound to source, schedule, checkpoint, preprocessing, and environment profile hashes"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_alignment.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.76,
+      "summary": "14/14 alignment tests re-verified (0.0 error across all 5 stages)"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_incremental.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 3.61,
+      "summary": "12/12 incremental engine tests re-verified (0.0 error across 2,414 val & 5,034 test steps)"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "04_SYNTHESIS/week4/design/INCREMENTAL_REVIEW.md",
+      "sha256": "dbe5484cc4086b7f1e37aaeae7635d747c8bc737b09022c8c7a3bb26496ab9dd"
+    },
+    {
+      "path": "tests/test_week4_incremental_gate.py",
+      "sha256": "67b7a598c3a190756e49411cf2eca4f41d1bb4279c6eea4f1fd3d1042b60ee1f"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/incremental_review.json",
+      "sha256": "42091a8eba14ba4d6f0220363d02cbfb7b93452862ff418298f496f7d2e7c6eb"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-021-C01",
+      "status": "PASS",
+      "evidence": "INCREMENTAL_REVIEW.md §1 reviews real-algebra RF identity alongside ATen _slow_conv2d_forward -> im2col -> MKL cblas_sgemm reduction order. Proves that L_out >= 2 preserves sequential k=0..K-1 reduction order (0.0 ULP error), whereas L_out = 1 dispatches sgemv with horizontal SIMD reduction (producing 8.9406967e-08 witness on global_row_id=15031). Verified by test_c01_kernel_dispatch_l_out_2_exact_vs_l_out_1_sgemv_witness."
+    },
+    {
+      "requirement_id": "W4-021-C02",
+      "status": "PASS",
+      "evidence": "INCREMENTAL_REVIEW.md §2 and incremental_review.json strictly separate 4 evidence levels: universal_real_algebra (DERIVED), universal_cross_backend_float32 (NOT_ESTABLISHED), finite_bitwise_equality (VERIFIED_FINITE_AND_KERNEL_LOCKED), and decision_agreement (VERIFIED_FINITE). Verified by test_c02_four_evidence_levels_strictly_separated."
+    },
+    {
+      "requirement_id": "W4-021-C03",
+      "status": "PASS",
+      "evidence": "All diagnostic probes executed with exact witnesses in incremental_review.json: (1) Near-tie probe on test row 13358 (margin=1.134872e-4, logit_err=0.0) and val row 17355 (margin=9.168863e-3, logit_err=0.0) plus synthetic sub-ULP probe; (2) Padding/overlap boundary probe on pair 15031->15032 (left err=1.3713, interior err=0.0, right err=2.0928); (3) BN train-mode probe (slice vs full err=2.2599, rejected by engine). Verified by test_c03_near_tie_real_and_synthetic_probes, test_c03_padding_and_overlap_boundary_probes, and test_c03_bn_train_mode_witness_and_engine_rejection."
+    },
+    {
+      "requirement_id": "W4-021-C04",
+      "status": "PASS",
+      "evidence": "Issued STRICT_ELIGIBLE_FOR_PROFILE verdict bound to environment_profile_id=linux-x86_64-py311-numpy246-torch2141cpu-avx512, cache_schedule_version=w4.incremental.schedule.v2, min_conv_slice_out_len>=2, incremental.py SHA-256, INCREMENTAL_SCHEDULE.md SHA-256, checkpoint SHA-256, and preprocessing ID."
+    },
+    {
+      "requirement_id": "W4-021-C05",
+      "status": "PASS",
+      "evidence": "IncrementalEquivalenceCapability is guarded by private _CAPABILITY_GUARD_TOKEN so external callers cannot spoof STRICT_ELIGIBLE_FOR_PROFILE via boolean/string construction. Any change to profile ID, min_conv_slice_out_len < 2, or file SHA-256 invalidates eligibility (status=INVALIDATED). Verified by test_c04_c05_anti_spoofing_and_hash_profile_invalidation."
+    },
+    {
+      "requirement_id": "W4-021-C06",
+      "status": "PASS",
+      "evidence": "ActualK12IncrementalEngine.forward_strict() automatically falls back to forward_full() with fallback_reason='incremental_gate_not_strict:<status>' when capability is EXPERIMENTAL_ONLY or INVALIDATED, while forward_incremental() remains measurable for experimental rows. Verified by test_c06_c07_strict_fallback_and_reviewer_gate."
+    },
+    {
+      "requirement_id": "W4-021-C07",
+      "status": "PASS",
+      "evidence": "equivalence_capability() requires reviewer_id != assignee in tasks.json before granting STRICT_ELIGIBLE_FOR_PROFILE, and enforces produces_regional_certificate=False and is_skipped_decision_reuse=False. Verified by test_c06_c07_strict_fallback_and_reviewer_gate."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H13 & H21 for locked CPU profile: Because every recomputed slice has spatial output length L_out >= 2, ATen/MKL dispatches cblas_sgemm with identical inner-product reduction order to full-window convolution, yielding 0.0 ULP error across all 2,414 val and 5,034 test steps.",
+    "Establishes exact counterexample to universal cross-backend float32 equivalence: L_out = 1 dispatches MKL sgemv (horizontal SIMD reduction), causing a 8.94e-8 discrepancy on val row 15031.",
+    "Confirms H22: Incremental feature reuse is strictly separated from regional certified decision reuse (produces_regional_certificate = False, is_skipped_decision_reuse = False)."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "STRICT_ELIGIBLE_FOR_PROFILE is strictly bound to linux-x86_64-py311-numpy246-torch2141cpu-avx512 and min_conv_slice_out_len >= 2; switching BLAS backend, thread count, or device automatically invalidates strict eligibility."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

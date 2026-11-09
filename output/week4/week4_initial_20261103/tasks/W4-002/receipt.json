@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-002",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "b575f241115e83db7fe7a75225cf8f1e903641a564f38fc8589b8a3b81a02e20",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? PLAN.md",
+    "?? configs/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? tests/test_week4_provenance.py"
+  ],
+  "claimed_write_paths": [
+    "configs/week4/protocol.json",
+    "configs/week4/methods.json",
+    "04_SYNTHESIS/week4/design/EVALUATION_PROTOCOL.md"
+  ],
+  "started_at_utc": "2026-11-03T08:15:00Z",
+  "completed_at_utc": "2026-11-03T08:17:30Z",
+  "environment_profile_id": "cpu_float32",
+  "protocol_sha256": "ac74d6b8ca9b3220cbed9baaf71582fc570e8c3e92230879d8374503541d09a2",
+  "commands": [
+    ".venv/bin/python -c 'import json; json.load(open(\"configs/week4/protocol.json\")); json.load(open(\"configs/week4/methods.json\"))'"
+  ],
+  "changed_files": [
+    "configs/week4/protocol.json",
+    "configs/week4/methods.json",
+    "04_SYNTHESIS/week4/design/EVALUATION_PROTOCOL.md"
+  ],
+  "artifacts": [
+    "configs/week4/protocol.json",
+    "configs/week4/methods.json",
+    "04_SYNTHESIS/week4/design/EVALUATION_PROTOCOL.md",
+    "output/week4/week4_initial_20261103/protocol_design_review.md",
+    "output/week4/week4_initial_20261103/tasks/W4-002/receipt.json"
+  ],
+  "requirement_evidence": [
+    {
+      "id": "W4-002-C01",
+      "status": "VERIFIED",
+      "evidence": "Declared KNOWN_TEST_EXPLORATORY and 3-stage lifecycle in protocol.json and EVALUATION_PROTOCOL.md"
+    },
+    {
+      "id": "W4-002-C02",
+      "status": "VERIFIED",
+      "evidence": "Separated denominators 5053, 3572, 5034, 19; defined R, D_reuse, D_fallback, nullable A_reuse and 3 distinct reuse modes"
+    },
+    {
+      "id": "W4-002-C03",
+      "status": "VERIFIED",
+      "evidence": "Pre-declared candidate radii, PCA ranks, horizons, build caps (128), timeout (500ms) and validation objective with tie-breaks"
+    },
+    {
+      "id": "W4-002-C04",
+      "status": "VERIFIED",
+      "evidence": "Defined fair matching criteria: same domain/center/coordinate system; distinguished 768D vs 384D volumes; M08/M09 hull control"
+    },
+    {
+      "id": "W4-002-C05",
+      "status": "VERIFIED",
+      "evidence": "Specified single-thread CPU execution, RAM residency, 50 warmup queries, 3 repetitions, and explicit timing boundaries"
+    },
+    {
+      "id": "W4-002-C06",
+      "status": "VERIFIED",
+      "evidence": "Populated full 17-method registry M00-M16 in methods.json with explicit category, guarantee target, and task ownership"
+    },
+    {
+      "id": "W4-002-C07",
+      "status": "VERIFIED",
+      "evidence": "Designated 19 recordings as primary cluster sampling unit for paired statistical tests and studentized bootstrap CIs"
+    }
+  ],
+  "protected_hash_check": "PASS",
+  "scientific_dispositions": [],
+  "missing_required_outputs": [],
+  "limitations": [
+    "W4-002 establishes pre-fit experimental schema and search space only; no parameter tuning or test replay is performed in this task."
+  ],
+  "blockers": [],
+  "submitted_status": "VERIFIED",
+  "review": {
+    "reviewer_id": "orchestrator_independent_review",
+    "decision": "ACCEPT",
+    "review_artifact": "output/week4/week4_initial_20261103/protocol_design_review.md",
+    "reviewed_source_tree_id": "b575f241115e83db7fe7a75225cf8f1e903641a564f38fc8589b8a3b81a02e20",
+    "checked_commands": [
+      ".venv/bin/python -c 'import json; json.load(open(\"configs/week4/protocol.json\")); json.load(open(\"configs/week4/methods.json\"))'"
+    ],
+    "remaining_findings": []
+  }
+}

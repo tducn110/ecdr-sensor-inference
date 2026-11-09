@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-012",
+  "title": "Actual K=12 global Lipschitz-margin baseline capability",
+  "milestone": "M2",
+  "target_model": "SmallCNN1D(num_classes=12)",
+  "reference_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "input_norm": "l2",
+  "method_id": "actual-smallcnn1d-lipschitz-l2-v1",
+  "numerical_status": "CONDITIONAL_REAL_ARITHMETIC",
+  "spectral_bounds": {
+    "backbone_lipschitz": 423.7158381212308,
+    "layer_norms": {
+      "conv.0": 1.9028120040893555,
+      "conv.1": 3.053898811340332,
+      "conv.2": 1.0,
+      "conv.3": 1.0,
+      "conv.4": 1.5326807498931885,
+      "conv.5": 3.1433627605438232,
+      "conv.6": 1.0,
+      "conv.7": 1.0,
+      "conv.8": 1.7621150016784668,
+      "conv.9": 3.1684324741363525,
+      "conv.10": 1.0,
+      "head.0": 1.0,
+      "head.1": 2.710811138153076,
+      "head.2": 1.0
+    },
+    "min_pairwise_margin_lipschitz": 337.62395971207127,
+    "max_pairwise_margin_lipschitz": 503.75848494283287
+  },
+  "scientific_dispositions": {
+    "H06_global_lipschitz_conservatism": "Global Lipschitz constants (~500) cause certified Euclidean radii to collapse to <= 1e-3.",
+    "H19_vanishing_coverage": "Displacements on continuous sensor streams (~0.5-2.0) drastically exceed certified radius (~0.004), yielding 0% singleton reuse.",
+    "H21_rejection_of_gap_constants": "GAP model constants (L ~ 10) do not apply to SmallCNN1D with dense projection (L ~ 500).",
+    "H22_conditional_status": "Lipschitz spectral bounds are computed in real arithmetic and tagged CONDITIONAL_REAL_ARITHMETIC."
+  }
+}

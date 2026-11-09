@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-025",
+  "title": "Finite-horizon reachable domains and no-drift validation",
+  "run_id": "week4_initial_20261103",
+  "evaluated_triplets_count": 50,
+  "recurrence_contracts": {
+    "h1_prefix_match_rate": 1.0,
+    "h2_consecutive_chain_match_rate": 1.0,
+    "h2_anchor_overlap_fraction": 0.0,
+    "h1_free_dimensions": 384,
+    "h2_free_dimensions": 768,
+    "dimension_growth_ratio": 2.0
+  },
+  "empirical_reachability_by_budget": {
+    "0.0001": {
+      "h1_reachability_rate": 0.0,
+      "h2_reachability_rate": 0.0
+    },
+    "0.001": {
+      "h1_reachability_rate": 0.0,
+      "h2_reachability_rate": 0.0
+    },
+    "0.01": {
+      "h1_reachability_rate": 0.0,
+      "h2_reachability_rate": 0.0
+    },
+    "0.1": {
+      "h1_reachability_rate": 0.3,
+      "h2_reachability_rate": 0.22
+    },
+    "0.5": {
+      "h1_reachability_rate": 0.78,
+      "h2_reachability_rate": 0.74
+    },
+    "1.0": {
+      "h1_reachability_rate": 0.78,
+      "h2_reachability_rate": 0.74
+    }
+  },
+  "displacement_quantiles": {
+    "h1_tail_max_linf": 16.092702865600586,
+    "h1_tail_median_linf": 0.13452164083719254,
+    "h2_full_max_linf": 16.092702865600586,
+    "h2_full_median_linf": 0.170743890106678
+  },
+  "scientific_dispositions": {
+    "H12_matched_geometry": "Finite-horizon structured domain reflects 50% overlap physics for h=1 and full displacement for h=2.",
+    "H15_fixed_anchor": "Strict anchor binding prevents cumulative floating drift over long sequences.",
+    "H16_deterministic_expiry": "Deterministic horizon expiration at anchor_step + max_horizon forces fail-closed reference fallback.",
+    "H18_finite_horizon": "Reachable bounds decay gracefully with horizon length; h>=3 fail closed as unsupported."
+  }
+}

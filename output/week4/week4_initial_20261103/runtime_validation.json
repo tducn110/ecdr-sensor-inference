@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-023",
+  "title": "Streaming runtime executor validation artifact",
+  "run_id": "week4_initial_20261103",
+  "evaluated_queries": 100,
+  "gate_open_profile": {
+    "counters": {
+      "total_queries": 100,
+      "reused_certified_count": 0,
+      "fallback_reference_count": 6,
+      "fallback_non_member_count": 94,
+      "fallback_expired_count": 0,
+      "fallback_recording_reset_count": 0,
+      "fallback_gate_closed_count": 0,
+      "fallback_unsupported_count": 0,
+      "build_attempts": 100,
+      "build_successes": 95,
+      "build_failures": 5,
+      "total_latency_ms": 1190.158564,
+      "reuse_rate": 0.0
+    },
+    "reference_agreement_accuracy": 1.0
+  },
+  "gate_closed_profile": {
+    "counters": {
+      "total_queries": 100,
+      "reused_certified_count": 0,
+      "fallback_reference_count": 100,
+      "fallback_non_member_count": 0,
+      "fallback_expired_count": 0,
+      "fallback_recording_reset_count": 0,
+      "fallback_gate_closed_count": 0,
+      "fallback_unsupported_count": 0,
+      "build_attempts": 100,
+      "build_successes": 0,
+      "build_failures": 100,
+      "total_latency_ms": 1914.818052,
+      "reuse_rate": 0.0
+    },
+    "reference_agreement_accuracy": 1.0,
+    "gate_closed_all_fallback": true
+  },
+  "scientific_dispositions": {
+    "H03_zero_lookahead": "Runtime selector operates strictly on current observable QueryView, zero future leakage.",
+    "H05_fallbacks_safe": "All misses execute reference forward and produce 100% agreement with reference full forward.",
+    "H15_fixed_anchor": "Anchors are never re-centered during hits, eliminating drift.",
+    "H16_expiration_enforced": "Certificates expire after max_age steps.",
+    "H18_finite_horizon": "State commits atomically only on valid query completion."
+  }
+}

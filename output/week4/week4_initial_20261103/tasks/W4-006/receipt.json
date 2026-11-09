@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-006",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "ecdr/week4/numerics.py",
+    "tests/test_week4_numerics.py"
+  ],
+  "started_at_utc": "2026-11-08T01:20:00Z",
+  "completed_at_utc": "2026-11-08T01:23:20Z",
+  "environment_profile_id": "linux-x86_64-py311-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_numerics.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.009,
+      "summary": "25/25 unit tests passed covering outward rounding, arithmetic primitives, cancellation, magnitude extremes, and exact rational oracle dot product bounds"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 1.544,
+      "summary": "151/151 unit tests passed across entire repository without regressions"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/numerics.py",
+      "sha256": "e373312eed7ec1f74514430c180b79182a01c90b20afe28c598ccbb29e64a680"
+    },
+    {
+      "path": "tests/test_week4_numerics.py",
+      "sha256": "e009689c0d910e8dd4bebdf72d20641055fcf643db04e86441373147ff50a886"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/primitive_numeric_review.md",
+      "sha256": "d48ecfbdf0d2c732722e9b50ef0aa9ca5acc95b7f4875f8dd1cf900657fa82f4"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/primitive_checks.json",
+      "sha256": "56630b4b47cc67e03851085a7fb8dabf42fb1639a7a295c65f955ebd5416cee2"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tasks/W4-006/receipt.json",
+      "sha256": "pending_submission"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-006-C01",
+      "status": "PASS",
+      "evidence": "Implemented Interval and IntervalVector in ecdr/week4/numerics.py with add/sub/mul/div/sqrt/relu/dot_with_constant. Explicit exceptions for inverted, division by zero, negative sqrt, and non-finite endpoints verified by 25 unit tests."
+    },
+    {
+      "requirement_id": "W4-006-C02",
+      "status": "PASS",
+      "evidence": "All primitives apply outward directed rounding (round_down/round_up). Vector reduction uses Higham gamma_{n+1} bounds accounting for n products plus scalar bias accumulation instead of arbitrary one-nextafter."
+    },
+    {
+      "requirement_id": "W4-006-C03",
+      "status": "PASS",
+      "evidence": "ExactRationalOracle implemented with fractions.Fraction; verified adversarial cancellation (diff=1e-15), magnitude extremes (1e15 + 1e-15), signed zeros, and dot products."
+    },
+    {
+      "requirement_id": "W4-006-C04",
+      "status": "PASS",
+      "evidence": "Tested all 3 multiplication sign regimes (positive, negative, zero-crossing), zero scaling, degenerate point intervals, and endpoint inclusion."
+    },
+    {
+      "requirement_id": "W4-006-C05",
+      "status": "PASS",
+      "evidence": "Enforced SmallCNN1D dot product lengths (30, 96, 128, 192, 2048) and verified gamma_n bound. Unsupported lengths (n=42) and untested profiles fail closed with UnsupportedNumericalError."
+    },
+    {
+      "requirement_id": "W4-006-C06",
+      "status": "PASS",
+      "evidence": "Preserved dyadic float32 weights exactly as real inputs; embedded execution profile and Higham rounding model in primitive outputs."
+    },
+    {
+      "requirement_id": "W4-006-C07",
+      "status": "PASS",
+      "evidence": "Zero new external package dependencies introduced; pure standard library + NumPy inside frozen .venv. Results logged in primitive_checks.json."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean)",
+  "scientific_dispositions": [
+    "H05: Outward directed rounding and gamma_n bounds establish the foundational layer for certified whole-domain margin bounds.",
+    "H07: Confirms that exact interval accumulation preserves containment, though wrapping effect remains present for deep graphs.",
+    "H22: Formalizes the exact discrepancy between real arithmetic and float32 reduction, closing the first gap in the numerical bridge."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Interval multiplication uses worst-case 4-point bounding; while sound, it does not track dependency between repeated occurrences of identical variables."
+  ]
+}

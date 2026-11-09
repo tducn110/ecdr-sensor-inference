@@ -1,5 +1,14 @@
 # TẦNG 4: TỔNG HỢP, NGHIỆM THU & BÀI BÁO KHOA HỌC (TIER 4 - SYNTHESIS & GATES)
 
+> **Week 4 Execution & Closeout:** [Báo cáo nghiệm thu Week 4 Closeout](week4/CLOSEOUT.md),
+> [Report A (IEEE Format PDF)](week4/reports/Week_4_Implementation_and_Evaluation.pdf),
+> [Report B (Explained PDF)](week4/reports/Week_4_Explained.pdf),
+> [Hướng dẫn tái lập REPRODUCE.md](week4/reports/REPRODUCE.md),
+> [Bảng so sánh 17 phương pháp](output/week4/week4_initial_20261103/comparison_matrix.csv),
+> và [Kết luận 24 giả thuyết](output/week4/week4_initial_20261103/hypotheses.csv).
+> Toàn bộ 40 tasks (M0–M7) đã hoàn thành và `VERIFIED`. Kết quả thực nghiệm xác nhận tính trung thực khoa học:
+> cơ chế fail-closed đạt 100% agreement ($D_{\text{all}}=0$), nhưng nhiễu cảm biến liên tục khiến useful reuse $R=0$ trên streaming (falsify H19) và net CPU speedup không đạt (falsify H20, H24).
+
 > **Current authorities:** [Week 1 brief](../00_OVERVIEW/02_Week_1_Project_Brief.tex), [Week 2 HAPT/data foundations](../01_DATA/03_Week_2_Data_Foundations.tex), and [Week 2 CNN Model Foundations](../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex). The combined report below retains historical Week 2/3 synthesis; its K=6/GAP choices, metrics and gate labels do not supersede the standalone authorities. Week 2 now has a [verified closeout](../output/week2_foundations_20261103/README.md); G2 quality remains HOLD, and formal certification/net savings remain open. Older acceptance checkboxes below describe a historical snapshot, not current gate acceptance.
 
 > **Mục tiêu của Tầng 4**:  

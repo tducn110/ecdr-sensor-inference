@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-015",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "clean",
+  "execution_source_tree_id": "local_v1",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "ecdr/week4/domains.py",
+    "tests/test_week4_domains.py"
+  ],
+  "started_at_utc": "2026-11-08T13:57:34.114100+00:00",
+  "completed_at_utc": "2026-11-08T14:03:00.000000+00:00",
+  "environment_profile_id": "env_local_py311_torch214_cpu",
+  "protocol_sha256": "3cb49a42531d0b54378877bcce945761a2936e788ad7208cfd4957e841b528b9",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_domains.py -v",
+      "exit_code": 0,
+      "purpose": "Verify W4-015 checklist items C01-C07 on causal wave domains and membership contracts"
+    },
+    {
+      "command": ".venv/bin/python ecdr/week4/domains.py --validate-wave --run-id week4_initial_20261103 --num-pairs 50",
+      "exit_code": 0,
+      "purpose": "Generate validation artifact wave_domain_validation.json on validation split"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/domains.py",
+      "sha256": "761b71309e67fb374392492a635fa79e1e46ef9e3261348fc38c5dffedeb07c9"
+    },
+    {
+      "path": "tests/test_week4_domains.py",
+      "sha256": "fbbf9533a9f7c01d15c364dbc2ddf5f51aef91962c102da4ca9a563b46b78dd9"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/wave_domain_validation.json",
+      "sha256": "40122e6b1fe5d76f444d2a5f64d309bd8a495746c33b40791ac89ce94ff52d16"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "code": "W4-015-C01",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "propose_causal_wave_domain",
+      "status": "VERIFIED",
+      "notes": "Exact 64-step prefix (384 fixed dims, lower==upper==anchor[:, 64:]) and 384 free tail dims around center."
+    },
+    {
+      "code": "W4-015-C02",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "propose_causal_wave_domain",
+      "status": "VERIFIED",
+      "notes": "Constant continuation baseline center[..., 64:] = anchor[..., -1:] strictly observed; no lookahead."
+    },
+    {
+      "code": "W4-015-C03",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "CausalWaveProposal",
+      "status": "VERIFIED",
+      "notes": "Domain identity embeds anchor_raw_sha256, anchor_norm_sha256, prefix_sha256, step_idx, recording_id, tail budgets."
+    },
+    {
+      "code": "W4-015-C04",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "check_causal_membership",
+      "status": "VERIFIED",
+      "notes": "Independent checks for bit-exact prefix matching, stream continuity (step t+1, same recording_id), and tail containment."
+    },
+    {
+      "code": "W4-015-C05",
+      "file": "ecdr/week4/domains.py",
+      "symbol": "propose_same_center_full_box",
+      "status": "VERIFIED",
+      "notes": "Exposes same-center full-box control with 768 free coordinates. Note: degenerate coordinate box does not claim correlation preservation."
+    },
+    {
+      "code": "W4-015-C06",
+      "file": "tests/test_week4_domains.py",
+      "symbol": "TestWeek4Domains.test_c06_h02_ramp_counterexample_and_invalid_budgets",
+      "status": "VERIFIED",
+      "notes": "Evaluates H02 ramp counterexample and rejects zero/negative/infinite budgets fail-closed."
+    },
+    {
+      "code": "W4-015-C07",
+      "file": "output/week4/week4_initial_20261103/wave_domain_validation.json",
+      "symbol": "run_wave_domain_validation",
+      "status": "VERIFIED",
+      "notes": "Evaluated 50 consecutive validation pairs without test set contamination; measured displacement and membership rates."
+    }
+  ],
+  "protected_hash_check": {
+    "status": "CLEAN",
+    "verified_count": 214
+  },
+  "scientific_dispositions": [
+    {
+      "hypothesis": "H01",
+      "verdict": "CONFIRMED",
+      "evidence": "100% (50/50) of consecutive pairs in the validation split have bit-exact prefix match anchor[..., 64:] == query[..., :64]."
+    },
+    {
+      "hypothesis": "H02",
+      "verdict": "CONFIRMED",
+      "evidence": "Natural sensor signals show non-zero tail displacement (mean L2: 5.58, median: 0.78), requiring budget delta >= 0.1 for non-zero membership."
+    }
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Causal wave proposal contract is strictly one-step (t -> t+1). Multi-step horizon expansion requires inductive compositions not covered by this task."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED"
+}

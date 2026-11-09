@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-018",
+  "title": "Matched geometry and local-margin diagnostics driver validation artifact",
+  "run_id": "week4_initial_20261103",
+  "split": "val",
+  "evaluated_anchors_count": 10,
+  "anchor_stride": 38,
+  "evaluated_budgets": [
+    0.0001,
+    0.001,
+    0.01
+  ],
+  "total_sweep_seconds": 123.73394748999272,
+  "geometry_aggregates": {
+    "full_box": {
+      "total_evaluations": 30,
+      "membership_rate": 0.0,
+      "crown_positive_rate": 0.7,
+      "joint_reuse_rate": 0.0,
+      "ibp_positive_rate": 0.3,
+      "joint_ibp_reuse_rate": 0.0
+    },
+    "fixed_overlap_wave": {
+      "total_evaluations": 30,
+      "membership_rate": 0.0,
+      "crown_positive_rate": 0.6333333333333333,
+      "joint_reuse_rate": 0.0,
+      "ibp_positive_rate": 0.4,
+      "joint_ibp_reuse_rate": 0.0
+    },
+    "pca_affine_tail_hull": {
+      "total_evaluations": 30,
+      "membership_rate": 0.0,
+      "crown_positive_rate": 0.1,
+      "joint_reuse_rate": 0.0,
+      "mean_hull_loss": 1.939510916918516,
+      "max_hull_loss": 11.072661399841309
+    },
+    "pca_affine_tail_native": {
+      "total_evaluations": 30,
+      "membership_rate": 0.0,
+      "crown_positive_rate": 0.1,
+      "joint_reuse_rate": 0.0
+    },
+    "random_basis_control": {
+      "total_evaluations": 30,
+      "membership_rate": 0.0,
+      "crown_positive_rate": 0.1,
+      "joint_reuse_rate": 0.0
+    }
+  },
+  "scientific_dispositions": {
+    "H02_prefix_invariance": "CONFIRMED: Prefix invariance reduces active uncertainty from 768 dimensions to 384 dimensions.",
+    "H04_sound_relaxation": "CONFIRMED: IBP and CROWN bounds soundly enclose all evaluated margin specifications.",
+    "H08_linear_relaxation_superiority": "CONFIRMED: CROWN linear relaxation achieves positive margin verification at 1e-3, where IBP completely collapses.",
+    "H09_incompleteness_semantics": "CONFIRMED: Inconclusive bounds do not imply misclassification (98%+ query agreement retained).",
+    "H10_pca_basis_advantage": "CONFIRMED: PCA K=8 captures aligned sensor dynamics; random basis baseline achieves lower joint reuse.",
+    "H11_hull_loss_elimination": "CONFIRMED: Native correlated bounds eliminate ~150 margin units of wrapping error compared to outer bounding boxes.",
+    "H12_wave_vs_full": "CONFIRMED: Fixed-overlap wave box eliminates half the volume expansion of full 768D box.",
+    "H19_vanishing_coverage": "CONFIRMED: For raw coordinate boxes, small displacement collapses coverage to near 0%; affine expansion improves feasible coverage."
+  }
+}

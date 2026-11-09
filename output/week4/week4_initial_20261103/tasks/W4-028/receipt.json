@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-028",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (clean 214 protected files)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? configs/week4/",
+    "?? ecdr/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? scripts/week4_tasks.py",
+    "?? tests/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/methods.py",
+    "tests/test_week4_methods.py"
+  ],
+  "started_at_utc": "2026-11-08T15:39:58Z",
+  "completed_at_utc": "2026-11-08T15:54:00Z",
+  "environment_profile_id": "week4_initial_20261103",
+  "protocol_sha256": "4b971a171aef42555c11d61c6b129759c258d4e7dbe3fa2d75f3e46c7ffea876",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_methods.py -v",
+      "exit_code": 0,
+      "purpose": "Unit test suite for W4-028 method registry, baseline adapters, exact replay, incremental, and capability matrix"
+    },
+    {
+      "command": ".venv/bin/python -c 'import ecdr.week4.methods as m; m.run_method_registry_validation()'",
+      "exit_code": 0,
+      "purpose": "Generate output/week4/week4_initial_20261103/method_capabilities.json artifact"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check",
+      "exit_code": 0,
+      "purpose": "Audit check verifying integrity of 214 protected files"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/methods.py",
+      "sha256": "cf915b342edd6a6f42750cb68657c7190df9e1008dbaa114fe7b10eb15fb3aab",
+      "description": "Method adapter implementations for M00-M16: BaseMethodAdapter, baselines (M00, M01, M16), singleton replay (M02), incremental engine (M03), heuristic (M04), regional bounding adapters (M05-M11), policy axes (M12, M13), and audited applicability rows (M14, M15)."
+    },
+    {
+      "path": "tests/test_week4_methods.py",
+      "sha256": "0c28d3a6197c0bf6ef61ade554c62e1fc5b57df7f3f8e00d0c4cff6bc6968ea5",
+      "description": "Comprehensive test suite covering W4-028 checklist items C01 through C07 (7/7 tests passing)."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/method_capabilities.json",
+      "sha256": "42a096e5099eb3609bf5e401bb26b092698e46100b73823c8491e3e0ff51299c",
+      "description": "Formal capability registry for 17 methods M00-M16 with semantic groups, threat models, parity check results, and scientific dispositions."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-028-C01",
+      "status": "PASS",
+      "evidence": "All 17 methods M00-M16 registered matching configs/week4/methods.json; separated into baselines (M00, M01, M16), singleton reuse (M02), incremental feature reuse (M03), heuristic (M04), regional certification (M05-M11), policy axes (M12, M13), and applicability-only audits (M14, M15). Verified by test_c01_method_registration_and_semantic_grouping."
+    },
+    {
+      "requirement_id": "W4-028-C02",
+      "status": "PASS",
+      "evidence": "M00 (NO_INTEGRITY_CHECK), M01 (PER_QUERY_INTEGRITY_CHECK), and M16 (OWNED_PROCESS_BOUNDARY) share identical QueryView input contract and return identical predictions and logits (100% agreement down to 0.0 ULP / float32 tolerance). Verified by test_c02_input_output_contract_and_identity_threat_models."
+    },
+    {
+      "requirement_id": "W4-028-C03",
+      "status": "PASS",
+      "evidence": "M02 uses full canonical input float32 bytes + SHA-256 with bitwise equality check; strictly records is_singleton_reuse=True and is_regional_reuse=False without claiming broad regional certificate coverage. Invalidates on recording boundary or stream discontinuity. Verified by test_c03_exact_input_replay_singleton_semantics."
+    },
+    {
+      "requirement_id": "W4-028-C04",
+      "status": "PASS",
+      "evidence": "M03 binds to W4-021 equivalence_capability() with BACKEND_EQUIVALENT_FORWARD target; M04 heuristic adapter tracks empirical distance without false formal badge. Verified by test_c04_incremental_eligibility_and_heuristic_budget."
+    },
+    {
+      "requirement_id": "W4-028-C05",
+      "status": "PASS",
+      "evidence": "M05-M11 adapters expose per-method numerical status (CONDITIONAL_REAL_ARITHMETIC, VALIDATED_FLOAT32_ENCLOSURE, CORRELATED_COORDINATE_HULL, NATIVE_CORRELATED_BOUNDS, SURROGATE_BACKWARD_RELAXATION) and descriptive failure reasons instead of a single shared boolean. Verified by test_c05_per_method_numerical_status_and_failure_reasons."
+    },
+    {
+      "requirement_id": "W4-028-C06",
+      "status": "PASS",
+      "evidence": "Prediction interface accepts strictly QueryView or raw (6, 128) array with zero lookahead and zero ground-truth label access; full forward is only executed as a fallback on miss. Verified by test_c06_zero_leakage_and_prediction_interface."
+    },
+    {
+      "requirement_id": "W4-028-C07",
+      "status": "PASS",
+      "evidence": "M14 and M15 raise fail-closed UnsupportedMethodError with detailed reasons from W4-029; policy axes M12 and M13 declare parent methods; method_capabilities.json artifact generated and validated. Verified by test_c07_unsupported_rows_policy_axes_and_artifact_generation."
+    }
+  ],
+  "scientific_dispositions": {
+    "H06_global_lipschitz_conservatism": "M05 correctly exposes CONDITIONAL_REAL_ARITHMETIC status and pair-margin spectral constants.",
+    "H13_incremental_arithmetic_equivalence": "M03 achieves bitwise and decision parity with M00, verified via im2col/sgemm equivalence from W4-021.",
+    "H18_identity_mode_cost_profile": "Distinct threat models explicitly documented for M00, M01, and M16.",
+    "H19_vanishing_coverage": "Explicitly distinguishes singleton input replay (M02) from regional certified reuse.",
+    "H20_assertion_overhead": "M01 wrapper isolates per-query SHA-256 overhead from inference core.",
+    "H21_applicability_matrix": "Audited rows M14 and M15 explicitly registered as non-executable under frozen scope.",
+    "H22_numerical_status_separation": "Each method exposes its own numerical status rather than a shared boolean.",
+    "H24_causal_selector_contract": "Adapters receive strictly QueryView or raw array with zero lookahead and zero ground truth."
+  },
+  "limitations": [
+    "M02 exact replay only covers bitwise identical windows, not continuous sensor trajectories.",
+    "M08 coordinate hull produces negative margins for large budgets due to correlation loss (H11).",
+    "M14 (LipCache) and M15 (StreamiNNC/TinyDejaVu) are audited applicability rows and excluded from execution benchmarking."
+  ]
+}

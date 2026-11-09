@@ -1,5 +1,10 @@
 # Kế hoạch hiện tại — Event-Conditioned Certified Decision Reuse
 
+> **Historical roadmap:** nội dung ngày 22/10 dưới đây giữ để truy nguồn.
+> Current Week 4 plan là [bộ goal/task/orchestrator](week4/README.md) và
+> [PLAN.md](../PLAN.md), lập 2026-11-03 cho frozen SmallCNN1D K=12.
+> Không dùng K=6/G2 PASS trong roadmap cũ như trạng thái hiện tại.
+
 **Đồng bộ:** 22/10/2026. File này thay đề xuất 15/10 bị lỗi thời; bản trước còn
 trong Git history. Phạm vi là milestone nghiên cứu G3–G6, không phải TMB
 `PLAN.md`/`ROADMAP.md`. Việc viết lại docs không chạy training hay đóng research gate.

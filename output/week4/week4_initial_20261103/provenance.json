@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-001",
+  "run_id": "week4_initial_20261103",
+  "mode": "preflight",
+  "timestamp_utc": "2026-11-03T07:45:48Z",
+  "git_state": {
+    "head": "eede68e418713e4aed331705ce82834a3b4bfa94",
+    "branch": "main",
+    "remote_url": "https://github.com/tducn110/ecdr-sensor-inference.git",
+    "is_dirty": true,
+    "dirty_entries": [
+      "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+      "M 04_SYNTHESIS/README.md",
+      "M README.md",
+      "?? 04_SYNTHESIS/week4/",
+      "?? PLAN.md",
+      "?? notes/WEEK2/",
+      "?? scripts/week4_audit.py",
+      "?? tests/test_week4_provenance.py"
+    ],
+    "source_tree_hash": "b575f241115e83db7fe7a75225cf8f1e903641a564f38fc8589b8a3b81a02e20"
+  },
+  "reference_identity": {
+    "checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+    "class_order": [
+      "WALKING",
+      "WALKING_UPSTAIRS",
+      "WALKING_DOWNSTAIRS",
+      "SITTING",
+      "STANDING",
+      "LAYING",
+      "STAND_TO_SIT",
+      "SIT_TO_STAND",
+      "SIT_TO_LIE",
+      "LIE_TO_SIT",
+      "STAND_TO_LIE",
+      "LIE_TO_STAND"
+    ],
+    "parameter_count": 283692,
+    "eval_mode": true,
+    "dtype": "torch.float32",
+    "device": "cpu"
+  },
+  "data_denominators": {
+    "total_windows": 17453,
+    "split_counts": {
+      "train": 9978,
+      "test": 5053,
+      "val": 2422,
+      "total": 17453
+    },
+    "test_windows": 5053,
+    "supervised_test_windows": 3572,
+    "test_recordings": 19,
+    "within_recording_adjacent_pairs": 5034
+  },
+  "protected_files_count": 214,
+  "status": "PASS",
+  "publication_note": "The designation 'unpublished' in Week 3 documentation describes the state at the time of the Week 3 run. Current git HEAD reflects subsequent published lineage."
+}

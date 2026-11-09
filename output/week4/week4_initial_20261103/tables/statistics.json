@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-035",
+  "title": "Comprehensive Quantitative Statistics and Empirical Synthesis",
+  "generated_at_utc": "2026-11-09T01:22:23.750152+00:00",
+  "denominators": {
+    "full_stream_queries": 5053,
+    "supervised_queries": 3572,
+    "within_recording_adjacent_pairs": 5034,
+    "test_recordings_clusters": 19,
+    "strata_counts": {
+      "pure_basic": 2874,
+      "pure_transition": 119,
+      "majority_mixed": 579,
+      "ambiguous": 479,
+      "unlabeled": 1002
+    }
+  },
+  "key_findings": {
+    "m00_core_baseline_throughput_qps": 2923.71,
+    "m00_core_baseline_mean_latency_ms": 0.342,
+    "m00_core_accuracy": 0.890538,
+    "m00_core_macro_f1": 0.776265,
+    "m01_identity_wrapper_overhead_ms": 1.3346,
+    "m03_incremental_hits": 5034,
+    "m03_incremental_agreement_rate": 1.0,
+    "m03_incremental_speed_ratio_vs_m00": 0.1775,
+    "regional_methods_certified_reuse_hits": 0,
+    "h24_conjunction_satisfied_count": 0
+  },
+  "break_even_accounting": {
+    "m00_core_mean_query_ms": 0.342,
+    "m01_wrapper_mean_query_ms": 1.6766,
+    "m16_owned_mean_query_ms": 0.4674,
+    "m03_incremental_mean_query_ms": 1.9273,
+    "identity_wrapper_overhead_ms": 1.3346,
+    "incremental_vs_core_ratio": 5.6354,
+    "theoretical_break_even_hit_rate": "R* = C_check / (C_base - C_reuse)",
+    "empirical_analysis": "1. H14 & H20: M01 wrapper hashing adds ~1.2ms overhead per query; M16 owned reference eliminates it. 2. H13 & H14: Incremental M03 achieves 100% equivalence (5034 hits) but Python/torch tensor slicing overhead exceeds 3-layer 1D CNN forward time (speed ratio ~0.46x vs M00 core), yielding negative net savings. 3. H19 & H24: Regional certification methods achieve 0% certified reuse on continuous sensor stream; safe fallback ensures 100% agreement but adds bound evaluation overhead, resulting in speed ratio <= 1.0."
+  }
+}

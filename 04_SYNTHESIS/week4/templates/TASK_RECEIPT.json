@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "template_only": true,
+  "task_id": null,
+  "agent_id": null,
+  "run_id": null,
+  "base_commit": null,
+  "execution_source_tree_id": null,
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [],
+  "started_at_utc": null,
+  "completed_at_utc": null,
+  "environment_profile_id": null,
+  "protocol_sha256": null,
+  "commands": [],
+  "changed_files": [],
+  "artifacts": [],
+  "requirement_evidence": [],
+  "protected_hash_check": null,
+  "scientific_dispositions": [],
+  "missing_required_outputs": [],
+  "limitations": [],
+  "blockers": [],
+  "submitted_status": null,
+  "review": {
+    "reviewer_id": null,
+    "decision": null,
+    "review_artifact": null,
+    "reviewed_source_tree_id": null,
+    "checked_commands": [],
+    "remaining_findings": []
+  }
+}

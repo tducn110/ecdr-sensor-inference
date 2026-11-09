@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-003",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "ecdr/week4/__init__.py",
+    "ecdr/week4/types.py",
+    "ecdr/week4/reference.py",
+    "tests/test_week4_contracts.py"
+  ],
+  "started_at_utc": "2026-11-03T08:25:00Z",
+  "completed_at_utc": "2026-11-03T08:27:00Z",
+  "environment_profile_id": "linux-x86_64-py311-torch2141cpu",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_contracts.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.102,
+      "summary": "18/18 unit tests passed covering QueryView, types, enums, CandidateBox, serialization, ReferenceOwner, and forged receipts"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week3_verifier.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.204,
+      "summary": "27/27 unit tests passed verifying zero regression on historical Week 3 verifier"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_provenance.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.164,
+      "summary": "9/9 provenance tests passed verifying baseline protection and denominators"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/__init__.py",
+      "sha256": "7556dff10baaa75d342e89184a696a252e7632f9859adcac5bd9c861b0d1da48"
+    },
+    {
+      "path": "ecdr/week4/types.py",
+      "sha256": "ed32b49ae870a1dbe81cb714e1bc5f75e63b3928fa05a3fb40df5e36ec3fbbb3"
+    },
+    {
+      "path": "ecdr/week4/reference.py",
+      "sha256": "fe152cc9b00c89bbf32d5927dd09c147e90733f8646aa1ba47caba992ed3a6de"
+    },
+    {
+      "path": "tests/test_week4_contracts.py",
+      "sha256": "456a5f63b4d3ef96e6289f6503336d9d1f5fbf4203224b1db49e0353909fd713"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/contracts_review.md",
+      "sha256": "e9f87cb004619d29576daf6e4695a845b8d782df88fbbbf462472ff3dec7c095"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tasks/W4-003/receipt.json",
+      "sha256": "e77e64e536740a31e0146db8f3f3364eb98014dd9c607763fad4ed9976438efc"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-003-C01",
+      "status": "PASS",
+      "evidence": "QueryView in ecdr/week4/types.py contains strictly raw_window (6x128), global_row_id, recording_id, step_idx. Verified by test_query_view_fields_contract rejecting label/activity/purity/split attributes."
+    },
+    {
+      "requirement_id": "W4-003-C02",
+      "status": "PASS",
+      "evidence": "Defined ReferenceIdentity, TrustedAnchorReceipt, MembershipResult, BoundResult, NumericalCapability, Certificate, RuntimeDecision with schema_version='w4.v1' and disjoint enum statuses in ecdr/week4/types.py."
+    },
+    {
+      "requirement_id": "W4-003-C03",
+      "status": "PASS",
+      "evidence": "Bound source-tree/profile/graph/weights/BN/class order/preprocessing IDs. Strict serialization rejecting NaN/Inf and unknown schema versions verified by test_strict_serialization_round_trip."
+    },
+    {
+      "requirement_id": "W4-003-C04",
+      "status": "PASS",
+      "evidence": "ReferenceOwner in ecdr/week4/reference.py loads explicit K=12 SmallCNN1D (283,692 params, eval mode, CPU float32). Normalization array outputs are read-only; no mutable state aliases exposed."
+    },
+    {
+      "requirement_id": "W4-003-C05",
+      "status": "PASS",
+      "evidence": "TrustedAnchorReceipt signed via HMAC using secret session salt and generation ID. Arbitrary/forged receipts rejected as verified by test_forged_receipt_rejected and test_cross_query_receipt_rejected."
+    },
+    {
+      "requirement_id": "W4-003-C06",
+      "status": "PASS",
+      "evidence": "assert_identity() checks graph bytecode, weights digest, BN running statistics, eval mode, CPU float32, and forward hooks at boundary. Verified by test_strong_identity_assertion_catches_mutations."
+    },
+    {
+      "requirement_id": "W4-003-C07",
+      "status": "PASS",
+      "evidence": "All 18 contract tests pass in tests/test_week4_contracts.py verifying mutation, aliasing, forged receipts, and QueryView label isolation without implementing downstream runtime acceptance."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean)",
+  "scientific_dispositions": [
+    "QueryView strictly enforces no-label runtime boundary to guarantee zero data leakage into certifier.",
+    "ReferenceOwner guarantees exact bit-level execution match to Week 1 SmallCNN1D reference checkpoint."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "W4-003 establishes contracts only; numerical floating-point enclosure proof is deferred to W4-005..W4-010."
+  ],
+  "blockers": [],
+  "submitted_status": "VERIFIED",
+  "review": {
+    "reviewer_id": "orchestrator_independent_review",
+    "decision": "ACCEPT",
+    "reviewed_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94",
+    "checked_commands": [
+      ".venv/bin/python -m unittest discover -s tests -p test_week4_contracts.py -v",
+      ".venv/bin/python -m unittest discover -s tests -p test_week3_verifier.py -v",
+      ".venv/bin/python -m unittest discover -s tests -p test_week4_provenance.py -v"
+    ],
+    "remaining_findings": []
+  }
+}

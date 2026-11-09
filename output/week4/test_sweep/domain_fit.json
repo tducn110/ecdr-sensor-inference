@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-016",
+  "title": "Train-fit PCA and residual bound parameters",
+  "train_pair_count": 9944,
+  "k_components": 8,
+  "singular_values_top_k": [
+    49.987548828125,
+    45.341453552246094,
+    86.24346160888672,
+    58.29823303222656,
+    179.12684631347656,
+    44.64952850341797,
+    143.83448791503906,
+    98.14200592041016
+  ],
+  "mean_residual_bound": 9.676681518554688,
+  "max_residual_bound": 26.4287052154541,
+  "fit_sha256": "d11da4200ebd95892a10a5dd54651815682d7e12e6a5a1787b0ab5896c1bf44a",
+  "orthogonality_max_error": 1.5608256376253848e-07
+}

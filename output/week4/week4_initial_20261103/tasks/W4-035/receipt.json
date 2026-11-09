@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-035",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (clean 214 protected files)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? configs/week4/",
+    "?? ecdr/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? scripts/week4_tasks.py",
+    "?? tests/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/metrics.py",
+    "scripts/week4_tables.py",
+    "tests/test_week4_metrics.py"
+  ],
+  "started_at_utc": "2026-11-09T01:19:50Z",
+  "completed_at_utc": "2026-11-09T01:23:00Z",
+  "environment_profile_id": "week4_initial_20261103",
+  "protocol_sha256": "2ff87705e8a7c782a4a0be256017a861ee0e58ba8ad337610ff7200bdd11dead",
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/week4_tables.py --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "purpose": "Generate all comparison tables, 24-hypothesis outcomes ledger, H24 conjunction matrix, and statistics summary"
+    },
+    {
+      "command": ".venv/bin/python -m unittest tests/test_week4_metrics.py",
+      "exit_code": 0,
+      "purpose": "Comprehensive unit test suite for W4-035 accounting, denominators, null rule, and edge cases (5/5 tests passing)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check",
+      "exit_code": 0,
+      "purpose": "Protected files audit check verifying integrity of 214 protected files (clean)"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/metrics.py",
+      "sha256": "d20749005f4d2ff2a0c56c1df3eff0bfbb8bb539a5f5b8ea9fd05176e2ffb38f",
+      "description": "Core metrics, macro-F1, agreement accounting, comparison matrix, 24-hypothesis ledger, and H24 trilemma conjunction modules."
+    },
+    {
+      "path": "scripts/week4_tables.py",
+      "sha256": "a3e32bb0bb2445cf0c69f94aaf26a3d93d2f0bf5d567f0bac9e22a57c547fceb",
+      "description": "CLI driver for tables generation generating CSV, JSON, and Markdown synthesis outputs."
+    },
+    {
+      "path": "tests/test_week4_metrics.py",
+      "sha256": "37c6958d187b97f11c847f53475566e9e24a379f9ba82c5ec63626547f841267",
+      "description": "Comprehensive unit test suite verifying W4-035-C01 through C07 requirements."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/tables/comparison_matrix.csv",
+      "sha256": "4cd0e76476ba0180ac4c18f4ee1cfee19de168c7b0effba3a600b1d1ed16c6fc",
+      "description": "Exhaustive comparison matrix spanning all 17 registered methods (M00-M16) with operational latencies, speed ratios, agreement, accuracy, macro-F1, and attributable memory."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tables/hypotheses.csv",
+      "sha256": "3a4b8113112cc8a085980dea32d2958290af1b6f873fc0f4bedf65d30a04f998",
+      "description": "Complete 24-hypothesis outcomes ledger (H01-H24) tracking formal verdicts, tasks, primary witnesses, and baseline/soundness dispositions."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tables/h24_conjunction.csv",
+      "sha256": "e9c1f86893697c1095eb0863d89bffe451590c9b0b2eb9cc4042d7f91c240a8e",
+      "description": "H24 trilemma conjunction matrix evaluating Soundness & Useful Coverage & Low-Cost Net Speedup across all 17 methods (0/17 satisfied)."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tables/summary.md",
+      "sha256": "f36fb36a9acaf2c61b5a8728431af83c892900850eb1188f24e8a8f081b1535e",
+      "description": "Synthesis report presenting executive findings, formatted markdown tables, and statistical rigor analysis."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tables/statistics.json",
+      "sha256": "79ff1ee451a06a210df3d0aeb374ef64fc100bf6ba874f3b4814de1a06af5bec",
+      "description": "Structured quantitative statistics document recording exact denominators, strata, key metric findings, and break-even accounting."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-035-C01",
+      "status": "PASS",
+      "evidence": "Recounted raw trace verifying full 5,053 queries, 3,572 supervised queries, 5,034 adjacent within-recording pairs, and 19 recordings. Verified by test_w4_035_c01_denominators_and_strata_recount."
+    },
+    {
+      "requirement_id": "W4-035-C02",
+      "status": "PASS",
+      "evidence": "Enforced A_reuse strictly using D_reuse; A_reuse is null when R=0; D_all = D_reuse + D_fallback. Explicit rows retained for unavailable methods M14 and M15 with AUDITED_UNSUPPORTED status. Verified by test_w4_035_c02_agreement_rates_and_null_rule."
+    },
+    {
+      "requirement_id": "W4-035-C03",
+      "status": "PASS",
+      "evidence": "Generated all 5 required tables/reports: comparison_matrix.csv, hypotheses.csv, h24_conjunction.csv, summary.md, and statistics.json. Verified by test_w4_035_c03_tables_generation_artifacts."
+    },
+    {
+      "requirement_id": "W4-035-C04",
+      "status": "PASS",
+      "evidence": "Handled uncertainty hierarchy over 19 recording clusters without treating overlapping sliding windows as IID or repetitions as seeds. Verified by test_w4_035_c04_c05_uncertainty_and_baselines_reporting."
+    },
+    {
+      "requirement_id": "W4-035-C05",
+      "status": "PASS",
+      "evidence": "Reported all 3 baselines (M00 core, M01 wrapper, M16 owned). Classified policy axes (M12, M13) distinct from independent bounding algorithms. Verified by test_w4_035_c04_c05_uncertainty_and_baselines_reporting."
+    },
+    {
+      "requirement_id": "W4-035-C06",
+      "status": "PASS",
+      "evidence": "Traced all table cells to underlying execution runs and artifacts. Set missing measurements for unsupported/uninstrumented fields to null/N/A with explicit reasons rather than numeric zero. Verified by test_w4_035_c06_c07_unsupported_status_and_edge_cases."
+    },
+    {
+      "requirement_id": "W4-035-C07",
+      "status": "PASS",
+      "evidence": "Tested edge cases including empty strata, disjoint classes, fallback-disagreement isolation from A_reuse, and ratio-of-totals consistency. Verified by test_w4_035_c06_c07_unsupported_status_and_edge_cases."
+    }
+  ],
+  "limitations": [
+    "Statistical comparisons rely on two-sided paired t-tests clustered across 19 recordings due to temporal correlation between adjacent sliding windows.",
+    "External comparator methods M14 (LipCache) and M15 (StreamiNNC/TinyDejaVu) are retained as AUDITED_UNSUPPORTED per W4-029 audit findings."
+  ]
+}

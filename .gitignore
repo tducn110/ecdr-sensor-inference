@@ -35,3 +35,4 @@ latex/*.pdf
 web/.vercel
 node_modules/
 **/node_modules/
+.obsidian/

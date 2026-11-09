@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-006",
+  "dot_product_checks": [
+    {
+      "length_n": 30,
+      "num_accum_terms": 31,
+      "gamma_accum": 1.8477474022012632e-06,
+      "interval_lo": 3.7840416431427,
+      "interval_hi": 3.7840940952301025,
+      "interval_radius": 2.6226043701171875e-05,
+      "exact_rational_val": 3.7840678668498278,
+      "oracle_enclosed": true
+    },
+    {
+      "length_n": 96,
+      "num_accum_terms": 97,
+      "gamma_accum": 5.781683970889162e-06,
+      "interval_lo": -3.8033227920532227,
+      "interval_hi": -3.802739381790161,
+      "interval_radius": 0.0002917051315307617,
+      "exact_rational_val": -3.803031087344574,
+      "oracle_enclosed": true
+    },
+    {
+      "length_n": 128,
+      "num_accum_terms": 129,
+      "gamma_accum": 7.689058297188302e-06,
+      "interval_lo": -27.34602928161621,
+      "interval_hi": -27.344865798950195,
+      "interval_radius": 0.0005817413330078125,
+      "exact_rational_val": -27.34544768957508,
+      "oracle_enclosed": true
+    },
+    {
+      "length_n": 192,
+      "num_accum_terms": 193,
+      "gamma_accum": 1.1503828778204571e-05,
+      "interval_lo": -11.403188705444336,
+      "interval_hi": -11.399971961975098,
+      "interval_radius": 0.0016083717346191406,
+      "exact_rational_val": -11.40158023929615,
+      "oracle_enclosed": true
+    },
+    {
+      "length_n": 2048,
+      "num_accum_terms": 2049,
+      "gamma_accum": 0.00012214483468331493,
+      "interval_lo": -97.18460083007812,
+      "interval_hi": -96.85712432861328,
+      "interval_radius": 0.16373825073242188,
+      "exact_rational_val": -97.02086204362004,
+      "oracle_enclosed": true
+    }
+  ],
+  "primitives_verified": [
+    "add",
+    "sub",
+    "mul",
+    "div",
+    "sqrt",
+    "relu",
+    "dot_with_constant"
+  ],
+  "fail_closed_checks": [
+    "inverted_interval",
+    "division_by_zero",
+    "negative_sqrt",
+    "unsupported_length",
+    "unsupported_profile"
+  ]
+}

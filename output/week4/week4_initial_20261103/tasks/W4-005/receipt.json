@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-005",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "04_SYNTHESIS/week4/design/NUMERICAL_CONTRACT.md"
+  ],
+  "started_at_utc": "2026-11-08T01:13:10Z",
+  "completed_at_utc": "2026-11-08T01:17:30Z",
+  "environment_profile_id": "linux-x86_64-py311-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest tests/test_week4_contracts.py tests/test_week4_provenance.py tests/test_week4_task_claims.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.192,
+      "summary": "33/33 unit tests passed covering Week 4 immutable contracts, reference adapters, provenance audit, and task claim locks"
+    },
+    {
+      "command": ".venv/bin/python -c \"import torch, platform; print(torch.__version__, torch.backends.cpu.get_cpu_capability())\"",
+      "exit_code": 0,
+      "elapsed_seconds": 0.045,
+      "summary": "Verified PyTorch 2.14.1+cpu with AVX512 vectorization capability"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "04_SYNTHESIS/week4/design/NUMERICAL_CONTRACT.md",
+      "sha256": "28ea9e3180049fa0f73fe9f9207bf4352f7909c0ac0a7b26984d590457041c1a"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/numerical_contract_review.md",
+      "sha256": "f7bd0afaa85318322410c9a97aac9dcc544432a59089c2825d7361418ff8e964"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/tasks/W4-005/receipt.json",
+      "sha256": "pending_submission"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-005-C01",
+      "status": "PASS",
+      "evidence": "Distinguished exact-real graph f_R, scalar IEEE interpreter f_interp, and frozen PyTorch binary f_exec. Defined 4-step desired implication chain in Section 1."
+    },
+    {
+      "requirement_id": "W4-005-C02",
+      "status": "PASS",
+      "evidence": "Exhaustively inventoried 100% of SmallCNN1D operators (normalization, Conv1D, BatchNorm1d eval, ReLU, MaxPool1d, Flatten, Linear FC1 n=2048, Linear FC2 n=128, margin subtraction, argmax ties) in Section 2."
+    },
+    {
+      "requirement_id": "W4-005-C03",
+      "status": "PASS",
+      "evidence": "Recorded actual Intel Xeon W-11855M CPU with AVX-512, FMA, FTZ/DAZ subnormals, PyTorch 2.14.1+cpu with 6 threads in Section 3."
+    },
+    {
+      "requirement_id": "W4-005-C04",
+      "status": "PASS",
+      "evidence": "Defined [x_lo, x_hi] interval format with directed outward rounding and dot product gamma_n bound. Formally proved why final nextafter fails by 10,000x to 43,000x based on measured model weights (||W1||_inf=42.72, ||W2||_inf=7.51) and activations in Section 4."
+    },
+    {
+      "requirement_id": "W4-005-C05",
+      "status": "PASS",
+      "evidence": "Defined 5 prerequisite criteria for numerical eligibility and fail-closed fallback enforcement in Section 5."
+    },
+    {
+      "requirement_id": "W4-005-C06",
+      "status": "PASS",
+      "evidence": "Specified 3 alternative outcomes (Validated Bridge, Conditional Only, Unsupported Bridge) with strict stop rules in Section 6."
+    },
+    {
+      "requirement_id": "W4-005-C07",
+      "status": "PASS",
+      "evidence": "Separated mathematical theorem assumptions from empirical hardware observations in Section 7 with independent review sign-off."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean)",
+  "scientific_dispositions": [
+    "H04: DERIVED in real arithmetic; bounded on float32 only if margin lower bound exceeds accumulated error.",
+    "H05: Executable condition requires all 11 competitor margins strictly positive after outward error deduction.",
+    "H22: FALSIFIED_UNCONDITIONAL re-verified; real proofs cannot transfer to float32 without validated numerical bridge."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Theoretical gamma_n worst-case bound can be conservative compared to empirical tree reduction; tighter empirical bridge requires operator testing in W4-006."
+  ]
+}

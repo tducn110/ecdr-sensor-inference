@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-030",
+  "title": "Week 4 Protocol & Configuration Seal",
+  "run_id": "week4_initial_20261103",
+  "sealed_at_utc": "2026-11-08T16:01:35.353726+00:00",
+  "scientific_status": "PROTOCOL_SEALED",
+  "disclosure": {
+    "test_exposure_level": "KNOWN_TEST_EXPLORATORY",
+    "exposure_history": "Full-stream test set of 5,053 windows across 19 HAPT recordings was exposed during Weeks 1-3 baseline establishment. Week 4 operates as an exploratory follow-up study with strict pre-test protocol sealing."
+  },
+  "selected_policy_id": "policy_diag_crown_1e4_h1",
+  "formal_reuse_enabled": false,
+  "master_seal_hash": "5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b",
+  "config_hashes": {
+    "protocol_json": "2ff87705e8a7c782a4a0be256017a861ee0e58ba8ad337610ff7200bdd11dead",
+    "methods_json": "29b14a4fdfa31d9ff7822817e814c0d8d6b197aa73d3e399ef74d4dc4fe9275a"
+  },
+  "artifact_hashes": {
+    "method_capabilities_json": "42a096e5099eb3609bf5e401bb26b092698e46100b73823c8491e3e0ff51299c",
+    "selected_policy_json": "d3ceaf55235521b97864d9f2371b51218ccd419c4d6c89f17f0be2c2f9c75500",
+    "selection_validation_json": "2112838b950a327c791b01d65c25d408adeb1b9821e94e81a6b1039be1f6a8bf"
+  },
+  "code_hashes": {
+    "ecdr_week4_methods_py": "cf915b342edd6a6f42750cb68657c7190df9e1008dbaa114fe7b10eb15fb3aab",
+    "ecdr_week4_bounds_py": "d339a660beab56fabcd0d1a95bfb4a8d0a95dc5cbcaca04c45485a6769251cb8",
+    "ecdr_week4_runtime_py": "9f27410df45c255d84567bb1c3a34da549f0c59efb8aafc1751c634aab6ec6ee",
+    "ecdr_week4_domains_py": "bce85b8509b5a67f64c1b2abe289feffe62e5ca8e76cb45c682d130d7f458cae",
+    "ecdr_week4_incremental_py": "be1a25cd408165ce346171fc0ea05e9b17bf03d625a10dd0c21afde3fc7fbb3f",
+    "ecdr_week4_reference_py": "cb7cc96156d173c6263406b5d21c119b78cb42255995efc032e95c8ee2204d43",
+    "scripts_week4_run_py": "3dec889240454a8e4d6858b4074315af69ca4864478a923d1a2ca0e7d9ebf112"
+  },
+  "domain_fit_hashes": {
+    "pca_affine_parameters_npz": "MISSING"
+  },
+  "environment_profile_id": "week4_initial_20261103",
+  "seal_invalidation_rule": "Modifying any sealed config or source file invalidates this seal and aborts test stream replay."
+}

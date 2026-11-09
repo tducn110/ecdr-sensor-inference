@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-017",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/bounds.py",
+    "ecdr/week4/lirpa_adapter.py",
+    "tests/test_week4_correlated_bounds.py"
+  ],
+  "started_at_utc": "2026-11-08T14:46:35Z",
+  "completed_at_utc": "2026-11-08T14:56:00Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_correlated_bounds.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 13.3,
+      "summary": "7/7 correlated bounds unit tests passed: backend justification, numerical status separation, native vs hull monotonicity, all 11 objectives, analytic toy cancellation, fail-closed handling, and artifact generation"
+    },
+    {
+      "command": "PYTHONPATH=. .venv/bin/python ecdr/week4/lirpa_adapter.py --run-correlated-study --run-id week4_initial_20261103 --num-samples 10",
+      "exit_code": 0,
+      "elapsed_seconds": 58.0,
+      "summary": "Generated correlated_bound_capability.json and hull_loss_validation.json with 10 validation anchors across 3 scales"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/lirpa_adapter.py",
+      "sha256": "2bf23766ebd0ca35413ad16bb4da5c3edb6dc55ba5a1cd0d8eaba6ffd48c0b57"
+    },
+    {
+      "path": "ecdr/week4/bounds.py",
+      "sha256": "d339a660beab56fabcd0d1a95bfb4a8d0a95dc5cbcaca04c45485a6769251cb8"
+    },
+    {
+      "path": "tests/test_week4_correlated_bounds.py",
+      "sha256": "0df40ec64b96f9d3c742334281f087c64777e271f0e3a7d2d949a946f00b667c"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/correlated_bound_capability.json",
+      "sha256": "dd4e86251c615b24f2ffbba284bb277b16a9b492e3713a292d7558c9006f75a8"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/hull_loss_validation.json",
+      "sha256": "c8e94ec9da262ee60190378d3e8643379a6f91d1d76a338ccf0ec87440e88b60"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-017-C01",
+      "status": "PASS",
+      "evidence": "Concrete backend justified: auto-LiRPA CROWN backward linear relaxation with affine zonotope support evaluation on SingletonHeightCNN surrogate. Supported operators: Conv2d, BatchNorm2d, MaxPool2d, ReLU, Flatten, Linear. Verified by test_c01_backend_justification_and_dimensions."
+    },
+    {
+      "requirement_id": "W4-017-C02",
+      "status": "PASS",
+      "evidence": "Support and margin bounds derived mathematically: LB_m = <lA_m, x_center> + lbias_m - sum_k |(lA_tail_m)^T B_k| a_k - sum_j |lA_tail_m_j| e_j. Numerical status is separated as CONDITIONAL_REAL_ARITHMETIC. Verified by test_c02_numerical_status_and_margin_derivation."
+    },
+    {
+      "requirement_id": "W4-017-C03",
+      "status": "PASS",
+      "evidence": "Exposes CorrelatedBoundMode.NATIVE_CORRELATED and CorrelatedBoundMode.CORRELATED_HULL. Outer-box method_id is strictly labeled 'auto-lirpa-crown-correlated-hull-v1'. Triangle inequality guarantee LB_m^{native} >= LB_m^{hull} verified on all margins without exception. Verified by test_c03_native_vs_hull_monotonicity_and_labeling."
+    },
+    {
+      "requirement_id": "W4-017-C04",
+      "status": "PASS",
+      "evidence": "Evaluates all 11 class margins against winner c*. Matches reference identity, checkpoint_sha256, graph_id, and domain_id. Ambient dimensions (768), fixed prefix (384), tail (384), latent (K=8), residual (384) explicitly documented. Verified by test_c04_all_11_objectives_and_identity_binding."
+    },
+    {
+      "requirement_id": "W4-017-C05",
+      "status": "PASS",
+      "evidence": "Analytical 2-variable toy network (y = x_1 + x_2, x = [u, -u]^T) demonstrates 100% correlation cancellation (gap = 2.0). Actual paired validation study measures mean hull loss of 149.47 and ~83% cancellation ratio across validation anchors. Verified by test_c05_toy_correlation_cancellation."
+    },
+    {
+      "requirement_id": "W4-017-C06",
+      "status": "PASS",
+      "evidence": "Preserves all K=8 latent components and all 384 residual bounds without truncation. Forged anchor receipts and non-finite domain endpoints are rejected fail-closed with FAILED status and ValueError. Verified by test_c06_fail_closed_error_handling_and_no_truncation."
+    },
+    {
+      "requirement_id": "W4-017-C07",
+      "status": "PASS",
+      "evidence": "LiRPA adapter and bounds engine updated with non-breaking backward compatibility. All 214 protected files confirmed clean and intact. Artifacts correlated_bound_capability.json and hull_loss_validation.json generated successfully. Verified by test_c07_validation_ablation_and_artifact_generation and week4_audit check."
+    }
+  ],
+  "scientific_dispositions": {
+    "H07_cancellation_gap": "CONFIRMED: Outer coordinate bounding boxes discard cross-coordinate cancellations between PCA eigenvectors and convolutional filters, incurring substantial hull loss (mean ~149.5 margin units).",
+    "H08_linear_relaxation": "CONFIRMED: Evaluating CROWN backward linear relaxation directly on the affine generators preserves correlation without expanding the bounding box.",
+    "H10_pca_affine_domain": "CONFIRMED: K=8 PCA basis captures sensor spatial-temporal correlations; affine zonotope evaluation eliminates the wrapping effect on principal components.",
+    "H11_correlated_vs_box": "CONFIRMED: Native correlated bounds achieve strictly tighter lower margins than outer bounding boxes across all validation anchors (all_paired_comparisons_pass = true).",
+    "H22_computational_cost": "CONFIRMED: Affine support evaluation overhead is negligible (<0.5ms), while CROWN backward pass remains the latency bottleneck (~800-1300ms)."
+  },
+  "limitations": [
+    "CROWN backward linear relaxation remains too slow for streaming real-time certification (~1.3s per anchor vs 2ms inference budget), confirming H21.",
+    "Floating-point BLAS roundoff is un-enclosed in CROWN backward passes, requiring CONDITIONAL_REAL_ARITHMETIC status."
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "protocol_id": "ECDR_WEEK4_EVALUATION_PROTOCOL",
+  "created_at_utc": "2026-11-03T08:15:00Z",
+  "scientific_status": "VALIDATION_SELECTED_AND_SEALED",
+  "selected_policy_reference": "output/week4/week4_initial_20261103/selected_policy.json",
+  "protocol_seal_reference": "output/week4/week4_initial_20261103/protocol_seal.json",
+  "disclosure": {
+    "test_exposure_level": "KNOWN_TEST_EXPLORATORY",
+    "exposure_history": "Full-stream test set of 5,053 windows across 19 HAPT recordings was exposed during Weeks 1-3 baseline establishment. Week 4 operates as an exploratory follow-up study with strict pre-test protocol sealing.",
+    "protocol_stages": [
+      "1_INITIAL_PROTOCOL (declarative schema, grids, budgets committed before any fitting)",
+      "2_VALIDATION_SELECTED_POLICY (hyperparameters selected strictly on train/val splits)",
+      "3_SEALED_TEST_CONFIG (committed frozen policy hash before final test stream replay)"
+    ]
+  },
+  "denominators": {
+    "full_stream_queries": 5053,
+    "supervised_queries": 3572,
+    "within_recording_adjacent_pairs": 5034,
+    "test_recordings": 19,
+    "split_counts": {
+      "train": 9978,
+      "val": 2422,
+      "test": 5053,
+      "total": 17453
+    }
+  },
+  "metrics_taxonomy": {
+    "reuse_count": "R = total queries answered via reuse mechanism",
+    "reuse_disagreement": "D_reuse = queries where reused decision != frozen reference decision",
+    "fallback_disagreement": "D_fallback = queries where fallback execution != frozen reference decision",
+    "reused_agreement_rate": "A_reuse = 1.0 - (D_reuse / R) if R > 0 else null",
+    "full_stream_agreement_rate": "A_full = 1.0 - ((D_reuse + D_fallback) / N_full)",
+    "reuse_modes": [
+      "MODE_1_EXACT_REPLAY (singleton bitwise input equality)",
+      "MODE_2_EXACT_INCREMENTAL (stage-wise feature cache + full Flatten-MLP head)",
+      "MODE_3_REGIONAL_CERTIFIED (validated interval / CROWN / Lipschitz domain enclosure)"
+    ],
+    "heuristic_reuse": "Reported strictly as separate empirical trade-off curve; never counted toward certified reuse metrics."
+  },
+  "search_space_and_grids": {
+    "candidate_radii_normalized": [
+      0.0,
+      1e-06,
+      1e-05,
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1.0
+    ],
+    "pca_affine_ranks": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "finite_horizons": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "domain_families": [
+      "diagonal_box (768D ambient coordinate box)",
+      "fixed_overlap_wave (384D free tail box + 384D fixed prefix)",
+      "pca_affine_tail (k-rank PCA projection on 384D tail with bounded residual)",
+      "correlated_zonotope (native affine bounds propagation)"
+    ]
+  },
+  "budgets_and_stopping_criteria": {
+    "max_build_attempts_per_recording": 128,
+    "per_window_build_timeout_ms": 500.0,
+    "max_active_certificate_cache_size": 64,
+    "cooldown_steps_after_build_failure": 4,
+    "timeout_handling": "TIMEOUT_ABORT with immediate fallback to reference; no partial state mutations permitted."
+  },
+  "validation_selection_contract": {
+    "target_split": "val",
+    "validation_anchor_stride": 38,
+    "objective_function": "maximize R_val_cert subject to D_val_reuse == 0 and numerical_gate == PASS",
+    "tie_breaking_rules": [
+      "1. Highest certified reuse count (R_val_cert)",
+      "2. Largest average certified radius",
+      "3. Smallest mean build latency (ms)",
+      "Note: Zero-radius control is strictly ineligible for selection as a certified configuration."
+    ]
+  },
+  "matching_criteria": {
+    "geometry_control": "Pairing must hold same domain family, same anchor center, and identical coordinate system.",
+    "volume_distinction": "Ambient 768D box volume and 384D wave tail volume cannot be compared as same-dimensional volume.",
+    "hull_loss_control": "Method M08 (affine projected to outer box) paired with M09 (native correlated propagation) to isolate box-wrapping error."
+  },
+  "execution_and_hardware_profile": {
+    "target_device": "cpu",
+    "torch_threads": 1,
+    "batch_size": 1,
+    "data_residency": "In-memory RAM-resident float32 numpy arrays; disk I/O excluded from inference timer.",
+    "timing_boundaries": {
+      "warmup_queries": 50,
+      "benchmark_repetitions": 3,
+      "measured_phases": [
+        "cold_setup (model instantiation, weights loading, memory allocation)",
+        "query_inference (per-window latency)",
+        "membership_check (point-in-set test)",
+        "certificate_build (bound engine execution)",
+        "state_update (cache maintenance and lifecycle transitions)"
+      ]
+    }
+  },
+  "uncertainty_and_statistics": {
+    "primary_sampling_unit": "HAPT recording session (N=19 independent clusters)",
+    "secondary_sampling_unit": "Repeated timing runs across identical test stream (repetitions=3)",
+    "statistical_tests": [
+      "Paired two-sided t-test across 19 recording clusters",
+      "Wilcoxon signed-rank test for paired latency differences",
+      "Studentized cluster bootstrap for 95% confidence intervals"
+    ]
+  }
+}

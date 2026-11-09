@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-010",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "04_SYNTHESIS/week4/design/NUMERICAL_REVIEW.md",
+    "tests/test_week4_numerical_gate.py"
+  ],
+  "started_at_utc": "2026-11-08T12:41:18Z",
+  "completed_at_utc": "2026-11-08T12:48:45Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_numerical_gate.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.23,
+      "summary": "7/7 independent numerical review gate tests passed: oracle replay, operator classification, decision structure, anti-spoofing rejection, expiry/invalidation, G3 scope confinement, and strict fallback continuation"
+    },
+    {
+      "command": ".venv/bin/python tests/test_week4_numerical_gate.py --generate-report",
+      "exit_code": 0,
+      "elapsed_seconds": 0.20,
+      "summary": "Generated output/week4/week4_initial_20261103/numerical_review.json"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 10.53,
+      "summary": "All 261/261 tests passed across entire test suite"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "04_SYNTHESIS/week4/design/NUMERICAL_REVIEW.md",
+      "sha256": "ae1588a80d11f1d55f6306a2d8c7a62431887feaf323b6a53880fb3f94745b87"
+    },
+    {
+      "path": "tests/test_week4_numerical_gate.py",
+      "sha256": "701edadbca6b0799cee792f550af1b29ddfa7890fcef3f1dbf76a45b37f21f4c"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/numerical_review.json",
+      "sha256": "47e8963e638b6d43ff44e69f361c75bc0f0df9ed0e6408f4625d6c4ababbe925"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-010-C01",
+      "status": "PASS",
+      "evidence": "Conducted independent review separate from W4-006..009 authors. Replayed narrow oracles including ExactRationalOracle exact dot product enclosure, BatchNorm negative gamma bound reversal, zero gamma bias collapse, and cancellation stress (+1e6, -1e6). Verified by test_c01_independent_reviewer_replays_oracle_and_negative_cases."
+    },
+    {
+      "requirement_id": "W4-010-C02",
+      "status": "PASS",
+      "evidence": "Categorized 100% of SmallCNN1D operators and compositions into epistemic classes in NUMERICAL_REVIEW.md §2 and numerical_review.json. All primary network layers are DERIVED with analytic Higham bounds and exact mappings (delta=0 for ReLU, MaxPool, Flatten). Only backend hardware reduction is ASSUMED. Zero MISSING operators. Verified by test_c02_operator_and_composition_classification."
+    },
+    {
+      "requirement_id": "W4-010-C03",
+      "status": "PASS",
+      "evidence": "Generated capability decision ELIGIBLE_FOR_PROFILE in output/week4/week4_initial_20261103/numerical_review.json. Decision is cryptographically bound to profile linux-x86_64-py311-numpy246-torch2141cpu-avx512, checkpoint SHA-256, preprocessing ID, and exact source hashes. Verified by test_c03_capability_decision_structure."
+    },
+    {
+      "requirement_id": "W4-010-C04",
+      "status": "PASS",
+      "evidence": "Implemented load_numerical_capability anti-spoofing gate. Verified that forged JSON, bare boolean {'is_sound': True}, missing cryptographic hashes, and profile mismatches are rejected and yield formal_reuse_eligible = False. Verified by test_c04_anti_spoofing_gate."
+    },
+    {
+      "requirement_id": "W4-010-C05",
+      "status": "PASS",
+      "evidence": "NUMERICAL_REVIEW.md §5 and load_numerical_capability implement automatic invalidation (INVALIDATED_STALE_REVIEW) upon source code mutation, checkpoint modification, or profile divergence. Verified by test_c05_expiry_and_invalidation."
+    },
+    {
+      "requirement_id": "W4-010-C06",
+      "status": "PASS",
+      "evidence": "Explicitly bounded review scope to the numerical component of Gate G3 (G3_numerical_component = 'SOUND_FOR_FLOAT32'). No blanket G3 PASS is granted (G3_overall_status = 'PENDING_REMAINING_EVIDENCE'), and runtime certificate issuance is prohibited (runtime_certificates_issued = False). Verified by test_c06_g3_boundary_and_no_runtime_certificates."
+    },
+    {
+      "requirement_id": "W4-010-C07",
+      "status": "PASS",
+      "evidence": "NUMERICAL_REVIEW.md §7 defines strict fail-closed fallback to ReferenceOwner.infer whenever bounds are non-positive or gate is closed. Verified on real near-tie witness sample row 13358 and simulated gate closure by test_c07_fallback_and_diagnostic_continuation."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H05, H22, H24: Numerical capability is certified as ELIGIBLE_FOR_PROFILE under strictly locked environment and backward error bounds.",
+    "Non-bypass gate prevents forged certificates or premature reuse, strictly binding downstream certification to verified mathematical enclosures."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Eligibility is strictly confined to canonical CPU profile linux-x86_64-py311-numpy246-torch2141cpu-avx512; alternate hardware or BLAS configurations require independent re-review.",
+    "Does not grant Gate G3 PASS or mint runtime certificates, which require subsequent milestone tasks."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

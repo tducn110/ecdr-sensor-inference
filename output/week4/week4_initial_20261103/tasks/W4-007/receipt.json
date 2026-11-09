@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-007",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/reference.py",
+    "ecdr/week4/domains.py",
+    "tests/test_week4_membership.py"
+  ],
+  "started_at_utc": "2026-11-08T03:39:18Z",
+  "completed_at_utc": "2026-11-08T03:45:30Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_membership.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.54,
+      "summary": "47/47 tests passed"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_contracts.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05,
+      "summary": "18/18 tests passed (ReferenceOwner.normalize refactor: no regression)"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 2.12,
+      "summary": "198/198 tests passed (151 before this task + 47 new)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 3.0,
+      "summary": "Preflight PASSED; 214/214 protected files clean"
+    },
+    {
+      "command": ".venv/bin/python output/week4/week4_initial_20261103/tasks/W4-007/exhaustive_monotonicity.py",
+      "exit_code": 0,
+      "elapsed_seconds": 95.0,
+      "summary": "All 4,278,190,080 finite float32 raw values x 6 channels: 0 monotonicity violations, 0 NaN (inf only at overflow extremes)"
+    },
+    {
+      "command": ".venv/bin/python output/week4/week4_initial_20261103/tasks/W4-007/mutation_check.py",
+      "exit_code": 0,
+      "elapsed_seconds": 4.0,
+      "summary": "5/5 injected mutants killed by tests/test_week4_membership.py; baseline 0/47 failures"
+    }
+  ],
+  "changed_files": [
+    {"path": "ecdr/week4/reference.py", "sha256": "da2c1fbb529201688c3b1772639edad8e4f707342f4eefc8fb88f814e0cfdb89"},
+    {"path": "ecdr/week4/domains.py", "sha256": "c799f9a03ce0de03b3343b4349eaa393080cd0caa1e9c0c2ac27e30dee85fe0a"},
+    {"path": "tests/test_week4_membership.py", "sha256": "45d90e0cdd0abb048bfa4c3018853a000ace8f8838e4dba72f061284de3c7c13"}
+  ],
+  "artifacts": [
+    {"path": "output/week4/week4_initial_20261103/normalization_membership_review.md", "sha256": "2e09559ad798d7bb61292f7eace6f55a4becaaa4ff626ce9057b33cc56595840"},
+    {"path": "output/week4/week4_initial_20261103/tasks/W4-007/exhaustive_monotonicity.json", "sha256": "11c2aa146f58e24607c82669e2cd15a16468d428784861b094400e2c0756387c"},
+    {"path": "output/week4/week4_initial_20261103/tasks/W4-007/exhaustive_monotonicity.py", "sha256": "52b44ed40260c91b20ae052d5117e69d994af67643e4abd633e5224fa8e2dba9"},
+    {"path": "output/week4/week4_initial_20261103/tasks/W4-007/mutation_check.py", "sha256": "ebe564fab15f2865ab23f216bb9920f34dc61326e281cda3e774e31a359f4b20"},
+    {"path": "output/week4/week4_initial_20261103/tasks/W4-007/reference_py.diff", "sha256": "58971a3dc992f12133256e10725334b7a34bde39ceae307eb8058a8c75682d59"}
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-007-C01",
+      "status": "PASS",
+      "evidence": "reference.py::execute_normalization / enclose_normalization use the executable float32 subtract-then-divide with stored constants; bitwise equal to scripts.backbone.apply_norm (test_executable_matches_pipeline_apply_norm_bitwise). Real-valued formula not substituted."
+    },
+    {
+      "requirement_id": "W4-007-C02",
+      "status": "PASS",
+      "evidence": "domains.py::CoordinateBox: owned tuple endpoints, domain_id binds coordinate_space/prefix/schema; radius 0 valid; negative/NaN radius, inverted, non-finite, wrong shape/space rejected (tests TestCoordinateBox)."
+    },
+    {
+      "requirement_id": "W4-007-C03",
+      "status": "PASS",
+      "evidence": "Four verdicts mapped onto the frozen MembershipStatus enum (EXACT_MEMBER/VALIDATED_OUTSIDE/CONDITIONAL_MEMBER/ERROR); strict_gate_accepts passes only EXACT_MEMBER with is_member=True (test_strict_gate_rejects_forged_result_shapes). Mapping needs reviewer confirmation (limitation 2)."
+    },
+    {
+      "requirement_id": "W4-007-C04",
+      "status": "PASS",
+      "evidence": "Monotone-composition argument in normalization_membership_review.md section 2; exhaustive check of all 4,278,190,080 finite float32 x 6 channels (exhaustive_monotonicity.json); tests for boundary equality, conversion overflow, normalized/subtraction overflow, one-ULP, subnormal/+-0 neighbourhoods. Conditional on the IEEE correct-rounding premise of this NumPy build."
+    },
+    {
+      "requirement_id": "W4-007-C05",
+      "status": "PASS",
+      "evidence": "test_every_prefix_coordinate_enforced_one_ulp_each_direction: all 6x64 prefix coordinates, +/-1 ULP each (768 cases) rejected; prefix_mismatches reports count and first index; tail coordinates remain free."
+    },
+    {
+      "requirement_id": "W4-007-C06",
+      "status": "PASS",
+      "evidence": "Tests: caller-array alias mutation, read-only internals and copy-returning arrays(), F-order vs C-order and transposed layout, serialization round-trip + tamper rejection, non-finite/float64/wrong-shape/wrong-space queries."
+    },
+    {
+      "requirement_id": "W4-007-C07",
+      "status": "PASS",
+      "evidence": "contains() is pure; failed ReferenceOwner.normalize/enclose_normalization leave generation_id and identity unchanged (test_enclosure_method_and_failed_calls_do_not_mutate_owner); no PCA/affine membership implemented."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Establishes only: executable raw->normalized float32 bridge by monotonicity (conditional on correct-rounding premise, exhaustively checked on this build) and exact box membership. No claim about operator/float32 bridge (W4-008..010), coverage, G3-G6, or any H-disposition change."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Soundness premise (correctly rounded elementwise float32 sub/div) verified exhaustively on this NumPy/CPU build only.",
+    "Verdict names mapped onto frozen types.MembershipStatus rather than editing types.py (outside write set).",
+    "enclose_normalization lives in reference.py, not numerics.py as FILE_SPEC 2.3 suggests, because numerics.py is outside the W4-007 write set.",
+    "AMBIGUOUS semantics (raw/normalized disagreement, missing bridge) is the author's design choice and needs reviewer confirmation.",
+    "Only CoordinateBox implemented; selectors, FixedOverlapBox anchor policy, AffineTailDomain and outer_box are deferred (W4-015/016/017).",
+    "Author evidence only: no independent review has been performed; status must remain REVIEW until an independent reviewer decides."
+  ]
+}

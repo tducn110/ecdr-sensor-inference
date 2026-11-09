@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-019",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "04_SYNTHESIS/week4/design/INCREMENTAL_SCHEDULE.md",
+    "tests/test_week4_alignment.py"
+  ],
+  "started_at_utc": "2026-11-08T04:06:58Z",
+  "completed_at_utc": "2026-11-08T04:15:30Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_alignment.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.57,
+      "summary": "13/13 tests passed: RF analytical/empirical derivation, stagewise mappings, boundary necessity, premises, MLP position-sensitivity, validation pairs bitwise match, hook hygiene"
+    },
+    {
+      "command": ".venv/bin/python tests/test_week4_alignment.py --generate-report",
+      "exit_code": 0,
+      "elapsed_seconds": 1.25,
+      "summary": "Generated alignment_validation.json across 5,034 test pairs (3,866,112 scalar comparisons, max abs error = 0.0)"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover tests",
+      "exit_code": 0,
+      "elapsed_seconds": 2.71,
+      "summary": "211/211 tests passed across all test suites (no regressions)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 1.05,
+      "summary": "Preflight PASSED; 214/214 protected files clean"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "04_SYNTHESIS/week4/design/INCREMENTAL_SCHEDULE.md",
+      "sha256": "b5cd3a6428f55beec997a13ee1c6a83db5522782cb49b8d5fa9e70e214e82983"
+    },
+    {
+      "path": "tests/test_week4_alignment.py",
+      "sha256": "b412e2bd132f5db2acb41308a4bf7923beea43e8aa7f2ce350878d27b3ce4b45"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/alignment_validation.json",
+      "sha256": "fc47372dbf81ecc6c521ea57db4682740b755f32be171248074d3b42aa18b189"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-019-C01",
+      "status": "PASS",
+      "evidence": "Analytical endpoints derived and proved in INCREMENTAL_SCHEDULE.md §1: Conv1 [j-2, j+2] (width 5, jump 1), Pool1 [2j-2, 2j+3] (width 6, jump 2), Conv2 [2j-4, 2j+5] (width 10, jump 2), Pool2 [4j-4, 4j+7] (width 12, jump 4), Conv3 [4j-8, 4j+11] (width 20, jump 4). Verified by test_c01_analytical_receptive_fields, test_c01_empirical_rf_support_impulse_perturbation (0 out-of-RF violations across all test positions), and test_c01_receptive_field_endpoints_tightness (endpoints 4j-8 and 4j+11 have non-zero influence)."
+    },
+    {
+      "requirement_id": "W4-019-C02",
+      "status": "PASS",
+      "evidence": "Stagewise mappings verified separately in INCREMENTAL_SCHEDULE.md §2 and test_c02_stagewise_mappings_synthetic_stream: Conv1 2..61<-old+64, Pool1 1..30<-old+32, Conv2 2..29<-old+32, Pool2 1..14<-old+16, Conv3 2..13<-old+16. All 5 stages achieve max absolute error = 0.0."
+    },
+    {
+      "requirement_id": "W4-019-C03",
+      "status": "PASS",
+      "evidence": "Boundary/new positions enumerated in INCREMENTAL_SCHEDULE.md §3: Left boundary j in {0, 1} (due to left zero-padding in new window) and new positions j in [14, 31] (due to new timesteps t >= 64). Verified by test_c03_conv3_boundary_and_new_positions_necessity (strictly positive error if old features were blindly reused) and test_c03_dependency_intervals_bounds ([4j-8, 4j+11] strictly within [0, 63] iff j in [2, 13])."
+    },
+    {
+      "requirement_id": "W4-019-C04",
+      "status": "PASS",
+      "evidence": "Premises documented in INCREMENTAL_SCHEDULE.md §4: BN eval mode with frozen running buffers, pooling phase origin=0 with shift=64 divisible by pooling strides 2 and 4, coordinatewise normalization invariance, recording continuity. Verified by test_c04_premises_bn_eval_and_buffers, test_c04_premises_pooling_phase_alignment, test_c04_premises_pointwise_normalization_overlap."
+    },
+    {
+      "requirement_id": "W4-019-C05",
+      "status": "PASS",
+      "evidence": "INCREMENTAL_SCHEDULE.md §5 explains why H14 (GAP delta) cannot apply: SmallCNN1D has no GAP layer; Flatten(2048)->Linear(128)->ReLU->Linear(12) applies distinct position-specific weight columns W1[:, c*32 + j] vs W1[:, c*32 + j + 16]. Measured min L2 difference is 0.1709 (mean 0.2296). Non-linear ReLU prevents logit delta updates. Full MLP head recomputation is required and takes ~263k FLOPs. Verified by test_c05_head_architecture_no_gap and test_c05_mlp_weights_position_sensitive."
+    },
+    {
+      "requirement_id": "W4-019-C06",
+      "status": "PASS",
+      "evidence": "Empirical verification on Dirac impulses, linear ramp signals, 2,414 validation adjacent pairs, and 5,034 test adjacent pairs. All 3,866,112 scalar comparisons in guaranteed Conv3 region j in [2, 13] achieve bitwise equality (max abs error = 0.0). Boundaries j in {0, 1} and j in [14, 15] exhibit non-zero errors. Documented in alignment_validation.json."
+    },
+    {
+      "requirement_id": "W4-019-C07",
+      "status": "PASS",
+      "evidence": "Forward hooks cleanly detached in try/finally blocks; zero lingering hooks in model.named_modules(); ReferenceOwner.load().assert_identity() succeeds before and after all tests; frozen model artifacts and weights remain completely unmutated. Verified by test_c07_hook_hygiene_and_reference_identity."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H12/H13 incremental feature reuse feasibility: Conv3 features for j in [2, 13] match bitwise (max error 0.0) across all 5,034 test pairs.",
+    "Falsifies H14 (GAP delta update) for SmallCNN1D: position-dependent Flatten-MLP weights require recomputing the MLP head, precluding logit-level delta updates."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "Universal bitwise equivalence holds for the current CPU/PyTorch backend with AVX-512; cross-backend (e.g. GPU or alternate BLAS) bitwise equivalence requires backend-specific verification.",
+    "Feature cache requires contiguous recording with stride=64; any packet drop or recording boundary must trigger fail-closed cache invalidation."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

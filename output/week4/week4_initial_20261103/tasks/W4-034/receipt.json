@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-034",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (clean 214 protected files)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? configs/week4/",
+    "?? ecdr/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? scripts/week4_tasks.py",
+    "?? tests/"
+  ],
+  "claimed_write_paths": [
+    "scripts/week4_run.py",
+    "tests/test_week4_memory.py"
+  ],
+  "started_at_utc": "2026-11-09T01:13:12Z",
+  "completed_at_utc": "2026-11-09T01:19:00Z",
+  "environment_profile_id": "week4_initial_20261103",
+  "protocol_sha256": "2ff87705e8a7c782a4a0be256017a861ee0e58ba8ad337610ff7200bdd11dead",
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/week4_run.py memory --run-id week4_initial_20261103 --sealed-policy output/week4/week4_initial_20261103/selected_policy.json",
+      "exit_code": 0,
+      "purpose": "Comprehensive attributable memory measurement, scaling sweeps, and membership microbenchmarks"
+    },
+    {
+      "command": ".venv/bin/python -m unittest tests/test_week4_memory.py",
+      "exit_code": 0,
+      "purpose": "Unit test suite for W4-034 memory components, de-duplication, scaling sweeps, and telemetry (7/7 tests passing)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check",
+      "exit_code": 0,
+      "purpose": "Protected files audit check verifying integrity of 214 protected files (clean)"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "scripts/week4_run.py",
+      "sha256": "8e97c5b7fadbefc443b38ef1bc9d41c418535d2ba284724fa3d4bdf848f0b859",
+      "description": "Implemented get_object_deep_size, run_memory_analysis, membership microbenchmarks, rank/horizon/build scaling, and memory CLI subcommand."
+    },
+    {
+      "path": "tests/test_week4_memory.py",
+      "sha256": "6f3a324bb3de266c60923d611481364d1d679def09d8ae8439586230368dc12d",
+      "description": "Comprehensive unit test suite verifying W4-034-C01 through C07 requirements."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/memory_results.json",
+      "sha256": "f5c36418cfea2c57483da084da571293c6745f99795f0d972cf12a577dd9ea4d",
+      "description": "Report detailing reference tensor payloads (Float32: 1,136,072 bytes, Float64: 2,272,120 bytes), process peak RSS context, attributable memory per method, and membership microbenchmarks."
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/scaling_results.json",
+      "sha256": "44aec6fdb62a4bb88905009bd3cb1849a11424870a3901525a9df24296015727",
+      "description": "Scaling analysis report covering rank scaling (k=1..32), horizon scaling (H=1..32), and build budget scaling (1e-4..1e-1)."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-034-C01",
+      "status": "PASS",
+      "evidence": "Counted owned parameter/buffer/domain/certificate/cache bytes recursively. Isolated baseline core (1,136,072 bytes) and avoided double-counting shared reference model objects across wrappers (M01 wrapper attributable bytes < 2KB). Verified by test_w4_034_c01_baseline_and_owned_byte_separation."
+    },
+    {
+      "requirement_id": "W4-034-C02",
+      "status": "PASS",
+      "evidence": "Recorded process peak RSS (446,088 KB) with explicit clarification that process memory includes Python runtime, PyTorch backend, and frozen HAPT dataset arrays, not attributable to adapter cache. Verified by test_w4_034_c02_process_peak_rss_scope_clarification."
+    },
+    {
+      "requirement_id": "W4-034-C03",
+      "status": "PASS",
+      "evidence": "Evaluated membership microbenchmarks across 1,000 iterations for full 768 coordinate box, tail 384 fixed-prefix, latent PCA k=16, and residual norm checks. Documented Theta(m) worst-case complexity regardless of early rejection or SIMD execution. Verified by test_w4_034_c03_membership_microbenchmarks."
+    },
+    {
+      "requirement_id": "W4-034-C04",
+      "status": "PASS",
+      "evidence": "Evaluated scaling sweeps strictly adhering to validation-declared protocol caps across rank k in {1, 2, 4, 8, 16, 32}, horizon H in {1, 2, 4, 8, 16, 32}, and build budgets {1e-4, 1e-3, 1e-2, 1e-1}. Stated protocol extension requirement. Verified by test_w4_034_c04_scaling_sweeps."
+    },
+    {
+      "requirement_id": "W4-034-C05",
+      "status": "PASS",
+      "evidence": "Logged coordinates read (768 for full, 384 for tail/incremental), workspace allocations, and amortization scopes (per_query vs per_window_stream). Verified by test_w4_034_c05_coordinates_read_and_amortization_scope."
+    },
+    {
+      "requirement_id": "W4-034-C06",
+      "status": "PASS",
+      "evidence": "Explicitly set unmeasured telemetry (GPU memory bytes, energy joules, dynamic workspace RSS delta) to null with sound engineering reasons. Avoided extrapolating memory from disk file size. Verified by test_w4_034_c06_unmeasured_telemetry_null_with_reasons."
+    },
+    {
+      "requirement_id": "W4-034-C07",
+      "status": "PASS",
+      "evidence": "Tested payload accounting against aliased buffers (confirming no duplication), verified bytes/ns/ms units, and retained metadata for all 17 registered methods (including M14 and M15 marked AUDITED_UNSUPPORTED). Verified by test_w4_034_c07_all_17_methods_retention_and_no_double_counting."
+    }
+  ],
+  "limitations": [
+    "Sub-millisecond dynamic heap workspace RSS delta cannot be reliably isolated due to Python allocator fragmentation; exact tensor payloads and recursive object deep sizes are reported instead.",
+    "Hardware GPU and energy instrumentation are null because execution is restricted to single-thread CPU isolation."
+  ]
+}

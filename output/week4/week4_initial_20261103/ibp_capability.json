@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-011",
+  "title": "Actual-graph IBP and all-11 direct/separate margin specifications capability",
+  "milestone": "M2",
+  "profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "target_model": "SmallCNN1D(num_classes=12)",
+  "reference_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "source_hashes": {
+    "ecdr/week4/bounds.py": "d339a660beab56fabcd0d1a95bfb4a8d0a95dc5cbcaca04c45485a6769251cb8",
+    "ecdr/week4/numerics.py": "cfa08740c4f2dbc811ed4a3b00fdd9b9876b66312907ab5ddefa0d27b43c27f2"
+  },
+  "capabilities": {
+    "margin_methods": [
+      "direct_margin",
+      "separate_logits"
+    ],
+    "numerical_modes": [
+      "validated",
+      "ordinary_float"
+    ],
+    "competitor_count": 11,
+    "supports_candidate_box": true,
+    "supports_raw_box_with_normalization_enclosure": true,
+    "enforces_profile_lock": true,
+    "rejects_stale_anchor": true,
+    "rejects_non_finite_bounds": true
+  },
+  "scientific_dispositions": {
+    "H04_ibp_sound_relaxation": "IBP provides a sound but incomplete lower bound on competitor margins.",
+    "H05_float32_enclosure": "All operators bounded with Higham backward error analysis in float32.",
+    "H07_cancellation_gap": "Direct-margin achieves strictly tighter bounds than separate-logits on shared hidden boxes.",
+    "H08_margin_collapse_at_scale": "Multi-layer interval wrapping causes margin collapse for epsilon >= 1e-4.",
+    "H09_incompleteness_semantics": "Inconclusive bound does not imply existence of an adversarial counterexample."
+  }
+}

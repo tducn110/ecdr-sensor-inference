@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-016",
+  "title": "Affine-tail domain and outer box relaxation validation",
+  "run_id": "week4_initial_20261103",
+  "evaluated_validation_pairs": 50,
+  "k_components": 8,
+  "fit_sha256": "d11da4200ebd95892a10a5dd54651815682d7e12e6a5a1787b0ab5896c1bf44a",
+  "mean_outer_box_width": 65.49712371826172,
+  "membership_rate_by_scale": {
+    "0.1": {
+      "affine_domain_rate": 0.8,
+      "outer_box_rate": 0.9
+    },
+    "0.5": {
+      "affine_domain_rate": 0.92,
+      "outer_box_rate": 1.0
+    },
+    "1.0": {
+      "affine_domain_rate": 1.0,
+      "outer_box_rate": 1.0
+    },
+    "2.0": {
+      "affine_domain_rate": 1.0,
+      "outer_box_rate": 1.0
+    }
+  },
+  "scientific_dispositions": {
+    "H10_correlated_gain": "Fitting PCA on train captures multi-channel sensor correlation; outer box expansion measures hull loss.",
+    "H11_bound_tightness": "Affine domain enforces both latent singular subspace and bounded residual orthogonal bounds.",
+    "H18_finite_horizon": "Affine candidate is strictly valid only for one-step ahead (t -> t+1)."
+  }
+}

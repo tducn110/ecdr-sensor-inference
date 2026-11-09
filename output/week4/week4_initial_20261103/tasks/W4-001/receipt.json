@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-001",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "b575f241115e83db7fe7a75225cf8f1e903641a564f38fc8589b8a3b81a02e20",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? PLAN.md",
+    "?? notes/WEEK2/",
+    "?? scripts/week4_audit.py",
+    "?? tests/test_week4_provenance.py"
+  ],
+  "claimed_write_paths": [
+    "scripts/week4_audit.py",
+    "tests/test_week4_provenance.py"
+  ],
+  "started_at_utc": "2026-11-03T07:45:48Z",
+  "completed_at_utc": "2026-11-03T07:45:48Z",
+  "environment_profile_id": "cpu_float32",
+  "protocol_sha256": null,
+  "commands": [
+    ".venv/bin/python -m unittest discover -s tests -p test_week4_provenance.py -v",
+    ".venv/bin/python scripts/week4_audit.py preflight --run-id week4_initial_20261103"
+  ],
+  "changed_files": [
+    "scripts/week4_audit.py",
+    "tests/test_week4_provenance.py"
+  ],
+  "artifacts": [
+    "output/week4/week4_initial_20261103/provenance.json",
+    "output/week4/week4_initial_20261103/protected_manifest.json",
+    "output/week4/week4_initial_20261103/source_map.md",
+    "output/week4/week4_initial_20261103/environment.json",
+    "output/week4/week4_initial_20261103/tasks/W4-001/receipt.json"
+  ],
+  "requirement_evidence": [
+    {
+      "id": "W4-001-C01",
+      "status": "VERIFIED",
+      "evidence": "Git source_tree_hash=b575f241115e83db7fe7a75225cf8f1e903641a564f38fc8589b8a3b81a02e20"
+    },
+    {
+      "id": "W4-001-C02",
+      "status": "VERIFIED",
+      "evidence": "Checkpoint SHA256=8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1, Preprocessing ID=aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e, Params=283692"
+    },
+    {
+      "id": "W4-001-C03",
+      "status": "VERIFIED",
+      "evidence": "Protected manifest created with 214 files verified clean"
+    },
+    {
+      "id": "W4-001-C04",
+      "status": "VERIFIED",
+      "evidence": "5053 test windows, 3572 supervised, 5034 adjacent pairs, 19 recordings verified"
+    },
+    {
+      "id": "W4-001-C05",
+      "status": "VERIFIED",
+      "evidence": "preflight, snapshot, and check modes implemented with nonzero exit on failure"
+    },
+    {
+      "id": "W4-001-C06",
+      "status": "VERIFIED",
+      "evidence": "Publication history note preserved in provenance.json without modifying prior receipts"
+    },
+    {
+      "id": "W4-001-C07",
+      "status": "VERIFIED",
+      "evidence": "Unit test suite in tests/test_week4_provenance.py covers mutation, class order, missing artifact, dirty source"
+    }
+  ],
+  "protected_hash_check": "PASS",
+  "scientific_dispositions": [],
+  "missing_required_outputs": [],
+  "limitations": [
+    "W4-001 establishes preflight verification only; formal numerical soundness and reuse are addressed in downstream tasks."
+  ],
+  "blockers": [],
+  "submitted_status": "VERIFIED",
+  "review": {
+    "reviewer_id": "orchestrator_independent_review",
+    "decision": "ACCEPT",
+    "review_artifact": "output/week4/week4_initial_20261103/provenance.json",
+    "reviewed_source_tree_id": "b575f241115e83db7fe7a75225cf8f1e903641a564f38fc8589b8a3b81a02e20",
+    "checked_commands": [
+      ".venv/bin/python -m unittest discover -s tests -p test_week4_provenance.py -v",
+      ".venv/bin/python scripts/week4_audit.py preflight --run-id week4_initial_20261103"
+    ],
+    "remaining_findings": []
+  }
+}

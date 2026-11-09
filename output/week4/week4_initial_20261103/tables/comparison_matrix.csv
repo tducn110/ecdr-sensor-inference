@@ -1,0 +1,18 @@
+method_id,method_name,category,guarantee_target,formal_badge,execution_status,full_stream_queries,supervised_queries,reuse_count,full_stream_agreement_rate,reused_agreement_rate,supervised_accuracy,supervised_macro_f1,mean_query_latency_ms,p50_query_latency_ms,p95_query_latency_ms,throughput_qps,speed_ratio_vs_m00_core,speed_ratio_vs_m01_wrapper,speed_ratio_vs_m16_owned,net_savings_core_pct,attributable_cache_bytes,coordinates_read,t_test_p_val_vs_m00
+M00,Frozen full core,baseline,OPERATIONAL_REFERENCE,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.342,0.3303,0.407,2923.71,1.0,4.9019,1.3666,0.0,1113,768,1.0
+M01,Full equivalent wrapper,baseline_wrapper,OPERATIONAL_REFERENCE,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,1.6766,1.6034,2.1147,596.44,0.204,1.0,0.2788,-390.19,1307,768,0.0
+M02,Exact input replay,singleton_reuse,IDENTICAL_INPUT_EQUALITY,False,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4788,0.451,0.6365,2088.63,0.7144,3.5018,0.9763,-39.98,4613,768,0.0
+M03,Exact incremental computation,feature_cache_reuse,BACKEND_EQUIVALENT_FORWARD,False,EXECUTED,5053,3572,5034,1.0,1.0,0.890538,0.776265,1.9273,1.7548,2.8766,518.87,0.1775,0.8699,0.2425,-463.47,16049,384,0.0
+M04,Heuristic reuse,heuristic,EMPIRICAL_TRADE_OFF,False,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4974,0.4664,0.6773,2010.61,0.6877,3.371,0.9398,-45.41,8250,384,0.0
+M05,Global Lipschitz cache,regional_certification,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.5094,0.4808,0.6781,1963.01,0.6714,3.2912,0.9176,-48.94,15053,768,0.0
+M06,IBP diagonal box,regional_certification,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,7.1278,6.5475,10.564,140.3,0.048,0.2352,0.0656,-1983.96,18084,768,0.0
+M07,IBP fixed-overlap wave,regional_certification,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,6.5641,6.1424,9.7216,152.34,0.0521,0.2554,0.0712,-1819.16,17849,768,0.0
+M08,Correlated candidate via coordinate hull,control_ablation,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4626,0.4493,0.5274,2161.59,0.7393,3.6241,1.0104,-35.26,1466267,768,0.0
+M09,Native correlated bounds,regional_certification,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4481,0.4449,0.4667,2231.51,0.7632,3.7414,1.0431,-31.02,1466555,768,0.0
+M10,CROWN diagonal,regional_certification,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.45,0.4489,0.4705,2222.03,0.76,3.7255,1.0386,-31.58,1466120,768,0.0
+M11,CROWN wave/correlated,regional_certification,CERTIFIED_CLASS_STABILITY,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4479,0.4448,0.4678,2232.56,0.7636,3.7431,1.0436,-30.96,1466382,768,0.0
+M12,Fixed-anchor policy control,policy_axis,POLICY_AXIS_CONTROL,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4966,0.47,0.5024,2013.7,0.6887,3.3762,0.9413,-45.19,17913,768,0.0
+M13,Finite-horizon policy control,policy_axis,POLICY_AXIS_CONTROL,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,6.1458,5.9997,8.1202,162.71,0.0557,0.2728,0.0761,-1696.85,17959,768,0.0
+M14,Faithful LipCache comparator,prior_work_comparator,EXTERNAL_COMPARATOR_TARGET,False,AUDITED_UNSUPPORTED,5053,3572,0,,,,,,,,,,,,,0,0,
+M15,Prior-work applicability only,applicability_audit,AUDIT_ONLY_NOT_BENCHMARKED,False,AUDITED_UNSUPPORTED,5053,3572,0,,,,,,,,,,,,,0,0,
+M16,OWNED_REFERENCE baseline,secondary_baseline,OWNED_IDENTITY_REFERENCE,True,EXECUTED,5053,3572,0,1.0,,0.890538,0.776265,0.4674,0.4513,0.5645,2139.37,0.7317,3.5869,1.0,-36.66,1514,768,0.0

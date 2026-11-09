@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-009",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "ecdr/week4/numerics.py",
+    "04_SYNTHESIS/week4/design/FLOAT32_BRIDGE.md",
+    "tests/test_week4_numerical_bridge.py"
+  ],
+  "started_at_utc": "2026-11-08T05:47:40Z",
+  "completed_at_utc": "2026-11-08T05:51:30Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_numerical_bridge.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.40,
+      "summary": "6/6 bridge tests passed: end-to-end margin soundness, direct head difference vs separate logits, strict positive acceptance & tie rejection, profile binding, real near-tie witness & confident sample verification, and artifact generation"
+    },
+    {
+      "command": ".venv/bin/python tests/test_week4_numerical_bridge.py --generate-report",
+      "exit_code": 0,
+      "elapsed_seconds": 0.38,
+      "summary": "Generated numerical_bridge.json and bridge_checks.json"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_operators.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04,
+      "summary": "17/17 operator tests re-verified"
+    },
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_numerics.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.02,
+      "summary": "25/25 numerics tests re-verified"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/numerics.py",
+      "sha256": "cfa08740c4f2dbc811ed4a3b00fdd9b9876b66312907ab5ddefa0d27b43c27f2"
+    },
+    {
+      "path": "04_SYNTHESIS/week4/design/FLOAT32_BRIDGE.md",
+      "sha256": "adb37e74d98530bea7c38091ac2451302944407a286947cb799c041dedc13eaf"
+    },
+    {
+      "path": "tests/test_week4_numerical_bridge.py",
+      "sha256": "378e308ce9522111ccce8a92932a524e17daf278e28846ffc01242ddf9dadc57"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/numerical_bridge.json",
+      "sha256": "ac7cc79a8381dabc110a2ee5612afbb4959f61aae61f66a5170927779db17688"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/bridge_checks.json",
+      "sha256": "8f728540524ff01190bbfd3759d2fcb91120361f2dc8f5c286fa43285bee74b2"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-009-C01",
+      "status": "PASS",
+      "evidence": "FLOAT32_BRIDGE.md §1 derives the complete composition of raw conversion, normalization, 3 Conv layers, 3 BN layers, 3 ReLU layers, 2 MaxPool layers, Flatten, and 2 Linear layers. Proves that lower_margin_j = round_down_f32(lo_c - hi_j) strictly lower-bounds the executable logit difference fl(z_c) - fl(z_j). Verified by test_c01_end_to_end_margin_bounds_soundness."
+    },
+    {
+      "requirement_id": "W4-009-C02",
+      "status": "PASS",
+      "evidence": "FLOAT32_BRIDGE.md §2 and compute_margin_bounds support both 'separate_logits' and 'direct_head_difference'. For direct head difference, the lower bound is explicitly widened by the sum of backward rounding errors of both separate reference dot products (delta_c + delta_j), preserving conservatism over two rounded PyTorch logits. Verified by test_c02_direct_head_difference_accounts_for_rounding_errors."
+    },
+    {
+      "requirement_id": "W4-009-C03",
+      "status": "PASS",
+      "evidence": "Safe margin acceptance predicate is strictly positive (min_{j != c*} lower_margin_j > 0.0). Ties (margin == 0.0) and negative margins strictly return is_positive = False. Non-finite values fail closed. Verified by test_c03_safe_margin_predicate_rejects_ties_and_negatives."
+    },
+    {
+      "requirement_id": "W4-009-C04",
+      "status": "PASS",
+      "evidence": "Proof is cryptographically bound to profile linux-x86_64-py311-numpy246-torch2141cpu-avx512, SmallCNN1D checkpoint SHA-256, preprocessing ID, and dot lengths in {30, 96, 128, 192, 2048}. Unsupported profile fails closed. Verified by test_c04_profile_mismatch_fails_closed."
+    },
+    {
+      "requirement_id": "W4-009-C05",
+      "status": "PASS",
+      "evidence": "Near-tie control evaluated on real test sample row 13358 (executable margin 1.13487e-4): because margin is smaller than multi-layer accumulated Higham bound (~0.03), verifier soundly rejects certification (is_positive = False, status = VALIDATED_INCONCLUSIVE), preventing false positives. On confident sample row 15031 (margin 2.23), bridge proves VALIDATED_POSITIVE. Verified by test_c05_real_dataset_near_tie_witness."
+    },
+    {
+      "requirement_id": "W4-009-C06",
+      "status": "PASS",
+      "evidence": "FLOAT32_BRIDGE.md §5 and numerical_bridge.json provide end-to-end derivation and explain why interval wrapping across 15 layers causes margin collapse for perturbation radii epsilon >= 1e-4, formalizing the theoretical limitation of regional IBP certification on continuous streams without arbitrary safety factors."
+    },
+    {
+      "requirement_id": "W4-009-C07",
+      "status": "PASS",
+      "evidence": "Recorded cost and tightness diagnostics in bridge_checks.json and numerical_bridge.json, preparing full evidence base for independent review in W4-010. Verified by test_c06_c07_artifact_generation."
+    }
+  ],
+  "protected_hash_check": "PASSED (214/214 files clean) via scripts/week4_audit.py check",
+  "scientific_dispositions": [
+    "Confirms H05/H06/H08: An end-to-end mathematically sound float32 bridge exists for SmallCNN1D(num_classes=12) under backward rounding error bounds. The safe margin predicate is strictly positive and conservative.",
+    "Proves the near-tie boundary mechanism: inputs with executable margins smaller than accumulated rounding slack are soundly classified as VALIDATED_INCONCLUSIVE, precluding unsound certificate issuance."
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "End-to-end bridge provides point-wise and small-radius float32 guarantees; for regional boxes with epsilon >= 1e-4, multi-layer interval wrapping causes margin collapse (min_lower_margin < 0)."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED_FOR_REVIEW",
+  "review": null
+}

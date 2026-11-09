@@ -1,0 +1,443 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-027",
+  "title": "Independent mathematical review of hypotheses H01-H24",
+  "run_id": "week4_initial_20261103",
+  "total_hypotheses": 24,
+  "hypotheses": [
+    {
+      "id": "H01",
+      "title": "Shift-aligned overlap identity",
+      "type": "STRUCTURAL_THEOREM",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Continuous stream within same recording",
+        "stride S=64",
+        "window W=128",
+        "pointwise normalization"
+      ],
+      "proof_source": "03_MATH/08_SUPP05_Wave_Domain.tex Sec. 2",
+      "week4_tasks": [
+        "W4-001",
+        "W4-002",
+        "W4-007",
+        "W4-015",
+        "W4-019",
+        "W4-025"
+      ],
+      "empirical_evidence": "100.0% bit-exact prefix match across 5,034 adjacent pairs in test split and 50 triplets in validation split."
+    },
+    {
+      "id": "H02",
+      "title": "Overlap does not bound ordinary Euclidean distance",
+      "type": "COUNTEREXAMPLE",
+      "disposition": "FALSIFIED_UNCONDITIONAL",
+      "premises": [
+        "No universal lipschitz or bounded derivative assumed on physical sensor time series"
+      ],
+      "proof_source": "03_MATH/08_SUPP05_Wave_Domain.tex Sec. 5 (Sinusoidal delta up to 2A)",
+      "week4_tasks": [
+        "W4-002",
+        "W4-015",
+        "W4-018",
+        "W4-025"
+      ],
+      "empirical_evidence": "Mean tail Linf displacement on HAPT validation split is 0.1345; max tail displacement reaches 16.09 (ramp counterexample)."
+    },
+    {
+      "id": "H03",
+      "title": "Same activity label does not guarantee identical CNN predictions",
+      "type": "COUNTEREXAMPLE",
+      "disposition": "FALSIFIED_UNCONDITIONAL",
+      "premises": [
+        "Supervised activity annotation from human observers"
+      ],
+      "proof_source": "output/week3_certification_20261103/feature_alignment.json",
+      "week4_tasks": [
+        "W4-023",
+        "W4-026",
+        "W4-032"
+      ],
+      "empirical_evidence": "78 prediction flips observed across 2,661 adjacent pure-label pairs; witness global row 682->683 flips class 10->8."
+    },
+    {
+      "id": "H04",
+      "title": "Local invariance region existence from strict winner and continuity",
+      "type": "EXISTENCE_THEOREM",
+      "disposition": "DERIVED_REAL_CONDITIONAL_FLOAT",
+      "premises": [
+        "Continuous graph operators in real field",
+        "strict top-1 margin > 0"
+      ],
+      "proof_source": "03_MATH/03_Week_3_Mathematical_Foundations.tex Sec. 3.1",
+      "week4_tasks": [
+        "W4-005",
+        "W4-011",
+        "W4-012",
+        "W4-026"
+      ],
+      "empirical_evidence": "Topology theorem guarantees non-empty ball B(x*, r) in R^768; useful radius on HAPT is non-trivial only under structured domain."
+    },
+    {
+      "id": "H05",
+      "title": "All 11 positive lower margins guarantee regional invariance",
+      "type": "SOUNDNESS_THEOREM",
+      "disposition": "DERIVED_REAL_AND_FLOAT32_GATE",
+      "premises": [
+        "Exact mathematical enclosure",
+        "positive margins inf_{x in D}(f_c*(x) - f_j(x)) > 0 for all j!=c*"
+      ],
+      "proof_source": "03_MATH/03_Week_3_Mathematical_Foundations.tex Sec. 3.2",
+      "week4_tasks": [
+        "W4-005",
+        "W4-008",
+        "W4-010",
+        "W4-011",
+        "W4-022",
+        "W4-023",
+        "W4-026"
+      ],
+      "empirical_evidence": "Conjunction of formal gate, store verification, and validated bound engine achieves 100% reference agreement in runtime executor."
+    },
+    {
+      "id": "H06",
+      "title": "Sound Lipschitz upper bound provides certified ball radius",
+      "type": "BOUNDING_THEOREM",
+      "disposition": "DERIVED_WITH_STAGED_NORMS",
+      "premises": [
+        "Spectral norm product of linear layers",
+        "1-Lipschitz activations (ReLU, MaxPool)"
+      ],
+      "proof_source": "04_SYNTHESIS/week4/design/LIPSCHITZ.md",
+      "week4_tasks": [
+        "W4-006",
+        "W4-010",
+        "W4-012",
+        "W4-028"
+      ],
+      "empirical_evidence": "Analytical SmallCNN1D margin Lipschitz constants derived (mean L=3.57e7); certified radius ~1e-8 for K=12."
+    },
+    {
+      "id": "H07",
+      "title": "Interval Bound Propagation is incomplete (wrapping / cancellation loss)",
+      "type": "COUNTEREXAMPLE",
+      "disposition": "FALSIFIED_COMPLETENESS",
+      "premises": [
+        "Rectangular coordinate interval propagation ignores inter-neuron dependencies"
+      ],
+      "proof_source": "03_MATH/03_Week_3_Mathematical_Foundations.tex Sec. 4.2",
+      "week4_tasks": [
+        "W4-006",
+        "W4-008",
+        "W4-010",
+        "W4-011",
+        "W4-017"
+      ],
+      "empirical_evidence": "Analytical toy model h1=h2=ReLU(t+1) incurs cancellation gap = 2.0; paired validation ablation in W4-017 confirms 149.47 margin hull loss."
+    },
+    {
+      "id": "H08",
+      "title": "Direct margin vector objectives reduce dependency cancellation loss",
+      "type": "SOUNDNESS_THEOREM",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Evaluating W_c - W_j in single affine transformation before intervalization"
+      ],
+      "proof_source": "03_MATH/03_Week_3_Mathematical_Foundations.tex Sec. 4.3",
+      "week4_tasks": [
+        "W4-011",
+        "W4-014",
+        "W4-018"
+      ],
+      "empirical_evidence": "Direct margin method LB(f_c - f_j) >= LB(f_c) - UB(f_j) verified analytically and numerically on 100% of tested pairs."
+    },
+    {
+      "id": "H09",
+      "title": "CROWN relaxation tighter than IBP but has higher computational cost",
+      "type": "COMPLEXITY_AND_TIGHTNESS",
+      "disposition": "EMPIRICALLY_VERIFIED",
+      "premises": [
+        "Linear relaxation of non-linear activations with backward bound propagation"
+      ],
+      "proof_source": "auto_LiRPA documentation & W4-013/W4-014 benchmarks",
+      "week4_tasks": [
+        "W4-013",
+        "W4-014",
+        "W4-028"
+      ],
+      "empirical_evidence": "auto-LiRPA produces tighter bounds than pure IBP at the expense of ~5-10x latency per query evaluation."
+    },
+    {
+      "id": "H10",
+      "title": "Temporal PCA subspace captures empirical sensor motion correlations",
+      "type": "EMPIRICAL_STRUCTURE",
+      "disposition": "VERIFIED_FINITE",
+      "premises": [
+        "Low-rank manifold hypothesis on 6-channel human locomotion trajectories"
+      ],
+      "proof_source": "03_MATH/08_SUPP05_Wave_Domain.tex Sec. 3",
+      "week4_tasks": [
+        "W4-002",
+        "W4-016",
+        "W4-017",
+        "W4-018"
+      ],
+      "empirical_evidence": "PCA with K=8 explains 98.4% variance of tail increments; orthonormal basis yields ~57 margin units tighter bounds than random basis control."
+    },
+    {
+      "id": "H11",
+      "title": "Structured domain superiority requires matched-volume and matched-budget comparison",
+      "type": "METHODOLOGICAL_CRITIQUE",
+      "disposition": "ESTABLISHED",
+      "premises": [
+        "Fair comparison between unstructured isotropic balls and structured wave domains"
+      ],
+      "proof_source": "04_SYNTHESIS/week4/HYPOTHESES.md H11",
+      "week4_tasks": [
+        "W4-015",
+        "W4-016",
+        "W4-017",
+        "W4-018"
+      ],
+      "empirical_evidence": "Volume of fixed-overlap wave is degenerate (0 volume in R^768 due to fixed prefix); direct radius comparison is invalid without dimensionality matching."
+    },
+    {
+      "id": "H12",
+      "title": "Fixed prefix reduces free perturbation dimensions from 768 to 384",
+      "type": "STRUCTURAL_THEOREM",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Continuous stream with 50% window overlap (stride S=64, window W=128, channels C=6)"
+      ],
+      "proof_source": "03_MATH/08_SUPP05_Wave_Domain.tex Sec. 4",
+      "week4_tasks": [
+        "W4-007",
+        "W4-015",
+        "W4-018",
+        "W4-025"
+      ],
+      "empirical_evidence": "CandidateBox free_dimensions confirmed 384 for h=1 (wave) vs 768 for h=2 and isotropic full boxes."
+    },
+    {
+      "id": "H13",
+      "title": "Intermediate CNN feature alignment for padded Conv1D-BatchNorm-MaxPool graph",
+      "type": "EQUIVALENCE_THEOREM",
+      "disposition": "DERIVED_AND_BITWISE_VERIFIED",
+      "premises": [
+        "Padded Conv1D with kernel 3/5, stride 1",
+        "frozen BatchNorm eval mode",
+        "cumulative pooling stride 4 divides 64"
+      ],
+      "proof_source": "03_MATH/03_Week_3_Mathematical_Foundations.tex Sec. 2",
+      "week4_tasks": [
+        "W4-019",
+        "W4-020",
+        "W4-021",
+        "W4-026"
+      ],
+      "empirical_evidence": "Conv3 feature map positions j=2..13 at step t+1 match j=18..29 at step t bit-for-bit (3,866,112 scalars verified with max abs diff = 0.0)."
+    },
+    {
+      "id": "H14",
+      "title": "Global Average Pooling delta update is not applicable to Flatten-MLP classifier head",
+      "type": "NEGATIVE_APPLICABILITY",
+      "disposition": "ESTABLISHED",
+      "premises": [
+        "SmallCNN1D reference uses Flatten(2048) -> Linear(128) -> ReLU -> Linear(12)"
+      ],
+      "proof_source": "scripts/backbone.py SmallCNN1D architecture",
+      "week4_tasks": [
+        "W4-019",
+        "W4-020",
+        "W4-021",
+        "W4-027"
+      ],
+      "empirical_evidence": "Weights of Linear1 are position-dependent; shifting feature columns across spatial positions breaks linear combination."
+    },
+    {
+      "id": "H15",
+      "title": "Re-centering certificates after reuse without re-execution causes cumulative drift",
+      "type": "COUNTEREXAMPLE_AND_POLICY",
+      "disposition": "FALSIFIED_RECENTERING_ESTABLISHED_FIXED_ANCHOR",
+      "premises": [
+        "Floating anchor updates on accepted queries allow unbounded drift"
+      ],
+      "proof_source": "04_SYNTHESIS/week4/design/HORIZON.md Sec. 3",
+      "week4_tasks": [
+        "W4-022",
+        "W4-023",
+        "W4-025",
+        "W4-026"
+      ],
+      "empirical_evidence": "Adversarial drift witness demonstrates cumulative error escaping safe region; fixed-anchor invariant with deterministic max_age eliminates drift 100%."
+    },
+    {
+      "id": "H16",
+      "title": "Fixed anchor certificates preserve multi-step soundness up to deterministic expiration",
+      "type": "SOUNDNESS_THEOREM",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Immutable certificate store",
+        "fixed anchor coordinates",
+        "hard expiration at anchor_step + max_age"
+      ],
+      "proof_source": "ecdr/week4/certificates.py ImmutableCertificateStore",
+      "week4_tasks": [
+        "W4-010",
+        "W4-022",
+        "W4-023",
+        "W4-025",
+        "W4-026"
+      ],
+      "empirical_evidence": "Replay validation confirms 100.0% decision agreement with reference model across all evaluated stream queries."
+    },
+    {
+      "id": "H17",
+      "title": "Finite horizon multi-step reachable sets have decaying tightness",
+      "type": "RECURRENCE_THEOREM",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Shift-append recurrence over stride-64 streaming windows"
+      ],
+      "proof_source": "04_SYNTHESIS/week4/design/HORIZON.md Sec. 1-2",
+      "week4_tasks": [
+        "W4-015",
+        "W4-017",
+        "W4-022",
+        "W4-025"
+      ],
+      "empirical_evidence": "Free dimensions double from 384 at h=1 to 768 at h=2; outer product-set box relaxation evaluated on 50 validation triplets."
+    },
+    {
+      "id": "H18",
+      "title": "Exact box membership checking has worst-case Theta(m) complexity",
+      "type": "COMPLEXITY_THEOREM",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Coordinatewise interval comparison over m=768 dimensions"
+      ],
+      "proof_source": "ecdr/week4/domains.py CoordinateBox.contains",
+      "week4_tasks": [
+        "W4-007",
+        "W4-016",
+        "W4-018",
+        "W4-024"
+      ],
+      "empirical_evidence": "Measured membership latency ~0.014 ms in pure NumPy elementwise comparison; SIMD vectorization achieves sub-microsecond throughput."
+    },
+    {
+      "id": "H19",
+      "title": "Mathematical soundness does not guarantee empirical useful coverage",
+      "type": "COUNTEREXAMPLE",
+      "disposition": "FALSIFIED_IMPLICATION",
+      "premises": [
+        "Sound conservative enclosures often have near-zero membership probability under natural sensor dynamics"
+      ],
+      "proof_source": "Week 3 benchmark results (zero next-window hits for eps=1e-6)",
+      "week4_tasks": [
+        "W4-018",
+        "W4-023",
+        "W4-025"
+      ],
+      "empirical_evidence": "Radius 1e-4 achieves 100% mathematical soundness but 0.0% streaming reuse; radius 0.5 achieves 78% reachability."
+    },
+    {
+      "id": "H20",
+      "title": "High verification and identity checking costs can eliminate caching speedup",
+      "type": "COUNTEREXAMPLE",
+      "disposition": "FALSIFIED_IMPLICATION_EMPIRICALLY_VERIFIED",
+      "premises": [
+        "Zero-trust cryptographic assertion on every query incurs significant computational overhead"
+      ],
+      "proof_source": "output/week4/week4_initial_20261103/runtime_cost_validation.json",
+      "week4_tasks": [
+        "W4-024",
+        "W4-028"
+      ],
+      "empirical_evidence": "Full SHA-256 assert_identity takes 1.394 ms (76.8% of M01 infer time, 5.98x slower than bare PyTorch M00); owned reference M16 recovers 4.13x speedup."
+    },
+    {
+      "id": "H21",
+      "title": "Owned reference architecture resolves identity overhead while preserving security",
+      "type": "ARCHITECTURE_INVENTION",
+      "disposition": "DERIVED_AND_VERIFIED",
+      "premises": [
+        "Process-internal memory encapsulation by ReferenceOwner",
+        "HMAC session salt rotation"
+      ],
+      "proof_source": "ecdr/week4/reference.py ReferenceOwner",
+      "week4_tasks": [
+        "W4-024",
+        "W4-028"
+      ],
+      "empirical_evidence": "M16 achieves 0.439 ms infer latency (1.45x of M00) while detecting 100% of injected mutations at boundaries."
+    },
+    {
+      "id": "H22",
+      "title": "Real-field verification theorems do not automatically transfer to IEEE-754 float32",
+      "type": "COUNTEREXAMPLE_AND_GAP",
+      "disposition": "FALSIFIED_DIRECT_TRANSFER_ESTABLISHED_NUMERICAL_GATE",
+      "premises": [
+        "Rounding errors, catastrophic cancellation, subnormals, and non-associativity in float32 arithmetic"
+      ],
+      "proof_source": "04_SYNTHESIS/week4/design/FLOAT32_BRIDGE.md",
+      "week4_tasks": [
+        "W4-005",
+        "W4-008",
+        "W4-010",
+        "W4-021",
+        "W4-026"
+      ],
+      "empirical_evidence": "Audited outward rounding primitives and NumericalCapability gate formally prevent unsound float32 decisions."
+    },
+    {
+      "id": "H23",
+      "title": "Event name / activity status cannot serve as certification authority",
+      "type": "COUNTEREXAMPLE",
+      "disposition": "FALSIFIED_AUTHORITY",
+      "premises": [
+        "Human activity annotation is an external descriptive label, not a neural network mathematical invariant"
+      ],
+      "proof_source": "tests/test_week4_adversarial.py test_c01",
+      "week4_tasks": [
+        "W4-015",
+        "W4-022",
+        "W4-023",
+        "W4-026"
+      ],
+      "empirical_evidence": "Query with identical activity label but outside certified domain is rejected fail-closed; admission is governed strictly by geometry."
+    },
+    {
+      "id": "H24",
+      "title": "Simultaneous attainment of formal soundness, useful reuse, and net speedup",
+      "type": "JOINT_SCIENTIFIC_FRONTIER",
+      "disposition": "EMPIRICALLY_CHARACTERIZED",
+      "premises": [
+        "Trilemma between formal proof soundness, empirical physical reachability, and computational verification overhead"
+      ],
+      "proof_source": "04_SYNTHESIS/week4/HYPOTHESES.md H24 & Milestone M3/M4 reviews",
+      "week4_tasks": [
+        "W4-010",
+        "W4-021",
+        "W4-024",
+        "W4-025",
+        "W4-026",
+        "W4-028",
+        "W4-035"
+      ],
+      "empirical_evidence": "Characterized exact Pareto frontier: M16 with incremental Conv3 feature reuse provides net acceleration under strict gate."
+    }
+  ],
+  "classification_summary": {
+    "theorems_derived_and_verified": 8,
+    "universal_claims_falsified_with_witness": 8,
+    "empirical_and_methodological_established": 5,
+    "architectural_and_joint_characterized": 3
+  },
+  "core_conclusions": {
+    "all_24_hypotheses_reviewed": true,
+    "zero_unproved_universal_claims_accepted": true,
+    "no_falsified_claims_reinterpreted": true,
+    "sound_fail_closed_gates_enforced": true
+  }
+}

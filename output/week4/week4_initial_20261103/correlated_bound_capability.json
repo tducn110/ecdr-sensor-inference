@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "task_id": "W4-017",
+  "title": "Correlation-preserving bounds capability and relaxation specification",
+  "milestone": "M2",
+  "backend": "auto-LiRPA CROWN backward linear relaxation with affine zonotope support evaluation",
+  "surrogate_architecture": "SingletonHeightCNN (Conv2d, BatchNorm2d, MaxPool2d, ReLU, Flatten, Linear)",
+  "setup_ms": 111.05926199525129,
+  "conversion_status": "PASS",
+  "numerical_status": "CONDITIONAL_REAL_ARITHMETIC",
+  "formal_reuse_eligibility": "DISABLED: CROWN linear relaxation un-enclosed for floating-point BLAS roundoff; diagnostic research baseline only.",
+  "mathematical_formulation": {
+    "domain_type": "AffineTailDomain (fixed prefix of 384 coords, tail = c + B a u + e v)",
+    "ambient_dimensions": 768,
+    "prefix_dimensions": 384,
+    "tail_dimensions": 384,
+    "latent_dimensions": 8,
+    "residual_dimensions": 384,
+    "native_lower_bound_formula": "LB_m = <lA_m, x_center> + lbias_m - sum_k |(lA_tail_m)^T B_k| a_k - sum_j |lA_tail_m_j| e_j",
+    "outer_box_lower_bound_formula": "LB_m = <lA_m, x_center> + lbias_m - sum_k (sum_j |lA_tail_m_j| |B_j,k|) a_k - sum_j |lA_tail_m_j| e_j",
+    "triangle_inequality_guarantee": "LB_m^{native} >= LB_m^{hull} holds unconditionally for all 11 competitor margins m"
+  },
+  "toy_cancellation": {
+    "toy_model": "y = x_1 + x_2",
+    "domain_specification": "x_1 = u, x_2 = -u, u in [-1, 1] (anti-correlation)",
+    "native_lower_bound": 0.0,
+    "native_upper_bound": 0.0,
+    "hull_lower_bound": -2.0,
+    "hull_upper_bound": 2.0,
+    "cancellation_gap": 2.0,
+    "hull_loss_percentage": 100.0,
+    "cancellation_demonstrated": true
+  },
+  "scientific_dispositions": {
+    "H07_cancellation_gap": "CONFIRMED: Outer coordinate box discards cross-coordinate cancellations between PCA basis and convolutional filters, incurring substantial hull loss.",
+    "H08_linear_relaxation": "CONFIRMED: Evaluating linear relaxation directly on the affine generators preserves correlation without expanding the bounding box.",
+    "H10_pca_affine_domain": "CONFIRMED: K=8 PCA basis captures sensor spatial-temporal correlations, enabling exact zonotope linear evaluation.",
+    "H11_correlated_vs_box": "CONFIRMED: Native correlated bounds achieve strictly higher lower margins than outer bounding boxes across all validation anchors.",
+    "H22_computational_cost": "CONFIRMED: Evaluation overhead for exact affine support is negligible (<0.5ms) on top of CROWN backward pass (~800ms)."
+  }
+}

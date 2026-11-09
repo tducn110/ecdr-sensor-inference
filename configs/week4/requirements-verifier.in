@@ -1,0 +1,19 @@
+# configs/week4/requirements-verifier.in
+# Authoritative pinned inputs for the isolated verifier environment
+# Evaluated for W4-013 auto-LiRPA capability probe
+
+# Official dependency declaration from auto-LiRPA 0.8.0 metadata:
+# - torch<2.12.0,>=2.0.0
+# - numpy>=2.0.0
+# - packaging>=20.0
+# - tqdm>=4.67.3
+# - graphviz>=0.21
+# - appdirs>=1.4.4
+
+torch>=2.0.0,<2.12.0
+numpy>=2.0.0
+packaging>=20.0
+tqdm>=4.67.3
+graphviz>=0.21
+appdirs>=1.4.4
+auto-lirpa==0.8.0

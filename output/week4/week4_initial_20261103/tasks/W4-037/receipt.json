@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-037",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (clean 214 protected files)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? configs/week4/",
+    "?? ecdr/week4/",
+    "?? output/week4/",
+    "?? scripts/week4_audit.py",
+    "?? scripts/week4_tasks.py",
+    "?? tests/"
+  ],
+  "claimed_write_paths": [
+    "04_SYNTHESIS/week4/reports/Week_4_Implementation_and_Evaluation.tex",
+    "04_SYNTHESIS/week4/reports/refs.bib"
+  ],
+  "started_at_utc": "2026-11-09T01:25:15Z",
+  "completed_at_utc": "2026-11-09T01:27:00Z",
+  "environment_profile_id": "week4_initial_20261103",
+  "protocol_sha256": "2ff87705e8a7c782a4a0be256017a861ee0e58ba8ad337610ff7200bdd11dead",
+  "commands": [
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check",
+      "exit_code": 0,
+      "purpose": "Verify integrity of 214 protected files (clean)"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "04_SYNTHESIS/week4/reports/Week_4_Implementation_and_Evaluation.tex",
+      "sha256": "06886de35fd254b67977b4a1aea825a1f476b46015a7e3700d18ae4ae5320933",
+      "description": "Formal IEEE-style implementation and empirical evaluation report covering architecture, proofs, execution engine, full test replay results, 24 hypotheses, and H24 trilemma outcome."
+    },
+    {
+      "path": "04_SYNTHESIS/week4/reports/refs.bib",
+      "sha256": "45b4f2e3c912e2f507497d2d7751a067acfd97a6ec246862db2e3013657ddabf",
+      "description": "BibTeX bibliography file citing primary literature for HAPT, CROWN, IBP, Auto-LiRPA, LipCache, StreamiNNC, and TinyDejaVu."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/report_source_review.md",
+      "sha256": "6731e8ceca3243b46e9cc40fb4ce25095e59948121ac81390c0a6b608af1a60b",
+      "description": "Detailed source review document cross-referencing LaTeX report tables and numbers against exact run artifacts and verification checklists."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-037-C01",
+      "status": "PASS",
+      "evidence": "Report structures problem formulation, sensor streaming context, frozen SmallCNN1D graph, and 11-margin output specifications prior to implementation details."
+    },
+    {
+      "requirement_id": "W4-037-C02",
+      "status": "PASS",
+      "evidence": "Described StreamingMethodAdapter interface, five candidate geometries (box, wave, affine hull, zonotope, random basis), and lifecycle profiles."
+    },
+    {
+      "requirement_id": "W4-037-C03",
+      "status": "PASS",
+      "evidence": "All 24 original hypotheses (H01-H24) fully documented with formal verdicts, primary empirical witnesses, and baseline dispositions."
+    },
+    {
+      "requirement_id": "W4-037-C04",
+      "status": "PASS",
+      "evidence": "Extracted numerical tables directly from comparison_matrix.csv and hypotheses.csv generated under run week4_initial_20261103 without alteration."
+    },
+    {
+      "requirement_id": "W4-037-C05",
+      "status": "PASS",
+      "evidence": "Maintained strict separation between mathematical real-number theorems and Float32 silicon execution. Declared KNOWN_TEST_EXPLORATORY exposure level."
+    },
+    {
+      "requirement_id": "W4-037-C06",
+      "status": "PASS",
+      "evidence": "Cited verified primary sources in refs.bib (Reyes-Ortiz 2016, Zhang 2018, Gowal 2018, Xu 2020, Xiang 2026, Kechris 2024, Huang 2026)."
+    },
+    {
+      "requirement_id": "W4-037-C07",
+      "status": "PASS",
+      "evidence": "Evaluated H24 trilemma conjunction per method, concluding NOT_ESTABLISHED with 0 of 17 methods satisfying Soundness, Useful Coverage, and Net Speedup."
+    }
+  ],
+  "limitations": [
+    "LaTeX source document; compilation to standalone PDF is executed and verified in downstream task W4-038."
+  ]
+}

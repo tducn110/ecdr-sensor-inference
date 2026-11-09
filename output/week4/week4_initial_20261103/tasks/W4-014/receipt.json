@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "task_id": "W4-014",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "clean",
+  "execution_source_tree_id": "local_v1",
+  "initial_dirty_paths": [],
+  "claimed_write_paths": [
+    "ecdr/week4/lirpa_adapter.py",
+    "tests/test_week4_lirpa.py"
+  ],
+  "started_at_utc": "2026-11-08T14:20:08.000000+00:00",
+  "completed_at_utc": "2026-11-08T14:26:00.000000+00:00",
+  "environment_profile_id": "env_local_py311_torch214_cpu",
+  "protocol_sha256": "3cb49a42531d0b54378877bcce945761a2936e788ad7208cfd4957e841b528b9",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_lirpa.py -v",
+      "exit_code": 0,
+      "purpose": "Verify W4-014 C01-C07 checklist items on CROWN adapter and bound comparison"
+    },
+    {
+      "command": ".venv/bin/python -c 'from ecdr.week4.lirpa_adapter import run_bound_method_comparison...'",
+      "exit_code": 0,
+      "purpose": "Generate crown_capability.json and bound_method_validation.json artifacts"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "ecdr/week4/lirpa_adapter.py",
+      "sha256": "7e79203220a6744bf1727f8371f2b66d2b7332242fc50a313c06bc5e99bd167a"
+    },
+    {
+      "path": "tests/test_week4_lirpa.py",
+      "sha256": "de450d0c7e9f8e4f90e8282764bc76e84dba5e34c47ac9e825ef3f9f81b045d0"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/crown_capability.json",
+      "sha256": "67cb584421a2ea288d784426d99d82d034e5a1210695fd637401e86ae5eb8b38"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/bound_method_validation.json",
+      "sha256": "a8ce4b44d9df41dfa39219ea25916b01cbdcf831f3aea5e322534b0e8aab998b"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "code": "W4-014-C01",
+      "file": "ecdr/week4/lirpa_adapter.py",
+      "symbol": "CrownAdapter",
+      "status": "VERIFIED",
+      "notes": "Pinned CROWN variant (analytic_backward), conv_mode matrix, SingletonHeightCNN 2D surrogate, setup_ms=109.9ms."
+    },
+    {
+      "code": "W4-014-C02",
+      "file": "ecdr/week4/lirpa_adapter.py",
+      "symbol": "CrownAdapter.compute_bounds",
+      "status": "VERIFIED",
+      "notes": "Implemented 11 direct-margin specifications C_{c*, j} and separate-logits control ablation on same domain."
+    },
+    {
+      "code": "W4-014-C03",
+      "file": "ecdr/week4/lirpa_adapter.py",
+      "symbol": "CrownAdapter.compute_bounds",
+      "status": "VERIFIED",
+      "notes": "Fail-closed error handling on non-finite, inverted domains, and forged anchor receipts."
+    },
+    {
+      "code": "W4-014-C04",
+      "file": "tests/test_week4_lirpa.py",
+      "symbol": "TestWeek4Lirpa.test_c04_surrogate_real_algebra_parity",
+      "status": "VERIFIED",
+      "notes": "Sampled logits max abs difference between 1D reference and 2D surrogate is <= 1e-6 (bit-exact decisions)."
+    },
+    {
+      "code": "W4-014-C05",
+      "file": "output/week4/week4_initial_20261103/bound_method_validation.json",
+      "symbol": "run_bound_method_comparison",
+      "status": "VERIFIED",
+      "notes": "At eps=1e-3, CROWN achieves 80% positive bounds where IBP collapses to 0%, but CROWN latency is ~892ms vs 7.3ms for IBP."
+    },
+    {
+      "code": "W4-014-C06",
+      "file": "ecdr/week4/lirpa_adapter.py",
+      "symbol": "CrownAdapter",
+      "status": "VERIFIED",
+      "notes": "Designates numerical status as CONDITIONAL_REAL_ARITHMETIC; formal reuse on 1D reference remains DISABLED."
+    },
+    {
+      "code": "W4-014-C07",
+      "file": "output/week4/week4_initial_20261103/crown_capability.json",
+      "symbol": "crown_capability",
+      "status": "VERIFIED",
+      "notes": "Generated crown_capability.json and bound_method_validation.json with 10 validation samples x 3 epsilons."
+    }
+  ],
+  "protected_hash_check": {
+    "status": "CLEAN",
+    "verified_count": 214
+  },
+  "scientific_dispositions": [
+    {
+      "hypothesis": "H08",
+      "verdict": "CONFIRMED",
+      "evidence": "IBP collapses to 0% positive bounds at eps=1e-3 due to interval wrapping, while CROWN retains 80% positive coverage."
+    },
+    {
+      "hypothesis": "H11",
+      "verdict": "CONFIRMED",
+      "evidence": "CROWN linear relaxation yields strictly tighter lower margins than separate-logits and IBP."
+    },
+    {
+      "hypothesis": "H21",
+      "verdict": "CONFIRMED",
+      "evidence": "CROWN latency of 892.4ms per query is ~440x slower than full forward inference (~2ms), rendering real-time streaming reuse unviable."
+    }
+  ],
+  "missing_required_outputs": [],
+  "limitations": [
+    "CROWN is evaluated on the 2D singleton-height surrogate. Universal IEEE-754 float32 equivalence to the 1D frozen reference across diverse hardware is not formally proved."
+  ],
+  "blockers": [],
+  "submitted_status": "SUBMITTED"
+}

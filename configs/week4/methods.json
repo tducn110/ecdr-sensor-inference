@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "registry_name": "ECDR_WEEK4_STABLE_METHODS_REGISTRY",
+  "created_at_utc": "2026-11-03T08:15:00Z",
+  "methods": [
+    {
+      "id": "M00",
+      "name": "Frozen full core",
+      "category": "baseline",
+      "guarantee_target": "OPERATIONAL_REFERENCE",
+      "output_semantics": "class_index_and_full_logits",
+      "description": "Raw input -> frozen normalization -> actual float32 SmallCNN1D forward; ground truth inference reference.",
+      "tasks": ["W4-028", "W4-031", "W4-032", "W4-033", "W4-034"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M01",
+      "name": "Full equivalent wrapper",
+      "category": "baseline_wrapper",
+      "guarantee_target": "OPERATIONAL_REFERENCE",
+      "output_semantics": "class_index_and_full_logits",
+      "description": "Identical query wrapper, state machine, and continuity checks as ECDR, but always executes full forward to isolate runtime overhead.",
+      "tasks": ["W4-022", "W4-023", "W4-024", "W4-028", "W4-031", "W4-032", "W4-033", "W4-034"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M02",
+      "name": "Exact input replay",
+      "category": "singleton_reuse",
+      "guarantee_target": "IDENTICAL_INPUT_EQUALITY",
+      "output_semantics": "cached_class_and_logits",
+      "description": "Bitwise or collision-safe input equality check on canonical preprocessed bytes; singleton cache without regional certificate.",
+      "tasks": ["W4-003", "W4-022", "W4-023", "W4-026", "W4-028", "W4-032", "W4-033", "W4-034"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M03",
+      "name": "Exact incremental computation",
+      "category": "feature_cache_reuse",
+      "guarantee_target": "BACKEND_EQUIVALENT_FORWARD",
+      "output_semantics": "exact_full_logits_and_class",
+      "description": "Reuses unshifted intermediate Conv1D/BN/Pool feature representations; computes full Flatten-MLP head to produce identical output.",
+      "tasks": ["W4-019", "W4-020", "W4-021", "W4-026", "W4-028", "W4-032", "W4-033", "W4-034"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M04",
+      "name": "Heuristic reuse",
+      "category": "heuristic",
+      "guarantee_target": "EMPIRICAL_TRADE_OFF",
+      "output_semantics": "predicted_class_only",
+      "description": "Reuses prior prediction when distance falls within empirical threshold; measures error vs speedup without formal certificate.",
+      "tasks": ["W4-015", "W4-022", "W4-023", "W4-026", "W4-028", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M05",
+      "name": "Global Lipschitz cache",
+      "category": "regional_certification",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "Computes certified L2 ball radius r = Delta / (2 * L_global) using 11-margin output bounds and global spectral norm constant.",
+      "tasks": ["W4-005", "W4-006", "W4-007", "W4-008", "W4-009", "W4-010", "W4-012", "W4-022", "W4-028", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M06",
+      "name": "IBP diagonal box",
+      "category": "regional_certification",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "Propagates 768-dimensional axis-aligned interval box through actual Conv1D-BN-ReLU-Pool-Flatten-Linear graph; verifies 11 margin specs.",
+      "tasks": ["W4-005", "W4-006", "W4-007", "W4-008", "W4-009", "W4-010", "W4-011", "W4-018", "W4-022", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M07",
+      "name": "IBP fixed-overlap wave",
+      "category": "regional_certification",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "Fixed 384-dimensional prefix contract + 384-dimensional tail box; exploits 50% temporal sliding window overlap.",
+      "tasks": ["W4-007", "W4-011", "W4-015", "W4-018", "W4-022", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M08",
+      "name": "Correlated candidate via coordinate hull",
+      "category": "control_ablation",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "Ablation control: converts PCA-affine candidate into outer bounding box before interval propagation; measures hull loss.",
+      "tasks": ["W4-011", "W4-016", "W4-017", "W4-018", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M09",
+      "name": "Native correlated bounds",
+      "category": "regional_certification",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "Direct zonotope / affine factor propagation preserving linear dependencies across sensor channels and time steps.",
+      "tasks": ["W4-005", "W4-006", "W4-007", "W4-008", "W4-009", "W4-010", "W4-016", "W4-017", "W4-018", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M10",
+      "name": "CROWN diagonal",
+      "category": "regional_certification",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "Linear relaxation backward bounding on ambient diagonal coordinate box; evaluates tighter margin lower bounds vs IBP.",
+      "tasks": ["W4-013", "W4-014", "W4-018", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M11",
+      "name": "CROWN wave/correlated",
+      "category": "regional_certification",
+      "guarantee_target": "CERTIFIED_CLASS_STABILITY",
+      "output_semantics": "certified_class_decision",
+      "description": "CROWN relaxation over transformed wave and affine candidate domains; evaluates bound tightness under temporal constraints.",
+      "tasks": ["W4-013", "W4-014", "W4-015", "W4-016", "W4-017", "W4-018", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M12",
+      "name": "Fixed-anchor policy control",
+      "category": "policy_axis",
+      "guarantee_target": "POLICY_AXIS_CONTROL",
+      "output_semantics": "decision_from_parent_bound",
+      "description": "Policy axis: uses single immutable anchor throughout lifetime until expiration or boundary discontinuity.",
+      "tasks": ["W4-010", "W4-022", "W4-023", "W4-025", "W4-026", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M13",
+      "name": "Finite-horizon policy control",
+      "category": "policy_axis",
+      "guarantee_target": "POLICY_AXIS_CONTROL",
+      "output_semantics": "decision_from_parent_bound",
+      "description": "Policy axis: bounds reachable input regions for discrete horizons H in {1, 2, 4, 8, 16, 32}; enforces no-drift contract.",
+      "tasks": ["W4-010", "W4-015", "W4-017", "W4-022", "W4-025", "W4-026", "W4-030", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    },
+    {
+      "id": "M14",
+      "name": "Faithful LipCache comparator",
+      "category": "prior_work_comparator",
+      "guarantee_target": "EXTERNAL_COMPARATOR_TARGET",
+      "output_semantics": "faithful_comparator_output",
+      "description": "Evaluates LipCache proxy framework (Xiang et al. 2026) under exact published semantics. Audited in W4-029: requires separate GuardNet training (out of frozen scope) and certificate holds only on GuardNet side (Remark 5.2), not MainNet.",
+      "tasks": ["W4-029", "W4-030", "W4-031", "W4-032", "W4-033", "W4-034", "W4-035", "W4-036"],
+      "status": "NOT_APPLICABLE_IN_FROZEN_SCOPE"
+    },
+    {
+      "id": "M15",
+      "name": "Prior-work applicability only",
+      "category": "applicability_audit",
+      "guarantee_target": "AUDIT_ONLY_NOT_BENCHMARKED",
+      "output_semantics": "none",
+      "description": "Formal audit of StreamiNNC (Kechris et al. 2024) and TinyDejaVu (Huang et al. 2026) architectural and runtime prerequisites. Completed in W4-029: excluded from performance ranking.",
+      "tasks": ["W4-029", "W4-035", "W4-036", "W4-037", "W4-038"],
+      "status": "AUDITED_APPLICABILITY_ONLY"
+    },
+    {
+      "id": "M16",
+      "name": "OWNED_REFERENCE baseline",
+      "category": "secondary_baseline",
+      "guarantee_target": "OWNED_IDENTITY_REFERENCE",
+      "output_semantics": "class_index_and_full_logits",
+      "description": "Secondary full-forward baseline executed under optimized in-memory ownership profile without redundant integrity hashing per query.",
+      "tasks": ["W4-005", "W4-022", "W4-023", "W4-024", "W4-026", "W4-028", "W4-031", "W4-032", "W4-033", "W4-034", "W4-035"],
+      "status": "PENDING_EXECUTION"
+    }
+  ]
+}

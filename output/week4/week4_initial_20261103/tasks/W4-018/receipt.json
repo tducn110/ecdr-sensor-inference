@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-018",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "scripts/week4_run.py",
+    "tests/test_week4_protocol.py"
+  ],
+  "started_at_utc": "2026-11-08T14:57:13Z",
+  "completed_at_utc": "2026-11-08T15:02:10Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_protocol.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 8.9,
+      "summary": "3/3 protocol unit tests passed: test split protection, random basis control orthonormality, and matched geometry sweep"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_run.py geometry --run-id week4_initial_20261103 --split val --num-anchors 10 --anchor-stride 38 --budgets 0.0001,0.001,0.01",
+      "exit_code": 0,
+      "elapsed_seconds": 123.7,
+      "summary": "Generated geometry_validation.json and geometry_validation_trace.csv covering 150 evaluations across 5 geometries"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "summary": "Verified 214/214 protected files clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "scripts/week4_run.py",
+      "sha256": "d3d94f615bc24471307cce11288b50ef8354589409faef6628b2603248a3eb2c"
+    },
+    {
+      "path": "tests/test_week4_protocol.py",
+      "sha256": "87135caba1a93908f29b388f2b4e0b458b0d367c8445f501d7048152ebeec192"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/geometry_validation.json",
+      "sha256": "8f8ebec5b147b75e3a3b65e8f3e77d51902457a1c986b434b9364c7d1c0d6df4"
+    },
+    {
+      "path": "output/week4/week4_initial_20261103/geometry_validation_trace.csv",
+      "sha256": "4dda264eae2ff579635a6fcc370918cf2bb188014e617943c1e6ee438c4e5ad5"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-018-C01",
+      "status": "PASS",
+      "evidence": "Implemented canonical CLI driver scripts/week4_run.py with 'geometry' subcommand; tracks stable global row IDs and per-anchor records. Verified by test_c01_and_c06_test_split_protection and CLI execution."
+    },
+    {
+      "requirement_id": "W4-018-C02",
+      "status": "PASS",
+      "evidence": "Mandatory paired controls executed on identical anchors: full_box (768D), fixed_overlap_wave (384D free), pca_affine_tail_hull, and pca_affine_tail_native with IBP and CROWN bounds. Verified by test_c04_c05_c07_small_geometry_sweep."
+    },
+    {
+      "requirement_id": "W4-018-C03",
+      "status": "PASS",
+      "evidence": "Generated orthonormal random basis control (Q^T Q = I_8) and evaluated 11 competitor margins against winner c*. PCA basis provides ~57 margin units tighter bounds than random basis at scale 1e-3. Verified by test_c02_and_c03_random_basis_control and trace CSV."
+    },
+    {
+      "requirement_id": "W4-018-C04",
+      "status": "PASS",
+      "evidence": "Separates candidate membership, conditional-positive build, and joint positive-member counts explicitly without marginal probability multiplication. Recorded per-sample in geometry_validation_trace.csv."
+    },
+    {
+      "requirement_id": "W4-018-C05",
+      "status": "PASS",
+      "evidence": "Proposals generated strictly from observed anchor inputs with zero next-input leakage. Next streaming query evaluated offline for containment. Labels used strictly for post-hoc stratification. Verified by test_c04_c05_c07_small_geometry_sweep."
+    },
+    {
+      "requirement_id": "W4-018-C06",
+      "status": "PASS",
+      "evidence": "Strict pre-test sealing contract: rejects test split evaluation with PermissionError unless explicit allow_test flag is passed. Verified by test_c01_and_c06_test_split_protection."
+    },
+    {
+      "requirement_id": "W4-018-C07",
+      "status": "PASS",
+      "evidence": "Deterministic anchor pairing using stride 38; PCA fit strictly on train split (zero validation leakage). All 214 protected files confirmed intact. Generated geometry_validation.json and geometry_validation_trace.csv. Verified by week4_audit check."
+    }
+  ],
+  "scientific_dispositions": {
+    "H02_prefix_invariance": "CONFIRMED: Prefix invariance reduces active uncertainty from 768 dimensions to 384 dimensions.",
+    "H04_sound_relaxation": "CONFIRMED: Both IBP and CROWN bounds soundly enclose all evaluated margin specifications.",
+    "H08_linear_relaxation_superiority": "CONFIRMED: CROWN linear relaxation achieves positive margin verification at 1e-3, where IBP completely collapses.",
+    "H09_incompleteness_semantics": "CONFIRMED: Inconclusive bounds do not imply misclassification (98%+ query agreement retained).",
+    "H10_pca_basis_advantage": "CONFIRMED: PCA K=8 captures aligned sensor dynamics; random basis baseline achieves lower margin tightness.",
+    "H11_hull_loss_elimination": "CONFIRMED: Native correlated bounds eliminate ~150 margin units of wrapping error compared to outer bounding boxes.",
+    "H12_wave_vs_full": "CONFIRMED: Fixed-overlap wave box eliminates half the volume expansion of full 768D box.",
+    "H19_vanishing_coverage": "CONFIRMED: For raw coordinate boxes, small displacement collapses coverage to near 0%; affine expansion improves feasible coverage."
+  },
+  "limitations": [
+    "CROWN linear relaxation latency (~1.2s per anchor) remains the runtime bottleneck for streaming real-time reuse.",
+    "Coordinate boxes at raw sensor windows have low membership rates on validation streams due to continuous physical sensor displacement."
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "task_id": "W4-010",
+  "title": "Independent numerical eligibility review and non-bypass capability gate",
+  "milestone": "M1",
+  "decision": "ELIGIBLE_FOR_PROFILE",
+  "profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "method_id": "higham_directed_float32_enclosure_v1",
+  "target_model": "SmallCNN1D(num_classes=12)",
+  "reference_checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "source_hashes": {
+    "ecdr/week4/numerics.py": "cfa08740c4f2dbc811ed4a3b00fdd9b9876b66312907ab5ddefa0d27b43c27f2",
+    "04_SYNTHESIS/week4/design/FLOAT32_BRIDGE.md": "adb37e74d98530bea7c38091ac2451302944407a286947cb799c041dedc13eaf",
+    "04_SYNTHESIS/week4/design/NUMERICAL_REVIEW.md": "ae1588a80d11f1d55f6306a2d8c7a62431887feaf323b6a53880fb3f94745b87",
+    "output/week4/week4_initial_20261103/operator_capabilities.json": "33f0fd584c143f4f5144d24c87582aa128afbce2ff68053bb03f92f8c383fe46",
+    "output/week4/week4_initial_20261103/numerical_bridge.json": "ac7cc79a8381dabc110a2ee5612afbb4959f61aae61f66a5170927779db17688"
+  },
+  "operator_inventory": {
+    "input_conversion": {
+      "operator": "float32_cast",
+      "status": "DERIVED",
+      "proof_reference": "NUMERICAL_CONTRACT.md \u00a71 & IEEE-754 round-to-nearest monotonicity"
+    },
+    "normalization": {
+      "operator": "elementwise_sub_div",
+      "status": "DERIVED",
+      "proof_reference": "Theorem 1 (NUMERICAL_CONTRACT.md & reference.py)"
+    },
+    "conv.0": {
+      "operator": "Conv1d(6->32, k=5, p=2)",
+      "dot_product_dim": 30,
+      "status": "DERIVED",
+      "proof_reference": "Higham backward error gamma_31"
+    },
+    "conv.1": {
+      "operator": "BatchNorm1d(32)",
+      "status": "DERIVED",
+      "proof_reference": "Affine scale-shift alpha*x + beta, error gamma_4"
+    },
+    "conv.2": {
+      "operator": "ReLU",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise non-expansive exact map (delta=0)"
+    },
+    "conv.3": {
+      "operator": "MaxPool1d(k=2, s=2)",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise exact pairwise max (delta=0)"
+    },
+    "conv.4": {
+      "operator": "Conv1d(32->64, k=3, p=1)",
+      "dot_product_dim": 96,
+      "status": "DERIVED",
+      "proof_reference": "Higham backward error gamma_97"
+    },
+    "conv.5": {
+      "operator": "BatchNorm1d(64)",
+      "status": "DERIVED",
+      "proof_reference": "Affine scale-shift alpha*x + beta, error gamma_4"
+    },
+    "conv.6": {
+      "operator": "ReLU",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise non-expansive exact map (delta=0)"
+    },
+    "conv.7": {
+      "operator": "MaxPool1d(k=2, s=2)",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise exact pairwise max (delta=0)"
+    },
+    "conv.8": {
+      "operator": "Conv1d(64->64, k=3, p=1)",
+      "dot_product_dim": 192,
+      "status": "DERIVED",
+      "proof_reference": "Higham backward error gamma_193"
+    },
+    "conv.9": {
+      "operator": "BatchNorm1d(64)",
+      "status": "DERIVED",
+      "proof_reference": "Affine scale-shift alpha*x + beta, error gamma_4"
+    },
+    "conv.10": {
+      "operator": "ReLU",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise non-expansive exact map (delta=0)"
+    },
+    "conv.11": {
+      "operator": "MaxPool1d(k=2, s=2)",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise exact pairwise max (delta=0)"
+    },
+    "head.0": {
+      "operator": "Flatten(start_dim=1)",
+      "status": "DERIVED",
+      "proof_reference": "Memory layout reshape exact (delta=0)"
+    },
+    "head.1": {
+      "operator": "Linear(2048->128)",
+      "dot_product_dim": 2048,
+      "status": "DERIVED",
+      "proof_reference": "Higham backward error gamma_2049"
+    },
+    "head.2": {
+      "operator": "ReLU",
+      "status": "DERIVED",
+      "proof_reference": "Coordinatewise non-expansive exact map (delta=0)"
+    },
+    "head.3": {
+      "operator": "Linear(128->12)",
+      "dot_product_dim": 128,
+      "status": "DERIVED",
+      "proof_reference": "Higham backward error gamma_129"
+    },
+    "competitor_margins": {
+      "operator": "pairwise_differences_or_direct_head",
+      "status": "DERIVED",
+      "proof_reference": "FLOAT32_BRIDGE.md \u00a73 (sound lower bounding)"
+    },
+    "backend_reduction": {
+      "operator": "Intel_MKL_AVX512_sum",
+      "status": "ASSUMED",
+      "proof_reference": "Standard sequential/tree float32 reduction bounded by gamma_N"
+    }
+  },
+  "gate_recommendation": {
+    "G3_numerical_component": "SOUND_FOR_FLOAT32",
+    "G3_numerical_gate_cleared": true,
+    "G3_overall_status": "PENDING_REMAINING_EVIDENCE",
+    "runtime_certificates_issued": false,
+    "formal_reuse_eligible": true,
+    "fallback_policy": "Strict fallback to ReferenceOwner.infer on non-positive margin"
+  },
+  "invalidation_policy": {
+    "stale_on_source_change": true,
+    "stale_on_checkpoint_change": true,
+    "stale_on_profile_mismatch": true,
+    "require_eval_mode": true
+  }
+}

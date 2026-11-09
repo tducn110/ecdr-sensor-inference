@@ -1,0 +1,580 @@
+{
+  "task_id": "W4-013",
+  "title": "auto-LiRPA capability and native operator probe report",
+  "environment": {
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "python_version": "3.11.15 (main, May 10 2026, 19:28:18) [Clang 22.1.3 ]",
+    "python_executable": "/home/pro/Downloads/research/.venv/bin/python",
+    "torch_version": "2.14.1+cpu",
+    "torch_cuda_available": false,
+    "cpu_count": 12,
+    "auto_lirpa_version": "0.8.0",
+    "auto_lirpa_requirements": [
+      "torch<2.12.0,>=2.0.0",
+      "numpy>=2.0.0",
+      "packaging>=20.0",
+      "tqdm>=4.67.3",
+      "graphviz>=0.21",
+      "appdirs>=1.4.4"
+    ],
+    "version_contract_satisfied": false,
+    "contract_note": "Host torch 2.14.1+cpu violates requirement 'torch<2.12.0,>=2.0.0'",
+    "environment_isolation_mode": "isolated_interpreter_evaluation"
+  },
+  "checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "architecture_layers": [
+    {
+      "index": 0,
+      "section": "conv",
+      "type": "Conv1d",
+      "details": "Conv1d(6, 32, kernel_size=(5,), stride=(1,), padding=(2,))"
+    },
+    {
+      "index": 1,
+      "section": "conv",
+      "type": "BatchNorm1d",
+      "details": "BatchNorm1d(32, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)"
+    },
+    {
+      "index": 2,
+      "section": "conv",
+      "type": "ReLU",
+      "details": "ReLU()"
+    },
+    {
+      "index": 3,
+      "section": "conv",
+      "type": "MaxPool1d",
+      "details": "MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)"
+    },
+    {
+      "index": 4,
+      "section": "conv",
+      "type": "Conv1d",
+      "details": "Conv1d(32, 64, kernel_size=(3,), stride=(1,), padding=(1,))"
+    },
+    {
+      "index": 5,
+      "section": "conv",
+      "type": "BatchNorm1d",
+      "details": "BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)"
+    },
+    {
+      "index": 6,
+      "section": "conv",
+      "type": "ReLU",
+      "details": "ReLU()"
+    },
+    {
+      "index": 7,
+      "section": "conv",
+      "type": "MaxPool1d",
+      "details": "MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)"
+    },
+    {
+      "index": 8,
+      "section": "conv",
+      "type": "Conv1d",
+      "details": "Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))"
+    },
+    {
+      "index": 9,
+      "section": "conv",
+      "type": "BatchNorm1d",
+      "details": "BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)"
+    },
+    {
+      "index": 10,
+      "section": "conv",
+      "type": "ReLU",
+      "details": "ReLU()"
+    },
+    {
+      "index": 11,
+      "section": "head",
+      "type": "Flatten",
+      "details": "Flatten(start_dim=1, end_dim=-1)"
+    },
+    {
+      "index": 12,
+      "section": "head",
+      "type": "Linear",
+      "details": "Linear(in_features=2048, out_features=128, bias=True)"
+    },
+    {
+      "index": 13,
+      "section": "head",
+      "type": "ReLU",
+      "details": "ReLU()"
+    },
+    {
+      "index": 14,
+      "section": "head",
+      "type": "Linear",
+      "details": "Linear(in_features=128, out_features=12, bias=True)"
+    }
+  ],
+  "surrogate_equivalence": {
+    "mathematical_real_algebra": "DERIVED: kernel (1,k), stride (1,s), pool (1,2) preserve 1D summation indices exactly in R",
+    "sampled_logit_max_abs_error": 0.0,
+    "sampled_decision_disagreements": 0,
+    "ieee754_floating_point_equivalence": "NOT ESTABLISHED (different BLAS matrix / conv implementations across 1D and 2D)",
+    "formal_equivalence_verdict": "CONDITIONAL_SURROGATE_ONLY"
+  },
+  "probes": [
+    {
+      "graph": "native_1d",
+      "model_type": "SmallCNN1D",
+      "input_shape": [
+        1,
+        6,
+        128
+      ],
+      "conversion_status": "FAILED",
+      "conversion_ms": 108.0339250038378,
+      "total_ms": 108.75099799886812,
+      "failing_layer": "MaxPool1d (auto_LiRPA/operators/pooling.py pads indexing IndexError)",
+      "exception_type": "IndexError",
+      "exception_repr": "IndexError('list index out of range')",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/pro/Downloads/research/scripts/week4_probe.py\", line 251, in run_operator_probe\n    bm_1d = BoundedModule(ref_model, dummy_1d, bound_opts={\"conv_mode\": \"matrix\"}, device=\"cpu\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/pro/Downloads/research/.venv/lib/python3.11/site-packages/auto_LiRPA/bound_general.py\", line 170, in __init__\n    self._convert(model, self.global_input)\n  File \"/home/pro/Downloads/research/.venv/lib/python3.11/site-packages/auto_LiRPA/bound_general.py\", line 948, in _convert\n    nodesOP, nodesIn, nodesOut, template = self._convert_nodes(\n                                           ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/pro/Downloads/research/.venv/lib/python3.11/site-packages/auto_LiRPA/bound_general.py\", line 831, in _convert_nodes\n    nodesOP[n] = nodesOP[n]._replace(bound_node=op(\n                                                ^^^\n  File \"/home/pro/Downloads/research/.venv/lib/python3.11/site-packages/auto_LiRPA/operators/pooling.py\", line 29, in __init__\n    assert ('pads' not in attr) or (attr['pads'][0] == attr['pads'][2])\n                                                       ~~~~~~~~~~~~^^^\nIndexError: list index out of range\n",
+      "bounds": [],
+      "root_cause": "auto-LiRPA assumes 2D padding tuples (4 elements [t, l, b, r]); 1D pooling ONNX export produces 2 elements [l, r], causing attr['pads'][2] IndexError."
+    },
+    {
+      "graph": "singleton_height_2d",
+      "model_type": "SingletonHeightCNN",
+      "input_shape": [
+        1,
+        6,
+        1,
+        128
+      ],
+      "conversion_status": "PASS",
+      "conversion_ms": 17.402808996848762,
+      "total_ms": 3529.134732001694,
+      "bounds": [
+        {
+          "anchor_val_index": 15031,
+          "radius": 0.0,
+          "method": "IBP",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 3.328633989440277,
+          "all_positive": true,
+          "min_margin": 2.232367515563965,
+          "lower_margins": [
+            10.363056182861328,
+            2.232367515563965,
+            6.810950756072998,
+            6.476865768432617,
+            4.587632179260254,
+            4.869068145751953,
+            11.201653480529785,
+            2.2925100326538086,
+            9.825776100158691,
+            2.9160854816436768,
+            4.578122615814209
+          ],
+          "competitors": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15031,
+          "radius": 0.0,
+          "method": "CROWN",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 33.9257970044855,
+          "all_positive": true,
+          "min_margin": 2.232365369796753,
+          "lower_margins": [
+            10.363056182861328,
+            2.232365369796753,
+            6.810948848724365,
+            6.476865291595459,
+            4.587629795074463,
+            4.8690690994262695,
+            11.201651573181152,
+            2.2925117015838623,
+            9.825773239135742,
+            2.916083335876465,
+            4.578121185302734
+          ],
+          "competitors": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15031,
+          "radius": 0.001,
+          "method": "IBP",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 2.7433770010247827,
+          "all_positive": false,
+          "min_margin": -22.351926803588867,
+          "lower_margins": [
+            -12.223408699035645,
+            -18.812673568725586,
+            -18.39162826538086,
+            -16.592029571533203,
+            -22.351926803588867,
+            -20.299978256225586,
+            -18.301044464111328,
+            -19.053054809570312,
+            -16.731311798095703,
+            -22.092798233032227,
+            -18.286392211914062
+          ],
+          "competitors": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15031,
+          "radius": 0.001,
+          "method": "CROWN",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 285.00105399871245,
+          "all_positive": true,
+          "min_margin": 2.0793051719665527,
+          "lower_margins": [
+            10.232889175415039,
+            2.0793051719665527,
+            6.663650035858154,
+            6.359300136566162,
+            4.4017534255981445,
+            4.713082313537598,
+            11.012226104736328,
+            2.122026205062866,
+            9.650219917297363,
+            2.7507216930389404,
+            4.443376064300537
+          ],
+          "competitors": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15031,
+          "radius": 0.01,
+          "method": "IBP",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 4.7153420018730685,
+          "all_positive": false,
+          "min_margin": -249.7785186767578,
+          "lower_margins": [
+            -184.1248321533203,
+            -204.8024139404297,
+            -225.00149536132812,
+            -214.04945373535156,
+            -249.7785186767578,
+            -235.2852783203125,
+            -238.54554748535156,
+            -204.43968200683594,
+            -220.48345947265625,
+            -239.2342529296875,
+            -215.00108337402344
+          ],
+          "competitors": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15031,
+          "radius": 0.01,
+          "method": "CROWN",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 1389.5672999933595,
+          "all_positive": false,
+          "min_margin": -18.36306381225586,
+          "lower_margins": [
+            -7.939981460571289,
+            -17.45952606201172,
+            -14.112117767333984,
+            -12.162818908691406,
+            -18.36306381225586,
+            -16.578041076660156,
+            -12.819206237792969,
+            -16.513750076293945,
+            -11.690967559814453,
+            -18.25205421447754,
+            -14.128068923950195
+          ],
+          "competitors": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15376,
+          "radius": 0.0,
+          "method": "IBP",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 2.637012003106065,
+          "all_positive": true,
+          "min_margin": 4.626915454864502,
+          "lower_margins": [
+            12.575509071350098,
+            14.881017684936523,
+            14.172110557556152,
+            4.626915454864502,
+            9.489057540893555,
+            9.507486343383789,
+            10.723033905029297,
+            13.162498474121094,
+            13.484335899353027,
+            13.093619346618652,
+            13.122949600219727
+          ],
+          "competitors": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15376,
+          "radius": 0.0,
+          "method": "CROWN",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 9.991439001169056,
+          "all_positive": true,
+          "min_margin": 4.626914978027344,
+          "lower_margins": [
+            12.575508117675781,
+            14.881013870239258,
+            14.172107696533203,
+            4.626914978027344,
+            9.489055633544922,
+            9.507484436035156,
+            10.723031997680664,
+            13.162497520446777,
+            13.484336853027344,
+            13.093618392944336,
+            13.122947692871094
+          ],
+          "competitors": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15376,
+          "radius": 0.001,
+          "method": "IBP",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 3.3178659941768274,
+          "all_positive": false,
+          "min_margin": -22.357450485229492,
+          "lower_margins": [
+            -20.529481887817383,
+            -18.20298194885254,
+            -21.082796096801758,
+            -17.310251235961914,
+            -18.517921447753906,
+            -22.258901596069336,
+            -20.949390411376953,
+            -18.402864456176758,
+            -17.18027687072754,
+            -22.357450485229492,
+            -20.02688217163086
+          ],
+          "competitors": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15376,
+          "radius": 0.001,
+          "method": "CROWN",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 456.29238500259817,
+          "all_positive": true,
+          "min_margin": 3.834627151489258,
+          "lower_margins": [
+            10.674464225769043,
+            13.160248756408691,
+            12.307973861694336,
+            3.834627151489258,
+            8.489635467529297,
+            8.226600646972656,
+            9.193106651306152,
+            11.82852554321289,
+            12.120967864990234,
+            11.688904762268066,
+            11.69916820526123
+          ],
+          "competitors": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15376,
+          "radius": 0.01,
+          "method": "IBP",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 2.508721998310648,
+          "all_positive": false,
+          "min_margin": -320.9398193359375,
+          "lower_margins": [
+            -275.74383544921875,
+            -265.4200744628906,
+            -280.6995849609375,
+            -228.08558654785156,
+            -254.4907684326172,
+            -294.4974670410156,
+            -267.71624755859375,
+            -265.6683654785156,
+            -243.69024658203125,
+            -320.9398193359375,
+            -279.28082275390625
+          ],
+          "competitors": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "anchor_val_index": 15376,
+          "radius": 0.01,
+          "method": "CROWN",
+          "status": "CONDITIONAL_DIAGNOSTIC",
+          "elapsed_ms": 1313.7899689900223,
+          "all_positive": false,
+          "min_margin": -62.637718200683594,
+          "lower_margins": [
+            -62.637718200683594,
+            -55.92125701904297,
+            -59.74506378173828,
+            -41.366615295410156,
+            -44.54624557495117,
+            -54.18846130371094,
+            -53.801292419433594,
+            -48.503318786621094,
+            -47.08952331542969,
+            -58.576107025146484,
+            -51.53734588623047
+          ],
+          "competitors": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ]
+        }
+      ]
+    }
+  ],
+  "formal_runtime_reuse": "DISABLED: Native 1D graph conversion fails due to auto-LiRPA MaxPool1d pads bug. 2D surrogate arithmetic is conditionally diagnostic only, because floating-point equivalence to the frozen 1D reference is not proven and CROWN runtime (~400ms) violates the streaming deadline."
+}

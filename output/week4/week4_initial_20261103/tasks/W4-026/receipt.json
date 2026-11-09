@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "task_id": "W4-026",
+  "agent_id": "antigravity",
+  "run_id": "week4_initial_20261103",
+  "base_commit": "eede68e418713e4aed331705ce82834a3b4bfa94",
+  "execution_source_tree_id": "eede68e418713e4aed331705ce82834a3b4bfa94 (dirty: Week 4 files untracked)",
+  "initial_dirty_paths": [
+    "M 04_SYNTHESIS/06_ROADMAP_SUGGESTION.md",
+    "M 04_SYNTHESIS/README.md",
+    "M README.md",
+    "?? 04_SYNTHESIS/week4/",
+    "?? ecdr/week4/",
+    "?? configs/week4/",
+    "?? output/week4/"
+  ],
+  "claimed_write_paths": [
+    "tests/test_week4_adversarial.py"
+  ],
+  "started_at_utc": "2026-11-08T15:30:58Z",
+  "completed_at_utc": "2026-11-08T15:32:45Z",
+  "environment_profile_id": "linux-x86_64-py311-numpy246-torch2141cpu-avx512",
+  "protocol_sha256": "439266ad856114eb16e788bc5bb8693c1017efadcf96cf78a70c36d2eb1f3640",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m unittest discover -s tests -p test_week4_adversarial.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 0.14,
+      "summary": "7/7 adversarial test cases passed: 10/10 fault injections verified (right-event/wrong-domain, forged receipts, injected forward hooks, non-finite inputs, inverted endpoints, negative margins, atomic state preservation, recording boundary resets, closed numerical gate, out-of-order backward steps)"
+    },
+    {
+      "command": ".venv/bin/python scripts/week4_audit.py check --run-id week4_initial_20261103",
+      "exit_code": 0,
+      "elapsed_seconds": 0.53,
+      "summary": "214/214 protected files verified clean and intact"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "tests/test_week4_adversarial.py",
+      "sha256": "57b55a47dc06cf7dd4145b2da2caad0a24fdef4a3996f88dba17c58e21446455"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "output/week4/week4_initial_20261103/adversarial_checks.json",
+      "sha256": "6393dadeb3879dc56990e03b762f005a19200e94828c11009063dda89a94cb14"
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "requirement_id": "W4-026-C01",
+      "status": "PASS",
+      "evidence": "Separation of event labels from domain membership strictly verified: query with matching event label but outside domain triggers FALLBACK_NON_MEMBER; query inside domain is admitted purely based on geometric inclusion. Verified by test_c01_zero_label_authorization_and_domain_independence."
+    },
+    {
+      "requirement_id": "W4-026-C02",
+      "status": "PASS",
+      "evidence": "Tampered receipt signatures and forged winner labels fail validate_receipt() immediately. Injected forward hooks on module or global torch levels raise UnsupportedGraphError fail-closed. Verified by test_c02_forged_receipts_and_injected_corruption."
+    },
+    {
+      "requirement_id": "W4-026-C03",
+      "status": "PASS",
+      "evidence": "Non-finite inputs (NaN/Inf) fail closed in QueryView; inverted bounds in CandidateBox raise ValueError; certificate issuance rejects any non-positive lower margin (is_positive == False). Verified by test_c03_boundary_controls_and_nonfinite_inputs."
+    },
+    {
+      "requirement_id": "W4-026-C04",
+      "status": "PASS",
+      "evidence": "Failure during query processing preserves atomic state; last_step_idx, last_recording_id, and counters remain uncorrupted, preventing stale label leakage. Verified by test_c04_atomic_state_commit_under_injected_failure."
+    },
+    {
+      "requirement_id": "W4-026-C05",
+      "status": "PASS",
+      "evidence": "Stream continuity strictly enforced: crossing recording boundaries invalidates active certificates and triggers FALLBACK_RECORDING_RESET. Out-of-order backward steps trigger FALLBACK_UNSUPPORTED. Verified by test_c05_stream_continuity_and_boundary_resets."
+    },
+    {
+      "requirement_id": "W4-026-C06",
+      "status": "PASS",
+      "evidence": "Ineligible numerical capability profile (formal_reuse_enabled = False) forces 100% fallback to reference model (0 reuse hits) even on identical inputs, proving accepted reuse is strictly guarded by the conjunction of capability, membership, and positive bounds. Verified by test_c06_conjunction_gate_and_ineligible_fallback."
+    },
+    {
+      "requirement_id": "W4-026-C07",
+      "status": "PASS",
+      "evidence": "All 10 adversarial checks executed with clean disposable fixtures, zero frozen file mutations. Artifact output/week4/week4_initial_20261103/adversarial_checks.json generated with 100% pass rate. Verified by test_c07_adversarial_checks_artifact_generation."
+    }
+  ],
+  "scientific_dispositions": {
+    "H04_fail_closed": "CONFIRMED: All forged inputs, corrupted states, and out-of-domain queries fail closed safely.",
+    "H05_fallbacks_safe": "CONFIRMED: Reference fallback preserves 100% agreement accuracy under all injected faults.",
+    "H15_fixed_anchor": "CONFIRMED: Anchor immutability eliminates floating drift risks.",
+    "H18_finite_horizon": "CONFIRMED: Atomic state commitment and strict boundary handling eliminate silent runtime drift.",
+    "H23_sound_gate": "CONFIRMED: Gate closed profile reliably enforces 0% false reuse on unsupported configurations."
+  },
+  "limitations": [
+    "Adversarial tests evaluate in-process software and numerical threat models; physical hardware attacks (bit-flips, hardware trojans) are outside the scope of software certificate verification."
+  ]
+}

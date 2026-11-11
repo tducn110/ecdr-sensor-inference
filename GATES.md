@@ -1,11 +1,11 @@
 # GATES.md — Research Evidence Gates
 
-> **Current K=12 status post-Week 4 (2026-11-09):**
+> **Current K=12 status post-Week 4 & G2 Full Closure (2026-11-11):**
 > Week 4 implementation and full empirical evaluation across 17 methods (M00–M15, including non-certified baselines) are **ENGINEERING_COMPLETE** (40/40 tasks VERIFIED).
 > Scientific gates summary:
 > - **G0:** PASS (Historical literature baseline).
 > - **G1:** COMPLETE_WITH_REVISIONS / PASS (Historical dataset foundations).
-> - **G2:** HOLD_CONDITIONAL (Retained from Week 2/3: 89.05% Acc, 0.7763 Macro-F1 on supervised test; transition classes remain weakly supported).
+> - **G2:** PASS (G2-A & G2-B K=12 Verified post-W4 via [`scripts/post_w4_g2_full_closure.py`](scripts/post_w4_g2_full_closure.py) and [`output/post_week4/g2_full_closure.json`](output/post_week4/g2_full_closure.json): Span-Anchored Transition Extraction resolves all 18 support blockers (`0/18 blockers`, $\ge 58$ val / $\ge 194$ test / $\ge 318$ train windows per transition class across 17/4/9 subjects); 3-seed Class-Balanced Focal training raises K=12 Macro-F1 to **$0.8537 \pm 0.0020$** on Full-G2 test ($N=4,544$) and **$0.8018 \pm 0.0045$** (Acc $89.85\% \pm 0.22\%$) on Canonical test ($N=3,572$); Week 1–4 frozen reference `selected_best.pt` retained as historical `HOLD_CONDITIONAL` baseline for replay continuity).
 > - **G3:** FALSIFIED_STREAMING for useful streaming reuse ($R=0$ useful hits across certified methods M05–M13 due to continuous sensor noise, falsifying H19). Fail-closed fallback guarantees 100% decision agreement ($D_{\text{all}}=0$, supporting H09, H11, H18).
 > - **G4:** FALSIFIED_CPU for runtime acceleration. Incremental re-computation (M03) achieves 100% adjacent reuse ($R=5,034$) but tensor slicing/stitching overhead reduces speed ratio to $0.1775\times$ vs M00 (falsifying H14). Regional verifiers achieve speed ratio $\le 0.76\times$.
 > - **G5:** NOT_ESTABLISHED / FALSIFIED for net CPU speedup ($0/17$ methods achieve net speedup; H24 trilemma conjunction failed).

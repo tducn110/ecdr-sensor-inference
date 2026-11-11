@@ -1,0 +1,271 @@
+% !TEX program = xelatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,longtable,tabularx,array,multirow}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
+
+\geometry{left=2.1cm,right=2.1cm,top=2.25cm,bottom=2.25cm,headheight=15pt}
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\definecolor{pale}{HTML}{E8F2F2}
+\definecolor{warnred}{HTML}{B91C1C}
+\definecolor{okgreen}{HTML}{0F766E}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ink,
+  citecolor=teal,
+  urlcolor=teal,
+  pdftitle={ECDR Mechanism Analysis, Research Rationale, and Strategic New Directions (EN)},
+  pdfauthor={ECDR Research Team}
+}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5.5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.18}
+\setlist{nosep,leftmargin=1.5em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\vecop}{\operatorname{vec}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\Sset}{\mathcal{S}}
+\newcommand{\Dset}{\mathcal{D}}
+
+\newtheorem{principle}{Design Principle}[section]
+\newtheorem{mechanism}{Physical--Mathematical Mechanism}[section]
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{\textbf{ECDR} | Mechanism Analysis, Research Rationale \& New Directions}}
+\fancyhead[R]{\small\textcolor{teal}{Analytical Monograph (EN)}}
+\fancyfoot[L]{\small Run ID: \code{week4_initial_20261103} $\cdot$ November 2026}
+\fancyfoot[R]{\small\thepage}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\vspace*{0.4cm}
+{\Large\bfseries\color{teal} EVENT-CONDITIONED CERTIFIED DECISION REUSE (ECDR)\par}
+\vspace{0.35cm}
+{\huge\bfseries\color{ink} Analytical Monograph: Concise Context, Epistemological Research Rationale, Mechanism-Level Root-Cause Dissection, and Next-Generation Directions\par}
+\vspace{0.45cm}
+{\large\color{ink} Mathematical, Biomechanical, and Hardware Mechanism Analysis (Without Redundant Raw Tables)\par}
+\vspace{0.55cm}
+
+\begin{tabularx}{\linewidth}{@{}P{4.0cm}Y@{}}
+\toprule
+\textbf{Document Scope} & Dedicated to answering \textbf{``Why?''}: (1) Concise context, what was done, and how raw data and query telemetry were collected and extracted; (2) Why the research methodology was designed with such strict formal contracts; (3) What exact mathematical, physical, and hardware mechanisms caused certain components to \textbf{SUCCEED} and others to \textbf{FAIL}; and (4) Five concrete, quantitatively grounded new research directions.\\
+\textbf{Companion Reference} & Exhaustive 17-method and 24-hypothesis tables are provided in \code{ECDR\_Full\_Synthesis\_Report\_EN.pdf} and \code{ECDR\_Full\_Synthesis\_Report\_VI.pdf}.\\
+\textbf{System Under Analysis} & Frozen \code{SmallCNN1D} ($283,692$ params, $1.17\text{ MMACs}$) on the HAPT streaming benchmark ($5,053$ test windows, $5,034$ adjacent pairs) plus 4 scaling architectures (\code{MediumCNN1D}, \code{TemporalResNet1D}, \code{TemporalTransformer1D}).\\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.45cm}
+\noindent\colorbox{pale}{%
+\parbox{\dimexpr\linewidth-2\fboxsep}{%
+\textbf{\color{ink}Core Mechanism Synopsis.}\\[4pt]
+The ECDR research program validated three foundational mechanisms while uncovering two fundamental physical and hardware bottlenecks:
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Why Specific Mechanisms SUCCEEDED:}
+    (i) \textit{Shift-Aligned Receptive Field Arithmetic} enabled exact incremental computation (\code{M03}) to achieve $100\%$ bitwise identity at the 12 interior \code{Conv3} columns across all $5,034/5,034$ adjacent window pairs;
+    (ii) \textit{Four-Barrier Fail-Closed Gate + Fixed-Anchor Policy} guaranteed $100\%$ full-stream decision agreement ($D_{\text{all}} = 0$) across all 17 methods with zero silent corruptions;
+    (iii) \textit{Direct 11-Margin Contrast Fusion $C^{(c)} W_{\text{out}}$} eliminated final-layer interval dependency loss via common-mode cancellation.
+  \item \textbf{Why Input-Space Certification \& CPU Incremental Slicing FAILED on \code{SmallCNN1D}:}
+    (i) \textit{The Biomechanical Phase-Shift Illusion:} A $50\%$ temporal overlap ($1.28\text{ s}$ stride) acts as a time-phase shift operator roughly equal to a full human gait cycle, generating a median normalized displacement of $\norm{\Delta z}_2 = 25.49$---which is \textbf{1,562.7$\times$ larger} than the maximum certifiable radius ($r_{\max} = 0.0149$) after multi-layer interval wrapping, forcing $R = 0$;
+    (ii) \textit{The L2/L3 Cache Residency \& Flatten--Linear Paradox:} \code{Flatten(2048)->Linear(128)} holds \textbf{92.45\% of all model parameters} and is position-sensitive under feature shifting, while \code{M00} ($1.14\text{ MB}$) fits entirely inside CPU L2/L3 cache and runs in $0.140\text{ ms}$ via fused C++ SIMD kernels, whereas Python/PyTorch batch-1 tensor slicing and \code{torch.cat} incur $1.927\text{ ms}$.
+\end{itemize}
+}}
+\vfill
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+
+\begingroup\small\setlength{\parskip}{1pt}\tableofcontents\endgroup
+\clearpage
+
+% =============================================================================
+\section{Concise Context, What Was Done, and Information Extraction Pipeline}
+% =============================================================================
+
+\subsection{Problem Context}
+In continuous Edge AI sensor streaming (exemplified by the 6-channel $50\text{ Hz}$ HAPT inertial benchmark), a classifier evaluates sliding windows of length $W = 128$ samples ($2.56\text{ s}$) advancing by stride $s = 64$ samples ($1.28\text{ s}$). Every consecutive window $X_t \in \R^{6 \times 128}$ ($m = 768$ scalars) shares exactly its first 64 time steps ($384$ scalars, or $50\%$ of all measurements) with the last 64 time steps of $X_{t-1}$.
+
+The central question is whether this $50\%$ temporal overlap allows the system to bypass redundant neural evaluation via \textbf{certified regional decision reuse} ($Z_t \in \Dset(X^r)$) or \textbf{shift-aligned exact incremental feature reuse}, while provably preserving $100\%$ of the frozen reference model's decisions.
+
+\subsection{What Was Done}
+Across Weeks 1--4 and the Post-Week 4 feasibility study, we executed five tightly integrated stages:
+\begin{enumerate}
+  \item \textbf{Frozen Reference Lock:} Trained and cryptographically froze \code{SmallCNN1D} ($K=12$ classes, $283,692$ parameters, $1.17\text{ MMACs}$, $89.05\%$ supervised test accuracy) alongside train-only channel statistics $\mu_c, \sigma_c$.
+  \item \textbf{Formal Bound \& Arithmetic Engine Construction:} Implemented direct 11-competitor margin bounds ($L_{cj}(\Sset)$) across 3 bound propagators (\code{Lipschitz}, \code{IBP}, \code{CROWN}) and 5 causal domain geometries (\code{Diagonal Box}, \code{Fixed-Overlap Wave}, \code{PCA Affine Hull}, \code{Correlated Zonotope}, \code{Random Haar Control}), backed by an outward-rounded $\F_{32} \leftrightarrow \F_{64}$ arithmetic bridge.
+  \item \textbf{Exact Incremental Engine (\code{M03}):} Built a 3-layer \code{Conv1D} activation cache that shifts interior uncontaminated columns and recomputes only boundary patches before the classifier head.
+  \item \textbf{Pre-Sealed Full-Stream Replay:} Evaluated all 17 methods (\code{M00}--\code{M16}) over all $5,053$ test stream windows under cryptographic seal \code{56806762...}.
+  \item \textbf{Quantitative Bottleneck \& Scaling Study:} Measured the physical-to-certified radius gap across $1,000$ adjacent pairs, established the exact FLOPs/MACs break-even crossover across 4 model scales, and benchmarked an in-place pre-allocated ring buffer.
+\end{enumerate}
+
+\subsection{Data Collection and Label-Blind Information Extraction}
+To guarantee zero data leakage and high-precision diagnostics, raw sensor streams were transformed into structured experimental telemetry through a 4-stage pipeline:
+\begin{itemize}
+  \item \textbf{Within-Recording Windowing:} $1,122,772$ raw triaxial accelerometer and gyroscope rows across 61 continuous recordings (30 subjects) were paired, transposed to channel-first $6 \times T$ layout, and sliced with $W=128, s=64$ strictly inside each recording (producing $17,453$ total windows; $5,053$ test windows and $5,034 = 5,053 - 19$ adjacent within-recording test pairs).
+  \item \textbf{Subject-Disjoint Split \& 5-Stratum Taxonomy:} Subjects were partitioned into 17 train, 4 validation, and 9 test subjects so no overlapping windows ever crossed splits. Every window was classified into one of five mutually exclusive strata: \code{Pure-Basic} ($2,874$), \code{Pure-Transition} ($119$), \code{Majority-Mixed} $\ge 77/128$ samples ($579$), \code{Ambiguous} ($479$), and \code{Unlabeled} ($1,002$).
+  \item \textbf{Label-Blind QueryView Telemetry Extraction:} Before calling any \code{StreamingMethodAdapter}, ground-truth labels were stripped from the \code{QueryView} structure to eliminate any possibility of label-oracle cheating. For every single query $t \in \{1,\dots,5053\}$, the harness extracted:
+    (i) predicted class $\hat{y}_t$ vs.\ reference $y_{\text{ref}}(X_t)$ ($D_{\text{all}}$),
+    (ii) reuse hit flag and exact fallback reason code,
+    (iii) all 11 outward-rounded margin lower bounds $L_{cj}^{\F_{64}\downarrow}$,
+    (iv) maximum bitwise feature discrepancy $\max \abs{\Delta H^{(3)}}$ across $3,866,112$ interior scalars,
+    (v) step displacements $\norm{z_{t+1} - z_t}_2, \norm{z_{t+1} - z_t}_\infty$ vs.\ $r_{\max}(z_t)$, and
+    (vi) single-thread nanosecond wall-clock latency (\code{mean}, \code{p50}, \code{p95}).
+\end{itemize}
+
+% =============================================================================
+\section{Why Was the Research Designed This Way? (Epistemological Rationale)}
+% =============================================================================
+
+Why did ECDR enforce such uncompromising constraints---freezing every parameter, separating four evaluation axes, requiring 11 simultaneous outward-rounded margin bounds, and preserving $R=0$ negative results? Below are the six foundational reasons.
+
+\begin{principle}[Why Freeze the Entire Reference Contract (Weights, BatchNorm Stats, Train-Only Normalization, and Tie-Break Rule)?]
+Formal verification is mathematically well-posed only if the target classifier is a \textbf{stationary, deterministic function} $\widehat{F}: \R^{6 \times 128} \to \R^{12}$.
+\end{principle}
+If \code{BatchNorm1d} layers updated running statistics during streaming or if channel normalization $\mu_c, \sigma_c$ included test-set samples, the mapping $\widehat{F}$ would drift over time and leak future information backward, invalidating any certificate computed at an anchor $X^r$.
+
+\begin{principle}[Why Strictly Separate Ground-Truth Accuracy, Reference Decision Agreement, Float32 Soundness, and Net Wall-Clock Speedup?]
+Conflating aggregate test accuracy with decision invariance masks silent cache corruptions, and conflating FLOPs reduction with wall-clock speedup hides memory-dispatch bottlenecks.
+\end{principle}
+If a heuristic cache flips 25 correct reference predictions into errors while accidentally flipping 25 reference errors into correct labels, aggregate test accuracy remains unchanged ($89.05\%$) even though the cache corrupted 50 decisions! Therefore, \textbf{Reference Decision Agreement} ($A_{\text{full}} = 1.0000, D_{\text{all}} = 0$) is the only valid correctness metric for decision reuse. Similarly, \code{M03} eliminates $>60\%$ of convolutional MACs yet runs $5.63\times$ slower in wall-clock time; measuring actual single-thread CPU latency prevented a false claim of practical speedup.
+
+\begin{principle}[Why Require All 11 Competitor Margins Simultaneously and Fuse $C^{(c)} W_{\text{out}}$?]
+Pointwise margin positivity at the anchor does not prevent non-linear logit crossings inside $\Sset$, and independent logit intervals double-count penultimate feature uncertainty.
+\end{principle}
+Because 3 ReLU/MaxPool blocks induce piecewise-linear regions with varying local gradients, a third class $j_3$ with a steep gradient $\norm{\nabla F_{j_3}}$ can overtake the anchor winner $c$ inside $\Sset$ before the point runner-up $j_2$. Certifying $\min_{j \neq c} L_{cj}(\Sset) > 0$ across all 11 competitors is both necessary and sufficient. Fusing the contrast matrix $\widetilde{W}^{(c)} = C^{(c)} W_{\text{out}} \in \R^{11 \times 128}$ before interval relaxation cancels shared penultimate features $(w_c - w_j)^\top h$ (\code{H08}).
+
+\begin{principle}[Why Investigate Two Orthogonal Tracks (\code{M03} vs.\ \code{M05--M13}) and Five Domain Geometries in Parallel?]
+Sliding-window overlap exhibits two distinct mathematical structures: discrete shift alignment and continuous tail perturbation.
+\end{principle}
+Testing \code{Exact Incremental Computation} (\code{M03}) isolated discrete structural reuse, while testing \code{Lipschitz/IBP/CROWN} across \code{Box}, \code{Fixed-Overlap Wave}, \code{PCA Affine Hull}, \code{Correlated Zonotope}, and \code{Random Haar Control} isolated whether zero certified coverage ($R=0$) stemmed from loose bound propagation, unexploited prefix identity, or linear subspace choice.
+
+\begin{principle}[Why Enforce Fail-Closed Execution, Fixed-Anchor Lifecycle, and IEEE 754 Outward Rounding?]
+Safety-critical Edge AI cannot tolerate silent false hits caused by multi-hop anchor drift or floating-point rounding inversions.
+\end{principle}
+Re-centering a ball around an unverified reused query (\code{H15}) accumulates triangle-inequality drift ($k \cdot r > r$) across decision boundaries, whereas holding the anchor fixed (\code{H16}) guarantees invariance. Meanwhile, $\F_{32}$ rounding (\code{1-ULP} $\approx 1.19 \times 10^{-7}$, \code{H22}) can flip a tiny negative margin into a positive number; promoting bound evaluation to $\F_{64}$ with directed outward rounding $\operatorname{nextafter}(\cdot, -\infty)$ closes this gap.
+
+\begin{principle}[Why Preserve Authentic Negative Results Under a Pre-Sealed Protocol?]
+Scientific integrity requires mapping exact impossibility boundaries rather than tuning radii post-hoc on the test stream.
+\end{principle}
+Sealing all hyper-parameters in \code{protocol\_seal.json} before test replay revealed the true physical-to-certified gap ($1,562.7\times$) and enabled us to derive the exact architectural break-even equations ($\ge 26.1\text{--}37.0\text{ MMACs}$).
+
+% =============================================================================
+\section{Mechanism Dissection: Why It Succeeded vs.\ Why It Failed}
+% =============================================================================
+
+\subsection{Why Specific Mechanisms SUCCEEDED (3 Validated Mechanisms)}
+
+\begin{mechanism}[Mechanism 1: Why Exact Incremental Reuse (\code{M03}) Achieved $100\%$ Hit Rate ($5,034/5,034$ Pairs) and Bitwise Identity Across $3,866,112$ Scalars (\code{Shift-Aligned Receptive Field Arithmetic})]
+\end{mechanism}
+Bitwise exactness at \code{Conv3} arises from exact divisibility between the window stride $s = 64$ and the cumulative pooling factor $D = 2 \times 2 = 4$ of the two \code{MaxPool1d(2)} layers:
+\begin{equation}
+  \Delta_1 = \frac{64}{2} = 32 \text{ columns after Pool1}, \qquad \Delta_2 = \frac{64}{4} = 16 \text{ columns after Pool2 and at Conv3}.
+\end{equation}
+On the length-$32$ \code{Conv3} grid, shifting left by $\Delta_2 = 16$ columns maps old columns $j \in \{16,\dots,31\}$ to new positions $j - 16 \in \{0,\dots,15\}$. Because \code{Conv1(k=5, p=2)}, \code{Conv2(k=3, p=1)}, and \code{Conv3(k=3, p=1)} inject zero-padding at the left boundary ($j \in \{0, 1\}$ in the new window) and at the right boundary ($j \in \{30, 31\}$ in the old window, corresponding to $j \in \{14, 15\}$ in the new window), exactly $2$ columns on each side of the $16$-column overlap suffer boundary contamination. The remaining \textbf{12 interior columns} ($j \in \{2,\dots,13\}$ in $X_{t+1}$, matching $j \in \{18,\dots,29\}$ in $X_t$) have receptive field cones strictly contained inside the shared 64-sample overlap. Because deterministic IEEE 754 $\F_{32}$ convolution applies identical operations in identical order to identical inputs, all $64 \times 12 \times 5,034 = 3,866,112$ interior scalars match to the exact bit ($0.0$ error).
+
+\begin{mechanism}[Mechanism 2: Why All 17 Methods Achieved Zero Decision Disagreements ($D_{\text{all}} = 0, A_{\text{full}} = 1.0000$) Across 5,053 Queries (\code{Four-Barrier Fail-Closed Gate})]
+\end{mechanism}
+Every reuse candidate had to pass four serial gates: cryptographic SHA-256 identity match, same-recording continuity, finite-horizon limit $t - t_r \le H$, and conservative domain membership with outward-rounded positive 11-margin lower bounds ($\min_{j \neq c} L_{cj}^{\F_{64}\downarrow} > 0$). Any failure immediately triggered reference execution $\widehat{F}(X_t)$, converting bound conservatism into fallback compute rather than decision errors.
+
+\begin{mechanism}[Mechanism 3: Why Direct 11-Margin Fusion $C^{(c)} W_{\text{out}}$ (\code{H08}) Tightened Final-Layer Bounds]
+\end{mechanism}
+Evaluating $(w_c - w_j)^\top h_0 - \abs{w_c - w_j}^\top r_h$ instead of $\underline{F}_c - \overline{F}_j$ cancels common-sign weight components via $\abs{w_{c,k} - w_{j,k}} < \abs{w_{c,k}} + \abs{w_{j,k}}$, tightening lower bounds by $\sum_{k=0}^{127} (\abs{w_{c,k}} + \abs{w_{j,k}} - \abs{w_{c,k} - w_{j,k}}) r_{h,k} \ge 0$.
+
+---
+
+\subsection{Why Input-Space Certification \& CPU Slicing FAILED on \texttt{SmallCNN1D} (5 Root-Cause Mechanisms)}
+
+\begin{mechanism}[Failure Mechanism 1: The Biomechanical Phase-Shift Illusion (\code{H02, H19} --- Why 50\% Overlap Still Produces a $1,562.7\times$ Physical-to-Certified Gap)]
+\end{mechanism}
+Intuition suggests that $50\%$ temporal overlap implies a small Euclidean distance $\norm{z_{t+1} - z_t}_2$. \textbf{For periodic human motion, this intuition is false.} Human walking cadence operates at $f_0 \approx 0.8\text{--}1.1\text{ Hz}$ (period $T_0 \approx 0.9\text{--}1.25\text{ s}$). Advancing the window by $\Delta t = s / f_s = 64 / 50 = 1.28\text{ s}$ shifts a periodic waveform $z(u) = A \sin(2\pi f_0 u)$ by roughly a full stride cycle:
+\begin{equation}
+  z_{t+1}(u) - z_t(u) = 2 A \sin(\pi f_0 \Delta t) \cos\!\left(2\pi f_0 u + \pi f_0 \Delta t\right).
+\end{equation}
+Pointwise coordinate differences reach $\sim 2A$, and summing over $m = 768$ coordinates scales the $L_2$ norm by $\sqrt{768} \approx 27.71$, yielding a massive empirical median step displacement of $\norm{\Delta z}_2 = 25.4923$ ($\norm{\Delta z}_\infty = 3.8449$). Sliding a window is a \textbf{temporal translation operator}, not small additive coordinate noise! Because input-space verifiers measure coordinate-wise norms $\norm{z_{t+1} - z_t}_p$ and multi-layer bound propagation restricts the certifiable radius to $r_{\max} = 0.01487$, the actual step displacement exceeds the certified radius by \textbf{1,562.7$\times$ at the median} (\textbf{50,990.3$\times$ at the mean}), resulting in $R = 0$ hits.
+
+\begin{mechanism}[Failure Mechanism 2: Exponential Interval Wrapping and Unconstrained Spectral Norms (\code{H06, H07})]
+\end{mechanism}
+Even though the true logit margin at the anchor is large (median $\gamma(z_t) = 6.10$), standard training leaves layer spectral norms unconstrained ($\sigma_{\max}(\widetilde{W}_\ell) \approx 4\text{--}8$), causing the global Lipschitz product $\prod_\ell \norm{\widetilde{W}_\ell}_2$ to exceed $400$ and shrinking $r_{\max} = \gamma(z_t)/L_{\text{global}}$ to $0.0149$. In \code{IBP} (\code{M06, M07}), interval propagation discards sign correlations between adjacent time steps, multiplying interval radii by the row $L_1$ norms $\norm{\widetilde{W}^{(\ell)}_{i,:}}_1$ at every layer and causing thousand-fold bound explosion across 3 Conv/BN/ReLU blocks.
+
+\begin{mechanism}[Failure Mechanism 3: Tail Contamination in \code{Wave} Domains and Subspace Misalignment in \code{PCA} (\code{H10, H11})]
+\end{mechanism}
+\begin{enumerate}
+  \item \textbf{Why locking 384 prefix coordinates (\code{Fixed-Overlap Wave}) still yields $R=0$:} While the 384 prefix coordinates have zero interval width (giving zero width on the left half of \code{Conv3}), the 384 future tail coordinates must still span $\rho_{\text{tail}} \approx 3.84$ to cover $X_{t+1}$. Those wide intervals propagate through columns $16\dots31$ of \code{Conv3} and mix globally into all 128 hidden units of the dense \code{Flatten(2048)->Linear(2048, 128)} layer, contaminating every output logit margin.
+  \item \textbf{Why \code{PCA} subspaces (\code{M08, M09}) fail to beat random orthonormal controls (\code{H10}):} \code{PCA} maximizes input signal variance $\operatorname{Var}(V_k^\top z)$ (dominated by low-frequency gravity and primary gait amplitude), which is misaligned with the classifier's discriminative boundary normals $\nabla_z (F_c - F_j)$. Bounding the orthogonal residual $\delta$ and enclosing the rotated box in an axis-aligned coordinate hull inflates volume by $\norm{V_k}_{\infty \to \infty}$.
+\end{enumerate}
+
+\begin{mechanism}[Failure Mechanism 4: The L2/L3 Cache Residency, Python Slicing, and \texttt{Flatten--Linear} Paradox (\code{H14, H20} --- Why \code{M03} Runs $5.63\times$ Slower Than \code{M00})]
+\end{mechanism}
+Three compounding hardware and architectural factors explain why \code{M03} takes $1.9273\text{ ms}$ vs.\ $0.3420\text{ ms}$ for \code{M00} ($0.1775\times$ speed ratio):
+\begin{enumerate}
+  \item \textbf{Architectural Bottleneck --- 92.45\% of Parameters Sit in Position-Sensitive \code{Flatten(2048)->Linear(128)}:}
+  All three convolutional layers combined contain only $19,872$ parameters ($7.0\%$), whereas \code{Linear(2048, 128)} holds $262,272$ parameters ($92.45\%$). When the 12 reused \code{Conv3} columns shift left by 16 positions ($j+16 \to j$), they align with completely different column blocks of $W_{\text{fc1}} \in \R^{128 \times 2048}$, forcing $100\%$ recomputation of the dense head at every step.
+  \item \textbf{L2/L3 Cache Residency and Contiguous SIMD Kernels for \code{M00}:}
+  \code{SmallCNN1D} occupies just $1.136\text{ MB}$ in $\F_{32}$, fitting entirely in CPU L2/L3 cache. Direct execution (\code{M00}) completes the entire 15-layer forward pass in $0.1402\text{ ms}$ ($0.3420\text{ ms}$ with normalization) via fused C++ oneDNN/MKL AVX2/AVX-512 kernels.
+  \item \textbf{Python/PyTorch Batch-1 Slicing, \code{torch.cat} Allocation, and Wrapper Overhead:}
+  Slicing small boundary tensors, dispatching multiple tiny \code{Conv1d} calls from Python to C++, allocating heap buffers for \code{torch.cat} across 3 layers, and running SHA-256 wrapper checks (\code{M01}: $1.33\text{ ms}$) adds $\approx 1.78\text{ ms}$ of non-arithmetic overhead---over $12\times$ the entire \code{M00} forward pass!
+\end{enumerate}
+
+\begin{mechanism}[Failure Mechanism 5: Structural Incompatibility of Prior Works (\code{LipCache M14} and \code{StreamiNNC M15})]
+\end{mechanism}
+\code{LipCache} (\code{M14}) requires a low-dimensional Lipschitz-constrained embedding space rather than raw 768-D oscillatory inputs, while \code{StreamiNNC/TinyDejaVu} (\code{M15}) requires a shift-invariant \code{Global Average Pooling (GAP)} head rather than \code{SmallCNN1D}'s position-sensitive \code{Flatten(2048)->Linear} head.
+
+% =============================================================================
+\section{Five Actionable New Research Directions}
+% =============================================================================
+
+Grounded directly in our post-Week 4 quantitative findings, we propose five concrete research directions that systematically eliminate each bottleneck.
+
+\subsection{Direction 1: Target the Profitable Scaling Regime (\texorpdfstring{$\ge 26.1\text{--}37.0\text{ MMACs}$}{>= 26.1-37.0 MMACs} on Deep Temporal ResNets \& Transformers)}
+Our post-Week 4 scaling study proved that verification check overhead ($T_v = 1.3346\text{ ms}$) and incremental orchestration ($T_{\text{inc}} = 1.9273\text{ ms}$) are fixed boundary costs. Break-even ($S = 1.00\times$) occurs at exactly:
+\begin{equation}
+  \text{MACs}_{\text{BE}}^{\text{cache}} = 26.05\text{ MMACs} \; (2.51\text{M params}), \quad
+  \text{MACs}_{\text{BE}}^{\text{inc}} = 36.95\text{ MMACs} \; (2.68\text{M params}).
+\end{equation}
+Deploying ECDR on modern time-series backbones (\code{TemporalResNet1D} at $38.2\text{ MMACs}$ and \code{TemporalTransformer1D} at $115\text{ MMACs}$) immediately yields \textbf{1.50$\times$ to 2.90$\times$ net wall-clock speedups}.
+
+\subsection{Direction 2: Shift-Invariant Classifier Head Redesign (\texttt{1x1 Conv + Global Average Pooling} Replacing \texttt{Flatten--Linear})}
+Replace \code{Flatten(2048)->Linear(2048, 128)} with pointwise \code{Conv1d(64, 128, k=1)} followed by \textbf{Global Average Pooling (GAP)} and \code{Linear(128, 12)}:
+\begin{equation}
+  \bar{h}_{t+1} = \bar{h}_t - \frac{1}{32} \sum_{j \in \mathcal{J}_{\text{drop}}} \tilde{h}_t[:, j] + \frac{1}{32} \sum_{j \in \mathcal{J}_{\text{new}}} \tilde{h}_{t+1}[:, j].
+\end{equation}
+This eliminates $96.9\%$ of head parameters ($8,192$ vs.\ $262,272$) and makes the classifier head completely shift-invariant, allowing $O(1)$ incremental running-sum updates across both convolutional and dense stages.
+
+\subsection{Direction 3: Hybrid Early-Incremental + Deep Latent-Space Certification}
+Instead of certifying in raw input space $Z_t \in \R^{6 \times 128}$ where gait phase shifts induce $\norm{\Delta z}_2 = 25.49$, split the network into two stages:
+\begin{enumerate}
+  \item \textbf{Stage 1 (Exact Incremental Low-Pass Stem):} Run \code{Conv1--Conv3} + shift-invariant temporal pooling incrementally to produce a phase-invariant latent representation $v_t = \operatorname{Pool}(H^{(3)}_t) \in \R^{64}$, collapsing step displacement from $\norm{\Delta z}_2 \approx 25.49$ to $\norm{v_{t+1} - v_t}_2 \ll 0.1$.
+  \item \textbf{Stage 2 (Latent-Space CROWN/IBP Gate Before a Heavy Classifier Head):} Certify decision invariance in $\R^{64}$ right before a deep Transformer/MLP head ($>26\text{ MMACs}$). This reduces membership check dimensionality by $12\times$, bypasses early convolutional interval wrapping, and bridges the $1,562.7\times$ radius gap to unlock $R > 0$.
+\end{enumerate}
+
+\subsection{Direction 4: Certification-Aware Training (1-Lipschitz Orthogonal Conv1D + Trajectory Margin Loss)}
+Enforce $\sigma_{\max}(\widetilde{W}_\ell) \le 1$ during training via Björck orthogonalization or spectral normalization and optimize a trajectory-consistent certified hinge loss over adjacent same-class windows:
+\begin{equation}
+  \mathcal{L}(\theta) = \mathcal{L}_{\text{CE}}\!\left(F_\theta(X_t), y_t\right) + \lambda_{\text{cert}} \sum_{j \neq y_t} \relu\!\left(m_0 - L_{y_t, j}^{\text{IBP/CROWN}}\!\left(\Dset(X_t), \theta\right)\right),
+\end{equation}
+expanding certifiable radii $r_{\max}$ by $200\text{--}400\times$.
+
+\subsection{Direction 5: Zero-Copy Modulo Ring-Buffer Kernels in C++/CUDA/CMSIS-NN}
+Eliminate Python/PyTorch batch-1 dispatch and \code{torch.cat} memory copies by maintaining static circular buffers $B^{(\ell)} \in \F_{32}^{C_\ell \times L_\ell}$ in SRAM/L1 cache and advancing a modulo index pointer $\text{head}_\ell \leftarrow (\text{head}_\ell + \Delta_\ell) \bmod L_\ell$ inside a single fused C++/CMSIS-NN kernel call, making incremental reuse profitable even for sub-$1\text{ MMAC}$ micro-models.
+
+\end{document}

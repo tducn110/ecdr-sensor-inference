@@ -1,0 +1,1257 @@
+{
+  "study_id": "POST-W4-G2-CLOSURE",
+  "title": "Gate G2 Full Closure: Span-Anchored Transition Policy & Class-Balanced Focal K=12 SmallCNN1D",
+  "timestamp_utc": "2026-11-11T11:20:13Z",
+  "gate_decision": {
+    "previous_status": "HOLD_CONDITIONAL",
+    "updated_status": "PASS (G2-A & G2-B K=12 Verified)",
+    "preserved_week1_reference_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+    "upgraded_g2_full_checkpoint_path": "output/post_week4/g2_k12_full_best.pt",
+    "upgraded_g2_full_checkpoint_sha256": "c4f892bac5b5852f8070a3032288ef7f7c7b34dc4f487612b4a147ae59615d15",
+    "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+    "parameter_count": 283692
+  },
+  "g2a_support_audit": {
+    "thresholds": {
+      "min_windows_per_split": 50,
+      "min_subjects_per_split": 3,
+      "windows_per_transition_span": 9
+    },
+    "canonical_split_denominators": {
+      "train": 6955,
+      "val": 1751,
+      "test": 3572
+    },
+    "full_g2_split_denominators": {
+      "train": 8809,
+      "val": 2147,
+      "test": 4544
+    },
+    "blockers_canonical_count": 10,
+    "blockers_full_g2_count": 0,
+    "k12_ready_canonical": false,
+    "k12_ready_full_g2": true,
+    "per_class_support": {
+      "1": {
+        "class_id": 1,
+        "class_name": "WALKING",
+        "kind": "basic",
+        "canonical_counts": {
+          "train": 1077,
+          "val": 246,
+          "test": 531
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 1077,
+          "val": 246,
+          "test": 531
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [],
+        "full_g2_flags": []
+      },
+      "2": {
+        "class_id": 2,
+        "class_name": "WALKING_UPSTAIRS",
+        "kind": "basic",
+        "canonical_counts": {
+          "train": 973,
+          "val": 247,
+          "test": 537
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 973,
+          "val": 247,
+          "test": 537
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [],
+        "full_g2_flags": []
+      },
+      "3": {
+        "class_id": 3,
+        "class_name": "WALKING_DOWNSTAIRS",
+        "kind": "basic",
+        "canonical_counts": {
+          "train": 894,
+          "val": 231,
+          "test": 492
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 894,
+          "val": 231,
+          "test": 492
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [],
+        "full_g2_flags": []
+      },
+      "4": {
+        "class_id": 4,
+        "class_name": "SITTING",
+        "kind": "basic",
+        "canonical_counts": {
+          "train": 1103,
+          "val": 289,
+          "test": 546
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 1103,
+          "val": 289,
+          "test": 546
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [],
+        "full_g2_flags": []
+      },
+      "5": {
+        "class_id": 5,
+        "class_name": "STANDING",
+        "kind": "basic",
+        "canonical_counts": {
+          "train": 1206,
+          "val": 312,
+          "test": 597
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 1206,
+          "val": 312,
+          "test": 597
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [],
+        "full_g2_flags": []
+      },
+      "6": {
+        "class_id": 6,
+        "class_name": "LAYING",
+        "kind": "basic",
+        "canonical_counts": {
+          "train": 1188,
+          "val": 316,
+          "test": 586
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 1188,
+          "val": 316,
+          "test": 586
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [],
+        "full_g2_flags": []
+      },
+      "7": {
+        "class_id": 7,
+        "class_name": "STAND_TO_SIT",
+        "kind": "transition",
+        "canonical_counts": {
+          "train": 79,
+          "val": 19,
+          "test": 45
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 385,
+          "val": 91,
+          "test": 207
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [
+          "low_count_val(19<50)",
+          "low_count_test(45<50)"
+        ],
+        "full_g2_flags": [],
+        "span_statistics": {
+          "total_spans": 60,
+          "spans_ge_128": 53,
+          "median_samples": 166.5,
+          "median_seconds": 3.33,
+          "theoretical_stride64_pure_hit_prob_at_median": 0.6172
+        }
+      },
+      "8": {
+        "class_id": 8,
+        "class_name": "SIT_TO_STAND",
+        "kind": "transition",
+        "canonical_counts": {
+          "train": 53,
+          "val": 13,
+          "test": 32
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 377,
+          "val": 85,
+          "test": 194
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [
+          "low_count_val(13<50)",
+          "low_count_test(32<50)"
+        ],
+        "full_g2_flags": [],
+        "span_statistics": {
+          "total_spans": 62,
+          "spans_ge_128": 33,
+          "median_samples": 129.5,
+          "median_seconds": 2.59,
+          "theoretical_stride64_pure_hit_prob_at_median": 0.0391
+        }
+      },
+      "9": {
+        "class_id": 9,
+        "class_name": "SIT_TO_LIE",
+        "kind": "transition",
+        "canonical_counts": {
+          "train": 90,
+          "val": 26,
+          "test": 51
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 396,
+          "val": 98,
+          "test": 213
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [
+          "low_count_val(26<50)"
+        ],
+        "full_g2_flags": [],
+        "span_statistics": {
+          "total_spans": 60,
+          "spans_ge_128": 60,
+          "median_samples": 202.0,
+          "median_seconds": 4.04,
+          "theoretical_stride64_pure_hit_prob_at_median": 1.0
+        }
+      },
+      "10": {
+        "class_id": 10,
+        "class_name": "LIE_TO_SIT",
+        "kind": "transition",
+        "canonical_counts": {
+          "train": 89,
+          "val": 15,
+          "test": 46
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 3,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 413,
+          "val": 69,
+          "test": 208
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 3,
+          "test": 9
+        },
+        "canonical_flags": [
+          "low_count_val(15<50)",
+          "low_count_test(46<50)"
+        ],
+        "full_g2_flags": [],
+        "span_statistics": {
+          "total_spans": 60,
+          "spans_ge_128": 58,
+          "median_samples": 179.0,
+          "median_seconds": 3.58,
+          "theoretical_stride64_pure_hit_prob_at_median": 0.8125
+        }
+      },
+      "11": {
+        "class_id": 11,
+        "class_name": "STAND_TO_LIE",
+        "kind": "transition",
+        "canonical_counts": {
+          "train": 119,
+          "val": 18,
+          "test": 68
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 3,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 425,
+          "val": 72,
+          "test": 230
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 3,
+          "test": 9
+        },
+        "canonical_flags": [
+          "low_count_val(18<50)"
+        ],
+        "full_g2_flags": [],
+        "span_statistics": {
+          "total_spans": 58,
+          "spans_ge_128": 58,
+          "median_samples": 236.5,
+          "median_seconds": 4.73,
+          "theoretical_stride64_pure_hit_prob_at_median": 1.0
+        }
+      },
+      "12": {
+        "class_id": 12,
+        "class_name": "LIE_TO_STAND",
+        "kind": "transition",
+        "canonical_counts": {
+          "train": 84,
+          "val": 19,
+          "test": 41
+        },
+        "canonical_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "full_g2_counts": {
+          "train": 372,
+          "val": 91,
+          "test": 203
+        },
+        "full_g2_subjects": {
+          "train": 17,
+          "val": 4,
+          "test": 9
+        },
+        "canonical_flags": [
+          "low_count_val(19<50)",
+          "low_count_test(41<50)"
+        ],
+        "full_g2_flags": [],
+        "span_statistics": {
+          "total_spans": 58,
+          "spans_ge_128": 56,
+          "median_samples": 181.0,
+          "median_seconds": 3.62,
+          "theoretical_stride64_pure_hit_prob_at_median": 0.8438
+        }
+      }
+    }
+  },
+  "g2b_baseline_vs_upgraded": {
+    "baseline_reference_seed43": {
+      "canonical_test": {
+        "denominator": 3572,
+        "accuracy": 0.890538,
+        "macro_f1": 0.776265,
+        "basic_6_macro_f1": 0.913925,
+        "transition_6_macro_f1": 0.638604,
+        "per_class": {
+          "WALKING": {
+            "class_id": 1,
+            "support": 531,
+            "precision": 0.9603,
+            "recall": 0.9567,
+            "f1": 0.9585
+          },
+          "WALKING_UPSTAIRS": {
+            "class_id": 2,
+            "support": 537,
+            "precision": 0.9331,
+            "recall": 0.9088,
+            "f1": 0.9208
+          },
+          "WALKING_DOWNSTAIRS": {
+            "class_id": 3,
+            "support": 492,
+            "precision": 0.9237,
+            "recall": 0.9837,
+            "f1": 0.9528
+          },
+          "SITTING": {
+            "class_id": 4,
+            "support": 546,
+            "precision": 0.7997,
+            "recall": 0.8407,
+            "f1": 0.8196
+          },
+          "STANDING": {
+            "class_id": 5,
+            "support": 597,
+            "precision": 0.8798,
+            "recall": 0.809,
+            "f1": 0.8429
+          },
+          "LAYING": {
+            "class_id": 6,
+            "support": 586,
+            "precision": 0.9831,
+            "recall": 0.9949,
+            "f1": 0.989
+          },
+          "STAND_TO_SIT": {
+            "class_id": 7,
+            "support": 45,
+            "precision": 0.7619,
+            "recall": 0.7111,
+            "f1": 0.7356
+          },
+          "SIT_TO_STAND": {
+            "class_id": 8,
+            "support": 32,
+            "precision": 0.7778,
+            "recall": 0.6562,
+            "f1": 0.7119
+          },
+          "SIT_TO_LIE": {
+            "class_id": 9,
+            "support": 51,
+            "precision": 0.5893,
+            "recall": 0.6471,
+            "f1": 0.6168
+          },
+          "LIE_TO_SIT": {
+            "class_id": 10,
+            "support": 46,
+            "precision": 0.7714,
+            "recall": 0.587,
+            "f1": 0.6667
+          },
+          "STAND_TO_LIE": {
+            "class_id": 11,
+            "support": 68,
+            "precision": 0.5714,
+            "recall": 0.5294,
+            "f1": 0.5496
+          },
+          "LIE_TO_STAND": {
+            "class_id": 12,
+            "support": 41,
+            "precision": 0.4737,
+            "recall": 0.6585,
+            "f1": 0.551
+          }
+        },
+        "point_margin_gt": {
+          "p5": -1.9483,
+          "p50": 7.5746,
+          "p95": 12.5496,
+          "mean": 6.3674,
+          "frac_negative": 0.109462
+        }
+      },
+      "full_g2_test": {
+        "denominator": 4544,
+        "accuracy": 0.853433,
+        "macro_f1": 0.811883,
+        "basic_6_macro_f1": 0.905681,
+        "transition_6_macro_f1": 0.718085,
+        "per_class": {
+          "WALKING": {
+            "class_id": 1,
+            "support": 531,
+            "precision": 0.9585,
+            "recall": 0.9567,
+            "f1": 0.9576
+          },
+          "WALKING_UPSTAIRS": {
+            "class_id": 2,
+            "support": 537,
+            "precision": 0.8841,
+            "recall": 0.9088,
+            "f1": 0.8962
+          },
+          "WALKING_DOWNSTAIRS": {
+            "class_id": 3,
+            "support": 492,
+            "precision": 0.9132,
+            "recall": 0.9837,
+            "f1": 0.9472
+          },
+          "SITTING": {
+            "class_id": 4,
+            "support": 546,
+            "precision": 0.778,
+            "recall": 0.8407,
+            "f1": 0.8081
+          },
+          "STANDING": {
+            "class_id": 5,
+            "support": 597,
+            "precision": 0.8703,
+            "recall": 0.809,
+            "f1": 0.8385
+          },
+          "LAYING": {
+            "class_id": 6,
+            "support": 586,
+            "precision": 0.9782,
+            "recall": 0.9949,
+            "f1": 0.9865
+          },
+          "STAND_TO_SIT": {
+            "class_id": 7,
+            "support": 207,
+            "precision": 0.8659,
+            "recall": 0.7488,
+            "f1": 0.8031
+          },
+          "SIT_TO_STAND": {
+            "class_id": 8,
+            "support": 194,
+            "precision": 0.9096,
+            "recall": 0.8299,
+            "f1": 0.8679
+          },
+          "SIT_TO_LIE": {
+            "class_id": 9,
+            "support": 213,
+            "precision": 0.6624,
+            "recall": 0.7277,
+            "f1": 0.6935
+          },
+          "LIE_TO_SIT": {
+            "class_id": 10,
+            "support": 208,
+            "precision": 0.876,
+            "recall": 0.5433,
+            "f1": 0.6706
+          },
+          "STAND_TO_LIE": {
+            "class_id": 11,
+            "support": 230,
+            "precision": 0.5981,
+            "recall": 0.5435,
+            "f1": 0.5695
+          },
+          "LIE_TO_STAND": {
+            "class_id": 12,
+            "support": 203,
+            "precision": 0.6236,
+            "recall": 0.8079,
+            "f1": 0.7039
+          }
+        },
+        "point_margin_gt": {
+          "p5": -2.5101,
+          "p50": 6.2649,
+          "p95": 11.9365,
+          "mean": 5.4505,
+          "frac_negative": 0.146567
+        }
+      },
+      "systems_profile": {
+        "cumulative_spectral_bound": 105.0,
+        "cpu_batch1_latency_ms": {
+          "mean": 0.1543,
+          "p50": 0.1405,
+          "p95": 0.2484
+        }
+      }
+    },
+    "upgraded_g2_full_selected": {
+      "selected_seed": 43,
+      "selected_epoch": 6,
+      "val_composite_macro_f1": 0.897504,
+      "canonical_test": {
+        "denominator": 3572,
+        "accuracy": 0.895577,
+        "macro_f1": 0.795639,
+        "macro_precision": 0.787928,
+        "macro_recall": 0.812682,
+        "basic_6_macro_f1": 0.920608,
+        "transition_6_macro_f1": 0.670671,
+        "per_class": {
+          "WALKING": {
+            "class_id": 1,
+            "support": 531,
+            "precision": 0.9824,
+            "recall": 0.9473,
+            "f1": 0.9645
+          },
+          "WALKING_UPSTAIRS": {
+            "class_id": 2,
+            "support": 537,
+            "precision": 0.9646,
+            "recall": 0.9125,
+            "f1": 0.9378
+          },
+          "WALKING_DOWNSTAIRS": {
+            "class_id": 3,
+            "support": 492,
+            "precision": 0.9047,
+            "recall": 0.9837,
+            "f1": 0.9426
+          },
+          "SITTING": {
+            "class_id": 4,
+            "support": 546,
+            "precision": 0.8271,
+            "recall": 0.8498,
+            "f1": 0.8383
+          },
+          "STANDING": {
+            "class_id": 5,
+            "support": 597,
+            "precision": 0.8959,
+            "recall": 0.8358,
+            "f1": 0.8648
+          },
+          "LAYING": {
+            "class_id": 6,
+            "support": 586,
+            "precision": 0.9947,
+            "recall": 0.9573,
+            "f1": 0.9757
+          },
+          "STAND_TO_SIT": {
+            "class_id": 7,
+            "support": 45,
+            "precision": 0.493,
+            "recall": 0.7778,
+            "f1": 0.6034
+          },
+          "SIT_TO_STAND": {
+            "class_id": 8,
+            "support": 32,
+            "precision": 0.8571,
+            "recall": 0.75,
+            "f1": 0.8
+          },
+          "SIT_TO_LIE": {
+            "class_id": 9,
+            "support": 51,
+            "precision": 0.6102,
+            "recall": 0.7059,
+            "f1": 0.6545
+          },
+          "LIE_TO_SIT": {
+            "class_id": 10,
+            "support": 46,
+            "precision": 0.7955,
+            "recall": 0.7609,
+            "f1": 0.7778
+          },
+          "STAND_TO_LIE": {
+            "class_id": 11,
+            "support": 68,
+            "precision": 0.4301,
+            "recall": 0.5882,
+            "f1": 0.4969
+          },
+          "LIE_TO_STAND": {
+            "class_id": 12,
+            "support": 41,
+            "precision": 0.7,
+            "recall": 0.6829,
+            "f1": 0.6914
+          }
+        },
+        "confusion_matrix": [
+          [
+            503,
+            3,
+            24,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            8,
+            490,
+            24,
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            3,
+            6,
+            3
+          ],
+          [
+            1,
+            4,
+            484,
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0,
+            464,
+            52,
+            0,
+            22,
+            2,
+            0,
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            3,
+            0,
+            89,
+            499,
+            0,
+            3,
+            0,
+            1,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            561,
+            0,
+            0,
+            0,
+            0,
+            25,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            4,
+            1,
+            0,
+            35,
+            1,
+            0,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            5,
+            0,
+            1,
+            24,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            1,
+            36,
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            35,
+            1,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            2,
+            0,
+            1,
+            3,
+            0,
+            22,
+            0,
+            40,
+            0
+          ],
+          [
+            0,
+            2,
+            2,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            6,
+            2,
+            28
+          ]
+        ],
+        "point_margin_gt": {
+          "p5": -1.7164,
+          "p50": 4.5393,
+          "p95": 11.1936,
+          "mean": 4.6857,
+          "frac_negative": 0.104423
+        },
+        "point_gap_top2": {
+          "min": 5.9e-05,
+          "p5": 0.3983,
+          "p50": 4.5523,
+          "p95": 11.1936,
+          "max": 20.1305
+        }
+      },
+      "full_g2_test": {
+        "denominator": 4544,
+        "accuracy": 0.877861,
+        "macro_f1": 0.852796,
+        "macro_precision": 0.856384,
+        "macro_recall": 0.852263,
+        "basic_6_macro_f1": 0.914771,
+        "transition_6_macro_f1": 0.790821,
+        "per_class": {
+          "WALKING": {
+            "class_id": 1,
+            "support": 531,
+            "precision": 0.9824,
+            "recall": 0.9473,
+            "f1": 0.9645
+          },
+          "WALKING_UPSTAIRS": {
+            "class_id": 2,
+            "support": 537,
+            "precision": 0.9176,
+            "recall": 0.9125,
+            "f1": 0.915
+          },
+          "WALKING_DOWNSTAIRS": {
+            "class_id": 3,
+            "support": 492,
+            "precision": 0.903,
+            "recall": 0.9837,
+            "f1": 0.9416
+          },
+          "SITTING": {
+            "class_id": 4,
+            "support": 546,
+            "precision": 0.8126,
+            "recall": 0.8498,
+            "f1": 0.8308
+          },
+          "STANDING": {
+            "class_id": 5,
+            "support": 597,
+            "precision": 0.8895,
+            "recall": 0.8358,
+            "f1": 0.8618
+          },
+          "LAYING": {
+            "class_id": 6,
+            "support": 586,
+            "precision": 0.9929,
+            "recall": 0.9573,
+            "f1": 0.9748
+          },
+          "STAND_TO_SIT": {
+            "class_id": 7,
+            "support": 207,
+            "precision": 0.7965,
+            "recall": 0.8889,
+            "f1": 0.8402
+          },
+          "SIT_TO_STAND": {
+            "class_id": 8,
+            "support": 194,
+            "precision": 0.9647,
+            "recall": 0.8454,
+            "f1": 0.9011
+          },
+          "SIT_TO_LIE": {
+            "class_id": 9,
+            "support": 213,
+            "precision": 0.7231,
+            "recall": 0.8216,
+            "f1": 0.7692
+          },
+          "LIE_TO_SIT": {
+            "class_id": 10,
+            "support": 208,
+            "precision": 0.883,
+            "recall": 0.7981,
+            "f1": 0.8384
+          },
+          "STAND_TO_LIE": {
+            "class_id": 11,
+            "support": 230,
+            "precision": 0.596,
+            "recall": 0.6478,
+            "f1": 0.6208
+          },
+          "LIE_TO_STAND": {
+            "class_id": 12,
+            "support": 203,
+            "precision": 0.8152,
+            "recall": 0.7389,
+            "f1": 0.7752
+          }
+        },
+        "confusion_matrix": [
+          [
+            503,
+            3,
+            24,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            8,
+            490,
+            24,
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            3,
+            6,
+            3
+          ],
+          [
+            1,
+            4,
+            484,
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0,
+            464,
+            52,
+            0,
+            22,
+            2,
+            0,
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            3,
+            0,
+            89,
+            499,
+            0,
+            3,
+            0,
+            1,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            561,
+            0,
+            0,
+            0,
+            0,
+            25,
+            0
+          ],
+          [
+            0,
+            2,
+            2,
+            12,
+            1,
+            0,
+            184,
+            1,
+            0,
+            0,
+            4,
+            1
+          ],
+          [
+            0,
+            9,
+            0,
+            1,
+            9,
+            0,
+            7,
+            164,
+            0,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            1,
+            175,
+            0,
+            35,
+            0
+          ],
+          [
+            0,
+            10,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            166,
+            1,
+            30
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0,
+            2,
+            8,
+            0,
+            66,
+            1,
+            149,
+            0
+          ],
+          [
+            0,
+            10,
+            2,
+            0,
+            0,
+            0,
+            1,
+            2,
+            0,
+            18,
+            20,
+            150
+          ]
+        ],
+        "point_margin_gt": {
+          "p5": -2.0855,
+          "p50": 4.1916,
+          "p95": 10.651,
+          "mean": 4.2561,
+          "frac_negative": 0.122139
+        },
+        "point_gap_top2": {
+          "min": 5.9e-05,
+          "p5": 0.3448,
+          "p50": 4.2422,
+          "p95": 10.651,
+          "max": 20.1305
+        }
+      },
+      "systems_profile": {
+        "cumulative_spectral_bound": 125.71,
+        "cpu_batch1_latency_ms": {
+          "mean": 0.1592,
+          "p50": 0.141,
+          "p95": 0.2942
+        }
+      }
+    },
+    "three_seed_summary_ddof0": {
+      "seeds": [
+        {
+          "seed": 42,
+          "selected_epoch": 9,
+          "val_composite_macro_f1": 0.89095,
+          "val_canonical_macro_f1": 0.872825,
+          "val_full_g2_macro_f1": 0.909074,
+          "test_canonical_acc": 0.898936,
+          "test_canonical_macro_f1": 0.806495,
+          "test_canonical_transition_f1": 0.692894,
+          "test_full_g2_acc": 0.877861,
+          "test_full_g2_macro_f1": 0.851901,
+          "test_full_g2_transition_f1": 0.789314
+        },
+        {
+          "seed": 43,
+          "selected_epoch": 6,
+          "val_composite_macro_f1": 0.897504,
+          "val_canonical_macro_f1": 0.879255,
+          "val_full_g2_macro_f1": 0.915753,
+          "test_canonical_acc": 0.895577,
+          "test_canonical_macro_f1": 0.795639,
+          "test_canonical_transition_f1": 0.670671,
+          "test_full_g2_acc": 0.877861,
+          "test_full_g2_macro_f1": 0.852796,
+          "test_full_g2_transition_f1": 0.790821
+        },
+        {
+          "seed": 44,
+          "selected_epoch": 14,
+          "val_composite_macro_f1": 0.891441,
+          "val_canonical_macro_f1": 0.874745,
+          "val_full_g2_macro_f1": 0.908136,
+          "test_canonical_acc": 0.900896,
+          "test_canonical_macro_f1": 0.803189,
+          "test_canonical_transition_f1": 0.683162,
+          "test_full_g2_acc": 0.881822,
+          "test_full_g2_macro_f1": 0.856485,
+          "test_full_g2_transition_f1": 0.795057
+        }
+      ],
+      "canonical_test_acc_mean": 0.89847,
+      "canonical_test_acc_std": 0.002196,
+      "canonical_test_macro_f1_mean": 0.801774,
+      "canonical_test_macro_f1_std": 0.004543,
+      "canonical_test_transition_f1_mean": 0.682242,
+      "canonical_test_transition_f1_std": 0.009096,
+      "full_g2_test_acc_mean": 0.879181,
+      "full_g2_test_acc_std": 0.001867,
+      "full_g2_test_macro_f1_mean": 0.853727,
+      "full_g2_test_macro_f1_std": 0.001984,
+      "full_g2_test_transition_f1_mean": 0.791731,
+      "full_g2_test_transition_f1_std": 0.002431
+    }
+  }
+}

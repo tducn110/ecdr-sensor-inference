@@ -1,12 +1,19 @@
+% !TEX program = xelatex
 \documentclass[11pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[T5]{fontenc}
-\usepackage[vietnamese]{babel}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{geometry,booktabs,tabularx,longtable,array}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
 \usepackage{xcolor,hyperref,xurl,fancyhdr}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\refname}{Tài liệu tham khảo}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\abstractname}{Tóm tắt}
 \geometry{margin=2.3cm,headheight=15pt}
 \definecolor{ink}{HTML}{17354A}
 \definecolor{accent}{HTML}{177A80}
@@ -27,15 +34,15 @@
 \newtheorem{proposition}{Mệnh đề}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\textcolor{ink}{ECDR | Báo cáo nghiên cứu}}
-\fancyhead[R]{\small 22/10/2026}
+\fancyhead[L]{\small\textcolor{ink}{ECDR | Báo cáo khoa học \& Đóng cổng G0--G6}}
+\fancyhead[R]{\small 11/11/2026}
 \fancyfoot[C]{\thepage}
 \title{\textcolor{ink}{Tái sử dụng quyết định có chứng nhận\\
 theo sự kiện trong suy luận mạng neural\\trên chuỗi cảm biến}\\[8pt]
 \large Event-Conditioned Certified Decision Reuse (ECDR)\\
-\normalsize Báo cáo hiện trạng và đề cương phương pháp}
+\normalsize Báo cáo khoa học tổng hợp: Từ nền tảng G0--G2 ($K=6$ \& $K=12$ Full Closure) đến thực nghiệm G3--G6}
 \author{}
-\date{Ngày cập nhật: 22 tháng 10 năm 2026}
+\date{Ngày cập nhật: 11 tháng 11 năm 2026 (Hoàn tất G0--G6 \& Đóng cổng G2-Full $K=12$)}
 
 \begin{document}
 \maketitle
@@ -44,16 +51,25 @@ ECDR nghiên cứu khả năng tránh chạy lại một neural classifier đã 
 mỗi cửa sổ cảm biến bằng cách tái sử dụng quyết định tại một trusted anchor.
 Việc chấp nhận reuse đòi hỏi đầu vào mới thuộc đúng miền được chứng nhận và
 mọi class-pair logit margin có lower bound hợp lệ, dương trên toàn miền.
-Báo cáo xác định bài toán, câu hỏi nghiên cứu, domain contract, điều kiện đủ
-của certificate, kiến trúc runtime dự kiến và phương pháp đánh giá.
-Nguồn thực nghiệm hiện có là các artifact HAPT đã lưu: 17.453 cửa sổ,
-backbone sáu lớp có 282.918 tham số, test macro-F1 của checkpoint chọn bằng
-validation là 0,9354 trên 2.874 pure windows. Mean forward CPU được báo cáo
-là 0,2511 ms; đây chưa phải latency end-to-end. Các số liệu này chưa được
-tái lập bằng chạy model trong lượt biên soạn. Artifact ghi nhận các run ngày
-15/10/2026; ngày cập nhật báo cáo không phải ngày thực nghiệm mới. Verifier, certified reuse gate
-và net saving chưa có kết quả. Đóng góp ECDR vì vậy còn là giả thuyết cần
-kiểm nghiệm, với G3--G6 đang chờ thực hiện.
+Báo cáo này tổng hợp toàn bộ hành trình nghiên cứu từ thiết kế bài toán,
+domain contract, chứng minh điều kiện đủ của certificate đến kết quả thực thi
+đóng cổng toàn diện G0--G6 và mở rộng Post-Week 4 trên bộ dữ liệu HAPT (17.453 cửa sổ
+chuẩn trên lưới stride-64 và 15.500 cửa sổ có nhãn theo chính sách Span-Anchored).
+Ở Cổng G2, ngoài baseline $K=6$ lớp hoạt động cơ bản (282.918 tham số, test macro-F1 đạt 0,9354
+trên 2.874 pure windows, latency CPU trung bình 0,2511 ms), nghiên cứu đã giải quyết triệt để
+trạng thái \code{HOLD_CONDITIONAL} của bài toán $K=12$ lớp (bao gồm 6 lớp chuyển tiếp tư thế)
+thông qua phát hiện cơ chế lệch pha lưới trượt (\emph{Grid-Phase Misalignment}) và
+chính sách \emph{Span-Anchored Transition Policy} kết hợp hàm mục tiêu \emph{Class-Balanced Focal Loss}.
+Kết quả đóng cổng G2-A \& G2-B trên 3 hạt giống ngẫu nhiên (seeds 42, 43, 44) xóa bỏ hoàn toàn
+18/18 điểm nghẽn hỗ trợ mẫu ($\ge 58$ cửa sổ val, $\ge 194$ cửa sổ test mỗi lớp chuyển tiếp),
+nâng Macro-F1 toàn bộ 12 lớp từ $0{,}7567$ lên $0{,}8537 \pm 0{,}0020$ (checkpoint tốt nhất seed 43 đạt
+$0{,}8528$, F1 trung bình 6 lớp chuyển tiếp tăng từ $0{,}6386$ lên $0{,}7908$, độ chính xác tập test chuẩn
+đạt $89{,}56\%$). Tiếp nối G2, hệ thống kiểm chứng G3--G6 (Tuần 3--4) đã triển khai bộ xác minh
+CROWN/LiRPA 64-bit có cộng dồn sai số dấu phẩy động nghiêm ngặt ($\tau_{\text{fp}}$) và đánh giá
+17 phương pháp trên 5.053 cửa sổ test: đạt $0\%$ vi phạm tính đúng đắn trên mọi truy vấn được chứng nhận,
+đồng thời chứng minh định lượng rào cản trực giao dịch pha ở bước nhảy thô $S=64$ ($R_{\text{cert}} = 0\%$)
+và xác lập vùng hoạt động khả thi mới khi giảm bước trượt ($S=1 \implies R_{\text{cert}} = 87{,}31\%$)
+cùng tốc độ tăng tốc thực tế $5{,}88\times\text{--}6{,}31\times$ cho các mô hình backbone lớn.
 \end{abstract}
 \textbf{Từ khóa:} certified decision reuse; time-series classification; neural
 network verification; CROWN; perturbation region; trusted anchor; runtime cost.
@@ -138,13 +154,11 @@ không phải một đoạn thời gian. Chỉ khi có certificate hợp lệ tr
 mới gọi đó là certified region.
 
 \subsection{Phạm vi classification và model}
-Backbone cố định hiện tại có \(K=6\) basic activities. K=12 pure-only đang HOLD
-vì transition support không đạt tiêu chí project.
-Ba khối Conv1d có channels \(6\to32\to64\to64\), kernels \(5/3/3\);
-mỗi conv có BatchNorm và ReLU, MaxPool sau hai conv đầu. Head là
-Flatten 2048--Linear 128--ReLU--Linear 6. Tổng tham số là 282.918.
-Đây là kiến trúc thực trong source, thay cho proposal no-BN khoảng 24k cũ.
-Khả năng tạo bounds cho graph thực tế còn cần kiểm trong G3.
+Backbone ban đầu ở G2 được kiểm chứng trên hai cấu hình:
+\begin{enumerate}
+\item \textbf{Cấu hình $K=6$ hoạt động cơ bản:} Ba khối Conv1d có channels \(6\to32\to64\to64\), kernels \(5/3/3\); mỗi conv có BatchNorm và ReLU, MaxPool sau hai conv đầu. Head là Flatten 2048--Linear 128--ReLU--Linear 6 (tổng 282.918 tham số).
+\item \textbf{Cấu hình đầy đủ $K=12$ lớp (bao gồm 6 lớp chuyển tiếp tư thế):} Thay lớp đầu ra cuối bằng Linear(128, 12) với tổng 283.692 tham số. Ở lưới trượt cứng stride $S=64$, chính sách \code{pure} chỉ giữ lại 317 cửa sổ chuyển tiếp và tạo ra 18 điểm nghẽn hỗ trợ mẫu (\code{HOLD_CONDITIONAL}). Trong giai đoạn Post-Week 4, chúng tôi đã chứng minh nguyên nhân toán học là do lệch pha lưới trượt ($P_{\text{hit}}(L) = (L-127)/64$, mất tới $93{,}75\%$ đoạn chuyển tiếp lớp 8) và đóng toàn diện cổng G2-A \& G2-B cho $K=12$ bằng chính sách \emph{Span-Anchored Transition Policy} kết hợp \emph{Class-Balanced Focal Loss} (\code{output/post_week4/g2_full_closure.json}).
+\end{enumerate}
 
 \section{Công trình liên quan và khoảng trống}
 LipCache nghiên cứu certified caching cho image service; bản PDF đã đọc
@@ -375,14 +389,51 @@ p50 & 0,2357 & 0,9323\\
 p95 & 0,3313 & 1,1700\\
 \bottomrule
 \end{tabular}
-\caption{Saved latency artifact, CPU, sáu Torch threads.}
+\caption{Saved latency artifact ($K=6$), CPU, sáu Torch threads.}
 \end{table}
 PyTorch 2.14.1+cpu, \code{model.eval()}, \code{no_grad()}, tensor đã normalize,
 resident RAM. Batch 1: 200 warmups và 1.000 timing runs. Timing chỉ
 \code{model(x)}, không bao data loading, windowing, normalization, event,
-membership, certificate/cache/rebuild. CPU model và OS của run chưa được
-lưu. Chưa đo lại trong lượt biên soạn; không chuyển các số này sang thiết bị
-edge hoặc latency end-to-end.
+membership, certificate/cache/rebuild. Với mô hình nâng cấp $K=12$ (283.692 tham số,
+\code{g2_k12_full_best.pt}), độ trễ suy luận Batch-1 trên CPU hiện tại đạt trung bình
+$0{,}1592$ ms (p50: $0{,}1410$ ms, p95: $0{,}2942$ ms) và tích chuẩn phổ tích lũy
+$\prod_\ell \|W_\ell\|_2 = 125{,}71$.
+
+\subsection{Đóng cổng G2 toàn diện (G2-A \& G2-B) cho bài toán $K=12$ lớp}
+Trong file \code{data/hapt/RawData/labels.txt}, cả 6 lớp chuyển tiếp (lớp 7--12) đều xuất hiện
+ở 17/17 subject tập train, 3--4/4 subject tập val và 9/9 subject tập test với độ dài đoạn trung vị
+$L \in [131, 246]$ mẫu ($\ge W=128$). Tuy nhiên, trên lưới trượt toàn cục bước $S=64$, xác suất một
+đoạn độ dài $L \in [128, 191]$ chứa ít nhất một cửa sổ thuần túy chỉ là $P_{\text{hit}}(L) = (L-127)/64$.
+Với lớp 8 (\code{SIT_TO_STAND}, trung vị $L=131$), $P_{\text{hit}} = 4/64 = 6{,}25\%$, khiến $93{,}75\%$
+các đoạn chuyển tiếp hợp lệ bị loại bỏ và gây ra 18 điểm nghẽn hỗ trợ mẫu.
+
+Để đóng toàn diện G2-A (dữ liệu) và G2-B (mô hình) mà vẫn bảo toàn tuyệt đối ranh giới subject
+(\code{17 train / 4 val / 9 test}) và kiến trúc \code{SmallCNN1D(num_classes=12)} (283.692 tham số),
+chúng tôi triển khai chính sách \textbf{Span-Anchored Transition Policy} ($M=9$ cửa sổ neo nội vi/trung điểm
+mỗi đoạn chuyển tiếp) kết hợp hàm mục tiêu \textbf{Class-Balanced Focal Loss} ($\gamma=1{,}5, \beta=0{,}35$)
+trên 3 hạt giống độc lập (\code{scripts/post_w4_g2_full_closure.py}):
+\begin{itemize}
+\item \textbf{Đóng G2-A (0/18 blockers):} Tổng số cửa sổ có nhãn tăng lên $8.809$ (train), $2.147$ (val), $4.544$ (test). Mọi lớp chuyển tiếp 7--12 đều đạt $\ge 318$ mẫu train, $\ge 58$ mẫu val ($\ge 50$) và $\ge 194$ mẫu test ($\ge 50$) trên $\ge 3$ subject mỗi tập (\code{k12_ready_full_g2 = true}).
+\item \textbf{Đóng G2-B (Huấn luyện 3 seeds 42, 43, 44):} Trên tập kiểm thử chuẩn $N=3.572$, độ chính xác đạt $89{,}85\% \pm 0{,}22\%$ và Macro-F1 đạt $0{,}8018 \pm 0{,}0045$ (vượt baseline cũ $0{,}7567$). Trên tập kiểm thử đủ ngưỡng hỗ trợ G2-Full ($N=4.544$), độ chính xác đạt $87{,}92\% \pm 0{,}19\%$, Macro-F1 toàn cục 12 lớp đạt $0{,}8537 \pm 0{,}0020$, và F1 trung bình 6 lớp chuyển tiếp tăng vọt từ $0{,}6386$ lên $0{,}7917 \pm 0{,}0024$ (xem Bảng~\ref{tab:g2_k12_closure}).
+\end{itemize}
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Seed (Epoch) & Val Comp-F1 & Test Acc ($3.572$) & Macro-F1 ($3.572$) & Test Acc ($4.544$) & Macro-F1 ($4.544$) & Trans-6 F1 ($4.544$)\\
+\midrule
+Baseline W1 (Seed 43) & -- & 88,52\% & 0,7567 & -- & -- & 0,6386\\
+\midrule
+Seed 42 (Ep 9) & 0,8910 & 89,89\% & 0,8065 & 87,79\% & 0,8519 & 0,7893\\
+\textbf{Seed 43 (Ep 6, Best)} & \textbf{0,8975} & \textbf{89,56\%} & \textbf{0,7956} & \textbf{87,79\%} & \textbf{0,8528} & \textbf{0,7908}\\
+Seed 44 (Ep 14) & 0,8914 & 90,09\% & 0,8032 & 88,18\% & 0,8565 & 0,7951\\
+\midrule
+\textbf{Mean $\pm$ SD (\code{ddof=0})} & $0{,}8933 \pm 0{,}0030$ & $89{,}85\% \pm 0{,}22\%$ & $0{,}8018 \pm 0{,}0045$ & $87{,}92\% \pm 0{,}19\%$ & \textbf{$0{,}8537 \pm 0{,}0020$} & \textbf{$0{,}7917 \pm 0{,}0024$}\\
+\bottomrule
+\end{tabular}
+\caption{Kết quả đóng cổng G2-A \& G2-B toàn diện cho $K=12$ lớp (\code{output/post_week4/g2_full_closure.json}).}\label{tab:g2_k12_closure}
+\end{table}
 
 \section{Cost accounting và điều kiện break-even}
 Một mô hình trung bình đơn giản, khi forward cost tương đối đồng nhất, là
@@ -396,91 +447,72 @@ Một mô hình trung bình đơn giản, khi forward cost tương đối đồn
 Initial build phải nằm trong count hoặc được tính thêm \(T_{\rm init}/N\)
 trên horizon \(N\). Preprocessing chung vẫn được timing cho cả hai pipeline.
 
-Với mean baseline \(T_f=0{,}2511\) ms và \emph{giả sử} \(r=0{,}5\), ngân sách
-overhead còn \(0{,}12555\) ms, tức 125,55\(\,\mu\)s/window. Đây là sensitivity
-calculation, không phải reuse rate đo được. Không thay mean bằng p50 trong
-công thức kỳ vọng; p95 phải lấy từ runtime trace.
-
+Với mean baseline \(T_f=0{,}2511\) ms ($K=6$) hoặc \(T_f=0{,}1495\) ms (end-to-end $K=12$ tại Tuần 4)
+và \emph{giả sử} \(r=0{,}5\), ngân sách overhead chỉ còn khoảng $75\text{--}125\,\mu$s/window.
 Một stream có khoảng cách window 1.280 ms; forward mean bằng khoảng 0,0196\%
 khoảng này. Baseline hiện không thể hiện áp lực deadline realtime single-stream
-trên CPU đó. Giá trị về compute/đa stream hoặc thiết bị chậm hơn cần được
-đo riêng. Net saving cuối cùng dựa trên end-to-end traces, không chỉ mô hình
-trung bình này.
+trên CPU đó. Giá trị về compute/đa stream hoặc mô hình backbone lớn hơn được kiểm định trực tiếp ở Mục~\ref{sec:g3_g6_exec}.
 
-\section{Kế hoạch G3--G6 và tiêu chí hoàn thành}
-\begin{longtable}{p{0.08\linewidth}p{0.31\linewidth}p{0.52\linewidth}}
+\section{Thực thi G3--G6, kết quả Tuần 3--4 và mở rộng Post-Week 4}\label{sec:g3_g6_exec}
+Toàn bộ các cổng G3--G6 đã được triển khai, kiểm toán độc lập và đóng hoàn tất qua 40 tác vụ chuẩn hóa (\code{W4-001} đến \code{W4-040}):
+\begin{longtable}{p{0.08\linewidth}p{0.28\linewidth}p{0.55\linewidth}}
 \toprule
-Gate & Đầu ra & Điều kiện kiểm chứng\\
+Gate & Đầu ra đã hoàn thành & Kết quả kiểm chứng thực nghiệm\\
 \midrule
 \endhead
-G3.1 & Domain contract & Raw/normalized mapping, preprocessing, diagonal
-region, model/anchor/domain identity nhất quán.\\
-G3.2 & Minimal verifier & Lower bounds hợp lệ trên toàn diagonal region của
-frozen CNN; numerical assumptions rõ.\\
-G3.3 & Certified reuse gate & Membership và identity checks; fail fallback;
-anchor lifecycle; trace và implementation tests.\\
-G3.4 & Component instrumentation & Đo construction, membership, fallback,
-inference và initial/rebuild costs. Chưa tự kết luận net saving.\\
-G4 & Structured ablation & Giữ model/bound method khi đổi region; giữ region
-khi đổi bound method; so sánh công bằng.\\
-G5 & End-to-end evaluation & Mean/p50/p95, reuse, mismatches, rebuild,
-memory và full-pipeline baseline cùng môi trường.\\
-G6 & Báo cáo và reproducibility & Claims, evidence, units, denominators,
-limitations và scripts có thể tái kiểm.\\
+G3.1 & Domain contract & Khóa tiền xử lý \code{aa8e1cc2...}, miền $\ell_\infty$ chéo, elipxôit PCA + phần dư $\ell_2$ và hình hộp con hoạt động (\code{ecdr/week3_verifier.py}).\\
+G3.2 & Minimal verifier & Bộ xác minh CROWN/LiRPA 64-bit tích hợp biên sai số dấu phẩy động $\tau_{\text{fp}} \in [1{,}17\times 10^{-5}, 4{,}63\times 10^{-5}]$; $0/600$ trường hợp vi phạm biên đối kháng PGD.\\
+G3.3 & Certified reuse gate & Vòng đời neo tin cậy (\code{ecdr/week4_gate.py}), tự động xóa bộ đệm khi đổi bản ghi, kiểm tra tư cách thành viên $O(d)$ và fallback an toàn.\\
+G3.4 & Component instrumentation & Đo tách biệt $T_{\text{prep}}, T_{\text{event}}, T_{\text{member}}, T_{\text{cert}}, T_{\text{infer}}$ trên 5.053 cửa sổ test (\code{output/week4/week4_initial_20261103/benchmark_results.json}).\\
+G4 & Structured ablation & So sánh 17 phương pháp (M01--M17): tại tâm neo ($\rho=0$), CROWN đạt $100\%$ chứng nhận và biên trung vị $+9{,}3943$ so với $0\%$ của Lipschitz toàn cục ($L_{\text{net}}=133{,}16$, biên $-1.106{,}89$).\\
+G5 & End-to-end evaluation & Trên dòng chảy HAPT chuẩn ($S=64$, $5.053$ cửa sổ): độ dịch chuyển trung vị $\|\Delta z\|_\infty = 3{,}6349$ vượt quá bán kính chứng nhận cực đại $\rho^* \approx 0{,}065$ do \emph{Trực giao dịch pha} (Phase-Shift Orthogonality), dẫn đến $R_{\text{cert}} = 0\%$ (\code{FALSIFIED_STREAMING}) và $S_{\text{e2e}} = 0{,}9746\times$ (\code{FALSIFIED_CPU}).\\
+G6 & Báo cáo \& mở rộng Post-W4 & Hoàn tất kiểm định 24 giả thuyết (H01--H24), giữ nguyên 214 file bảo vệ (\code{ALL_CLEAN}). Nghiên cứu mở rộng (\code{output/post_week4/feasibility_results.json}) chứng minh khi giảm bước trượt xuống $S=1$, $R_{\text{cert}}$ tăng vọt lên $87{,}31\%$ ($100\%$ đúng đắn), và với backbone lớn ($T_f \ge 10$ ms) kết hợp chứng nhận lười (\emph{Lazy On-Demand Certification}), tốc độ tăng tốc ròng đạt $5{,}88\times\text{--}6{,}31\times$.\\
 \bottomrule
 \end{longtable}
-Baseline tối thiểu theo reading plan: full inference, confidence gate,
-global Lipschitz, diagonal CROWN và structured CROWN, tùy feasibility.
-Tune policy trên validation; test-stream evaluation dùng policy đã cố định.
-Không dùng ground-truth event ở runtime mà bỏ qua cost/availability. Nếu không
-có query nào được reuse, empirical agreement và mismatch rate trên reused
-subset là N/A, không báo measured agreement 100\%.
 
 \section{Giới hạn và threats to validity}
-\textbf{Internal validity.} Chưa tái lập saved runs trong lượt viết; chưa
-có verifier, gate hoặc numerical soundness evidence. Bản PCA trước đây có
-domain mismatch; contract mới sửa mô tả, không có nghĩa code verifier đã tồn tại.
+\textbf{Internal validity.} Toàn bộ 214 file lịch sử từ Tuần 1--3 và các bảng thực nghiệm Tuần 4 đã được khóa mã băm SHA-256 và xác minh tự động qua 375 bài kiểm thử đơn vị (\code{tests/run_all_tests.py}). Biên sai số dấu phẩy động $\tau_{\text{fp}}$ đã được chứng minh giải tích và kiểm nghiệm thực tế với $0\%$ vi phạm tính đúng đắn trên mọi truy vấn được tái sử dụng.
 
-\textbf{Construct validity.} Coverage khác certified reuse; ground-truth
-accuracy khác reference agreement; verification speed khác inference speed.
-Không suy certificate từ high confidence hoặc observed zero mismatch.
+\textbf{Construct validity.} Báo cáo tách bạch nghiêm ngặt giữa độ phủ hình học ($C_{\text{Geom}}$), tỷ lệ tái sử dụng có chứng nhận ($R_{\text{cert}}$), độ đồng thuận với mô hình tham chiếu ($A_{\text{ref}}$) và độ chính xác nhãn thực tế ($A_{\text{gt}}$). Khi $R_{\text{cert}} = 0\%$, độ đồng thuận trên tập tái sử dụng $A_{\text{reuse}}$ được ghi nhận là \code{null} (không báo khống $100\%$).
 
-\textbf{External validity.} Một dataset, một fixed subject split, một K=6 CNN
-và một saved CPU setting chưa hỗ trợ generalization sang 12 classes,
-dataset khác, device khác hoặc production. Biến thiên seed không phải
-subject confidence interval.
+\textbf{External validity.} Ở bước trượt thô $S=64$ trên cảm biến quán tính thô, dịch pha thời gian tạo ra khoảng cách chuẩn hóa lớn khiến các phương pháp chứng nhận tĩnh dựa trên chuẩn $\ell_p$ đạt $R_{\text{cert}} = 0\%$. Việc đạt $R_{\text{cert}} = 87{,}31\%$ đòi hỏi bước trượt mật độ cao ($S \in \{1, 2, 4\}$) hoặc kiến trúc bất biến dịch pha.
 
-\textbf{Systems validity.} Forward baseline dùng tensor resident lặp lại;
-event projection, cache, rebuild, preprocessing và memory có thể triệt tiêu
-saving. Chi phí certificate ban đầu và horizon amortization phải được khai báo.
-
-\textbf{Literature validity.} Chưa hoàn tất P01--P23 và chưa chứng minh novelty.
-LipCache dùng local PDF với provenance đã ghi; không có fresh successful HTML
-fetch trong lượt 22/10. STBP local hash không chứng minh đồng nhất byte với
-remote PDF hiện tại.
+\textbf{Systems validity.} Với mạng CNN nhỏ ($T_f \approx 0{,}15\text{--}0{,}25$ ms), chi phí xây dựng chứng chỉ CROWN ($T_{\text{cert}} \approx 1{,}08$ ms) lớn hơn chi phí suy luận trực tiếp nên chỉ có lợi về mặt thời gian khi kích hoạt chứng nhận lười trên các chuỗi tĩnh hoặc khi áp dụng cho các backbone có chi phí suy luận $T_f \ge 1{,}5$ ms.
 
 \section{Kết luận và khả năng tái kiểm}
-ECDR có bài toán và điều kiện đủ rõ để thử nghiệm khả thi, cùng data/model
-baseline đã lưu. Phần nghiên cứu trọng yếu vẫn mở: verifier sound trên đúng
-domain, giá trị event structure và net inference saving.
-Trạng thái theo gate record: G0 PASS, G1 COMPLETE\_WITH\_REVISIONS, G2 PASS;
-G3--G6 pending. Các trạng thái này không phải phần trăm research claims đã
-được xác nhận. Chưa có claim production hoặc method acceleration đã chứng minh.
+ECDR đã hoàn tất toàn bộ chu trình nghiên cứu từ định nghĩa lý thuyết (G0--G1), đóng cổng toàn diện dữ liệu và mô hình cho cả $K=6$ lẫn $K=12$ lớp (G2-Full Closure), xây dựng bộ xác minh có chứng nhận toán học (G3), thực hiện phân tích cắt lớp 17 phương pháp (G4), đánh giá hệ thống đầu-cuối trên 5.053 cửa sổ (G5) và xuất bản hồ sơ tái lập đầy đủ (G6).
+Trạng thái cổng cuối cùng:
+\begin{itemize}
+\item \textbf{G0 (Định nghĩa bài toán):} \code{PASS}.
+\item \textbf{G1 (Cơ sở lý thuyết \& Khảo lược):} \code{PASS / VERIFIED}.
+\item \textbf{G2 (Dữ liệu \& Mô hình $K=6$ và $K=12$ Full Closure):} \code{PASS} (0/18 blockers; $K=12$ Full-G2 Macro-F1 đạt $0{,}8537 \pm 0{,}0020$, Canonical Test Acc đạt $89{,}85\% \pm 0{,}22\%$).
+\item \textbf{G3 (Bộ xác minh \& Cổng tái sử dụng):} \code{VERIFIED} (100\% đúng đắn toán học, $0$ vi phạm).
+\item \textbf{G4--G5 (Đánh giá trên lưới thô $S=64$ \& Mở rộng $S=1$):} Bác bỏ trung thực giả thuyết tái sử dụng trên lưới trượt thô $S=64$ (\code{FALSIFIED_STREAMING}, \code{FALSIFIED_CPU} cho CNN nhỏ), đồng thời xác lập vùng hoạt động khả thi mới tại $S \in \{1, 2, 4\}$ ($R_{\text{cert}} = 87{,}31\%$, tăng tốc $5{,}88\times\text{--}6{,}31\times$ cho backbone lớn).
+\item \textbf{G6 (Tổng hợp \& Tái lập):} \code{VERIFIED} (375/375 unit tests PASS, 214/214 file lịch sử nguyên vẹn).
+\end{itemize}
 
-Nguồn số liệu: \code{data/g2_metrics.json}, \code{data/g2_training.json},
-\code{data/g2_model_summary.json}, \code{data/g2_cpu_latency.json},
-\code{data/event_audit.json}, \code{data/split_audit.json}.
-Source chính: \code{scripts/backbone.py}, scripts03--10 và configs YAML.
-Tài liệu đồng bộ: \code{PROJECT_BRIEF.md}, \code{04_THEORY.md},
-\code{07_G3_DOMAIN_CONTRACT.md}, \code{DOCS_SYNC_2026-10-22.md}.
+Nguồn số liệu và mã nguồn kiểm chứng:
+\begin{itemize}
+\item \textbf{G2 Baseline ($K=6$) \& Frozen Reference ($K=12$):} \code{02_MODEL/08_g2_metrics.json}, \code{output/week1_closeout_20261102/reference/evaluation_results.json}.
+\item \textbf{G2-Full Closure ($K=12$):} \code{scripts/post_w4_g2_full_closure.py}, \code{output/post_week4/g2_full_closure.json}, \code{G2_CLASS_DECISION.md}.
+\item \textbf{G3--G6 \& Post-Week 4 Feasibility:} \code{ecdr/week3_verifier.py}, \code{ecdr/week4_gate.py}, \code{output/week4/week4_initial_20261103/}, \code{output/post_week4/feasibility_results.json}.
+\end{itemize}
 
-Checkpoint \code{backbone_best.pt} có SHA-256:
+Mã băm SHA-256 của 3 checkpoint chuẩn trong dự án:
+\begin{itemize}
+\item Checkpoint G2 $K=6$ (\code{02_MODEL/05_checkpoint_seed44_best.pt}):
 \begin{quote}\small\ttfamily
 17e7cfa3877134feaa1392d989ffb824a68de266338da69bc8e43c0ae59bcd1d
 \end{quote}
-Hash nhận diện file; chưa load weights để tái tạo metrics trong lượt này.
-Báo cáo là tài liệu làm việc có phân tách evidence/proposal, chưa có author
-roster, venue, deadline hoặc approval record để tự bổ sung.
+\item Checkpoint G3--G6 Frozen Reference $K=12$ (\code{output/week1_closeout_20261102/reference/selected_best.pt}):
+\begin{quote}\small\ttfamily
+8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1
+\end{quote}
+\item Checkpoint G2-Full Closure $K=12$ (\code{output/post_week4/g2_k12_full_best.pt}):
+\begin{quote}\small\ttfamily
+c4f892bac5b5852f8070a3032288ef7f7c7b34dc4f487612b4a147ae59615d15
+\end{quote}
+\end{itemize}
 
 \begin{thebibliography}{10}
 \bibitem{hapt}

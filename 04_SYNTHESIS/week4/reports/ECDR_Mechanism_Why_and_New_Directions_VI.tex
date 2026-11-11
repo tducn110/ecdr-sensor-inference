@@ -1,0 +1,557 @@
+% !TEX program = xelatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}[Scale=0.86]
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry,booktabs,longtable,tabularx,array,multirow}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\usepackage{xcolor,hyperref,xurl,fancyhdr,enumitem}
+
+\geometry{left=2.1cm,right=2.1cm,top=2.25cm,bottom=2.25cm,headheight=15pt}
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\definecolor{pale}{HTML}{E8F2F2}
+\definecolor{warnred}{HTML}{B91C1C}
+\definecolor{okgreen}{HTML}{0F766E}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ink,
+  citecolor=teal,
+  urlcolor=teal,
+  pdftitle={ECDR Bao Cao Giai Phau Co Che, Ly Do Nghien Cuu va Phuong Huong Moi (VI)},
+  pdfauthor={ECDR Research Team}
+}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5.5pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.18}
+\setlist{nosep,leftmargin=1.5em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\code}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\vecop}{\operatorname{vec}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\Sset}{\mathcal{S}}
+\newcommand{\Dset}{\mathcal{D}}
+
+\newtheorem{principle}{Nguyên lý Thiết kế}[section]
+\newtheorem{mechanism}{Cơ chế Vật lý -- Toán học}[section]
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\figurename}{Hình}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{ink}{\textbf{ECDR} | Giải Phẫu Cơ Chế, Triết Lý Nghiên Cứu \& Phương Hướng Mới}}
+\fancyhead[R]{\small\textcolor{teal}{Báo Cáo Phân Tích Chuyên Sâu (VI)}}
+\fancyfoot[L]{\small Run ID: \code{week4_initial_20261103} $\cdot$ Tháng 11/2026}
+\fancyfoot[R]{\small\thepage}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\vspace*{0.4cm}
+{\Large\bfseries\color{teal} EVENT-CONDITIONED CERTIFIED DECISION REUSE (ECDR)\par}
+\vspace{0.35cm}
+{\huge\bfseries\color{ink} Báo Cáo Chuyên Sâu: Tóm Tắt Ngữ Cảnh, Triết Lý Thiết Kế Nghiên Cứu, Giải Phẫu Cơ Chế Thành Bại và Lộ Trình Nghiên Cứu Thế Hệ Mới\par}
+\vspace{0.45cm}
+{\large\color{ink} Tài Liệu Phân Tích Cơ Chế Toán Học -- Vật Lý -- Phần Cứng (Không Lặp Lại Bảng Số Liệu Thô)\par}
+\vspace{0.55cm}
+
+\begin{tabularx}{\linewidth}{@{}P{4.0cm}Y@{}}
+\toprule
+\textbf{Mục đích tài liệu} & Tập trung trả lời câu hỏi \textbf{``Tại sao?''}: (1) Ngữ cảnh cốt lõi, quy trình thu gom \& trích xuất thông tin ngắn gọn; (2) Tại sao chương trình nghiên cứu lại được thiết kế với các ràng buộc khắt khe như vậy; (3) Cơ chế toán học, vật lý và phần cứng nào làm cho một số thành phần \textbf{ĐƯỢC} (thành công tuyệt đối) và một số thành phần \textbf{KHÔNG ĐƯỢC} (thất bại về độ phủ hoặc tốc độ); (4) Năm phương hướng nghiên cứu mới khả thi và có định lượng rõ ràng.\\
+\textbf{Tài liệu tham chiếu gốc} & Độc giả xem bảng số liệu chi tiết 17 phương pháp và 24 giả thuyết tại \code{ECDR\_Full\_Synthesis\_Report\_VI.pdf} và \code{ECDR\_Full\_Synthesis\_Report\_EN.pdf}.\\
+\textbf{Đối tượng phân tích} & Mạng \code{SmallCNN1D} ($283.692$ tham số, $1,17\text{ MMACs}$) trên luồng cảm biến HAPT ($5.053$ cửa sổ kiểm thử, $5.034$ cặp kề nhau) cùng 4 kiến trúc mở rộng quy mô (\code{MediumCNN1D}, \code{TemporalResNet1D}, \code{TemporalTransformer1D}).\\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.45cm}
+\noindent\colorbox{pale}{%
+\parbox{\dimexpr\linewidth-2\fboxsep}{%
+\textbf{\color{ink}Tóm Tắt Cốt Lõi Về Cơ Chế (Core Mechanism Synopsis).}\\[4pt]
+Nghiên cứu ECDR đã chứng minh thành công hai cơ chế nền tảng nhưng đồng thời phơi bày hai bức tường vật lý -- phần cứng quan trọng:
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Tại sao ĐƯỢC (3 Cơ chế thành công):}
+    (i) \textit{Cơ chế \code{Shift-Aligned Receptive Field}} giúp nhánh tính toán tăng dần (\code{M03}) đạt khớp từng bit ($100\%$) tại 12 cột nội bộ của tầng \code{Conv3} trên cả $5.034/5.034$ cặp cửa sổ liên tiếp;
+    (ii) \textit{Cơ chế \code{Fail-Closed Gate} + \code{Fixed-Anchor}} bảo đảm độ đồng thuận quyết định $100\%$ ($D_{\text{all}} = 0$) trên toàn bộ 17 phương pháp, không để lọt bất kỳ quyết định sai âm thầm nào;
+    (iii) \textit{Cơ chế nhân gộp ma trận tương phản $C^{(c)} W_{\text{out}}$} triệt tiêu hoàn toàn sai số phụ thuộc biến ở tầng phân lớp cuối.
+  \item \textbf{Tại sao KHÔNG ĐƯỢC (2 Nút thắt làm thất bại độ phủ và tốc độ trên \code{SmallCNN1D}):}
+    (i) \textit{Ảo ảnh chồng lấp thời gian (\code{Phase-Shift Illusion}):} Chồng lấp 50\% thời gian ($1,28\text{ s}$) tương đương phép dịch pha gần trọn một chu kỳ bước chân con người, tạo ra độ dịch chuyển chuẩn hóa trung vị $\norm{\Delta z}_2 = 25,49$, lớn gấp \textbf{1.562,7 lần} bán kính cầu an toàn tối đa chứng nhận được ($r_{\max} = 0,0149$) do hiện tượng phình khoảng qua 3 tầng tích chập (\code{interval wrapping}), khiến $R = 0$;
+    (ii) \textit{Nghịch lý Bộ nhớ đệm CPU \& Đầu ra nhạy vị trí (\code{Flatten--Linear Bottleneck}):} Khối \code{Flatten(2048)->Linear(128)} chiếm \textbf{92,45\% tổng tham số} và không bất biến khi dịch cột đặc trưng, kết hợp với việc mạng \code{M00} ($1,14\text{ MB}$) nằm trọn trong bộ nhớ đệm L2/L3 chạy bằng kernel C++ SIMD nguyên khối chỉ mất $0,140\text{ ms}$, trong khi chi phí cắt ghép \code{tensor slicing + torch.cat} ở \code{batch=1} của Python/PyTorch tốn tới $1,927\text{ ms}$.
+\end{itemize}
+}}
+\vfill
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+
+\begingroup\small\setlength{\parskip}{1pt}\tableofcontents\endgroup
+\clearpage
+
+% =============================================================================
+\section{Tóm Tắt Ngắn Gọn: Ngữ Cảnh, Việc Đã Làm, Thu Gom và Trích Xuất Thông Tin}
+% =============================================================================
+
+Phần này tóm lược ngắn gọn bối cảnh bài toán và cách thức thu gom, chuẩn hóa, trích xuất thông tin thực nghiệm để làm nền tảng cho phần giải thích cơ chế ở các mục sau.
+
+\subsection{Ngữ Cảnh Bài Toán (Problem Context)}
+Trong các hệ thống \code{Edge AI} xử lý luồng cảm biến đeo trên người (như bộ dữ liệu chuẩn \code{HAPT} gồm 6 kênh gia tốc kế và con quay hồi chuyển lấy mẫu ở $f_s = 50\text{ Hz}$), bộ phân loại hoạt động trên các cửa sổ trượt (\code{sliding windows}) độ dài $W = 128$ mẫu ($2,56\text{ s}$) với bước trượt \code{stride} $s = 64$ mẫu ($1,28\text{ s}$). Mỗi cửa sổ mới $X_t \in \R^{6 \times 128}$ ($m = 768$ số vô hướng) chia sẻ chính xác 64 mẫu thời gian đầu ($384$ số vô hướng, tức $50\%$ dữ liệu vật lý) với 64 mẫu cuối của cửa sổ liền trước $X_{t-1}$.
+
+Câu hỏi đặt ra là: \textit{Thay vì chạy lại toàn bộ mạng nơ-ron từ đầu tại mỗi bước trượt $t$, ta có thể tận dụng sự chồng lấp $50\%$ này để tái sử dụng quyết định phân lớp thông qua chứng nhận toán học (\code{certified decision reuse}) hoặc tái sử dụng kích hoạt trung gian (\code{exact incremental feature reuse}) nhằm tiết kiệm thời gian tính toán mà vẫn giữ nguyên $100\%$ quyết định của mô hình gốc hay không?}
+
+\subsection{Những Gì Đã Thực Hiện (What Was Done)}
+Trong suốt chương trình nghiên cứu, chúng tôi đã thực hiện một quy trình khép kín gồm 5 bước:
+\begin{enumerate}
+  \item \textbf{Khóa cứng hợp đồng tham chiếu (\code{Frozen Reference Contract}):} Huấn luyện và đóng băng mô hình \code{SmallCNN1D} ($K=12$ lớp, $283.692$ tham số, $1,17\text{ MMACs}$, đạt $89,05\%$ Accuracy trên tập kiểm thử có giám sát) cùng bộ tham số chuẩn hóa $\mu_c, \sigma_c$ từ tập \code{train}.
+  \item \textbf{Xây dựng công cụ chứng nhận toán học và số học:} Thiết lập đặc tả biên độ trực tiếp với 11 lớp đối thủ (\code{11-competitor margin specification}), cài đặt 3 bộ truyền cận (\code{Lipschitz}, \code{IBP}, \code{CROWN}) trên 5 cấu trúc hình học miền (\code{Diagonal Box}, \code{Fixed-Overlap Wave}, \code{PCA Affine Hull}, \code{Correlated Zonotope}, \code{Random Haar Control}) kèm cầu nối làm tròn hướng ra ngoài $\F_{32} \leftrightarrow \F_{64}$ (\code{outward rounding}).
+  \item \textbf{Xây dựng nhánh tính toán tăng dần chính xác (\code{M03}):} Thiết kế bộ nhớ đệm đặc trưng (\code{feature cache}) qua 3 tầng \code{Conv1D}, tái sử dụng các cột đặc trưng nội bộ không bị ảnh hưởng bởi biên \code{zero-padding}.
+  \item \textbf{Thực thi đánh giá toàn luồng (\code{Full-Stream Evaluation}):} Chạy 17 phương pháp (\code{M00}--\code{M16}) trên toàn bộ $5.053$ cửa sổ kiểm thử dưới giao thức đã niêm phong mật mã (\code{Master Seal SHA-256: 56806762...}).
+  \item \textbf{Phân tích định lượng nút thắt hậu nghiệm (\code{Post-Week 4 Feasibility \& Scaling Study}):} Đo khoảng cách giữa nhiễu dịch pha thực tế và bán kính chứng nhận trên $1.000$ cặp cửa sổ, xác định điểm hòa vốn (\code{break-even FLOPs}) trên 4 quy mô kiến trúc mạng và đo hiệu năng bộ đệm vòng tại chỗ (\code{in-place ring buffer}).
+\end{enumerate}
+
+\subsection{Quy Trình Thu Gom Dữ Liệu và Trích Xuất Thông Tin (Data Collection \& Information Extraction)}
+Để đảm bảo thông tin trích xuất không bị nhiễm bẩn bởi lỗi rò rỉ dữ liệu hay sai số đo đạc, hệ thống thu gom và trích xuất thông tin theo 3 lớp kiểm soát nghiêm ngặt:
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.55cm and 0.65cm,
+  stage/.style={rectangle, draw=ink, thick, fill=white, rounded corners=3pt, minimum height=0.95cm, text width=3.4cm, align=center, font=\scriptsize\sffamily},
+  extract/.style={rectangle, draw=teal, very thick, fill=pale, rounded corners=3pt, minimum height=0.95cm, text width=3.6cm, align=center, font=\scriptsize\sffamily},
+  arrow/.style={-{Stealth[length=2.0mm,width=1.5mm]}, thick, draw=ink}
+]
+\node[stage] (raw) {\textbf{1. Thu gom Cảm biến Thô}\\61 bản ghi HAPT ($1,12\text{M}$ dòng)\\Ghép $T \times 6 \to$ Chuyển vị $6 \times T$};
+\node[stage, right=of raw] (win) {\textbf{2. Cắt Cửa sổ \& Chia Tách}\\$W=128, s=64$ trong từng bản ghi\\$17.453$ cửa sổ; Chia 17/4/9 người};
+\node[stage, right=of win] (strat) {\textbf{3. Phân 5 Tầng \& Ẩn Nhãn}\\Pure-Basic, Transition, Mixed,\\Ambiguous, Unlabeled (\code{QueryView})};
+\node[extract, right=of strat] (tele) {\textbf{4. Trích xuất Telemetry}\\Độ trễ \code{p50/p95}, cận $\min L_{cj}$,\\sai lệch bit, $\norm{\Delta z}_2$, mã \code{fallback}};
+
+\draw[arrow] (raw) -- (win);
+\draw[arrow] (win) -- (strat);
+\draw[arrow] (strat) -- (tele);
+\end{tikzpicture}%
+}
+\caption{Quy trình thu gom dữ liệu cảm biến thô, phân tầng luồng thời gian và trích xuất thông tin thực nghiệm của ECDR.}
+\label{fig:extraction_flow}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Thu gom và làm sạch chỉ số bản ghi:} Từ $1.122.772$ mẫu thời gian thô trên 61 bản ghi của 30 người, hệ thống cắt cửa sổ nghiêm ngặt bên trong từng bản ghi (loại bỏ hoàn toàn các cửa sổ cắt ngang qua ranh giới hai bản ghi khác nhau, tạo ra đúng $5.053$ cửa sổ kiểm thử và $5.034 = 5.053 - 19$ cặp cửa sổ liên tiếp hợp lệ).
+  \item \textbf{Phân tầng ngữ nghĩa không rò rỉ (\code{Leakage-Free Stratification}):} Chia tách theo người (\code{subject-disjoint}: 17 người \code{train}, 4 người \code{val}, 9 người \code{test}) để không có hai cửa sổ chồng lấp nào nằm ở hai tập khác nhau. Mỗi cửa sổ được gán nhãn cấu trúc vào 1 trong 5 tầng: \code{Pure-Basic} ($2.874$), \code{Pure-Transition} ($119$), \code{Majority-Mixed} $\ge 77/128$ mẫu ($579$), \code{Ambiguous} ($479$) và \code{Unlabeled} ($1.002$).
+  \item \textbf{Cơ chế trích xuất thông tin mù nhãn (\code{Label-Blind Telemetry Extraction}):} Tại thời điểm suy luận, mỗi cửa sổ được đóng gói thành cấu trúc \code{QueryView} chỉ chứa tensor đầu vào $X_t$, định danh bản ghi \code{recording\_id} và chỉ số bước $t$; toàn bộ nhãn thực tế $y_{\text{true}}$ bị tước bỏ hoàn toàn trước khi đưa vào \code{StreamingMethodAdapter} để ngăn chặn gian lận \code{oracle}. Tại mỗi truy vấn, hệ thống trích xuất tự động 6 nhóm thông tin:
+    \begin{enumerate}
+      \item Quyết định phân lớp $\hat{y}_t$, đối chiếu với quyết định tham chiếu $y_{\text{ref}}(X_t)$ để đếm số lỗi bất đồng $D_{\text{all}}$;
+      \item Cờ trạng thái tái sử dụng (\code{reuse\_hit}) và mã lý do dự phòng (\code{fallback\_reason}: đầu bản ghi, hết hạn chân trời $H$, trượt kiểm tra thuộc miền $x \notin \Dset$, hoặc cận dưới biên độ $\min_{j \neq c} L_{cj} \le 0$);
+      \item Vector 11 cận dưới biên độ cạnh tranh $L_{cj}(\Sset)$ ở cả $\F_{32}$ và $\F_{64}$ làm tròn hướng ra ngoài;
+      \item Sai số tuyệt đối cực đại $\max \abs{\Delta H^{(\ell)}}$ trên $3.866.112$ số vô hướng của các cột đặc trưng tái sử dụng tại tầng \code{Conv3};
+      \item Độ dịch chuyển hình học thực tế giữa hai bước trượt $\norm{z_{t+1} - z_t}_2$, $\norm{z_{t+1} - z_t}_\infty$ và bán kính cầu an toàn cực đại $r_{\max}(z_t)$;
+      \item Thời gian thực thi từng truy vấn bằng đồng hồ độ phân giải cao \code{perf\_counter\_ns} trên CPU đơn luồng để trích xuất trung bình (\code{mean}), trung vị (\code{p50}) và phân vị thứ 95 (\code{p95}).
+    \end{enumerate}
+\end{itemize}
+
+% =============================================================================
+\section{Tại Sao Lại Nghiên Cứu Theo Cách Này? (Triết Lý \& Lý Do Thiết Kế Phương Pháp Luận)}
+% =============================================================================
+
+Một câu hỏi rất tự nhiên khi nhìn vào thiết kế của ECDR là: \textit{Tại sao nghiên cứu này lại đặt ra nhiều ràng buộc khắt khe đến vậy---từ việc khóa cứng mọi tham số, tách 4 trục đánh giá, bắt buộc chứng minh cả 11 biên độ với làm tròn hướng ra ngoài $\F_{64}$, cho đến việc giữ nguyên cả những kết quả bằng 0 ($R=0$)?} Dưới đây là 6 lý do khoa học cốt lõi giải thích tại sao việc thiết kế nghiên cứu như vậy là bắt buộc.
+
+\begin{principle}[Tại sao phải đóng băng toàn bộ Hợp đồng Tham chiếu (\code{Frozen Reference Contract})?]
+Chứng nhận toán học (\code{formal certification}) chỉ có ý nghĩa khi đối tượng được chứng nhận là một \textbf{hàm toán học tĩnh và xác định duy nhất} $\widehat{F}: \R^{6 \times 128} \to \R^{12}$.
+\end{principle}
+Nếu không đóng băng đồng thời (i) trọng số mạng $\theta$, (ii) thống kê trung bình/phương sai chạy (\code{running\_mean}, \code{running\_var}) của các tầng \code{BatchNorm1d} ở chế độ \code{eval()}, (iii) vector chuẩn hóa $\mu_c, \sigma_c$ tính riêng trên tập \code{train}, và (iv) quy tắc chọn chỉ số nhỏ nhất khi hòa (\code{lowest-index tie-break}), thì hàm $\widehat{F}$ sẽ biến đổi theo dữ liệu đầu vào hoặc theo thứ tự lô (\code{batch}). Khi đó, mọi cận dưới $L_{cj}(\Sset)$ tính tại bước $t$ sẽ lập tức mất hiệu lực tại bước $t+1$. Hơn nữa, nếu tính $\mu_c, \sigma_c$ trên toàn bộ tập dữ liệu (bao gồm cả tập \code{test}), thông tin tương lai sẽ rò rỉ ngược về quá khứ, phá hủy tính nhân quả (\code{causality}) của hệ thống suy luận trực tuyến.
+
+\begin{principle}[Tại sao phải tách bạch tuyệt đối 4 trục: Độ chính xác nhãn thật, Độ đồng thuận tham chiếu, Tính đúng đắn số học và Tốc độ thực tế?]
+Trong văn hiến về \code{approximate caching} và \code{early-exit}, một sai lầm phổ biến là gộp chung ``độ chính xác trên tập test ít thay đổi'' với ``tái sử dụng an toàn''.
+\end{principle}
+Chúng tôi bắt buộc tách rời 4 trục này vì:
+\begin{itemize}
+  \item \textbf{Nếu chỉ nhìn vào \code{Test Accuracy} ($89,05\%$):} Giả sử một bộ đệm đoán mò làm thay đổi 50 quyết định của mạng gốc, trong đó 25 lần sửa đúng ngẫu nhiên các mẫu mạng gốc đoán sai và 25 lần làm hỏng các mẫu mạng gốc đoán đúng. Khi đó \code{Test Accuracy} vẫn giữ nguyên $89,05\%$, tạo ra ảo giác rằng bộ đệm hoạt động hoàn hảo, trong khi thực tế nó đã làm sai lệch hành vi của mô hình gốc tới 50 lần! Do đó, thước đo đúng đắn của một cơ chế \code{decision reuse} phải là \textbf{Độ đồng thuận tham chiếu} ($A_{\text{full}} = 1,0000$, số lần lệch quyết định $D_{\text{all}} = 0$).
+  \item \textbf{Nếu chỉ đếm số phép tính \code{MACs} tiết kiệm được:} Nhánh \code{M03} giảm được hơn $60\%$ số phép tính tích chập. Nếu chỉ báo cáo độ phức tạp lý thuyết (FLOPs), người ta sẽ kết luận sai lầm rằng \code{M03} giúp tăng tốc $2,5\times$. Thực nghiệm đo thời gian thực trên CPU cho thấy \code{M03} chậm hơn $5,63$ lần ($0,1775\times$). Việc buộc phải đo \code{net wall-clock latency} giúp phát hiện ra chi phí ẩn của việc cắt ghép bộ nhớ (\code{tensor slicing}) trên phần cứng thực.
+\end{itemize}
+
+\begin{principle}[Tại sao bắt buộc phải kiểm chứng đồng thời cả 11 biên độ đối thủ (\code{11-Competitor Margins}) và nhân gộp ma trận tương phản $C^{(c)} W_{\text{out}}$?]
+Biên độ dương tại một điểm tâm không suy ra sự bất biến trên cả miền, và chỉ kiểm tra đối thủ đứng thứ hai (\code{runner-up}) tại tâm là không đủ an toàn.
+\end{principle}
+Tại tâm neo $X^r$, lớp đứng thứ nhì $j_2 = \arg\max_{j \neq c} F_j(X^r)$ có thể có logit gần lớp thắng $c$ nhất. Nhưng vì mạng nơ-ron có 3 tầng phi tuyến \code{ReLU} và \code{MaxPool1d}, khi dịch chuyển sang điểm $X \in \Sset$, một lớp thứ ba $j_3$ có độ dốc đạo hàm $\norm{\nabla F_{j_3}}$ lớn hơn nhiều có thể tăng vọt và vượt qua $F_c(X)$ trước cả $j_2$. Vì vậy, điều kiện đủ toán học bắt buộc phải kiểm tra đồng thời \textbf{tất cả $K-1 = 11$ bất đẳng thức} $\inf_{X \in \Sset} (F_c(X) - F_j(X)) > 0$.
+
+Đồng thời, nếu tính khoảng $[\underline{F}_c, \overline{F}_c]$ và $[\underline{F}_j, \overline{F}_j]$ riêng rẽ rồi lấy $\underline{F}_c - \overline{F}_j$, bộ truyền cận sẽ cho phép vector đặc trưng tầng áp chót $h \in [\underline{h}, \overline{h}] \subset \R^{128}$ nhận hai giá trị cực trị trái ngược nhau cùng lúc ở $F_c(h)$ và $F_j(h)$. Việc thiết kế phép nhân gộp ma trận hiệu số $\widetilde{W}^{(c)} = C^{(c)} W_{\text{out}} \in \R^{11 \times 128}$ trước khi lấy cận giúp triệt tiêu thành phần chung $(w_c - w_j)^\top h$, thu được cận dưới chặt hơn về mặt toán học (\code{H08}).
+
+\begin{principle}[Tại sao phải nghiên cứu song song cả 2 nhánh (\code{Exact Incremental M03} và \code{Certified Regional M05--M13}) cùng 5 cấu trúc hình học miền?]
+Sự chồng lấp cửa sổ trượt mang hai bản chất toán học hoàn toàn khác nhau, đòi hỏi hai công cụ khảo sát độc lập để không bỏ sót nguyên nhân gốc rễ.
+\end{principle}
+\begin{enumerate}
+  \item \textbf{Bản chất cấu trúc rời rạc (\code{Discrete Structural Shift}):} 64 mẫu đầu của $X_{t+1}$ là bản sao dịch trái của 64 mẫu cuối của $X_t$. Tính chất này được khai thác chính xác từng bit bởi \textbf{Nhánh Tính toán Tăng dần (\code{M03})} và \textbf{Miền Sóng Chồng lấp Cố định (\code{Fixed-Overlap Wave})}.
+  \item \textbf{Bản chất nhiễu liên tục (\code{Continuous Perturbation Invariance}):} Liệu phần thông tin mới xuất hiện ở 64 mẫu đuôi có đủ nhỏ để không làm đổi ngôi lớp thắng $c^*$ hay không? Tính chất này chỉ có thể trả lời bằng \textbf{Nhánh Chứng nhận Miền (\code{Lipschitz, IBP, CROWN})}.
+  \item \textbf{Tại sao cần tới 5 cấu trúc miền (\code{Box, Wave, PCA, Zonotope, Random Haar Control})?} Nếu chỉ thử miền hộp \code{Box} 768 chiều (\code{M06}) và thấy $R=0$, ta sẽ không biết liệu $R=0$ là do chưa khóa 384 chiều chồng lấp, hay do chưa chiếu lên không gian con \code{PCA}. Việc thử đầy đủ cả \code{Wave} (khóa 384 chiều đầu), \code{PCA Affine Hull}, \code{Correlated Zonotope} và đối chứng với \code{Random Haar Basis} (\code{H10}) cho phép kết luận dứt khoát: sự thất bại của độ phủ không nằm ở việc chọn thiếu hệ cơ sở tuyến tính, mà nằm ở độ lớn vật lý của phép dịch pha ($\norm{\Delta z}_2 = 25,49$) và sự mất mát phụ thuộc qua các tầng tích chập.
+\end{enumerate}
+
+\begin{principle}[Tại sao bắt buộc phải có \code{Fail-Closed}, \code{Fixed-Anchor} và Cầu nối số học IEEE 754 (\code{Outward Rounding})?]
+Một hệ thống gọi là ``Certified'' (Có chứng nhận) không được phép đánh đổi sự an toàn lấy tỷ lệ trúng bộ đệm.
+\end{principle}
+\begin{itemize}
+  \item \textbf{Chống hiệu ứng trôi tâm (\code{Anchor Drift}, \code{H15 vs. H16}):} Nếu tại bước $t$, $X_t$ nằm trong hình cầu bán kính $r$ quanh tâm $X_{t-1}$ nên được tái sử dụng nhãn, rồi ta lại lấy chính $X_t$ làm tâm mới cho bước $t+1$ mà không chạy lại mạng gốc, thì theo bất đẳng thức tam giác, khoảng cách từ $X_{t+k}$ tới tâm thật ban đầu sẽ phình lên tới $k \cdot r$, vượt qua biên phân lớp. Do đó, giữ cố định tâm neo (\code{Fixed-Anchor}) cho đến khi chạy lại \code{reference} là bắt buộc.
+  \item \textbf{Chống lật dấu dấu phẩy động (\code{Float32 Sign Inversion}, \code{H22}):} Số học $\F_{32}$ có độ chính xác hữu hạn ($\epsilon_{\text{mach}} \approx 1,19 \times 10^{-7}$). Khi tích lũy hàng nghìn phép nhân-cộng trong tích chập, sai số làm tròn có thể biến một cận dưới thực sự âm ($-10^{-7}$) thành một số dương giả tạo trên $\F_{32}$, dẫn đến quyết định tái sử dụng sai. Việc nâng lên $\F_{64}$ và dùng $\operatorname{nextafter}(\cdot, -\infty)$ để mở rộng khoảng ra ngoài (\code{outward rounding}) là rào chắn bắt buộc để nối lý thuyết số thực $\R$ với phần cứng thực thi.
+\end{itemize}
+
+\begin{principle}[Tại sao giữ nguyên và công bố trung thực các kết quả âm (\code{Negative Results}) thay vì nới lỏng giao thức?]
+Giá trị lớn nhất của khoa học thực nghiệm nằm ở việc xác định chính xác \textbf{ranh giới bất khả thi} (\code{impossibility boundaries}) dưới các điều kiện trung thực.
+\end{principle}
+Nếu chúng tôi cho phép chỉnh sửa bán kính trên tập \code{test}, hoặc dùng nhãn thật để lọc bỏ các cửa sổ chuyển tiếp, hoặc chỉ chạy trên các đoạn người dùng nằm yên (\code{LAYING}), ta có thể dễ dàng tạo ra những con số $R > 0$ giả tạo nhưng hoàn toàn vô dụng trong thực tế. Việc khóa giao thức trước khi mở tập \code{test} và chứng minh định lượng vì sao $R=0$ trên mạng nhỏ giúp cộng đồng nghiên cứu tránh đi vào lối mòn và chỉ ra đúng ngưỡng quy mô ($\ge 26,1\text{ MMACs}$) nơi phương pháp thực sự có lãi.
+
+% =============================================================================
+\section{Giải Phẫu Cơ Chế: Tại Sao ĐƯỢC và Tại Sao KHÔNG ĐƯỢC?}
+% =============================================================================
+
+Đây là phần trọng tâm của báo cáo: giải thích bằng cơ chế toán học, vật lý tín hiệu và kiến trúc vi xử lý vì sao từng hiện tượng thực nghiệm lại xảy ra.
+
+\subsection{Phân Tích Cơ Chế: Tại Sao ĐƯỢC? (4 Cơ Chế Thành Công Tuyệt Đối)}
+
+\begin{mechanism}[Cơ chế 1: Tại sao nhánh Tính toán Tăng dần (\code{M03}) đạt tỷ lệ trúng $100\%$ ($5.034/5.034$ cặp) và khớp từng bit trên $3.866.112$ số vô hướng? (\code{Shift-Aligned Receptive Field Arithmetic})]
+\end{mechanism}
+Sự khớp chính xác từng bit (\code{bitwise identity}) tại tầng \code{Conv3} không phải là sự trùng hợp ngẫu nhiên mà là hệ quả của phép chia hết giữa bước trượt cửa sổ (\code{stride} $s=64$) và tổng hệ số giảm mẫu (\code{downsampling factor}) của các tầng \code{MaxPool1d}:
+\begin{enumerate}
+  \item \textbf{Sự bảo toàn pha lưới tích chập (\code{Grid Phase Alignment}):} Cửa sổ đầu vào có chiều dài $W = 128$ và dịch chuyển đi $s = 64$ mẫu ở mỗi bước: $X_{t+1}[:, u] = X_t[:, u + 64]$ với mọi $u \in \{0,\dots,63\}$. Mạng \code{SmallCNN1D} có hai tầng \code{MaxPool1d(kernel\_size=2, stride=2)} đặt sau \code{Conv1} và \code{Conv2}, tạo ra tổng hệ số co trục thời gian là $D = 2 \times 2 = 4$. Vì $s = 64$ chia hết hoàn toàn cho $D = 4$, bước dịch $64$ mẫu ở đầu vào tương ứng chính xác với một phép dịch nguyên:
+  \begin{equation}
+    \Delta_1 = \frac{64}{2} = 32 \text{ cột sau Pool1}, \qquad \Delta_2 = \frac{64}{4} = 16 \text{ cột sau Pool2 và tại Conv3}.
+  \end{equation}
+  Nếu bước trượt $s$ không chia hết cho $4$ (ví dụ $s=65$), các cặp phần tử gom nhóm trong \code{MaxPool1d(2)} sẽ bị lệch pha lẻ/chẵn, làm toàn bộ bản đồ đặc trưng thay đổi hoàn toàn!
+  \item \textbf{Sự cô lập vùng nhiễm biên \code{Zero-Padding} (\code{Boundary Contamination Isolation}):} Tại sao trong 16 cột chồng lấp ở tầng \code{Conv3} (chiều dài $L_3 = 32$), chỉ có 12 cột nội bộ ($j \in \{2,\dots,13\}$ của cửa sổ mới, ứng với $j + 16 \in \{18,\dots,29\}$ của cửa sổ cũ) là khớp từng bit, còn 4 cột biên ($j \in \{0, 1, 14, 15\}$) phải tính lại?
+  \begin{itemize}
+    \item Ở cửa sổ mới $X_{t+1}$, các cột đầu $j \in \{0, 1\}$ nằm sát biên trái $u=0$, nơi các tầng \code{Conv1(k=5, p=2)}, \code{Conv2(k=3, p=1)} và \code{Conv3(k=3, p=1)} chèn các số $0$ giả tạo (\code{zero-padding}) vào bên trái. Trong khi đó, ở cửa sổ cũ $X_t$, các vị trí tương ứng $j \in \{16, 17\}$ nằm ở giữa cửa sổ nên nhận giá trị tín hiệu thật từ nửa đầu của $X_t$.
+    \item Ngược lại, ở các cột $j \in \{14, 15\}$ của cửa sổ mới, vùng tiếp nhận (\code{receptive field}) của chúng vươn sang bên phải vượt qua mốc $u=63$ để lấy dữ liệu mới của nửa sau $X_{t+1}$; trong khi ở cửa sổ cũ $X_t$, các cột $j \in \{30, 31\}$ lại nhìn thấy biên phải \code{zero-padding} tại $u=127$.
+    \item Bỏ đi đúng 2 cột nhiễm biên trái và 2 cột nhiễm biên phải, 12 cột nội bộ $j \in \{2,\dots,13\}$ có hình nón vùng tiếp nhận (\code{receptive field cone}) nằm trọn vẹn bên trong đoạn giao $[0, 63]$ của $X_{t+1}$ (tức $[64, 127]$ của $X_t$). Vì phép cộng-nhân dấu phẩy động $\F_{32}$ trong tích chập trượt là bất biến theo vị trí khi các toán hạng đầu vào giống hệt nhau theo đúng thứ tự, 12 cột này ($64 \text{ kênh} \times 12 \text{ cột} = 768$ số vô hướng mỗi cặp, tổng cộng $3.866.112$ số vô hướng trên $5.034$ cặp) đạt sai số bằng $0,0$ tuyệt đối ở mức từng bit!
+  \end{itemize}
+\end{enumerate}
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[x=0.38cm,y=0.75cm]
+  % Old window Conv3
+  \node[anchor=east, font=\footnotesize\bfseries\color{ink}] at (-0.5, 2.2) {$H^{(3)}_t$ (Cửa sổ cũ, 32 cột):};
+  \fill[gray!20, draw=ink] (0, 1.7) rectangle (16, 2.7);
+  \node[font=\scriptsize] at (8, 2.2) {Cột $0\dots15$ (Nửa đầu cũ -- loại bỏ)};
+  \fill[warnred!20, draw=warnred] (16, 1.7) rectangle (18, 2.7);
+  \node[font=\tiny, align=center] at (17, 2.2) {$16,17$\\(Trái)};
+  \fill[okgreen!20, draw=okgreen, very thick] (18, 1.7) rectangle (30, 2.7);
+  \node[font=\scriptsize\bfseries\color{okgreen}] at (24, 2.2) {12 cột nội bộ $18\dots29$ (Bitwise Exact)};
+  \fill[warnred!20, draw=warnred] (30, 1.7) rectangle (32, 2.7);
+  \node[font=\tiny, align=center] at (31, 2.2) {$30,31$\\(Pad phải)};
+
+  % New window Conv3
+  \node[anchor=east, font=\footnotesize\bfseries\color{ink}] at (-0.5, 0.2) {$H^{(3)}_{t+1}$ (Cửa sổ mới, 32 cột):};
+  \fill[warnred!20, draw=warnred] (0, -0.3) rectangle (2, 0.7);
+  \node[font=\tiny, align=center] at (1, 0.2) {$0,1$\\(Pad trái)};
+  \fill[okgreen!20, draw=okgreen, very thick] (2, -0.3) rectangle (14, 0.7);
+  \node[font=\scriptsize\bfseries\color{okgreen}] at (8, 0.2) {12 cột tái sử dụng $2\dots13$ (Copy từ $18\dots29$)};
+  \fill[warnred!20, draw=warnred] (14, -0.3) rectangle (16, 0.7);
+  \node[font=\tiny, align=center] at (15, 0.2) {$14,15$\\(Giao mới)};
+  \fill[pale, draw=teal] (16, -0.3) rectangle (32, 0.7);
+  \node[font=\scriptsize\color{ink}] at (24, 0.2) {Cột $16\dots31$ (Nửa đuôi mới -- tính trực tiếp)};
+
+  % Shift arrow
+  \draw[-{Stealth[length=2.5mm]}, very thick, color=okgreen] (24, 1.7) -- node[midway, fill=white, inner sep=1.5pt, font=\scriptsize\bfseries\color{okgreen}] {Dịch trái đúng $\Delta_2 = 16$ cột ($0,0$ bit error)} (8, 0.7);
+\end{tikzpicture}%
+}
+\caption{Cơ chế hình học vùng tiếp nhận (\code{receptive field}) giải thích tại sao đúng 12 cột nội bộ ($j=2\dots13$) tại tầng \code{Conv3} khớp từng bit giữa hai cửa sổ liên tiếp, trong khi 4 cột biên ($0,1$ và $14,15$) bị nhiễm \code{padding} hoặc dữ liệu mới.}
+\label{fig:conv3_reuse}
+\end{figure}
+
+\begin{mechanism}[Cơ chế 2: Tại sao toàn bộ 17 phương pháp đều đạt $0$ lỗi lệch quyết định ($D_{\text{all}} = 0, A_{\text{full}} = 1,0000$) trên cả 5.053 truy vấn? (\code{Four-Barrier Fail-Closed Architecture})]
+\end{mechanism}
+Không một phương pháp nào trong hệ thống ECDR đưa ra quyết định sai khác với \code{frozen reference} \code{M00} nhờ cơ chế \textbf{4 hàng rào chắn nối tiếp}:
+\begin{equation}
+  \text{ReuseHit}(X_t) = \mathbb{I}(\text{ID\_Match}) \cdot \mathbb{I}(\text{Same\_Rec}) \cdot \mathbb{I}(t - t_r \le H) \cdot \mathbb{I}\!\left(Z_t \in \Dset(X^r) \;\land\; \min_{j \neq c} L_{cj}^{\F_{64}\downarrow}(\Dset) > 0\right).
+\end{equation}
+Chỉ cần một trong bốn điều kiện trả về \code{False}, hệ thống lập tức kích hoạt \code{Reference Fallback} (gọi trực tiếp $\widehat{F}(X_t)$). Nhờ đó, ngay cả khi bán kính chứng nhận bị co nhỏ ($R=0$), hệ thống chuyển hóa sự bảo thủ của cận toán học thành chi phí tính toán lại chứ \textbf{tuyệt đối không bao giờ biến thành lỗi dự đoán sai}.
+
+\begin{mechanism}[Cơ chế 3: Tại sao phép nhân gộp ma trận tương phản $C^{(c)} W_{\text{out}}$ (\code{H08}) lại triệt tiêu được sai số phụ thuộc tầng cuối?]
+\end{mechanism}
+Giả sử vector đặc trưng tầng áp chót $h \in \R^{128}$ nằm trong khoảng $[\underline{h}, \overline{h}]$ với tâm $h_0 = \frac{1}{2}(\underline{h} + \overline{h})$ và bán kính $r_h = \frac{1}{2}(\overline{h} - \underline{h}) \ge 0$. Nếu tính riêng cận dưới của $F_c(h) = w_c^\top h + b_c$ và cận trên của $F_j(h) = w_j^\top h + b_j$ rồi trừ nhau, ta thu được cận dưới ngây thơ:
+\begin{equation}
+  L_{cj}^{\text{naive}} = (w_c - w_j)^\top h_0 + (b_c - b_j) - \left(\abs{w_c} + \abs{w_j}\right)^\top r_h.
+\end{equation}
+Ngược lại, khi nhân gộp ma trận hiệu số $\widetilde{w}_{cj} = w_c - w_j$ trước khi áp dụng công thức khoảng, cận dưới trực tiếp là:
+\begin{equation}
+  L_{cj}^{\text{direct}} = (w_c - w_j)^\top h_0 + (b_c - b_j) - \abs{w_c - w_j}^\top r_h.
+\end{equation}
+Theo bất đẳng thức tam giác, với mọi tọa độ $k \in \{0,\dots,127\}$ có $w_{c,k}$ và $w_{j,k}$ cùng dấu, ta luôn có $\abs{w_{c,k} - w_{j,k}} < \abs{w_{c,k}} + \abs{w_{j,k}}$, giúp tiết kiệm chính xác một lượng độ chặt bằng $\sum_{k=0}^{127} (\abs{w_{c,k}} + \abs{w_{j,k}} - \abs{w_{c,k} - w_{j,k}}) r_{h,k} \ge 0$.
+
+\begin{mechanism}[Cơ chế 4: Tại sao Chính sách Cửa sổ Neo theo Khoảng Chuyển tiếp (\code{Span-Anchored Transition Policy}) và \code{Class-Balanced Focal Loss} giải quyết triệt để bài toán đóng cổng \code{G2} ($K=12$)?]
+\end{mechanism}
+Ở cấu hình ban đầu, 6 lớp chuyển tiếp tư thế (lớp $7$--$12$) chỉ đạt Macro-F1 $0,6386$ và bị vướng $18$ rào cản số lượng mẫu (\code{18 blockers}, khiến cổng \code{G2} ở trạng thái \code{HOLD\_CONDITIONAL}). Nguyên nhân không phải vì bộ dữ liệu thiếu dữ liệu chuyển tiếp, mà vì \textbf{sự lệch pha giữa lưới trượt cố định \code{stride} $S=64$ và độ dài khoảng chuyển tiếp $L$}: một khoảng chuyển tiếp độ dài $L \in [W, W+S-1]$ ($W=128$) chỉ chứa một điểm lưới $s = 64k$ với xác suất $P_{\text{hit}}(L) = (L - 128 + 1)/64$. Với lớp \code{SIT\_TO\_STAND} (trung vị $L=131$ mẫu), $P_{\text{hit}} = 4/64 = 6,25\%$, tức là lưới cố định đã vứt bỏ $93,75\%$ các cửa sổ thuần nhất hợp lệ!
+
+Bằng cách đặt 9 cửa sổ neo trực tiếp vào bên trong từng khoảng chuyển tiếp (\code{Span-Anchored Extraction}, tuân thủ nghiêm ngặt phân chia 17/4/9 người) kết hợp hàm mất mát \code{Class-Balanced Focal Loss} ($\gamma=1,5, \beta=0,35$), toàn bộ 18/18 rào cản bị xóa bỏ (\code{0/18 blockers}, mọi lớp đạt $\ge 58$ mẫu \code{val} và $\ge 194$ mẫu \code{test}). Kết quả trên 3 hạt giống (\code{Seeds 42, 43, 44}) đưa Macro-F1 toàn cục 12 lớp tăng từ $0,7763 \to \mathbf{0,8537 \pm 0,0020}$ (nhóm 6 lớp chuyển tiếp tăng từ $0,6386 \to \mathbf{0,7917 \pm 0,0024}$), chính thức đưa cổng \code{G2} sang trạng thái \textbf{\code{PASS}}.
+
+---
+
+\subsection{Phân Tích Cơ Chế: Tại Sao KHÔNG ĐƯỢC? (5 Cơ Chế Gây Thất Bại Về Độ Phủ \& Tốc Độ)}
+
+Tại sao tất cả các bộ kiểm chứng miền có chứng nhận (\code{M05}--\code{M13}) đều cho số lượt tái sử dụng bằng không ($R = 0$), và tại sao nhánh \code{M03} dù trúng $100\%$ các cặp liên tiếp lại chạy chậm hơn \code{M00} tới $5,63$ lần? Dưới đây là 5 cơ chế vật lý, toán học và phần cứng giải thích triệt để các hiện tượng này.
+
+\begin{mechanism}[Cơ chế Thất bại 1: Ảo ảnh chồng lấp thời gian và Nghịch lý Dịch pha Chu kỳ Bước chân (\code{The Biomechanical Phase-Shift Illusion} --- Giải thích vì sao \code{H02} và \code{H19} bị bác bỏ với khoảng cách $1.562,7\times$)]
+\end{mechanism}
+Trực giác thông thường cho rằng: \textit{``Hai cửa sổ trượt liền kề trùng nhau tới $50\%$ thời gian thì khoảng cách giữa chúng trong không gian vector phải rất nhỏ''}. \textbf{Trực giác này hoàn toàn sai đối với tín hiệu dao động tuần hoàn!}
+
+Hãy xét cơ chế vật lý của chuyển động con người: tần số bước đi bộ (\code{walking cadence}) điển hình của người trưởng thành nằm trong khoảng $f_0 \approx 0,8\text{--}1,1\text{ Hz}$ (chu kỳ $T_0 \approx 0,9\text{--}1,25\text{ s}$). Một sóng gia tốc chuẩn hóa dạng điều hòa $z(t) = A \sin(2\pi f_0 t)$ khi bị dịch đi một bước trượt $\Delta t = s / f_s = 64 / 50 = 1,28\text{ s}$ sẽ trở thành:
+\begin{equation}
+  z_{t+1}(u) - z_t(u) = z(u + \Delta t) - z(u) = 2 A \sin(\pi f_0 \Delta t) \cos\!\left(2\pi f_0 u + \pi f_0 \Delta t\right).
+\end{equation}
+Khi $\Delta t = 1,28\text{ s}$ lệch pha so với chu kỳ vận động hoặc rơi vào nhịp đảo chiều chân trái -- chân phải, hiệu số điểm-đối-điểm tại mỗi tọa độ thời gian $u \in \{0,\dots,127\}$ có biên độ lên tới $\sim 2A$. Khi cộng dồn qua toàn bộ $m = 768$ tọa độ của không gian $\R^{6 \times 128}$, chuẩn Euclid tăng theo căn bậc hai của số chiều ($\sqrt{768} \approx 27,71$):
+\begin{equation}
+  \norm{z_{t+1} - z_t}_2 = \sqrt{\sum_{c=0}^{5} \sum_{u=0}^{127} \left(Z_{t+1}[c, u] - Z_t[c, u]\right)^2} \approx 25,49 \text{ (trung vị thực nghiệm)}.
+\end{equation}
+Nói cách khác, \textbf{phép trượt cửa sổ là một toán tử dịch chuyển vị trí (translation operator) chứ không phải là một nhiễu cộng biên độ nhỏ (additive noise)}! Trong khi đó, các bộ kiểm chứng miền ở không gian đầu vào (\code{Lipschitz ball}, \code{IBP box}) lại đo độ bền vững theo chuẩn hiệu số tại từng tọa độ cố định $\norm{z_{t+1} - z_t}_p$. Vì $\norm{\Delta z}_2 = 25,49$ lớn hơn bán kính cầu an toàn tối đa $r_{\max} = 0,01487$ tới \textbf{1.562,7 lần ở trung vị} (và \textbf{50.990,3 lần ở trung bình}), không một cửa sổ kế tiếp nào có thể lọt vào bên trong hình cầu hay hình hộp chứng nhận!
+
+\begin{mechanism}[Cơ chế Thất bại 2: Sự bùng nổ khoảng theo cấp số nhân (\code{Exponential Interval Wrapping}) và tích chuẩn phổ qua các tầng tích chập (\code{H06, H07})]
+\end{mechanism}
+Tại sao bán kính chứng nhận $r_{\max}$ lại chỉ đạt $0,01487$ trong khi biên độ logit thực tế tại tâm rất lớn ($\gamma(z_t) = F_{c^*}(z_t) - \max_{j \neq c^*} F_j(z_t)$ có trung vị tới $6,10$)?
+\begin{itemize}
+  \item \textbf{Trong phương pháp \code{Global Lipschitz} (\code{M05}):} Hằng số Lipschitz toàn cục được chặn trên bởi tích chuẩn phổ (\code{spectral norms}) của tất cả các tầng tuyến tính:
+  \begin{equation}
+    L_{\text{global}} \;\le\; \norm{C^{(c)} W_{\text{out}}}_2 \cdot \norm{W_{\text{fc1}}}_2 \cdot \prod_{\ell=1}^{3} \norm{\widetilde{W}_{\text{conv},\ell}}_2.
+  \end{equation}
+  Mỗi tầng \code{Conv1D + BatchNorm} chưa được chuẩn hóa phổ có giá trị kỳ dị lớn nhất (\code{maximum singular value}) $\sigma_{\max}(\widetilde{W}_\ell) \approx 4\text{--}8$. Khi nhân qua 5 tầng liên tiếp, tích chuẩn phổ vọt lên $L_{\text{global}} > 400$, ép bán kính $r_{\max} = \gamma(z_t) / L_{\text{global}} \approx 6,10 / 410 \approx 0,0149$.
+  \item \textbf{Trong phương pháp \code{IBP} (\code{M06, M07}):} Khi truyền một khoảng $[\underline{h}^{(\ell-1)}, \overline{h}^{(\ell-1)}]$ có bán kính $r^{(\ell-1)}$ qua tầng tích chập có trọng số tương đương $\widetilde{W}^{(\ell)}$, bán kính khoảng đầu ra bị nhân lên theo chuẩn $L_1$ của từng hàng trọng số:
+  \begin{equation}
+    r^{(\ell)}_i \;\approx\; \sum_{k} \abs{\widetilde{W}^{(\ell)}_{i, k}} r^{(\ell-1)}_k = \norm{\widetilde{W}^{(\ell)}_{i, :}}_1 r^{(\ell-1)}.
+  \end{equation}
+  Vì bộ truyền khoảng \code{IBP} xóa bỏ hoàn toàn tương quan dấu giữa các phần tử lân cận (coi $z_u$ và $z_{u+1}$ là hai biến độc lập hoàn toàn dù chúng thuộc cùng một sóng cảm biến trơn), các trọng số dương và âm trong bộ lọc tích chập không thể triệt tiêu nhau mà bị lấy trị tuyệt đối $\abs{\widetilde{W}^{(\ell)}}$ cộng dồn lại. Qua 3 tầng \code{Conv} và 2 tầng \code{Linear}, độ rộng khoảng bị phóng đại hàng nghìn lần, làm cận dưới $\underline{g}_{cj}$ sụt xuống giá trị âm rất lớn ngay cả ở bán kính $\rho = 0,01$.
+\end{itemize}
+
+\begin{mechanism}[Cơ chế Thất bại 3: Sự xâm thực của 384 tọa độ đuôi tự do trong miền \code{Wave} và sự lệch pha hình học của cơ sở \code{PCA} (\code{H10, H11})]
+\end{mechanism}
+\begin{enumerate}
+  \item \textbf{Tại sao khóa cứng 384 tọa độ đầu (\code{Fixed-Overlap Wave}, \code{M07/M11}) vẫn cho $R=0$?}
+  Đúng là khi dùng miền \code{Wave}, 64 mẫu thời gian đầu ($u \in \{0,\dots,63\}$) có bán kính khoảng bằng $0$, nhờ đó 12 cột nội bộ đầu tiên của tầng \code{Conv3} có độ rộng khoảng bằng $0$ tuyệt đối! Tuy nhiên, 64 mẫu thời gian mới ở nửa sau ($u \in \{64,\dots,127\}$) là tương lai chưa quan sát được tại thời điểm tạo chứng nhận ở bước $t$. Để bao phủ được cửa sổ $X_{t+1}$ thực tế, hộp dự báo ở nửa đuôi phải có bán kính $\rho_{\text{tail}} \ge \norm{z_{\text{tail}, t+1} - \hat{z}_{\text{tail}}}_\infty \approx 3,84$. Khi bán kính $\rho_{\text{tail}} \approx 3,84$ này truyền qua nửa phải của \code{Conv1--Conv3} (cột $16\dots31$ của \code{Conv3}) rồi đi vào tầng \code{Flatten(2048)->Linear(2048, 128)}, nơi mọi cột đặc trưng đều kết nối toàn cục (\code{fully connected}) tới cả 128 nơ-ron ẩn, sai số phình khoảng khổng lồ từ 16 cột nửa phải lập tức tràn sang toàn bộ 128 nơ-ron tầng áp chót và phá hủy cả 11 biên độ logit!
+  \item \textbf{Tại sao không gian con \code{PCA} (\code{M08, M09}) không vượt qua được đối chứng ngẫu nhiên (\code{H10})?}
+  Phân tích thành phần chính (\code{PCA}) tìm các trục trực chuẩn $V_k$ tối đa hóa phương sai của tín hiệu đầu vào $\max \operatorname{Var}(V_k^\top z)$. Trên dữ liệu gia tốc kế, phương sai lớn nhất nằm ở thành phần trọng trường tĩnh và biên độ dao động cơ bản năng lượng cao. Ngược lại, ranh giới quyết định của mạng phân lớp giữa hai hoạt động gần nhau (như \code{WALKING\_UPSTAIRS} và \code{WALKING\_DOWNSTAIRS}) lại phụ thuộc vào các đặc trưng tần số cao và tương quan pha tinh vi có phương sai năng lượng nhỏ. Do các vector riêng hàng đầu của \code{PCA} gần như trực giao hoặc lệch góc lớn với pháp tuyến biên phân lớp $\nabla_z (F_c - F_j)$, việc cắt bỏ phần dư ngoài không gian con (\code{residual} $\delta$) cộng với bước đóng khung hình học thành hộp trục tọa độ (\code{coordinate bounding hull}: làm phình thể tích theo hệ số $\norm{V_k}_{\infty \to \infty}$) khiến cận dưới không hề chặt hơn hộp chuẩn.
+\end{enumerate}
+
+\begin{mechanism}[Cơ chế Thất bại 4: Tại sao nhánh Tính toán Tăng dần (\code{M03}) tiết kiệm được phép tính tích chập nhưng lại chạy chậm hơn $5,63$ lần trên CPU? (\code{The CPU Cache, Slicing \& Flatten-Linear Paradox} --- Giải thích \code{H14} và \code{H20})]
+\end{mechanism}
+Đây là một trong những phát hiện thực nghiệm sắc sảo nhất của nghiên cứu. Tại sao tái sử dụng được 100\% các cặp liên tiếp ($R=5.034$) mà độ trễ trung bình của \code{M03} lại là $1,9273\text{ ms}$ so với $0,3420\text{ ms}$ của \code{M00}? Có đúng \textbf{3 nguyên nhân vật lý và kiến trúc phần cứng} cộng hưởng với nhau:
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[x=4.2cm,y=0.9cm]
+  % M00 bar
+  \node[anchor=east, font=\footnotesize\bfseries\color{ink}] at (0, 1.3) {\code{M00} (Chạy thẳng):};
+  \fill[teal!35, draw=teal, thick] (0.05, 0.95) rectangle (0.252, 1.65);
+  \fill[ink!80, draw=ink, thick] (0.252, 0.95) rectangle (0.392, 1.65);
+  \node[anchor=west, font=\footnotesize\bfseries\color{okgreen}] at (0.42, 1.3) {Tổng: $0,3420\text{ ms}$ ($0,140\text{ ms}$ CNN + $0,202\text{ ms}$ Norm)};
+
+  % M03 bar
+  \node[anchor=east, font=\footnotesize\bfseries\color{ink}] at (0, 0.1) {\code{M03} (Incremental):};
+  \fill[warnred!25, draw=warnred, thick] (0.05, -0.25) rectangle (1.385, 0.45);
+  \node[font=\scriptsize\bfseries\color{warnred}] at (0.72, 0.1) {Wrapper \& Check ($\approx 1,335\text{ ms}$)};
+  \fill[orange!30, draw=orange!80!black, thick] (1.385, -0.25) rectangle (1.84, 0.45);
+  \node[font=\scriptsize\color{ink}] at (1.61, 0.1) {Slicing/\code{cat} ($0,45\text{ ms}$)};
+  \fill[ink!80, draw=ink, thick] (1.84, -0.25) rectangle (1.977, 0.45);
+  \node[anchor=west, font=\footnotesize\bfseries\color{warnred}] at (2.00, 0.1) {Tổng: $1,9273\text{ ms}$ ($0,1775\times$)};
+\end{tikzpicture}%
+}
+\caption{Phân rã thời gian thực thi trung bình trên mỗi truy vấn giữa \code{M00} và \code{M03}, phơi bày sự thống trị của chi phí quản trị và cắt ghép bộ nhớ (\code{tensor slicing/concatenation}) so với thời gian tính toán mạng thực tế.}
+\label{fig:latency_breakdown}
+\end{figure}
+
+\begin{enumerate}
+  \item \textbf{Nút thắt Kiến trúc --- 92,45\% tham số nằm ở tầng \code{Flatten(2048)->Linear(2048, 128)} nhạy vị trí:}
+  Trong mạng \code{SmallCNN1D}, cả 3 tầng tích chập \code{Conv1, Conv2, Conv3} cộng lại chỉ có $1.056 + 6.336 + 12.480 = 19.872$ tham số ($7,0\%$ tổng số tham số), trong khi riêng tầng \code{Linear(2048, 128)} ngay sau \code{Flatten} chiếm tới $\mathbf{262.272}$ \textbf{tham số} ($\mathbf{92,45\%}$) và $262.144$ phép tính \code{MACs}!
+  Quan trọng hơn, vì \code{Flatten} trải phẳng ma trận $64 \times 32$ thành vector $2048$ chiều theo vị trí tuyệt đối của cột thời gian, khi 12 cột đặc trưng nội bộ dịch sang trái $16$ vị trí ($j+16 \to j$), chúng bị nhân với \textbf{các cột trọng số hoàn toàn khác} trong ma trận $W_{\text{fc1}} \in \R^{128 \times 2048}$:
+  \begin{equation}
+    y_{\text{fc1}} = \sum_{c=0}^{63} \sum_{j=0}^{31} W_{\text{fc1}}[:, \, 32c + j] \, H^{(3)}[c, j] + b_{\text{fc1}}.
+  \end{equation}
+  Hệ quả là tích vô hướng cục bộ của 12 cột cũ không thể tái sử dụng được cho tầng \code{Linear(2048, 128)}; toàn bộ khối \code{Flatten--MLP} vẫn phải tính lại $100\%$ tại mỗi bước!
+  \item \textbf{Hiệu ứng Bộ nhớ đệm L2/L3 (\code{Cache Residency}) và Kernel C++ SIMD nguyên khối của \code{M00}:}
+  Toàn bộ trọng số $\F_{32}$ của \code{SmallCNN1D} chỉ nặng $1,136\text{ MB}$---nằm gọn hoàn toàn bên trong bộ nhớ đệm L2/L3 tốc độ cao của CPU hiện đại. Khi chạy \code{M00}, PyTorch gọi thẳng một chuỗi rất ít các kernel C++ oneDNN/MKL đã được vector hóa bằng tập lệnh AVX2/AVX-512 trên vùng nhớ liên tục (\code{contiguous memory}), hoàn tất toàn bộ 15 tầng mạng chỉ trong \textbf{0,1402 ms} ($140\text{ micro-giây}$)!
+  \item \textbf{Chi phí điều phối Python/PyTorch (\code{Dispatch Overhead}) và Cấp phát Bộ nhớ Động khi \code{Slicing + torch.cat} ở \code{batch=1}:}
+  Để tái sử dụng các cột đặc trưng ở \code{M03}, tại mỗi tầng trong 3 tầng \code{Conv1, Conv2, Conv3}, mã thực thi phải: (i) cắt (\code{slice}) các đoạn biên trái/phải của tensor đầu vào, (ii) gọi các lệnh \code{Conv1d + BN + ReLU} nhỏ rời rạc trên các mảnh có chiều dài cực ngắn (chỉ 4--8 cột), (iii) cấp phát một vùng nhớ mới trên \code{heap} và gọi \code{torch.cat} để ghép mảnh biên trái, mảnh nội bộ lưu trong cache và mảnh đuôi mới lại với nhau. Ở kích thước \code{batch=1}, thời gian chuyển ngữ cảnh từ trình thông dịch Python xuống C++ dispatcher của PyTorch và chi phí cấp phát/sao chép các mảnh bộ nhớ không liên tục (\code{non-contiguous tensor views}) lớn gấp nhiều lần thời gian thực hiện vài trăm nghìn phép nhân dấu phẩy động! Cộng thêm $\approx 1,33\text{ ms}$ chi phí kiểm tra định danh SHA-256 và ghi nhận \code{telemetry} của khung đánh giá chuẩn (\code{M01}), tổng thời gian của \code{M03} vọt lên $1,9273\text{ ms}$.
+\end{enumerate}
+
+\begin{mechanism}[Cơ chế Thất bại 5: Sự bất tương thích cấu trúc của các công trình tiền nhiệm (\code{LipCache M14} và \code{StreamiNNC/TinyDejaVu M15}) trên luồng cảm biến liên tục]
+\end{mechanism}
+Kiểm toán kỹ thuật ở Tuần 4 chứng minh vì sao hai họ phương pháp nổi tiếng trong văn hiến không thể áp dụng trực tiếp cho bài toán ECDR:
+\begin{itemize}
+  \item \textbf{\code{LipCache} (\code{M14}):} Được thiết kế cho không gian nhúng (\code{embedding space}) chiều thấp đã được chuẩn hóa Lipschitz ($1$-Lipschitz layer). Khi áp lên không gian đầu vào $768$ chiều của luồng cảm biến với mạng \code{SmallCNN1D} đóng băng không có ràng buộc chuẩn phổ khi huấn luyện, bán kính cầu $L_2$ co về $0,0149$, hoàn toàn mất tác dụng.
+  \item \textbf{\code{StreamiNNC / TinyDejaVu} (\code{M15}):} Các phương pháp này đòi hỏi kiến trúc mạng phải hoàn toàn bất biến theo phép dịch (\code{shift-equivariant}) hoặc kết thúc bằng tầng \code{Global Average Pooling (GAP)} để có thể cập nhật tổng trượt ở tầng cuối. Vì \code{SmallCNN1D} sử dụng \code{Flatten(2048)->Linear(2048, 128)}, giả định nền tảng của \code{M15} bị vi phạm trực tiếp.
+\end{itemize}
+
+% =============================================================================
+\section{Năm Phương Hướng Nghiên Cứu Mới Khả Thi (Actionable New Directions)}
+% =============================================================================
+
+Từ việc giải phẫu chính xác 5 cơ chế thất bại và định lượng các điểm hòa vốn ở trên, chúng tôi đề xuất \textbf{5 phương hướng nghiên cứu mới} hoàn toàn khả thi, giải quyết trực tiếp từng nút thắt vật lý, toán học và phần cứng của ECDR.
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.55cm and 0.7cm,
+  bottleneck/.style={rectangle, draw=warnred, thick, fill=warnred!8, rounded corners=3pt, minimum height=1.0cm, text width=6.2cm, align=left, font=\scriptsize\sffamily},
+  direction/.style={rectangle, draw=okgreen, very thick, fill=pale, rounded corners=3pt, minimum height=1.0cm, text width=7.8cm, align=left, font=\scriptsize\sffamily},
+  arrow/.style={-{Stealth[length=2.2mm,width=1.6mm]}, very thick, draw=teal}
+]
+\node[bottleneck] (b1) {\textbf{Nút thắt 1:} Mạng \code{SmallCNN1D} quá nhỏ ($1,17\text{ MMACs}, 0,14\text{ ms}$) nên chi phí kiểm tra/slicing lớn hơn tiền lãi tính toán.};
+\node[direction, right=of b1] (d1) {\textbf{Hướng 1 (Scaling Regime):} Áp dụng ECDR cho các backbone lớn $\ge 26,1\text{--}37,0\text{ MMACs}$ (\code{TemporalResNet1D}, \code{TemporalTransformer1D}) $\to$ Tăng tốc thực \textbf{1,50$\times$--2,90$\times$}.};
+
+\node[bottleneck, below=of b1] (b2) {\textbf{Nút thắt 2:} \code{Flatten(2048)->Linear(128)} chiếm $92,45\%$ tham số và nhạy vị trí khi cột đặc trưng dịch chuyển.};
+\node[direction, right=of b2] (d2) {\textbf{Hướng 2 (Shift-Invariant GAP Head):} Thay \code{Flatten--MLP} bằng \code{Conv1x1 + GlobalAvgPool1d}, cập nhật tổng trượt $O(1)$ theo công thức bù trừ biên.};
+
+\node[bottleneck, below=of b2] (b3) {\textbf{Nút thắt 3:} Dịch pha bước chân ở đầu vào tạo $\norm{\Delta z}_2 = 25,49 \gg r_{\max} = 0,0149$ (khoảng cách $1.562,7\times$).};
+\node[direction, right=of b3] (d3) {\textbf{Hướng 3 (Hybrid Early-Incremental + Deep Latent Certification):} Chạy \code{Incremental} ở các tầng lọc thông thấp đầu, chỉ chứng nhận \code{CROWN/IBP} tại vector tiềm ẩn sâu $h \in \R^{64}$.};
+
+\node[bottleneck, below=of b3] (b4) {\textbf{Nút thắt 4:} Tích chuẩn phổ tự do $\prod \norm{W_\ell}_2 > 400$ làm co rúm bán kính chứng nhận.};
+\node[direction, right=of b4] (d4) {\textbf{Hướng 4 (Certification-Aware 1-Lipschitz Training):} Huấn luyện tích chập trực giao (\code{Björck/Spectral Norm} $\sigma(W_\ell)\le 1$) kết hợp hàm mất mát cực đại hóa biên độ 11 lớp.};
+
+\node[bottleneck, below=of b4] (b5) {\textbf{Nút thắt 5:} Cắt ghép \code{tensor slicing + torch.cat} ở \code{batch=1} trong Python tốn $1,78\text{ ms}$ overhead.};
+\node[direction, right=of b5] (d5) {\textbf{Hướng 5 (Zero-Copy Modulo Ring-Buffer Kernels):} Viết kernel C++/CUDA/CMSIS-NN dùng con trỏ vòng \code{head = (head + s) \% L}, không cấp phát hay sao chép bộ nhớ.};
+
+\draw[arrow] (b1) -- (d1);
+\draw[arrow] (b2) -- (d2);
+\draw[arrow] (b3) -- (d3);
+\draw[arrow] (b4) -- (d4);
+\draw[arrow] (b5) -- (d5);
+\end{tikzpicture}%
+}
+\caption{Ánh xạ trực tiếp 1-đối-1 từ 5 nút thắt cơ chế đã phát hiện sang 5 phương hướng nghiên cứu mới.}
+\label{fig:roadmap}
+\end{figure}
+
+\subsection{Phương Hướng 1: Chuyển Dịch Sang Vùng Quy Mô Hòa Vốn (\texorpdfstring{$\ge 26,1\text{--}37,0\text{ MMACs}$}{>= 26,1-37,0 MMACs} trên Kiến Trúc Deep ResNet \& Transformer Chuỗi Thời Gian)}
+\begin{itemize}
+  \item \textbf{Cơ sở định lượng:} Nghiên cứu mở rộng quy mô hậu Tuần 4 đã chứng minh rằng chi phí kiểm tra chứng nhận ($T_v \approx 1,33\text{ ms}$) và chi phí điều phối tính toán tăng dần ($T_{\text{inc}} \approx 1,93\text{ ms}$) là \textbf{chi phí cố định theo kích thước giao diện đầu vào} ($6 \times 128$), hầu như không tăng khi chiều sâu của phần thân mạng hoặc phần đầu phân lớp tăng lên. Điểm hòa vốn (\code{Break-Even Crossover} tại $S = 1,00\times$) nằm chính xác ở:
+  \begin{equation}
+    \text{MACs}_{\text{BE}}^{\text{cache}} = 26,05\text{ MMACs} \; (2,51\text{M params}), \quad
+    \text{MACs}_{\text{BE}}^{\text{inc}} = 36,95\text{ MMACs} \; (2,68\text{M params}).
+  \end{equation}
+  \item \textbf{Thiết kế triển khai:} Thay vì áp dụng ECDR lên các mạng vi điều khiển cực nhỏ như \code{SmallCNN1D} ($1,17\text{ MMACs}$), hãy định vị ECDR cho các mô hình nền tảng chuỗi thời gian (\code{Time-Series Foundation Models} như \code{PatchTST}, \code{TimesNet}, \code{TemporalTransformer1D} từ $5\text{M}$--$50\text{M}$ tham số, $\ge 100\text{ MMACs}$) chạy trên các thiết bị biên tầm trung (Raspberry Pi 5, Jetson Orin Nano, cổng IoT công nghiệp). Trên \code{TemporalTransformer1D} ($115\text{ MMACs}$, thời gian chạy thẳng $3,87\text{ ms}$), ngay cả kiến trúc hiện tại đã đạt mức tăng tốc ròng \textbf{2,01$\times$ đến 2,90$\times$}.
+\end{itemize}
+
+\subsection{Phương Hướng 2: Thiết Kế Lại Đầu Phân Lớp Bất Biến Dịch Chuyển (1x1 Conv + GAP)}
+\begin{itemize}
+  \item \textbf{Giải quyết nút thắt nào:} Loại bỏ hoàn toàn $92,45\%$ tham số nhạy vị trí ở tầng \code{Flatten(2048)->Linear(2048, 128)} đang chặn đứng khả năng tái sử dụng của tầng cuối.
+  \item \textbf{Cơ chế toán học đề xuất:} Thay thế khối \code{Flatten -> Linear(2048,128) -> ReLU -> Linear(128,12)} bằng một tầng chiếu điểm \code{Conv1d(64, 128, kernel\_size=1)} + \code{ReLU} đi kèm \textbf{Gộp Trung Bình Toàn Cục (\code{Global Average Pooling -- GAP})} theo trục thời gian rồi mới tới \code{Linear(128, 12)}:
+  \begin{equation}
+    \bar{h}_t = \frac{1}{L_3} \sum_{j=0}^{L_3 - 1} \phi\!\left(W_{1\times 1} H^{(3)}_t[:, j] + b_{1\times 1}\right) \in \R^{128}, \qquad F(X_t) = W_{\text{out}} \bar{h}_t + b_{\text{out}}.
+  \end{equation}
+  Khi đó, mọi cột thời gian $j \in \{0,\dots,31\}$ đều chia sẻ chung một ma trận trọng số $W_{1\times 1} \in \R^{128 \times 64}$ (chỉ tốn $8.192$ tham số thay vì $262.272$ tham số, giảm $96,9\%$ bộ nhớ!). Khi cửa sổ trượt sang bước $t+1$, 12 cột nội bộ khớp từng bit ($j \in \{2,\dots,13\}$) giữ nguyên hoàn toàn vector kích hoạt sau $W_{1\times 1}$. Hơn thế nữa, tổng trung bình toàn cục $\bar{h}_{t+1}$ có thể cập nhật tăng dần trong thời gian $O(1)$ chỉ bằng phép cộng/trừ bù trừ các cột biên:
+  \begin{equation}
+    \bar{h}_{t+1} = \bar{h}_t - \frac{1}{32} \sum_{j \in \mathcal{J}_{\text{drop}}} \tilde{h}_t[:, j] + \frac{1}{32} \sum_{j \in \mathcal{J}_{\text{new}}} \tilde{h}_{t+1}[:, j],
+  \end{equation}
+  trong đó $\abs{\mathcal{J}_{\text{drop}}} = \abs{\mathcal{J}_{\text{new}}} = 20$ cột (16 cột mới + 4 cột biên tái tính), giúp giảm $37,5\%$ phép tính ở cả phần thân lẫn phần đầu mạng!
+\end{itemize}
+
+\subsection{Phương Hướng 3: Kiến Trúc Lai --- Tính Toán Tăng Dần Ở Tầng Sớm Kết Hợp Chứng Nhận Miền Trong Không Gian Tiềm Ẩn Sâu (Hybrid Early-Incremental + Deep Latent-Space Certification)}
+\begin{itemize}
+  \item \textbf{Giải quyết nút thắt nào:} Phá vỡ bức tường khoảng cách $1.562,7\times$ do lệch pha chu kỳ bước chân ở không gian đầu vào thô $Z \in \R^{768}$ và loại bỏ sự phình khoảng qua các tầng tích chập đầu.
+  \item \textbf{Ý tưởng đột phá:} Tại sao phải ép bộ kiểm chứng \code{IBP/CROWN} chạy từ tận đầu vào thô $Z_t \in \R^{6 \times 128}$, nơi phép dịch thời gian $1,28\text{ s}$ làm $\norm{Z_{t+1} - Z_t}_2 = 25,49$?
+  Hãy kết hợp điểm mạnh của cả hai nhánh trong một kiến trúc phân tách 2 giai đoạn (\textbf{Two-Stage Split Architecture}):
+  \begin{enumerate}
+    \item \textbf{Giai đoạn 1 (Bộ trích xuất đặc trưng bất biến pha chạy bằng \code{Exact Incremental}):} Cho luồng cảm biến đi qua các tầng tích chập nhẹ ban đầu (\code{Conv1--Conv3}) sử dụng cơ chế tính toán tăng dần chính xác kết hợp \code{Global Average Pooling} (hoặc bộ lọc thông thấp năng lượng phổ) để thu được vector biểu diễn tiềm ẩn bất biến dịch chuyển $v_t = \operatorname{Pool}(H^{(3)}_t) \in \R^{64}$. Vì phép gộp trung bình theo thời gian triệt tiêu sự dịch pha giữa hai nửa chu kỳ bước chân cùng một hoạt động (ví dụ: người đang đi bộ ổn định thì năng lượng trung bình trên cửa sổ $2,56\text{ s}$ ở bước $t$ và $t+1$ gần như bằng nhau!), khoảng cách trong không gian tiềm ẩn giảm từ $\norm{\Delta z}_2 \approx 25,49$ xuống $\norm{v_{t+1} - v_t}_2 \ll 0,1$.
+    \item \textbf{Giai đoạn 2 (Chứng nhận miền \code{CROWN/Lipschitz} trước khối phân lớp nặng):} Đặt cổng kiểm chứng \code{Fail-Closed Certified Reuse} ngay tại không gian tiềm ẩn $v_t \in \R^{64}$ đứng trước một khối phân loại sâu / mạng Transformer nặng ở phía sau ($G_{\text{heavy}}: \R^{64} \to \R^{K}$). Khi đó:
+    \begin{itemize}
+      \item Số chiều cần kiểm tra thuộc miền giảm $12$ lần (từ $m=768$ xuống $d=64$);
+      \item Khoảng cách dịch chuyển $\norm{\Delta v}_2$ nhỏ hơn hàng trăm lần so với không gian thô vì đã lọc bỏ độ lệch pha thời gian;
+      \item Bộ truyền cận \code{CROWN/IBP} không còn phải đi qua các tầng tích chập + \code{MaxPool1d} đầu tiên nữa, giúp bán kính chứng nhận $r_{\max}(v^r)$ tăng lên hàng chục lần và trực tiếp mở khóa độ phủ $R \gg 0$!
+    \end{itemize}
+  \end{enumerate}
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.55cm and 0.65cm,
+  block/.style={rectangle, draw=ink, thick, fill=white, rounded corners=3pt, minimum height=0.95cm, align=center, font=\scriptsize\sffamily},
+  cert/.style={rectangle, draw=okgreen, very thick, fill=okgreen!10, rounded corners=3pt, minimum height=1.0cm, align=center, font=\scriptsize\sffamily\bfseries},
+  heavy/.style={rectangle, draw=teal, very thick, fill=pale, rounded corners=3pt, minimum height=0.95cm, align=center, font=\scriptsize\sffamily},
+  arrow/.style={-{Stealth[length=2.0mm,width=1.5mm]}, thick, draw=ink}
+]
+\node[block] (in) {Luồng Cảm biến\\$Z_t \in \R^{6 \times 128}$\\($\norm{\Delta z}_2 \approx 25,5$)};
+\node[block, right=of in] (inc) {\textbf{Giai đoạn 1: Incremental}\\Conv1--Conv3 + Shift-Invariant Pool\\(Nhẹ, lọc bỏ lệch pha thời gian)};
+\node[cert, right=of inc] (gate) {\textbf{Cổng Chứng Nhận Tiềm Ẩn}\\Kiểm tra $v_t \in \Dset_{\text{latent}}(v^r) \subset \R^{64}$\\($\norm{\Delta v}_2 \ll r_{\max}^{\text{latent}} \implies R > 0$)};
+\node[heavy, above right=0.25cm and 0.8cm of gate] (hit) {\textbf{Certified Hit}\\Bỏ qua Backbone Nặng\\Tiết kiệm $>26\text{ MMACs}$};
+\node[heavy, below right=0.25cm and 0.8cm of gate] (miss) {\textbf{Fallback \& Re-certify}\\Chạy Deep Transformer Head\\Cập nhật $\Dset_{\text{latent}}(v_t)$ bằng CROWN};
+
+\draw[arrow] (in) -- (inc);
+\draw[arrow] (inc) -- node[above, font=\tiny\sffamily\color{teal}] {$v_t \in \R^{64}$} (gate);
+\draw[arrow] (gate) |- node[pos=0.25, left, font=\scriptsize\sffamily\color{okgreen}] {Đạt} (hit);
+\draw[arrow] (gate) |- node[pos=0.25, left, font=\scriptsize\sffamily\color{warnred}] {Trượt} (miss);
+\end{tikzpicture}%
+}
+\caption{Kiến trúc Lai (Phương hướng 3): Kết hợp tính toán tăng dần ở các tầng tích chập sớm với chứng nhận miền trong không gian tiềm ẩn sâu $v_t \in \R^{64}$ để triệt tiêu đồng thời nhiễu lệch pha bước chân và hiện tượng phình khoảng.}
+\label{fig:hybrid_arch}
+\end{figure}
+
+\subsection{Phương Hướng 4: Huấn Luyện Nhận Thức Chứng Nhận (Certification-Aware Training Với Tích Chập Trực Giao 1-Lipschitz \& Cực Đại Hóa Biên Độ)}
+\begin{itemize}
+  \item \textbf{Giải quyết nút thắt nào:} Ngăn chặn sự suy giảm của bán kính chứng nhận $r_{\max}$ do trọng số mạng huấn luyện thông thường có chuẩn phổ lớn ($\prod_\ell \sigma_{\max}(W_\ell) > 400$) và các kích hoạt \code{ReLU} nằm ở vùng không ổn định.
+  \item \textbf{Cơ chế huấn luyện đề xuất:} Thay vì lấy một mạng đã huấn luyện bằng hàm mất mát \code{Cross-Entropy} tiêu chuẩn rồi mới cố gắng chứng nhận hậu nghiệm (\code{post-hoc verification}), hãy đưa mục tiêu chứng nhận trực tiếp vào quá trình huấn luyện (\code{Certified Training}):
+  \begin{enumerate}
+    \item \textbf{Chuẩn hóa phổ / Trực giao hóa trọng số (\code{1-Lipschitz Orthogonal Conv1D}):} Áp dụng phép chiếu trực giao Björck hoặc \code{Spectral Normalization} lên mỗi tầng tích chập và tuyến tính sao cho $\sigma_{\max}(\widetilde{W}_\ell) \le 1$. Khi đó hằng số Lipschitz của toàn bộ mạng bị chặn chặt bởi $\le \sqrt{2}$, làm tăng bán kính cầu an toàn $r_{\max} = \gamma(z) / L$ lên gấp $\mathbf{200\text{--}400}$ \textbf{lần} ngay lập tức!
+    \item \textbf{Hàm mất mát kết hợp khoảng \code{IBP/CROWN} trên quỹ đạo trượt (\code{Trajectory-Consistent Certified Loss}):} Trong quá trình huấn luyện trên tập \code{train}, với các cặp cửa sổ liền kề $(X_t, X_{t+1})$ có cùng nhãn hoạt động thuần nhất (\code{Pure-Basic}), tối ưu hóa hàm mục tiêu kép:
+    \begin{equation}
+      \mathcal{L}(\theta) = \mathcal{L}_{\text{CE}}\!\left(F_\theta(X_t), y_t\right) + \lambda_{\text{cert}} \sum_{j \neq y_t} \relu\!\left(m_0 - L_{y_t, j}^{\text{IBP/CROWN}}\!\left(\Dset(X_t), \theta\right)\right),
+    \end{equation}
+    ép các tầng \code{ReLU} đi vào trạng thái bền vững (\code{stably active} hoặc \code{stably inactive}) và mở rộng trực tiếp cận dưới 11 biên độ $L_{cj}$.
+  \end{enumerate}
+\end{itemize}
+
+\subsection{Phương Hướng 5: Triển Khai Kernel Bộ Đệm Vòng Không Sao Chép Ở Mức C++/CUDA/CMSIS-NN (Zero-Copy Modulo Ring-Buffer Kernels)}
+\begin{itemize}
+  \item \textbf{Giải quyết nút thắt nào:} Xóa bỏ chi phí $1,78\text{ ms}$ của trình thông dịch Python, PyTorch C++ dispatcher và việc cấp phát/ghép bộ nhớ \code{torch.cat} ở kích thước \code{batch=1}.
+  \item \textbf{Cơ chế kỹ thuật phần cứng:} Nghiên cứu 3 hậu Tuần 4 đã chỉ ra rằng ngay cả khi dùng bộ đệm vòng tại chỗ trong Python, thời gian gọi 3 lệnh tích chập nhỏ qua PyTorch dispatcher vẫn chậm hơn 1 lệnh C++ nguyên khối. Để biến mức tiết kiệm $60\%$ phép tính \code{MACs} của nhánh \code{M03} thành tăng tốc thực sự trên cả các mạng nhỏ ($< 2\text{ MMACs}$), cần hạ tầng thực thi xuống mức C/C++ hoặc vi điều khiển (\code{ARM CMSIS-NN} / \code{Cortex-M} / \code{TensorRT}):
+  \begin{enumerate}
+    \item Cấp phát tĩnh một vùng bộ nhớ vòng cố định $B^{(\ell)} \in \F_{32}^{C_\ell \times L_\ell}$ trong SRAM/L1 cache cho mỗi tầng tích chập ngay khi khởi động;
+    \item Thay thế hoàn toàn thao tác dịch chuyển bộ nhớ (\code{memmove} / \code{torch.cat}) bằng một con trỏ chỉ số vòng duy nhất:
+    \begin{equation}
+      \text{head}_\ell \leftarrow (\text{head}_\ell + \Delta_\ell) \bmod L_\ell;
+    \end{equation}
+    \item Viết một hàm C++ duy nhất (\code{fused incremental forward kernel}) chạy xuyên suốt từ \code{Conv1} $\to$ \code{Conv2} $\to$ \code{Conv3} $\to$ \code{GAP Head} trong một lần gọi hàm duy nhất (không quay về Python giữa các tầng), chỉ ghi đè đúng các cột biên cần tính lại theo địa chỉ modulo $(j + \text{head}_\ell) \bmod L_\ell$. Khi không còn chi phí cấp phát bộ nhớ và chuyển ngữ cảnh Python, độ trễ sẽ tỷ lệ thuận trực tiếp với số phép tính \code{MACs} thực tế, giúp nhánh \code{Exact Incremental} đạt tốc độ vượt trội ngay cả trên các mạng dưới $1\text{ MMAC}$.
+  \end{enumerate}
+\end{itemize}
+
+% =============================================================================
+\section{Bảng Tổng Hợp Đối Chiếu Cơ Chế \& Lộ Trình Hành Động}
+% =============================================================================
+
+\begin{table}[!htbp]
+\centering\footnotesize
+\caption{Bảng Tổng Hợp: Hiện Tượng Thực Nghiệm, Cơ Chế Gốc Rễ và Giải Pháp Kỹ Thuật Tương Ứng.}
+\label{tab:summary_roadmap}
+\begin{tabularx}{\linewidth}{@{}P{3.0cm}P{4.5cm}P{4.2cm}Y@{}}
+\toprule
+\textbf{Thành phần / Nhánh} & \textbf{Kết quả \& Hiện tượng Thực nghiệm} & \textbf{Cơ chế Gốc rễ (Vì sao Được / Không được?)} & \textbf{Phương hướng Giải quyết Mới} \\
+\midrule
+\textbf{Độ đồng thuận toàn luồng ($A_{\text{full}}$)} & \textcolor{okgreen}{\textbf{ĐƯỢC:}} $100\%$ đồng thuận ($D_{\text{all}}=0$) trên cả 17 phương pháp, $5.053$ truy vấn. & Cổng \code{Fail-Closed} 4 bước + giữ tâm \code{Fixed-Anchor} + cầu nối làm tròn hướng ra ngoài $\F_{64}$. & Duy trì nguyên vẹn kiến trúc \code{Fail-Closed} làm chuẩn mực an toàn bắt buộc. \\
+\addlinespace[3pt]
+\textbf{Khớp đặc trưng \code{Conv3} (\code{M03})} & \textcolor{okgreen}{\textbf{ĐƯỢC:}} Trúng $5.034/5.034$ cặp ($100\%$), sai số $0,0$ bit trên $3,87\text{M}$ số vô hướng. & Bước trượt $s=64$ chia hết cho hệ số gộp $2\times 2 = 4$; 12 cột nội bộ tách biệt khỏi vùng \code{zero-padding}. & Kết hợp với đầu ra \code{GAP} (Hướng 2) và kernel vòng C++ không sao chép (Hướng 5). \\
+\addlinespace[3pt]
+\textbf{Đóng cổng \code{G2-Full} ($K=12$ lớp)} & \textcolor{okgreen}{\textbf{ĐƯỢC:}} Xóa $18/18$ blockers; Macro-F1 đạt $\mathbf{0,8537 \pm 0,0020}$ (Trans-6 F1: $0,7917$). & Lưới cố định \code{stride-64} lệch pha làm mất $93,75\%$ mẫu \code{SIT\_TO\_STAND}; \code{Span-Anchored} + \code{CB-Focal Loss} khôi phục đủ mẫu. & Chuẩn hóa chính sách \code{Span-Anchored} cho các bài toán phân loại chuỗi thời gian đa lớp có chuyển tiếp ngắn. \\
+\addlinespace[3pt]
+\textbf{Độ phủ chứng nhận ở đầu vào (\code{M05--M13})} & \textcolor{warnred}{\textbf{KHÔNG ĐƯỢC:}} Số lượt tái sử dụng $R=0$ trên mọi hình học miền (\code{Box, Wave, PCA}). & Dịch $1,28\text{ s}$ gây lệch pha bước chân ($\norm{\Delta z}_2 = 25,49$), lớn gấp $1.562,7\times$ bán kính $r_{\max}=0,0149$ do phình khoảng. & Chuyển cổng chứng nhận vào không gian tiềm ẩn sâu sau tầng lọc/gộp (Hướng 3) + Huấn luyện 1-Lipschitz (Hướng 4). \\
+\addlinespace[3pt]
+\textbf{Tốc độ CPU của \code{M03} trên \code{SmallCNN1D}} & \textcolor{warnred}{\textbf{KHÔNG ĐƯỢC:}} Chậm hơn \code{M00} ($1,93\text{ ms}$ so với $0,34\text{ ms}$, tỷ số $0,1775\times$). & $92,45\%$ tham số nằm ở \code{Flatten--Linear} nhạy vị trí; \code{M00} nằm gọn trong L2/L3 cache; \code{torch.cat} ở \code{batch=1} tốn $1,78\text{ ms}$. & Áp dụng cho mạng $\ge 26,1\text{--}37,0\text{ MMACs}$ (Hướng 1), thay \code{Flatten} bằng \code{GAP} (Hướng 2) và dùng C++ Ring Buffer (Hướng 5). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Lời kết.} Báo cáo này đã giải mã trọn vẹn bức tranh cơ chế đằng sau toàn bộ kết quả nghiên cứu ECDR. Những gì thành công (\code{100\% bitwise feature reuse}, \code{0 silent decision errors}, \code{exact 11-margin matrix fusion}) cung cấp bộ khung lý thuyết và phần mềm hoàn toàn vững chắc; trong khi những gì chưa đạt hiệu quả kinh tế trên mạng nhỏ (\code{phase-shift gap 1,562.7x}, \code{Flatten-Linear bottleneck}, \code{CPU batch-1 slicing overhead}) đã được lượng hóa chính xác thành các phương trình điểm hòa vốn và 5 phương hướng thiết kế kiến trúc thế hệ tiếp theo.
+
+\end{document}

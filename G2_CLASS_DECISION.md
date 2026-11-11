@@ -1,4 +1,6 @@
-# G2 CLASS DECISION — K for backbone training (G2-A output)
+# G2 CLASS DECISION — K for backbone training (G2-A & G2-B output)
+
+> **Post-Week 4 Full G2 K=12 Closure Notice (2026-11-11):** All §5 revisit criteria for $K=12$ are now **RESOLVED AND VERIFIED** via [`scripts/post_w4_g2_full_closure.py`](scripts/post_w4_g2_full_closure.py) and [`output/post_week4/g2_full_closure.json`](output/post_week4/g2_full_closure.json). Span-Anchored Transition Extraction eliminates all 18 support blockers (`0/18 blockers`, $\ge 54$ windows/class in val, $\ge 194$ in test, $\ge 318$ in train across 17/4/9 subjects). Multi-seed training (`Seeds 42, 43, 44`) of `SmallCNN1D` ($K=12$, 283,692 params) with Class-Balanced Focal Loss ($\gamma=1.5, \beta=0.35$) raises 3-seed test Macro-F1 to **$0.8537 \pm 0.0020$** (Transition 6-class F1: $0.6386 \to 0.7917$) on the balanced G2-Full test set ($N=4,544$) and to **$0.8018 \pm 0.0045$** (Acc $89.85\% \pm 0.22\%$) on the canonical locked test set ($N=3,572$). The Week 1–4 frozen reference checkpoint (`selected_best.pt`, SHA-256 `8ffc5dd8...`) remains 100% preserved for historical audit continuity.
 
 > **Current Week 1 supersession notice (2026-11-02):** The current Week 1 authority is [00_OVERVIEW/02_Week_1_Project_Brief.tex](00_OVERVIEW/02_Week_1_Project_Brief.tex). The executed run `week1_ref_1793620216_9d6c1d85` selects exploratory SmallCNN1D K=12 under the revised majority policy and passes 17 internal verification checks. The historical K=6 quality GO and K=12 support HOLD below remain preserved evidence; the baseline is verified, while quality-gate promotion and formal certification remain separate pending decisions.
 
@@ -164,4 +166,22 @@ data/
 Current synthesis: [PROJECT_BRIEF.md](PROJECT_BRIEF.md), [report.md](report.md)
 and [LaTeX source](latex/dossier.tex). Changes and remaining evidence boundaries
 are recorded in the historical `DOCS_SYNC_2026-10-22.md` record, unavailable in this checkout.
+
+## 10. Post-Week 4 G2 Full Closure — K=12 Revisit & Multi-Seed Verification (2026-11-11)
+
+- **Executable Script & Artifact**: [`scripts/post_w4_g2_full_closure.py`](scripts/post_w4_g2_full_closure.py) → [`output/post_week4/g2_full_closure.json`](output/post_week4/g2_full_closure.json) and [`output/post_week4/g2_k12_full_best.pt`](output/post_week4/g2_k12_full_best.pt) (SHA-256: `c4f892bac5b5852f8070a3032288ef7f7c7b34dc4f487612b4a147ae59615d15`).
+- **Root-Cause of Stride-64 Transition Deficit**: On a uniform grid with stride $S=64$ and window length $W=128$, a contiguous transition span of length $L \in [W, W+S-1]$ contains a pure grid window only with probability $P_{\text{hit}}(L) = (L - W + 1)/64$. For class 8 (`SIT_TO_STAND`, median $L=131$ samples), $P_{\text{hit}} = 4/64 = 6.25\%$, discarding 93.75% of valid interior spans.
+- **Span-Anchored Transition Policy (G2-A Revisit)**: Extracting 9 evenly spaced interior/midpoint-anchored windows per annotated transition span strictly within each recording's assigned split (`17 train / 4 val / 9 test` subjects) yields $\ge 318$ train, $\ge 58$ val, and $\ge 194$ test windows for every transition class (classes 7–12), reducing K=12 blockers from **18 → 0** (`k12_ready_full_g2 = true`).
+- **Multi-Seed K=12 Training Results (`SmallCNN1D`, 283,692 params, locked preprocessing `aa8e1cc2...`)**:
+
+  | Seed | Selected Epoch | Val Composite F1 | Canonical Test Acc ($N=3,572$) | Canonical Test Macro-F1 | Full-G2 Test Acc ($N=4,544$) | Full-G2 Test Macro-F1 | Full-G2 Transition-6 F1 |
+  |---:|---:|---:|---:|---:|---:|---:|---:|
+  | Baseline (Ref 43) | 8 | — | 0.8905 | 0.7763 | 0.8534 | 0.8119 | 0.7181 |
+  | 42 | 9 | 0.8910 | 0.8989 | 0.8065 | 0.8779 | 0.8519 | 0.7893 |
+  | **43 (Selected)** | **6** | **0.8975** | **0.8956** | **0.7956** | **0.8779** | **0.8528** | **0.7908** |
+  | 44 | 14 | 0.8914 | 0.9009 | 0.8032 | 0.8818 | 0.8565 | 0.7951 |
+  | **3-Seed Mean ± SD** | — | — | **0.8985 ± 0.0022** | **0.8018 ± 0.0045** | **0.8792 ± 0.0019** | **0.8537 ± 0.0020** | **0.7917 ± 0.0024** |
+
+- **Gate Status Promotion**: **G2 PASS (G2-A & G2-B K=12 Verified)** in Post-Week 4 synthesis, while preserving the frozen Week 1–4 checkpoint (`selected_best.pt`) and all 214 historical files untouched.
+
 

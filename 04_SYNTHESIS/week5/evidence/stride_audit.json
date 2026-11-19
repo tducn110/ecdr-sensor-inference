@@ -1,0 +1,154 @@
+{
+  "date_utc": "2026-11-19T13:26:09.008982+00:00",
+  "git_head": "772e021c72d8325a0772933617798518423ed004",
+  "torch": "2.14.1+cpu",
+  "numpy": "2.4.6",
+  "torch_threads": 1,
+  "checkpoint_sha256": "8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1",
+  "preprocessing_id": "aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e",
+  "test_recordings": 19,
+  "canonical_grid_value_match": true,
+  "scope": "Exploratory pairwise geometry and batch-computed top-1 agreement. Ordinary float64 IBP for stride-one box members at radius 0.1. No validated float32 enclosure, adaptive anchor, runtime latency, or formal reuse measurement.",
+  "input_hashes": {
+    "data/window_manifest.parquet": "82f9a2875fa0b00b315b36d81f07ab1bc436ea078a2f8c491ec4206baf75413b",
+    "data/windows_with_split.parquet": "767dbe36f8a5a2b0b81cd2a5dd6873ab944a4460908f9052cd418b77799909f4",
+    "data/windows.npz": "1646061afa74266ac0fdd03b6f68af63327c7ab2f2a93db1f672e6177eb17900",
+    "04_SYNTHESIS/week5/evidence/stride_audit.py": "b9c93334f81e8803888b9b901cde2092c1ff79d3917cd0c3233e86ba8df0f4fa",
+    "data/hapt/RawData/acc_exp03_user02.txt": "98aa73a7a0bf5059f646c0a52bf067f00d80d4f2b699ff2fef3dd661f5b8d136",
+    "data/hapt/RawData/gyro_exp03_user02.txt": "fc7f157c1c18123b3dd4d2e9e202222ce219b80d0440925d538e3dc48471a386",
+    "data/hapt/RawData/acc_exp04_user02.txt": "86fba4a4b9d1a317e65045494c7dda3f6fcd1cf740781a872876d7b455eb8878",
+    "data/hapt/RawData/gyro_exp04_user02.txt": "11587ef81a4075b0a1b2e2f59e72cba46fd9705452bebc7e6ecbbac5aea52fbc",
+    "data/hapt/RawData/acc_exp07_user04.txt": "f839f3c3b76aa772c2b502fdafe0ce8e04caad9bdcc4a8ddc9d400ff477d576c",
+    "data/hapt/RawData/gyro_exp07_user04.txt": "8c3affc2e0b8241041efeeae2a7a0de21503bfaced8f8506c6bd8322bda48612",
+    "data/hapt/RawData/acc_exp08_user04.txt": "bf876ebd0f87cc07e2fdfd9812cc5a2e2b85933306376f3a6c8d55f39d0c97f6",
+    "data/hapt/RawData/gyro_exp08_user04.txt": "785885bc804b5ab14d768b9c5b0ea8a7a62ac5ee433071c638c3d61b1912b79e",
+    "data/hapt/RawData/acc_exp17_user09.txt": "cf39125d3351bd61a1331041e81bfd66c20a037d17baba00a3a34a38609df743",
+    "data/hapt/RawData/gyro_exp17_user09.txt": "730f60f5df86593f7c9847115e77d3f591d53286452a769c749f1cce7bd1c5f1",
+    "data/hapt/RawData/acc_exp18_user09.txt": "168595dc9864f890446e9ebf7790e113c4e869124655f986c57d2e7fc33c6544",
+    "data/hapt/RawData/gyro_exp18_user09.txt": "30253ba7737ed0a995ba290d0c3311df2998251d89e57c4f2eaff4e26423aa9e",
+    "data/hapt/RawData/acc_exp19_user10.txt": "a081d13d40f981995e59d400eef08c857ea019fbf559155a2b76da56dae616d6",
+    "data/hapt/RawData/gyro_exp19_user10.txt": "630960b99657d32578da5cf27857723092e54faa9790e27d6920eab20e98d472",
+    "data/hapt/RawData/acc_exp20_user10.txt": "59cc39ed6448a394dae27b784dcdf646fcdb105b0320d2b5e6b38cbf43b42cd3",
+    "data/hapt/RawData/gyro_exp20_user10.txt": "299f9dc1290643b809700e62a821738358df0f746ce41521e75ff3a2df88f19f",
+    "data/hapt/RawData/acc_exp21_user10.txt": "23f03a8726e610f645053e15fe078fc4fda7bc6c1e9d1a28d06c8b06d9ab4382",
+    "data/hapt/RawData/gyro_exp21_user10.txt": "98d46444a3d15c7c57ac267427fec39896de0bec9496a5c836e6f27d74ad2b10",
+    "data/hapt/RawData/acc_exp24_user12.txt": "26f0ff34a590647f03122fb5d0ab803010d638be0a3817818d87bb3084b8ac75",
+    "data/hapt/RawData/gyro_exp24_user12.txt": "24f43dcb9780aced77f6c901598d7b5cdfa2efb3f51c70068dd8f8b38159785d",
+    "data/hapt/RawData/acc_exp25_user12.txt": "25f65698976bade4df9a7051758d26d0dcb21d5d5e31917b3f1edae3de64ebcd",
+    "data/hapt/RawData/gyro_exp25_user12.txt": "27cba399c7e266829afad1dabb0b6f69deb6dc062a02d654ee3b2cd4c2882fbc",
+    "data/hapt/RawData/acc_exp26_user13.txt": "1573716d31330d88e4ebcd7b91a75313ec52e7d62f5070b4b149baaf09b125dc",
+    "data/hapt/RawData/gyro_exp26_user13.txt": "decae0826d91756ea1d6a898ad174ab3ba5c4057aeb55bd8b4ccecd83d0731ef",
+    "data/hapt/RawData/acc_exp27_user13.txt": "e778cfd4871214e8e4faf0a8ee1c82e95b8ac11a99286b01630ad292fafe3da5",
+    "data/hapt/RawData/gyro_exp27_user13.txt": "da1569186e95c784165d3af491969264396969e77163d97f34713227c14e7846",
+    "data/hapt/RawData/acc_exp36_user18.txt": "43992d858c45f01b2a7270e296dedf511649b7808cbfae6c51e697b79f4dd281",
+    "data/hapt/RawData/gyro_exp36_user18.txt": "a862e31b75dbac24ba083d4bfcafc601c42463bbf0173e88a539b4c55303f869",
+    "data/hapt/RawData/acc_exp37_user18.txt": "db7bf49d1c0dfe6b25248c66a96f8826f50e3e0fba5ad6cfd5f33d0e51a6343e",
+    "data/hapt/RawData/gyro_exp37_user18.txt": "f4b6e4338c19c8cd420652b636c369d50f165c3862c2323bc143ba0f96ab860b",
+    "data/hapt/RawData/acc_exp40_user20.txt": "af0c5e6539521bba27100dcf253d5c01fb671e38576c7430fe434bc203dcc2d5",
+    "data/hapt/RawData/gyro_exp40_user20.txt": "369d6a30045b22aaade3706b126dc45bee02c256f7002aabe10ba5b3396fb2f8",
+    "data/hapt/RawData/acc_exp41_user20.txt": "c6497551b9fd040738ee9523029f7899e96ab57e3a07d4a370aa552a5e7a9d1b",
+    "data/hapt/RawData/gyro_exp41_user20.txt": "ad97589b215224ecc486265bc8be08aa1d24efd9de69de0e570031664cec1064",
+    "data/hapt/RawData/acc_exp48_user24.txt": "40b274de71914e5b5fc36ebc8fd03d66c7a403215df065dd94214f18326c4f72",
+    "data/hapt/RawData/gyro_exp48_user24.txt": "d83adc1545701dbb108d5861e58460c4a897b9dacc0d7a97a783feb56841e195",
+    "data/hapt/RawData/acc_exp49_user24.txt": "6e169af5ebf204a2f5e6e0a267caa3ab6df80fad6aaab332281893a6a2735db0",
+    "data/hapt/RawData/gyro_exp49_user24.txt": "ff5aa45f813df654c0a16b72bba28f583b11f43f7daaa775d2df67959dc49ae4"
+  },
+  "results": {
+    "1": {
+      "within_recording_pairs": 322856,
+      "median_linf": 1.419794738292694,
+      "median_l2": 6.3423157273465005,
+      "reference_top1_agree": 316298,
+      "box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 49677
+      },
+      "reference_agreement_among_box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 49670
+      },
+      "ibp_radius_0.1": {
+        "conditional_members_tested": 49677,
+        "positive_all_11": 0,
+        "shadow_disagreements_among_positives": 0,
+        "largest_minimum_margin_estimate": -1544.8601147928007
+      }
+    },
+    "4": {
+      "within_recording_pairs": 80708,
+      "median_linf": 2.7761287689208984,
+      "median_l2": 15.251254245623137,
+      "reference_top1_agree": 77931,
+      "box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 5122
+      },
+      "reference_agreement_among_box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 5121
+      }
+    },
+    "16": {
+      "within_recording_pairs": 20171,
+      "median_linf": 3.4928189516067505,
+      "median_l2": 23.852324479705747,
+      "reference_top1_agree": 18329,
+      "box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 804
+      },
+      "reference_agreement_among_box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 804
+      }
+    },
+    "32": {
+      "within_recording_pairs": 10081,
+      "median_linf": 3.869920015335083,
+      "median_l2": 25.969767842865394,
+      "reference_top1_agree": 8658,
+      "box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 327
+      },
+      "reference_agreement_among_box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 327
+      }
+    },
+    "64": {
+      "within_recording_pairs": 5034,
+      "median_linf": 3.933603450655937,
+      "median_l2": 25.546277303139163,
+      "reference_top1_agree": 3982,
+      "box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 137
+      },
+      "reference_agreement_among_box_members": {
+        "1e-06": 0,
+        "0.0001": 0,
+        "0.01": 0,
+        "0.1": 137
+      }
+    }
+  }
+}

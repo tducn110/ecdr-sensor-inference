@@ -1,0 +1,86 @@
+\section{Replay Method Inventory}
+\begin{table}[H]
+\caption{Week 4 comparison matrix. Times and added delay $\Delta$ are in milliseconds. Reduction is relative to M00. Hits retain each method's semantics. A dash marks an unexecuted comparator.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYrrrrrrrr@{}}\toprule
+ID & Method & Hits & Mean & p50 & p95 & QPS & Speed/M00 & $\Delta$ & Reduction (\%) \\
+\midrule
+M00 & Frozen full core & 0 & 0.342 & 0.3303 & 0.407 & 2923.71 & 1.0 & +0.00 & +0.00 \\
+M01 & Full equivalent wrapper & 0 & 1.6766 & 1.6034 & 2.1147 & 596.44 & 0.204 & +1.33 & -390.19 \\
+M02 & Exact input replay & 0 & 0.4788 & 0.451 & 0.6365 & 2088.63 & 0.7144 & +0.14 & -39.98 \\
+M03 & Exact incremental computation & 5034 & 1.9273 & 1.7548 & 2.8766 & 518.87 & 0.1775 & +1.59 & -463.47 \\
+M04 & Heuristic reuse & 0 & 0.4974 & 0.4664 & 0.6773 & 2010.61 & 0.6877 & +0.16 & -45.41 \\
+M05 & Global Lipschitz cache & 0 & 0.5094 & 0.4808 & 0.6781 & 1963.01 & 0.6714 & +0.17 & -48.94 \\
+M06 & IBP diagonal box & 0 & 7.1278 & 6.5475 & 10.564 & 140.3 & 0.048 & +6.79 & -1983.96 \\
+M07 & IBP fixed-overlap wave & 0 & 6.5641 & 6.1424 & 9.7216 & 152.34 & 0.0521 & +6.22 & -1819.16 \\
+M08 & Correlated candidate via coordinate hull & 0 & 0.4626 & 0.4493 & 0.5274 & 2161.59 & 0.7393 & +0.12 & -35.26 \\
+M09 & Native correlated bounds & 0 & 0.4481 & 0.4449 & 0.4667 & 2231.51 & 0.7632 & +0.11 & -31.02 \\
+M10 & CROWN diagonal & 0 & 0.45 & 0.4489 & 0.4705 & 2222.03 & 0.76 & +0.11 & -31.58 \\
+M11 & CROWN wave/correlated & 0 & 0.4479 & 0.4448 & 0.4678 & 2232.56 & 0.7636 & +0.11 & -30.96 \\
+M12 & Fixed-anchor policy control & 0 & 0.4966 & 0.47 & 0.5024 & 2013.7 & 0.6887 & +0.15 & -45.19 \\
+M13 & Finite-horizon policy control & 0 & 6.1458 & 5.9997 & 8.1202 & 162.71 & 0.0557 & +5.80 & -1696.85 \\
+M14 & Faithful LipCache comparator & -- & -- & -- & -- & -- & -- & -- & -- \\
+M15 & Prior-work applicability only & -- & -- & -- & -- & -- & -- & -- & -- \\
+M16 & OWNED\_REFERENCE baseline & 0 & 0.4674 & 0.4513 & 0.5645 & 2139.37 & 0.7317 & +0.13 & -36.66 \\
+\bottomrule\end{tabularx}
+\end{table}
+\section{Hypothesis Dispositions}
+The statements and verdicts below follow the machine-readable Week 4 ledger. The underlying files retain Week 3 dispositions, governing tasks, and finite witnesses.
+\begin{table}[H]
+\caption{Week 4 ledger, H01--H12.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYY@{}}\toprule
+ID & Statement & Recorded Verdict \\
+\midrule
+H01 & Shift-aligned overlap is exact across adjacent chronological windows & VERIFIED FINITE \\
+H02 & 50\% window overlap implies small ordinary coordinate distance & FALSIFIED UNCONDITIONAL \\
+H03 & Same activity annotation implies identical CNN prediction & FALSIFIED UNCONDITIONAL \\
+H04 & Strict winner margin and continuity establish a local invariant decision region & DERIVED \\
+H05 & Positive valid whole-domain margins are sufficient for decision reuse & DERIVED REAL ARITHMETIC \\
+H06 & Sound Lipschitz bound defines certified decision ball & CONDITIONAL THEOREM \\
+H07 & IBP certifies every invariant domain & FALSIFIED COMPLETENESS \\
+H08 & Direct 11-margin output bounds eliminate intermediate logit dependency loss & DERIVED \\
+H09 & CROWN is always cheaper and tighter than alternatives & NOT ESTABLISHED \\
+H10 & Temporal/PCA directions align with decision margin normals & NOT ESTABLISHED \\
+H11 & Structured domains provide superior certified coverage over matched diagonal boxes & NOT ESTABLISHED \\
+H12 & Fixed overlap reduces free coordinates from CW=768 to Cs=384 & DERIVED \\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Week 4 ledger, H13--H24.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYY@{}}\toprule
+ID & Statement & Recorded Verdict \\
+\midrule
+H13 & Actual exact intermediate feature reuse preserves bitwise classifier output & VERIFIED FINITE \\
+H14 & Incremental computation yields net latency savings on SmallCNN1D CPU inference & FALSIFIED UNCONDITIONAL \\
+H15 & Re-centering after certified reuse hit requires no new numerical proof & FALSIFIED UNCONDITIONAL \\
+H16 & Fixed-anchor membership preserves repeated soundness across queries & CONDITIONAL THEOREM \\
+H17 & Multi-step finite horizon reachable sets preserve certified invariance & NOT ESTABLISHED \\
+H18 & Exact box membership worst-case complexity is Theta(m) in coordinate-access model & DERIVED \\
+H19 & Mathematical soundness implies useful streaming coverage & FALSIFIED UNCONDITIONAL \\
+H20 & Useful coverage implies net end-to-end speedup & FALSIFIED UNCONDITIONAL \\
+H21 & ECDR outperforms CNN baseline or LipCache on HAPT continuous streaming & NOT ESTABLISHED \\
+H22 & Real arithmetic proofs automatically transfer soundly to Float32 runtime & FALSIFIED UNCONDITIONAL \\
+H23 & Correct temporal event name alone is sufficient for sound decision reuse & FALSIFIED UNCONDITIONAL \\
+H24 & There exists an operating regime simultaneously sound, useful, and low-cost on HAPT & NOT ESTABLISHED \\
+\bottomrule\end{tabularx}
+\end{table}
+\section{Week 4 Task Register}
+The closeout records all 40 listed entries as verified engineering tasks. These dispositions attest to the scoped deliverables and do not imply positive scientific results.
+\begin{table}[H]
+\caption{Week 4 engineering tasks by closeout milestone.}
+\centering\small
+\begin{tabularx}{\columnwidth}{@{}llY@{}}\toprule
+Group & Task range & Scope \\
+\midrule
+M0 & 001--004 & Governance, integrity, specification, environment \\
+M1 & 005--010 & Numerical contract, margins, IBP, Lipschitz, CROWN, review \\
+M2 & 011--018 & Domains, incremental computation, event triggers, lookup, integration \\
+M3 & 019--026 & Runtime, fallback, cache, telemetry, reference, registry, assurance, harness \\
+M4 & 027--031 & Workload, baselines, calibration, synthetic probes, protocol seal \\
+M5 & 032--034 & Replay, timing, memory and scaling \\
+M6 & 035--036 & Comparison and independent audit \\
+M7 & 037--040 & Scientific and explanatory reports, rendering, delivery verification \\
+\bottomrule\end{tabularx}
+\end{table}

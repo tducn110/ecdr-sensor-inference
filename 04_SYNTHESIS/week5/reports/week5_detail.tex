@@ -1,0 +1,324 @@
+\section{Week 1: Reference Selection and Requirement Evidence}
+\begin{table}[H]
+\caption{Stored validation selection across three training seeds.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrr@{}}\toprule
+Fit & Seed & Best epoch & Validation macro-F1\\
+\midrule
+Candidate & 42 & 14 & 0.836829\\
+Selected & 43 & 8 & 0.846785\\
+Candidate & 44 & 9 & 0.836958\\
+\bottomrule\end{tabularx}
+\end{table}
+Training used a maximum of 30 epochs, batch size 128, Adam at \(10^{-3}\), weight decay \(10^{-4}\), cosine scheduling and patience 10. The selection criterion was validation macro-F1. The baseline test result uses the selected seed and the frozen supervised denominator of 3,572. The evidence locators below follow the Week 1 requirements and closeout \cite{localw1}.
+\begin{table}[H]
+\caption{Week 1 requirement-to-evidence map.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYY@{}}\toprule
+ID & Requirement & Recorded evidence\\
+\midrule
+W1-01 & Research grounding & Brief comparison and primary bibliography\\
+W1-02 & K=12 lock & selection.json and SOURCE\_OF\_TRUTH.md give the selected reference and input identity\\
+W1-03 & Architecture & Executed parameter count and layer shapes, reproduced in Week 2\\
+W1-04 & Pipeline execution & Week 1 train, evaluation and verification receipts\\
+W1-05 & Transition support & G2 hold and support evidence in the brief\\
+W1-06 & Research question & Decision preservation, useful coverage and total cost\\
+W1-07 & Evidence register & EVIDENCE\_REGISTER.md and independent baseline check (65/65)\\
+W1-08 & Sensor/data contract & Recording, channel order, window grid, split and label policy\\
+W1-09 & Hypotheses & H1 to H4 in the Week 1 ledger\\
+W1-10 & Stratification & Descriptive stable/transition pair counts and reference agreement\\
+W1-11 & Roadmap & Closeout describes handoff to reconstruction and verification\\
+W1-12 & English deliverable & Editable Week 1 brief and study records\\
+\bottomrule\end{tabularx}
+\end{table}
+\textbf{Interpretation.} Seed 43 led the three candidates on validation. High agreement for stable adjacent pairs coexists with much lower agreement for transition pairs. The baseline identifies the decision target and motivates the distinction between temporal similarity and a certificate.
+\section{Week 2: Dataset and Model Results}
+Raw inputs are ordered accelerometer \(x,y,z\), then gyroscope \(x,y,z\). The accepted majority threshold is 77 of 128 samples. Pure and accepted majority windows enter supervised metrics, while ambiguous and unlabeled windows retain their chronological positions. The local reconstruction establishes the project grid and labels. The upstream annotation-origin sensitivity remains a limitation for comparisons that relabel boundary windows \cite{localweek2}.
+\begin{table}[H]
+\caption{Frozen class order, supervised support and selected-reference test metrics.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}rYrrrrrr@{}}\toprule
+ID & Class & Train & Val. & Test & Precision & Recall & F1\\
+\midrule
+1 & Walking & 1077 & 246 & 531 & 0.9603 & 0.9567 & 0.9585\\
+2 & Walking Upstairs & 973 & 247 & 537 & 0.9331 & 0.9088 & 0.9208\\
+3 & Walking Downstairs & 894 & 231 & 492 & 0.9237 & 0.9837 & 0.9528\\
+4 & Sitting & 1103 & 289 & 546 & 0.7997 & 0.8407 & 0.8196\\
+5 & Standing & 1206 & 312 & 597 & 0.8798 & 0.8090 & 0.8429\\
+6 & Laying & 1188 & 316 & 586 & 0.9831 & 0.9949 & 0.9890\\
+7 & Stand To Sit & 79 & 19 & 45 & 0.7619 & 0.7111 & 0.7356\\
+8 & Sit To Stand & 53 & 13 & 32 & 0.7778 & 0.6562 & 0.7119\\
+9 & Sit To Lie & 90 & 26 & 51 & 0.5893 & 0.6471 & 0.6168\\
+10 & Lie To Sit & 89 & 15 & 46 & 0.7714 & 0.5870 & 0.6667\\
+11 & Stand To Lie & 119 & 18 & 68 & 0.5714 & 0.5294 & 0.5496\\
+12 & Lie To Stand & 84 & 19 & 41 & 0.4737 & 0.6585 & 0.5510\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Channel normalization fitted only on 6,955 supervised training windows.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrr@{}}\toprule
+Channel & Mean & Std. dev.\\
+\midrule
+Acc X & 0.8043609 & 0.4057797\\
+Acc Y & 0.0411366 & 0.4071547\\
+Acc Z & 0.0817700 & 0.3549119\\
+Gyro X & 0.0091356 & 0.4476351\\
+Gyro Y & -0.0043976 & 0.4212706\\
+Gyro Z & -0.0071832 & 0.2964415\\
+\bottomrule\end{tabularx}
+\end{table}
+\textbf{Interpretation.} Transition validation counts are much smaller than basic-activity counts. The lower transition F1 scores identify where the reference is less accurate on this split. They measure agreement with activity labels. Reuse is evaluated against the reference's decisions, including its mistakes.
+\begin{table}[H]
+\caption{Actual module shapes at batch size one and audited cost per sample.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYYYrr@{}}\toprule
+Module & Operator & Input shape & Output shape & Parameters & MACs\\
+\midrule
+conv.0 & Conv1d & [1, 6, 128] & [1, 32, 128] & 992 & 122880\\
+conv.1 & BatchNorm1d & [1, 32, 128] & [1, 32, 128] & 64 & 0\\
+conv.2 & ReLU & [1, 32, 128] & [1, 32, 128] & 0 & 0\\
+conv.3 & MaxPool1d & [1, 32, 128] & [1, 32, 64] & 0 & 0\\
+conv.4 & Conv1d & [1, 32, 64] & [1, 64, 64] & 6208 & 393216\\
+conv.5 & BatchNorm1d & [1, 64, 64] & [1, 64, 64] & 128 & 0\\
+conv.6 & ReLU & [1, 64, 64] & [1, 64, 64] & 0 & 0\\
+conv.7 & MaxPool1d & [1, 64, 64] & [1, 64, 32] & 0 & 0\\
+conv.8 & Conv1d & [1, 64, 32] & [1, 64, 32] & 12352 & 393216\\
+conv.9 & BatchNorm1d & [1, 64, 32] & [1, 64, 32] & 128 & 0\\
+conv.10 & ReLU & [1, 64, 32] & [1, 64, 32] & 0 & 0\\
+head.0 & Flatten & [1, 64, 32] & [1, 2048] & 0 & 0\\
+head.1 & Linear & [1, 2048] & [1, 128] & 262272 & 262144\\
+head.2 & ReLU & [1, 128] & [1, 128] & 0 & 0\\
+head.3 & Linear & [1, 128] & [1, 12] & 1548 & 1536\\
+\bottomrule\end{tabularx}
+\end{table}
+Total cost is 1,172,992 convolution/dense MACs per sample with the archived convention. Bias, normalization, nonlinear operators and memory traffic are outside that count. The Week 2 mean/p50/p95 forward-only measurements were 0.1892/0.1557/0.3111\,ms on a resident normalized input. These measurements do not include the complete Week 4 decision path.
+\begin{table}[H]
+\caption{Confusion counts on 3,572 supervised windows. Rows are true labels, columns are predictions; class IDs follow the support table.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrrrrrrrrrrr@{}}\toprule
+True/Pred. & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12\\
+\midrule
+1 & 508 & 0 & 22 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\
+2 & 16 & 488 & 15 & 0 & 0 & 0 & 2 & 0 & 0 & 3 & 2 & 11\\
+3 & 4 & 2 & 484 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0\\
+4 & 0 & 21 & 0 & 459 & 57 & 0 & 1 & 2 & 1 & 0 & 5 & 0\\
+5 & 0 & 3 & 0 & 106 & 483 & 0 & 1 & 0 & 1 & 0 & 2 & 1\\
+6 & 0 & 0 & 0 & 0 & 0 & 583 & 0 & 0 & 0 & 0 & 3 & 0\\
+7 & 1 & 2 & 0 & 4 & 1 & 0 & 32 & 3 & 1 & 0 & 1 & 0\\
+8 & 0 & 2 & 0 & 1 & 7 & 0 & 1 & 21 & 0 & 0 & 0 & 0\\
+9 & 0 & 0 & 0 & 0 & 1 & 6 & 0 & 0 & 33 & 0 & 11 & 0\\
+10 & 0 & 1 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 27 & 1 & 15\\
+11 & 0 & 1 & 1 & 2 & 0 & 4 & 2 & 0 & 20 & 0 & 36 & 2\\
+12 & 0 & 3 & 2 & 0 & 0 & 0 & 1 & 1 & 0 & 5 & 2 & 27\\
+\bottomrule\end{tabularx}
+\end{table}
+The full-stream top-two gap had minimum 0.0001135, median 5.9782 and p95 11.8876 logit units across 5,053 inputs. A sampled near-tie motivates strict margins. A large point gap alone gives no lower bound over a region.
+\section{Week 3: Domain, Backend and Runtime Evidence}
+\begin{table}[H]
+\caption{Offline domain diagnostic at the validation-selected normalized radius 1e-6.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrrrr@{}}\toprule
+Domain & Builds & Positive estimates & Next members & Formal hits & Mean build (ms)\\
+\midrule
+diagonal box & 5053 & 5034 & 0 & 0 & 6.774\\
+fixed overlap wave & 5053 & 4211 & 0 & 0 & 6.830\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Week 3 operational replay. Each run used 5,053 windows and zero accepted reuse.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrrrrr@{}}\toprule
+Domain & Repeat & Builds & Fallback & Core (ms) & ECDR (ms) & Reduction (\%)\\
+\midrule
+diagonal box & 1 & 49 & 5053 & 0.224 & 3.174 & -1316.92\\
+fixed overlap wave & 1 & 69 & 5053 & 0.224 & 3.198 & -1327.35\\
+diagonal box & 2 & 49 & 5053 & 0.215 & 3.107 & -1346.81\\
+fixed overlap wave & 2 & 69 & 5053 & 0.215 & 3.169 & -1375.60\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Fallback reason counts in the timed Week 3 runs.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}YrY@{}}\toprule
+Domain & Repeat & Reason and query count\\
+\midrule
+diagonal box & 1 & no certificate: 2, outside domain: 5,004, stale or expired anchor: 29, recording reset: 18\\
+fixed overlap wave & 1 & no certificate: 22, outside domain: 4,984, stale or expired anchor: 29, recording reset: 18\\
+diagonal box & 2 & no certificate: 2, outside domain: 5,004, stale or expired anchor: 29, recording reset: 18\\
+fixed overlap wave & 2 & no certificate: 22, outside domain: 4,984, stale or expired anchor: 29, recording reset: 18\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Saved auto-LiRPA probes on the K=12 graph.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}YYrrY@{}}\toprule
+Graph & Conversion & Bound records & Positive & Scope\\
+\midrule
+native 1d & FAILED & 0 & 0 & No native bounds\\
+singleton height 2d & PASS & 12 & 6 & Conditional surrogate diagnostics\\
+\bottomrule\end{tabularx}
+\end{table}
+\textbf{Interpretation.} The native 1-D operator conversion did not produce bounds in this probe. The singleton-height surrogate matched sampled logits, but the probe did not establish exact executable equivalence in general. Positive interval estimates remained conditional, and no next query entered the tested domains. Builds, state checks and fallback therefore added cost without avoiding reference forwards \cite{localw3}.
+\section{Week 4: Resource Use and Task Evidence}
+\begin{table}[H]
+\caption{Recorded attributable adapter/cache memory and membership coordinate counts.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrrrr@{}}\toprule
+Method & Adapter B & State B & Certificate B & Total B & Coordinates\\
+\midrule
+M00 & 1113 & 0 & 0 & 1113 & 768\\
+M01 & 1307 & 0 & 0 & 1307 & 768\\
+M02 & 1533 & 3080 & 0 & 4613 & 768\\
+M03 & 12465 & 3584 & 0 & 16049 & 384\\
+M04 & 1586 & 6664 & 0 & 8250 & 384\\
+M05 & 8909 & 0 & 6144 & 15053 & 768\\
+M06 & 11940 & 0 & 6144 & 18084 & 768\\
+M07 & 11705 & 0 & 6144 & 17849 & 768\\
+M08 & 1460123 & 0 & 6144 & 1466267 & 768\\
+M09 & 1460411 & 0 & 6144 & 1466555 & 768\\
+M10 & 1459976 & 0 & 6144 & 1466120 & 768\\
+M11 & 1460238 & 0 & 6144 & 1466382 & 768\\
+M12 & 11769 & 0 & 6144 & 17913 & 768\\
+M13 & 11815 & 0 & 6144 & 17959 & 768\\
+M14 & -- & -- & -- & -- & --\\
+M15 & -- & -- & -- & -- & --\\
+M16 & 1514 & 0 & 0 & 1514 & 768\\
+\bottomrule\end{tabularx}
+\end{table}
+The separately reported frozen float32 tensor payload is 1,136,072 bytes. The float64 bounds snapshot is 2,272,120 bytes. The attribution table tracks the fields recorded for each method. Process RSS includes the runtime, backend and resident arrays, so it cannot be interpreted as cache cost. The study did not isolate dynamic workspace or energy \cite{localw4}.
+\textbf{Interpretation.} M03 provides actual feature reuse, but its timed hit path is already slower than a complete M00 decision. Regional methods incur costs with no observed useful hits. Low attributed state size does not itself imply low query latency.
+\begin{table}[H]
+\caption{Week 4 closeout tasks 001--020. Receipt locators are relative to the Week 4 run directory.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYYl@{}}\toprule
+Task & Scope in closeout & Receipt locator & Status\\
+\midrule
+W4-001 & Task tracker, schemas and lock governance & tasks/W4-001/receipt.json & VERIFIED\\
+W4-002 & Baseline snapshot, dirty tree guard and integrity audit & tasks/W4-002/receipt.json & VERIFIED\\
+W4-003 & Method taxonomy, protocol matrix and task crosswalk & tasks/W4-003/receipt.json & VERIFIED\\
+W4-004 & Runtime, profiling and hardware telemetry & tasks/W4-004/receipt.json & VERIFIED\\
+W4-005 & Numerical soundness and floating-point safety bounds & tasks/W4-005/receipt.json & VERIFIED\\
+W4-006 & K=12 competing-class margin analysis & tasks/W4-006/receipt.json & VERIFIED\\
+W4-007 & IBP engine and radius calculation & tasks/W4-007/receipt.json & VERIFIED\\
+W4-008 & Global and local Lipschitz bounds & tasks/W4-008/receipt.json & VERIFIED\\
+W4-009 & LP/CROWN adapter & tasks/W4-009/receipt.json & VERIFIED\\
+W4-010 & Proof obligations and verification review & tasks/W4-010/receipt.json & VERIFIED\\
+W4-011 & Ball regions & tasks/W4-011/receipt.json & VERIFIED\\
+W4-012 & Box and diagonal regions & tasks/W4-012/receipt.json & VERIFIED\\
+W4-013 & Polytope and zonotope adapters & tasks/W4-013/receipt.json & VERIFIED\\
+W4-014 & PCA and low-dimensional projection & tasks/W4-014/receipt.json & VERIFIED\\
+W4-015 & Incremental streaming and partial recomputation & tasks/W4-015/receipt.json & VERIFIED\\
+W4-016 & Event triggers and heuristic detectors & tasks/W4-016/receipt.json & VERIFIED\\
+W4-017 & Exact and near-neighbor temporal lookup & tasks/W4-017/receipt.json & VERIFIED\\
+W4-018 & Domain integration and compliance & tasks/W4-018/receipt.json & VERIFIED\\
+W4-019 & Runtime adapter and lifecycle & tasks/W4-019/receipt.json & VERIFIED\\
+W4-020 & Fail-closed arbitration and fallback & tasks/W4-020/receipt.json & VERIFIED\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Week 4 closeout tasks 021--040. Receipt locators are relative to the Week 4 run directory.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYYl@{}}\toprule
+Task & Scope in closeout & Receipt locator & Status\\
+\midrule
+W4-021 & Cache and eviction & tasks/W4-021/receipt.json & VERIFIED\\
+W4-022 & Query instrumentation & tasks/W4-022/receipt.json & VERIFIED\\
+W4-023 & Reference and shadow validation & tasks/W4-023/receipt.json & VERIFIED\\
+W4-024 & Registry and lifecycle checks & tasks/W4-024/receipt.json & VERIFIED\\
+W4-025 & Fault injection and assurance & tasks/W4-025/receipt.json & VERIFIED\\
+W4-026 & Benchmark harness & tasks/W4-026/receipt.json & VERIFIED\\
+W4-027 & Workload and split isolation & tasks/W4-027/receipt.json & VERIFIED\\
+W4-028 & Reference core and other baseline paths & tasks/W4-028/receipt.json & VERIFIED\\
+W4-029 & Calibration and threshold selection & tasks/W4-029/receipt.json & VERIFIED\\
+W4-030 & Synthetic perturbation benchmarks & tasks/W4-030/receipt.json & VERIFIED\\
+W4-031 & Protocol seal and freeze & tasks/W4-031/receipt.json & VERIFIED\\
+W4-032 & Complete stream replay & tasks/W4-032/receipt.json & VERIFIED\\
+W4-033 & End-to-end CPU timing & tasks/W4-033/receipt.json & VERIFIED\\
+W4-034 & Memory and scaling profiles & tasks/W4-034/receipt.json & VERIFIED\\
+W4-035 & Synthesis and comparison & tasks/W4-035/receipt.json & VERIFIED\\
+W4-036 & Independent recount and audit & tasks/W4-036/receipt.json & VERIFIED\\
+W4-037 & Scientific report & tasks/W4-037/receipt.json & VERIFIED\\
+W4-038 & Explanatory report & tasks/W4-038/receipt.json & VERIFIED\\
+W4-039 & Rendered report and layout review & tasks/W4-039/receipt.json & VERIFIED\\
+W4-040 & Delivery verification and handoff & tasks/W4-040/receipt.json & VERIFIED\\
+\bottomrule\end{tabularx}
+\end{table}
+\section{Week 4: Hypothesis Witnesses}
+\begin{table}[H]
+\caption{Evidence recorded in the Week 4 hypothesis ledger, H01--H08.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYYY@{}}\toprule
+ID & Recorded verdict & Witness or interpretation & Governing tasks\\
+\midrule
+H01 & VERIFIED FINITE & 5,034 adjacent within-recording test pairs verified; 12 intermediate Conv1D feature positions bitwise equal. & W4-001, W4-002, W4-007, W4-015, W4-019, W4-027\\
+H02 & FALSIFIED UNCONDITIONAL & Ramp shifts and high-frequency sensor perturbations produce large L2/L\_inf coordinate deltas despite 50\% temporal overlap. & W4-002, W4-015, W4-018, W4-027, W4-035\\
+H03 & FALSIFIED UNCONDITIONAL & Rows 682 and 683 share true ID 11 (stand-to-lie); zero-based predictions are 10 and 8. & W4-023, W4-027, W4-032, W4-035\\
+H04 & DERIVED & Topological continuity theorem guarantees open neighbourhood around query with Delta > 0, but certified radius remains tiny under sensor scale. & W4-005, W4-011, W4-012, W4-027\\
+H05 & DERIVED REAL ARITHMETIC & Soundness theorem holds under exact real arithmetic; float32 implementation requires closed numerical bridge (W4-010). & W4-005, W4-006, W4-007, W4-008, W4-009, W4-010, W4-022, W4-036\\
+H06 & CONDITIONAL THEOREM & M05 global spectral norm Lipschitz constant yields r = Delta / (2 * L\_global). Non-trivial radius on continuous stream yields R=0 hits. & W4-005, W4-006, W4-007, W4-008, W4-009, W4-010, W4-012, W4-028, W4-033\\
+H07 & FALSIFIED COMPLETENESS & IBP interval propagation incurs severe dependency loss across 3 Conv1D layers and MLP head, failing to certify true invariant boxes. & W4-006, W4-008, W4-010, W4-011, W4-027\\
+H08 & DERIVED & On the same hidden box, direct margin minimization is no worse than separate extrema. & W4-011, W4-014, W4-018, W4-032, W4-035\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Evidence recorded in the Week 4 hypothesis ledger, H09--H16.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYYY@{}}\toprule
+ID & Recorded verdict & Witness or interpretation & Governing tasks\\
+\midrule
+H09 & NOT ESTABLISHED & The archived probes do not establish universal superiority in cost or tightness. & W4-013, W4-014, W4-028, W4-033, W4-035\\
+H10 & NOT ESTABLISHED & Local geometry probes do not establish alignment across certified regions. & W4-002, W4-016, W4-017, W4-018, W4-030, W4-032, W4-035\\
+H11 & NOT ESTABLISHED & Both structured PCA affine hulls and matched diagonal boxes achieve exactly 0 useful hits on full test stream under valid budgets. & W4-015, W4-016, W4-017, W4-018, W4-030, W4-032, W4-035\\
+H12 & DERIVED & Stride 64 with window 128 fixes 64 samples (384 coordinates) exactly when adjacent window belongs to same continuous recording. & W4-007, W4-015, W4-018, W4-025, W4-034\\
+H13 & VERIFIED FINITE & Bitwise aligned features and finite decision agreement; no universal bitwise logit guarantee. & W4-019, W4-020, W4-021, W4-026, W4-032, W4-033, W4-034\\
+H14 & FALSIFIED UNCONDITIONAL & Paired trace: M03 1.9273 ms, M00 0.3420 ms; reduction -463.47 percent. & W4-019, W4-020, W4-021, W4-027, W4-033, W4-035\\
+H15 & FALSIFIED UNCONDITIONAL & Re-centering around accepted query without fresh bound computation leads to unbounded drift and catastrophic loss of certificate soundness. & W4-022, W4-023, W4-025, W4-026, W4-027\\
+H16 & CONDITIONAL THEOREM & Immutability of anchor query and certificate domain guarantees that containment check contains true output class across lifetime. & W4-010, W4-022, W4-023, W4-025, W4-026, W4-032\\
+\bottomrule\end{tabularx}
+\end{table}
+\begin{table}[H]
+\caption{Evidence recorded in the Week 4 hypothesis ledger, H17--H24.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lYYY@{}}\toprule
+ID & Recorded verdict & Witness or interpretation & Governing tasks\\
+\midrule
+H17 & NOT ESTABLISHED & Zero useful hits for the horizon control; containment theorem remains conditional. & W4-015, W4-017, W4-022, W4-025, W4-032, W4-033, W4-034\\
+H18 & DERIVED & Proof establishes that verifying containment in non-degenerate box requires reading all m coordinates in worst case; verified by microbenchmarks. & W4-007, W4-016, W4-018, W4-026, W4-033, W4-034\\
+H19 & FALSIFIED UNCONDITIONAL & Methods M05-M13 possess mathematically valid bounding algorithms but achieve R = 0 (0\% reuse) on the 5,053-query continuous HAPT test stream. & W4-027, W4-030, W4-032, W4-035, W4-036\\
+H20 & FALSIFIED UNCONDITIONAL & M03 achieves 100\% within-recording reuse (5,034 hits) but suffers speed ratio 0.1775x vs M00 due to tensor manipulation overhead exceeding forward execution. & W4-024, W4-028, W4-030, W4-032, W4-033, W4-034, W4-035\\
+H21 & NOT ESTABLISHED & M00 is fastest among timed paths. Faithful LipCache was not timed. & W4-028, W4-029, W4-030, W4-031, W4-032, W4-033, W4-034, W4-035, W4-036\\
+H22 & FALSIFIED UNCONDITIONAL & A justified error enclosure for the executable backend is required. & W4-005, W4-006, W4-007, W4-008, W4-009, W4-010, W4-021, W4-026, W4-036\\
+H23 & FALSIFIED UNCONDITIONAL & Windows sharing identical event names (e.g. WALKING) span multiple distinct feature trajectories and target classes. & W4-015, W4-022, W4-023, W4-026, W4-027\\
+H24 & NOT ESTABLISHED & No witness among 15 executed out of 17 registered; other regimes remain open. & W4-010, W4-021, W4-030, W4-031, W4-032, W4-033, W4-034, W4-035, W4-036, W4-037, W4-038, W4-039, W4-040\\
+\bottomrule\end{tabularx}
+\end{table}
+The witnesses have different logical scope. A finite observation applies to the recorded data. A mathematical counterexample rejects a universal assertion. A conditional theorem needs its domain and numerical assumptions before executable reuse can follow.
+\section{Follow-up: Transition Quality and Stride Sensitivity}
+\begin{table}[H]
+\caption{Separate post-Week 4 G2 training. Canonical and expanded test policies use different denominators.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrrrrrr@{}}\toprule
+Selection & Seed & Canonical acc. & Canonical F1 & Transition F1 & Expanded acc. & Expanded F1 & Transition F1\\
+\midrule
+Epoch 9 & 42 & 0.8989 & 0.8065 & 0.6929 & 0.8779 & 0.8519 & 0.7893\\
+Epoch 6 & 43 & 0.8956 & 0.7956 & 0.6707 & 0.8779 & 0.8528 & 0.7908\\
+Epoch 14 & 44 & 0.9009 & 0.8032 & 0.6832 & 0.8818 & 0.8565 & 0.7951\\
+\bottomrule\end{tabularx}
+\end{table}
+The expanded policy removed all 18 recorded support blockers (18 to zero). Mean canonical test accuracy was 89.85 percent and mean expanded test accuracy was 87.92 percent. Mean transition F1 values were 0.6822 and 0.7917 under those respective policies. The training comparison changes the data policy and objective, so it does not isolate the effect of either change. The frozen Week 4 replay and its timing still refer to the original reference \cite{localg2}.
+\begin{table}[H]
+\caption{Stride audit. Counts use chronological pairs within each grid and recording.}
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Yrrrrrr@{}}\toprule
+Stride & Pairs & Equal top-1 & Median L2 & Median Linf & Box hits & Hit disagreements\\
+\midrule
+1 & 322856 & 316298 & 6.342 & 1.420 & 49677 & 7\\
+4 & 80708 & 77931 & 15.251 & 2.776 & 5122 & 1\\
+16 & 20171 & 18329 & 23.852 & 3.493 & 804 & 0\\
+32 & 10081 & 8658 & 25.970 & 3.870 & 327 & 0\\
+64 & 5034 & 3982 & 25.546 & 3.934 & 137 & 0\\
+\bottomrule\end{tabularx}
+\end{table}
+\textbf{Interpretation.} Shorter strides increase empirical neighboring agreement under these grids. Seven stride-one pairs within the radius-0.1 box changed decision. All 49,677 radius-0.1 member pairs were checked with conditional IBP and none had eleven positive lower bounds. This explains why high temporal agreement does not substantiate certified reuse for the tested box \cite{localstride}.
+\textbf{Research conclusion.} The four-week work established the frozen data/model contract, derived a sufficient decision-preservation rule, and tested multiple ways to reuse work. The measured canonical result is negative for acceleration. M03 demonstrated feature reuse at a latency penalty, and the tested regional paths supplied no useful certified hits. The separate G2 study improved classification under its stated support policy. Future claims of net certified acceleration require a valid executable certificate, actual hits and a measured complete-path advantage on the same workload.

@@ -1,0 +1,82 @@
+\section{Proofs, Counterexamples, and Evaluation of H01--H24}
+The identifiers below follow the Week 4 ledger. Week 3 H14 instead concerns the historical GAP head. Let $W$ be window length, $s$ stride, $C$ channel count, and $g_{cj}=F_c-F_j$ the margin against competitor $j$. The mathematical arguments use real arithmetic unless specified. The empirical conclusions use the recorded configurations and workload \cite{localw3,localw4,localpaired}.
+
+\subsection{Overlap and Certification}
+\paragraph{H01. Exact shift-aligned overlap.}
+Write $X_i(:,t)=u(:,is+t)$ for one recording $u$. For $0\le t<W-s$,
+\[
+X_{i+1}(:,t)=u(:,(i+1)s+t)=X_i(:,s+t).
+\]
+This proves the shifted equality for 64 samples per channel at $W=128$, $s=64$. The trace covers 5,034 same-recording adjacent pairs. No equality across recording boundaries is implied.
+
+\paragraph{H02. Overlap alone does not bound positional distance.}
+In one channel take $u(t)=at$. The aligned overlap is exact, but equal-index subtraction gives $as$ at every position. Therefore the $\ell_\infty$ and $\ell_2$ distances are $|a|s$ and $|a|s\sqrt W$. Scaling $a$ makes either arbitrarily large in this construction. Overlap supplies no small-distance guarantee without an additional constraint.
+
+\paragraph{H03. Same annotation can accompany different predictions.}
+Frozen manifest rows 682 and 683 are consecutive and both have pure activity ID 11, stand-to-lie. Their zero-based prediction indices are 10 and 8. One example of equal labels and unequal predictions disproves the universal implication. It gives no estimate of the population failure rate.
+
+\paragraph{H04. A strict winner has a local invariant neighborhood.}
+Assume every $g_{cj}(a)>0$ and continuity at anchor $a$. For each competitor choose $\delta_j>0$ so that within that distance the margin changes by less than $g_{cj}(a)/2$. The minimum of eleven positive radii is positive. In this common neighborhood all margins stay positive. Existence alone supplies no radius useful on the stream.
+
+\paragraph{H05. Valid positive whole-region margins suffice.}
+For every admitted $x\in S$, a valid lower bound gives $g_{cj}(x)\ge\ell_{cj}$. If all eleven $\ell_{cj}>0$, the class wins uniquely everywhere in $S$. For executable reuse, conservative membership must hold and numerical error must be covered. For example, if executable margins differ from the ideal margins by at most $\eta_{cj}$ on $S$, testing $\ell_{cj}>\eta_{cj}$ makes the executable margins positive.
+
+\paragraph{H06. Valid Lipschitz bounds give a certified ball conditionally.}
+If each margin is $L_{cj}$-Lipschitz on the proposed ball in the stated norm, then $g_{cj}(x)\ge g_{cj}(a)-L_{cj}\|x-a\|$. For a strict anchor winner, choose $r<\min_{j:L_{cj}>0}g_{cj}(a)/L_{cj}$. Positive constant margins impose no restriction. The proof requires a justified upper bound, not an unchecked norm estimate. M05 recorded zero useful hits.
+
+\subsection{Bounds and Domain Structure}
+\paragraph{H07. IBP is incomplete.}
+On $t\in[-1,1]$, set $h_1=h_2=\operatorname{ReLU}(t+1)$. The true margin $1+h_1-h_2$ is always 1. IBP replaces the hidden values by the box $[0,2]^2$, giving a lower bound of $1+0-2=-1$. This invariant domain is missed because the box loses the equality constraint. A failed bound does not by itself demonstrate a changed decision.
+
+\paragraph{H08. Direct margins can preserve final-layer cancellation.}
+For logits $A,D$ on the same hidden box $B$, every $A(h)-D(h)$ is at least $\inf_B A-\sup_B D$. Taking the infimum proves the direct affine minimum cannot be worse than subtraction of separate extrema. For $A(h)=1+h$ and $D(h)=h$ on $[0,2]$, the direct lower bound is 1 and the separate result is $-1$. This can avoid final-layer dependency loss and cannot restore dependencies already lost inside the graph.
+
+\paragraph{H09. Universal CROWN superiority is unestablished.}
+Validity compares a bound with the true minimum and imposes no runtime ordering. For an affine margin on a box, interval minimization is already exact, so a valid relaxation cannot always be strictly tighter. Runtime and practical tightness depend on graph, region, backend and budget. The archived native and surrogate probes do not establish universal dominance.
+
+\paragraph{H10. PCA variance alone does not imply margin alignment.}
+For covariance $\operatorname{diag}(4,1)$ and margin $g(x)=1+x_2$, the leading PCA direction is $(1,0)$ and the margin normal is $(0,1)$. Their dot product is zero. The example rules out an implication from variance alone. Local measurements in the frozen CNN do not establish alignment throughout regions where the slopes can change.
+
+\paragraph{H11. Structured coverage did not improve in replay.}
+On a common query set, count admitted queries with valid certificates and divide by the query count. The observed numerators for the tested diagonal and structured paths are both zero, yielding zero measured difference. A smaller region might tighten the bound but admit fewer queries. No superiority at another budget follows from this run.
+
+\paragraph{H12. Fixed overlap reduces the number of free coordinates.}
+H01 fixes the first $W-s$ samples of each channel of the next window. The tail has $Cs=6\cdot64=384$ free coordinates, compared with $CW=6\cdot128=768$. A tail-only membership check is justified only if the prefix invariant is guaranteed separately.
+
+\subsection{Incremental Inference and Lifecycle}
+\paragraph{H13. Aligned features have a derivation and finite validation.}
+At position $j$ the final feature has nominal raw support $[4j-8,4j+11]$. Adding stride 64 shifts this to the old position $j+16$. For $j=2,\ldots,13$ both supports are interior and pooling phases coincide. The local operators see the same input samples and fixed normalization, yielding equal real features. The archive records bitwise checks on $5{,}034\cdot12\cdot64=3{,}866{,}112$ corresponding scalars. M03 still reconstructs and evaluates the position-sensitive head, and the recorded replay agrees in top-1. These checks do not prove universal bitwise equality of executable logits.
+
+\paragraph{H14. Incremental computation did not save latency.}
+The historical GAP sum can cancel shared contributions. Flatten assigns position-specific weights, so shifting one reused feature can change its contribution. Week 4 H14 tests runtime on the actual graph. Mean latency rises from 0.3420 to 1.9273\,ms, an increase of 1.5852\,ms or 463.47\%. Actual reuse rows add 1.5861\,ms. These measurements reject net savings for this implementation and workload.
+
+\paragraph{H15. A reuse hit does not authorize recentering.}
+For $F_1(x)=1-x$, $F_2(x)=0$, class 1 wins on the radius-0.6 interval around zero. The query 0.6 is a valid hit. Reusing the same radius around that query would admit 1.2, where class 2 wins. A certificate for the original interval cannot be transferred without an additional argument.
+
+\paragraph{H16. Fixed-anchor reuse preserves repeated decisions conditionally.}
+Keep the domain, certificate and executable identity fixed. Every admitted query passes conservative membership in the same $S$. H05 and the numerical premise apply independently to each query, so every admitted decision is preserved. This gives no guarantee that later queries will belong to $S$.
+
+\paragraph{H17. Horizon preservation is conditional on reachable-set coverage.}
+If $R_t$ contains every admissible input at step $t$ and the same class has valid positive margins over $\bigcup_{t=1}^H R_t$ under the numerical contract, H05 applies at every step. The theorem does not guarantee tight reachable sets or useful coverage. The finite-horizon control had zero useful replay hits.
+
+\paragraph{H18. Exact box membership costs $\Theta(m)$ coordinate accesses.}
+Checking both bounds for every coordinate costs $O(m)$. If an exact algorithm accepts an interior point after leaving a coordinate unread, change only that coordinate to a value outside its interval. The algorithm sees the same values and accepts, while the correct outcome is rejection. Thus every coordinate must be read on that interior input. The bound concerns coordinate accesses, not measured latency.
+
+\subsection{Coverage, Cost, and Numerical Validity}
+\paragraph{H19. Soundness does not imply useful coverage.}
+A sound policy states that admission implies correctness. A policy that admits no queries satisfies this implication and has zero coverage, disproving the proposed implication. On the measured regional paths, agreement through fallback likewise supplied zero observed useful hits.
+
+\paragraph{H20. Useful coverage does not imply net speedup.}
+With constant hit and miss costs $H,F$, expected cost is $rH+(1-r)F$. Even $r=1$ fails to beat a baseline $B$ if $H>B$. On matched M03 reuse rows the measured hit cost was 1.9280\,ms and M00 cost 0.3419\,ms. This shows high feature reuse with slower execution in the actual workload.
+
+\paragraph{H21. Superiority over M00 or LipCache is unestablished.}
+M00 had the lowest complete-path mean, 0.3420\,ms. Every other executed path had a higher mean. M14 did not execute a faithful LipCache comparison, so its matched latency is unavailable. The recorded comparison supplies no acceleration over M00 and does not resolve the external comparison.
+
+\paragraph{H22. A real proof does not automatically prove binary32 behavior.}
+Evaluate $g_1=(2^{24}+1)-2^{24}$ in that order and let $g_2=1/2$. Over the reals $g_1=1>g_2$. With binary32 round-to-nearest ties-to-even, $2^{24}+1$ is halfway between representable $2^{24}$ and $2^{24}+2$ and rounds to the former. The subtraction gives zero, reversing the order. A sound transfer requires an error enclosure for the actual numerical operations.
+
+\paragraph{H23. An event name alone is insufficient.}
+If two inputs share an event name but their frozen predictions differ, a name-only cache fails when one anchors the other. H03 gives a same-activity example. A name can select a candidate domain. Reuse still requires valid margins and conservative membership under matching identity.
+
+\paragraph{H24. No tested configuration satisfies the joint regime.}
+Check decision preservation, useful reuse, and positive net speedup on the same configuration. M03 supplied feature hits and finite decision agreement but failed the speed condition. The regional paths supplied no useful hits or speedup. The baseline paths do not supply useful reuse, and the unsupported entries have no execution evidence. None of the 15 executed configurations out of 17 registered meets the conjunction. Existence over other models or policies remains open.

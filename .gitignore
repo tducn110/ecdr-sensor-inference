@@ -29,6 +29,13 @@ latex/*.log
 latex/*.out
 latex/*.toc
 latex/*.pdf
+*.aux
+*.log
+*.out
+*.toc
+*.blg
+*.bbl
+*.synctex.gz
 
 .DS_Store
 .vercel

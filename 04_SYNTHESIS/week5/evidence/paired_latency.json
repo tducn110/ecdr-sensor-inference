@@ -1,0 +1,268 @@
+{
+  "scope": "Saved Week 4 operational query timer, paired by repetition and global row ID. Not a new runtime run.",
+  "timing_trace": "output/week4/week4_initial_20261103/timing_trace.csv",
+  "timing_trace_sha256": "c18479b9a1eecdbab9fefc5dc62a64a011fc2530347edc51ee46ea916864b302",
+  "results": {
+    "M00": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.34203177254436307,
+        "delta_mean_ms": 0.0,
+        "latency_reduction_pct": 0.0
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.34203177254436307,
+        "delta_mean_ms": 0.0,
+        "latency_reduction_pct": 0.0
+      }
+    },
+    "M01": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 1.6766077531499437,
+        "delta_mean_ms": 1.3345759806055806,
+        "latency_reduction_pct": -390.1906453537091
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 1.6766077531499437,
+        "delta_mean_ms": 1.3345759806055806,
+        "latency_reduction_pct": -390.1906453537091
+      }
+    },
+    "M02": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4787824434329441,
+        "delta_mean_ms": 0.13675067088858106,
+        "latency_reduction_pct": -39.98186188122154
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4787824434329441,
+        "delta_mean_ms": 0.13675067088858106,
+        "latency_reduction_pct": -39.98186188122154
+      }
+    },
+    "M03": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 1.9272502849792204,
+        "delta_mean_ms": 1.5852185124348572,
+        "latency_reduction_pct": -463.4711274459881
+      },
+      "reuse": {
+        "timed_observations": 15102,
+        "baseline_mean_ms": 0.3419354423255198,
+        "method_mean_ms": 1.9280353900145677,
+        "delta_mean_ms": 1.5860999476890478,
+        "latency_reduction_pct": -463.8594750230932
+      },
+      "nonreuse": {
+        "timed_observations": 57,
+        "baseline_mean_ms": 0.3675542105263158,
+        "method_mean_ms": 1.7192387719298245,
+        "delta_mean_ms": 1.3516845614035087,
+        "latency_reduction_pct": -367.75107526804726
+      }
+    },
+    "M04": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.49736140378652943,
+        "delta_mean_ms": 0.15532963124216637,
+        "latency_reduction_pct": -45.41380179001335
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.49736140378652943,
+        "delta_mean_ms": 0.15532963124216637,
+        "latency_reduction_pct": -45.41380179001335
+      }
+    },
+    "M05": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.5094213134111749,
+        "delta_mean_ms": 0.16738954086681185,
+        "latency_reduction_pct": -48.93976358441983
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.5094213134111749,
+        "delta_mean_ms": 0.16738954086681185,
+        "latency_reduction_pct": -48.93976358441983
+      }
+    },
+    "M06": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 7.127795006266904,
+        "delta_mean_ms": 6.785763233722541,
+        "latency_reduction_pct": -1983.9569824883438
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 7.127795006266904,
+        "delta_mean_ms": 6.785763233722541,
+        "latency_reduction_pct": -1983.9569824883438
+      }
+    },
+    "M07": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 6.564147311827957,
+        "delta_mean_ms": 6.222115539283594,
+        "latency_reduction_pct": -1819.1630248258757
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 6.564147311827957,
+        "delta_mean_ms": 6.222115539283594,
+        "latency_reduction_pct": -1819.1630248258757
+      }
+    },
+    "M08": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4626220753347846,
+        "delta_mean_ms": 0.12059030279042154,
+        "latency_reduction_pct": -35.25704699693665
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4626220753347846,
+        "delta_mean_ms": 0.12059030279042154,
+        "latency_reduction_pct": -35.25704699693665
+      }
+    },
+    "M09": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4481262299623986,
+        "delta_mean_ms": 0.10609445741803553,
+        "latency_reduction_pct": -31.01888945252143
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4481262299623986,
+        "delta_mean_ms": 0.10609445741803553,
+        "latency_reduction_pct": -31.01888945252143
+      }
+    },
+    "M10": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4500382789102183,
+        "delta_mean_ms": 0.10800650636585524,
+        "latency_reduction_pct": -31.577916157437187
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4500382789102183,
+        "delta_mean_ms": 0.10800650636585524,
+        "latency_reduction_pct": -31.577916157437187
+      }
+    },
+    "M11": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4479165637575038,
+        "delta_mean_ms": 0.10588479121314076,
+        "latency_reduction_pct": -30.957589239580667
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.4479165637575038,
+        "delta_mean_ms": 0.10588479121314076,
+        "latency_reduction_pct": -30.957589239580667
+      }
+    },
+    "M12": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.49659877630450555,
+        "delta_mean_ms": 0.15456700376014249,
+        "latency_reduction_pct": -45.19083201257113
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.49659877630450555,
+        "delta_mean_ms": 0.15456700376014249,
+        "latency_reduction_pct": -45.19083201257113
+      }
+    },
+    "M13": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 6.145804690283,
+        "delta_mean_ms": 5.803772917738637,
+        "latency_reduction_pct": -1696.8519838272807
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 6.145804690283,
+        "delta_mean_ms": 5.803772917738637,
+        "latency_reduction_pct": -1696.8519838272807
+      }
+    },
+    "M16": {
+      "all": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.46742785473975856,
+        "delta_mean_ms": 0.1253960821953955,
+        "latency_reduction_pct": -36.66211511947507
+      },
+      "reuse": null,
+      "nonreuse": {
+        "timed_observations": 15159,
+        "baseline_mean_ms": 0.34203177254436307,
+        "method_mean_ms": 0.46742785473975856,
+        "delta_mean_ms": 0.1253960821953955,
+        "latency_reduction_pct": -36.66211511947507
+      }
+    }
+  }
+}

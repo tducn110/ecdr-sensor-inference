@@ -1,11 +1,9 @@
 <!-- trustmebro -->
 # Plan: ECDR Week 4 — implementation, numerical validity and measured feasibility
 
-Ngày lập: 2026-11-03. Trạng thái: **SPECIFIED — implementation NOT_STARTED**.
-Đây là plan và bộ giao việc cho `agy`, theo yêu cầu của user. Những mô tả
-NOT_STARTED là initial snapshot; execution từ tiến trình khác đã xuất hiện trong
-workspace. Current readiness và rework findings ở
-[REVIEW.md](04_SYNTHESIS/week4/REVIEW.md); task statuses không tự đặt gate PASS.
+Ngày lập: 2026-11-03. Cập nhật nghiệm thu: 2026-11-11. Trạng thái: **EXECUTED & VERIFIED** (40/40 tasks hoàn tất; Cổng G2-Full $K=12$ đóng hoàn tất; 376 tests PASS).
+Tài liệu này ghi nhận kế hoạch ban đầu và lịch sử thực thi của Week 4.
+Kết quả nghiệm thu chính thức xem tại [Báo cáo nghiệm thu Week 4 Closeout](04_SYNTHESIS/week4/CLOSEOUT.md) và [Báo cáo tổng hợp IEEE](04_SYNTHESIS/02_Dossier_Scientific_Report.pdf).
 
 Nguồn chuẩn của Week 4 nằm trong [bộ điều phối](04_SYNTHESIS/week4/README.md).
 Plan này là entry point; không duy trì backlog thứ hai. Các phase là milestone

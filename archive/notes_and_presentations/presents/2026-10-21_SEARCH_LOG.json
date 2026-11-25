@@ -1,0 +1,101 @@
+{
+  "run_id": "review-kickoff-2026-10-21",
+  "search_date": "2026-10-21",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "purpose": "Literature-review kickoff for event-conditioned certified decision reuse; audit currently available skills and tools",
+  "coverage": "Bounded pilot via web search and opened primary sources, not a systematic database search",
+  "database_export_status": "NOT_EXPORTED",
+  "total_retrieved_records": null,
+  "deduplicated_records": null,
+  "screened_records": null,
+  "exclusion_count": null,
+  "limitations": [
+    "No direct ACM DL, IEEE Xplore, Scopus or Web of Science query/export",
+    "Domain-filtered web queries are not direct database searches",
+    "Search date does not guarantee index coverage through that date",
+    "Only scoped claims from P04 were extracted into a new paper note",
+    "Search results and metadata refresh do not prove novelty or exhaustive coverage"
+  ],
+  "skill_discovery": {
+    "leaderboard_opened": "https://skills.sh/",
+    "commands": [
+      {"command": "npx --yes skills find literature-review", "exit_code": 0},
+      {"command": "npx --yes skills find scientific-writing", "exit_code": 0},
+      {"command": "npx --yes skills find systematic-literature-review", "exit_code": 0}
+    ],
+    "opened_primary_skill_sources": [
+      "https://raw.githubusercontent.com/K-Dense-AI/scientific-agent-skills/main/skills/literature-review/SKILL.md",
+      "https://raw.githubusercontent.com/K-Dense-AI/scientific-agent-skills/main/skills/scientific-writing/SKILL.md"
+    ],
+    "source_snapshot": {
+      "repository": "https://github.com/K-Dense-AI/scientific-agent-skills",
+      "head_sha": "593377bb048752abb0152deab9fbb1083a6087df",
+      "stargazers_count_at_check": 53416,
+      "archived": false,
+      "literature_review_installs_displayed": "2.3K",
+      "scientific_writing_installs_displayed": "2.4K"
+    },
+    "status": "Evaluated as workflow references; no scientific skill installed or activated",
+    "known_fetch_limitation": "Two specific skills.sh detail pages failed in web open; CLI results and primary GitHub skill source were available"
+  },
+  "web_search_queries": [
+    {"scope": "method_and_skill_discovery", "query": "site.prisma-statement.org PRISMA 2020 review reporting guideline"},
+    {"scope": "method_and_skill_discovery", "query": "site.github.com scientific-skills literature-review scientific-writing K-Dense"},
+    {"scope": "method_and_skill_discovery", "query": "site.github.com TrustMeBro specific skill scientific research"},
+    {"scope": "topic_pilot", "query": "site.arxiv.org \"2608.13144\""},
+    {"scope": "topic_pilot", "query": "site.arxiv.org \"2106.12732\""},
+    {"scope": "topic_pilot", "query": "site.vldb.org NoScope optimizing neural network queries video scale 2017"},
+    {"scope": "topic_pilot", "query": "site.proceedings.mlr.press/v80/weng18a Towards Fast Computation Certified Robustness"},
+    {"scope": "topic_pilot", "query": "\"certified caching\" neural inference LipCache"},
+    {"scope": "topic_pilot", "query": "\"certified\" \"cache reuse\" neural network inference"},
+    {"scope": "topic_pilot", "query": "\"certified decision reuse\" neural"},
+    {"scope": "topic_pilot", "query": "\"LipCache\" \"2026\""},
+    {"scope": "topic_pilot", "query": "\"Online Verification of Deep Neural Networks under Domain Shift or Network Updates\" \"journal\""},
+    {"scope": "topic_pilot", "query": "\"Online Verification\" \"Tianhao Wei\" \"2023\" \"ICLR\""},
+    {"scope": "topic_pilot", "query": "site.proceedings.neurips.cc \"Efficient Neural Network Robustness Certification\" \"4939\""}
+  ],
+  "opened_topic_sources": [
+    {"paper_id": "P01", "url": "https://arxiv.org/abs/2608.13144", "status": "METADATA_CHECKED"},
+    {"paper_id": "P01", "url": "https://arxiv.org/html/2608.13144v1", "status": "TARGETED_SOURCE_INSPECTION_NOT_FULL_EXTRACTION"},
+    {"paper_id": "P03", "url": "https://arxiv.org/abs/2106.12732", "status": "METADATA_CHECKED_V1_2021_06_24_V2_2023_02_03"},
+    {"paper_id": "P03", "url": "https://arxiv.org/html/2106.12732v2", "status": "TARGETED_SOURCE_INSPECTION_NOT_FULL_EXTRACTION"},
+    {"paper_id": "P04", "url": "https://dawn.cs.stanford.edu/publications/noscope", "status": "BIBLIOGRAPHIC_METADATA_CHECKED"},
+    {"paper_id": "P04", "url": "https://www.vldb.org/pvldb/vol10/p1586-kang.pdf", "status": "SCOPED_CLAIMS_CHECKED", "note": "P04_NoScope.md", "locators": ["Figure 1 p.1586", "Section 3 p.1588", "Section 5 pp.1589-1590", "Section 6.2 p.1590", "Section 6.3 p.1591", "Section 7 p.1591", "Section 8 pp.1591-1592"]},
+    {"paper_id": "P08", "url": "https://proceedings.neurips.cc/paper/2018/hash/d04863f100d59b3eb688a11f95b0ae60-Abstract.html", "status": "METADATA_CHECKED"},
+    {"paper_id": "P08", "url": "https://proceedings.neurips.cc/paper_files/paper/2018/file/d04863f100d59b3eb688a11f95b0ae60-Paper.pdf", "status": "TARGETED_SOURCE_INSPECTION_NOT_FULL_EXTRACTION", "locator": "Section 3.1, footnote 2, PDF p.5"},
+    {"paper_id": "P10", "url": "https://proceedings.mlr.press/v80/weng18a.html", "status": "AUTHOR_METADATA_CONFLICT_RECORDED"},
+    {"paper_id": "P10", "url": "https://proceedings.mlr.press/v80/weng18a/weng18a.pdf", "status": "AUTHOR_METADATA_CONFLICT_RECORDED"}
+  ],
+  "method_sources": [
+    "https://www.prisma-statement.org/prisma-2020",
+    "https://www.prisma-statement.org/prisma-search"
+  ],
+  "corpus_inventory": {
+    "source": "../05_READING_PLAN.md",
+    "items": [
+      {"id": "P01", "name": "LipCache", "this_run": "TARGETED_REFRESH"},
+      {"id": "P02", "name": "STBP", "this_run": "NOT_REVIEWED"},
+      {"id": "P03", "name": "Wei and Liu online verification", "this_run": "TARGETED_REFRESH"},
+      {"id": "P04", "name": "NoScope", "this_run": "SOURCE_CHECKED_SCOPED_NOTE_CREATED"},
+      {"id": "P05", "name": "DeltaCNN", "this_run": "NOT_REVIEWED"},
+      {"id": "P06", "name": "Skip RNN", "this_run": "NOT_REVIEWED"},
+      {"id": "P07", "name": "FrameExit", "this_run": "NOT_REVIEWED"},
+      {"id": "P08", "name": "CROWN", "this_run": "TARGETED_INSPECTION"},
+      {"id": "P09", "name": "auto_LiRPA", "this_run": "NOT_REVIEWED"},
+      {"id": "P10", "name": "Fast-Lin/Fast-Lip", "this_run": "METADATA_CONFLICT"},
+      {"id": "P11", "name": "RecurJac", "this_run": "NOT_REVIEWED"},
+      {"id": "P12", "name": "DeepPoly", "this_run": "NOT_REVIEWED"},
+      {"id": "P13", "name": "IBP", "this_run": "NOT_REVIEWED"},
+      {"id": "P14", "name": "Fast-complete verifier", "this_run": "NOT_REVIEWED"},
+      {"id": "P15", "name": "CROWN-IBP", "this_run": "NOT_REVIEWED"},
+      {"id": "P16", "name": "Overlapping vs non-overlapping HAR windows", "this_run": "NOT_REVIEWED"},
+      {"id": "P17", "name": "Conformalized randomized smoothing", "this_run": "NOT_REVIEWED"},
+      {"id": "P18", "name": "Self-ensemble time-series certification", "this_run": "NOT_REVIEWED"},
+      {"id": "P19", "name": "Deep Learning for TSC review", "this_run": "NOT_REVIEWED"},
+      {"id": "P20", "name": "InceptionTime", "this_run": "NOT_REVIEWED"},
+      {"id": "P21", "name": "Randomized smoothing", "this_run": "NOT_REVIEWED"},
+      {"id": "P22", "name": "Calibration", "this_run": "NOT_REVIEWED"},
+      {"id": "P23", "name": "VNN-COMP 2025 summary", "this_run": "NOT_REVIEWED"}
+    ]
+  }
+}

@@ -35,7 +35,20 @@ latex/*.pdf
 *.toc
 *.blg
 *.bbl
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
 *.synctex.gz
+*.synctex(busy)
+
+# environments & secrets
+.env*
+**/.env*
+*.env
+
+# external coursework (10GB)
+homeworkFB/
 
 .DS_Store
 .vercel

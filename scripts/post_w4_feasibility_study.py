@@ -254,7 +254,7 @@ class ScaledTemporalModel(nn.Module):
                 nn.Linear(512, 12)
             ])
             self.net = nn.Sequential(*layers)
-        elif arch_type == "TemporalTransformer1D (12M params)":
+        elif "TemporalTransformer" in arch_type:
             # Linear projection + 4 Transformer encoder layers + head
             self.proj = nn.Linear(6, 128)
             encoder_layer = nn.TransformerEncoderLayer(
@@ -272,7 +272,7 @@ class ScaledTemporalModel(nn.Module):
             raise ValueError(f"Unknown arch: {arch_type}")
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if self.arch_type == "TemporalTransformer1D (12M params)":
+        if "TemporalTransformer" in self.arch_type:
             # x is [B, 6, 128] -> transpose to [B, 128, 6]
             x_t = x.transpose(1, 2)
             h = self.proj(x_t)
@@ -306,10 +306,10 @@ def run_break_even_scaling_analysis() -> Dict[str, Any]:
         "SmallCNN1D (Baseline)",
         "MediumCNN1D (1.2M params)",
         "TemporalResNet1D (4.8M params)",
-        "TemporalTransformer1D (12M params)",
+        "TemporalTransformer1D (5.0M params)",
     ]
 
-    # Baseline empirical overhead costs measured in Week 4:
+    # Baseline empirical overhead costs measured in Week 4 on SmallCNN1D:
     # T_v (fast verifier wrapper / check overhead) ~ 1.33 ms
     # T_inc (incremental partial recompute) ~ 1.93 ms
     T_v_ms = 1.3346
@@ -350,6 +350,17 @@ def run_break_even_scaling_analysis() -> Dict[str, Any]:
         speedup_inc = mean_fwd_ms / T_inc_ms
         speedup_verif = mean_fwd_ms / T_v_ms
 
+        # Break-even certified reuse threshold:
+        # Cost equation: T_ecdr = T_v + (1 - r)*T_fwd + r*T_hit
+        # Assuming T_hit ~ 0: T_ecdr = T_v + (1 - r)*T_fwd
+        # For net speedup (T_ecdr < T_fwd): r > r_min = T_v / T_fwd
+        r_min = float(T_v_ms / mean_fwd_ms) if mean_fwd_ms > 0 else 1.0
+
+        # At zero reuse (R = 0%, as empirically observed for M05-M13 at Stride 64):
+        # T_ecdr(r=0) = T_v + T_fwd
+        t_ecdr_r0 = T_v_ms + mean_fwd_ms
+        slowdown_r0_pct = float((t_ecdr_r0 - mean_fwd_ms) / mean_fwd_ms * 100.0)
+
         results.append({
             "architecture": arch_name,
             "parameters": params,
@@ -359,6 +370,9 @@ def run_break_even_scaling_analysis() -> Dict[str, Any]:
             "fwd_latency_p95_ms": p95_fwd_ms,
             "speedup_vs_incremental": speedup_inc,
             "speedup_vs_verifier_cache": speedup_verif,
+            "break_even_reuse_threshold_rmin": r_min,
+            "latency_at_zero_reuse_ms": t_ecdr_r0,
+            "slowdown_at_zero_reuse_pct": slowdown_r0_pct,
             "break_even_status": "PROFITABLE" if speedup_inc > 1.0 else "UNPROFITABLE"
         })
 
@@ -376,10 +390,17 @@ def run_break_even_scaling_analysis() -> Dict[str, Any]:
     macs_be_inc = float(np.interp(T_inc_ms, fwd_list, macs_list))
     params_be_inc = float(np.interp(T_inc_ms, fwd_list, params_list))
 
+    trans_result = results[-1]
+    trans_speedup_v = float(trans_result["speedup_vs_verifier_cache"])
+    trans_speedup_inc = float(trans_result["speedup_vs_incremental"])
+    trans_rmin = float(trans_result["break_even_reuse_threshold_rmin"])
+    trans_slowdown_r0 = float(trans_result["slowdown_at_zero_reuse_pct"])
+
     return {
         "overhead_benchmarks": {
             "verifier_check_overhead_T_v_ms": T_v_ms,
             "incremental_recompute_T_inc_ms": T_inc_ms,
+            "note_on_provenance": "T_v and T_inc are proxy baseline measurements from SmallCNN1D; native Transformer attention verifier remains to be measured."
         },
         "model_benchmarks": results,
         "break_even_crossover": {
@@ -387,21 +408,37 @@ def run_break_even_scaling_analysis() -> Dict[str, Any]:
                 "target_fwd_latency_ms": T_v_ms,
                 "break_even_macs": int(macs_be_v),
                 "break_even_params": int(params_be_v),
-                "speedup_at_transformer_12M": float(results[-1]["speedup_vs_verifier_cache"])
+                "speedup_at_transformer_12M": trans_speedup_v,
+                "speedup_at_transformer_5M": trans_speedup_v
             },
             "for_incremental_recompute": {
                 "target_fwd_latency_ms": T_inc_ms,
                 "break_even_macs": int(macs_be_inc),
                 "break_even_params": int(params_be_inc),
-                "speedup_at_transformer_12M": float(results[-1]["speedup_vs_incremental"])
+                "speedup_at_transformer_12M": trans_speedup_inc,
+                "speedup_at_transformer_5M": trans_speedup_inc
+            }
+        },
+        "methodological_audit": {
+            "result_a_computational_crossover": {
+                "status": "ESTABLISHED_UNDER_HYPOTHESIS",
+                "summary": f"Theoretical computational crossover occurs at ~{macs_be_v/1e6:.1f} MMACs (~{params_be_v/1e6:.1f}M params) assuming verifier cost T_v={T_v_ms} ms and 100% reuse.",
+                "speedup_ratio": trans_speedup_v
+            },
+            "result_b_actual_stream_speedup": {
+                "status": "NOT_ESTABLISHED",
+                "summary": f"On actual HAPT stream with R=0% (observed at Stride 64), ECDR incurs a {trans_slowdown_r0:.1f}% slowdown ({trans_result['latency_at_zero_reuse_ms']:.2f} ms vs {trans_result['fwd_latency_mean_ms']:.2f} ms). Net speedup strictly requires certified reuse rate R > {trans_rmin*100:.1f}%.",
+                "break_even_reuse_rate_rmin": trans_rmin,
+                "slowdown_at_r0_percent": trans_slowdown_r0
             }
         },
         "scientific_conclusion": (
-            f"The break-even crossover occurs at ~{macs_be_v/1e6:.1f} MMACs (~{params_be_v/1e6:.1f}M params) "
-            f"for verifier caching, and ~{macs_be_inc/1e6:.1f} MMACs (~{params_be_inc/1e6:.1f}M params) for incremental recomputation. "
-            f"At 12M parameters (Temporal Transformer), ECDR achieves a theoretical net speedup of "
-            f"{results[-1]['speedup_vs_verifier_cache']:.2f}x to {results[-1]['speedup_vs_incremental']:.2f}x. "
-            "This proves mathematically and empirically that ECDR is structurally suited for larger, high-FLOP backbones."
+            f"[Result A - Computational Crossover]: The theoretical crossover occurs at ~{macs_be_v/1e6:.1f} MMACs "
+            f"(~{params_be_v/1e6:.1f}M params) for verifier caching, and ~{macs_be_inc/1e6:.1f} MMACs (~{params_be_inc/1e6:.1f}M params) for incremental recomputation. "
+            f"At 5.0M parameters (TemporalTransformer1D), full inference latency is ~{trans_result['fwd_latency_mean_ms']:.2f} ms vs T_v={T_v_ms} ms, giving a theoretical upper-bound speedup of {trans_speedup_v:.2f}x. "
+            f"[Result B - Actual Stream Speedup]: NOT_ESTABLISHED. Because T_v was borrowed from SmallCNN1D and evaluated on random batch=1 inputs, actual streaming performance on HAPT depends on certified reuse rate R. "
+            f"If R=0% (as observed at Stride 64), total latency is T_v + T_full = {trans_result['latency_at_zero_reuse_ms']:.2f} ms, causing a {trans_slowdown_r0:.1f}% slowdown. "
+            f"Net speedup strictly requires certified reuse R > {trans_rmin*100:.1f}%."
         )
     }
 

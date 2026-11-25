@@ -62,7 +62,7 @@ Toàn bộ test suite của repository được phát hiện và thực thi tự
 
 ## 4. Kiểm toán Khả năng Vận hành của 17 Method Adapters M00–M16 (C03)
 
-Quy trình mini-replay trên tập validation split khẳng định 17 phương pháp đã được đăng ký và phân loại minh bạch trong [`ecdr/week4/methods.py`](file:///home/pro/Downloads/research/ecdr/week4/methods.py):
+Quy trình mini-replay trên tập validation split khẳng định 17 phương pháp đã được đăng ký và phân loại minh bạch trong [`ecdr/week4/methods.py`](../../../ecdr/week4/methods.py):
 
 | ID | Tên Phương Pháp | Phân Loại Semantics | Threat Model | Numerical Status | Kết Quả Mini-Replay |
 |---|---|---|---|---|---|
@@ -98,7 +98,7 @@ Hệ thống tuân thủ 100% nguyên tắc không rò rỉ thông tin tương l
 
 ## 6. Kiểm toán Khóa Mật mã Giao thức (Protocol Seal - C06)
 
-Giao thức thực nghiệm và cấu hình đã được niêm phong mật mã tại [`output/week4/week4_initial_20261103/protocol_seal.json`](file:///home/pro/Downloads/research/output/week4/week4_initial_20261103/protocol_seal.json):
+Giao thức thực nghiệm và cấu hình đã được niêm phong mật mã tại [`output/week4/week4_initial_20261103/protocol_seal.json`](../../../output/week4/week4_initial_20261103/protocol_seal.json):
 - **Master Seal Hash:** `5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b`
 - **Tình trạng:** Khóa 100% hợp lệ (`verify-seal` PASSED).
 - **Mức độ Tiết lộ Dữ liệu:** `KNOWN_TEST_EXPLORATORY` (minh bạch toàn bộ bối cảnh dữ liệu test đã tiếp xúc trong các giai đoạn trước).

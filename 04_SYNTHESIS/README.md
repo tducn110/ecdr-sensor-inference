@@ -1,53 +1,40 @@
-# TẦNG 4: TỔNG HỢP, NGHIỆM THU & BÀI BÁO KHOA HỌC (TIER 4 - SYNTHESIS & GATES)
+# TẦNG 4: TỔNG HỢP, NGHIỆM THU & BÁO CÁO NGHIÊN CỨU TỔNG HỢP (TIER 4 - SYNTHESIS & FINAL REPORT)
 
-> **Week 4 Execution & Closeout:** [Báo cáo nghiệm thu Week 4 Closeout](week4/CLOSEOUT.md),
-> [Report A (IEEE Format PDF)](week4/reports/Week_4_Implementation_and_Evaluation.pdf),
-> [Report B (Explained PDF)](week4/reports/Week_4_Explained.pdf),
-> [Hướng dẫn tái lập REPRODUCE.md](week4/reports/REPRODUCE.md),
-> [Bảng so sánh 17 phương pháp](output/week4/week4_initial_20261103/comparison_matrix.csv),
-> và [Kết luận 24 giả thuyết](output/week4/week4_initial_20261103/hypotheses.csv).
-> Toàn bộ 40 tasks (M0–M7) đã hoàn thành và `VERIFIED`. Kết quả thực nghiệm xác nhận tính trung thực khoa học:
-> cơ chế fail-closed đạt 100% agreement ($D_{\text{all}}=0$), nhưng nhiễu cảm biến liên tục khiến useful reuse $R=0$ trên streaming (falsify H19) và net CPU speedup không đạt (falsify H20, H24).
-
-> **Current authorities:** [Week 1 brief](../00_OVERVIEW/02_Week_1_Project_Brief.tex), [Week 2 HAPT/data foundations](../01_DATA/03_Week_2_Data_Foundations.tex), and [Week 2 CNN Model Foundations](../02_MODEL/01_ECDR_CNN_Model_Analysis_EN.tex). The combined report below retains historical Week 2/3 synthesis; its K=6/GAP choices, metrics and gate labels do not supersede the standalone authorities. Week 2 now has a [verified closeout](../output/week2_foundations_20261103/README.md); G2 quality remains HOLD, and formal certification/net savings remain open. Older acceptance checkboxes below describe a historical snapshot, not current gate acceptance.
-
-> **Mục tiêu của Tầng 4**:  
-> Đứng ở góc độ nhà nghiên cứu tổng thể và thẩm định viên (Auditor): Tổng hợp toàn bộ kết quả từ 3 tuần nghiên cứu, đối chiếu với tiêu chí nghiêm ngặt của từng Gate G0 đến G6 trong `GATES.md`, theo dõi tiến độ chuẩn **TrustMeBro** trong `TMB.md`, tham khảo các bài báo quốc tế tiền nhiệm (`papers/`), và chuẩn bị xuất bản bài báo khoa học chính thức.
+> **Tình trạng nghiệm thu toàn trình (G0–G6 & Post-Week 4):**
+> - **Cổng G0–G2:** Đã hoàn tất và đóng cổng toàn diện (`G2-Full Closure`, $K=12$, 0/18 blockers).
+> - **Cổng G3:** Đã nghiệm thu và kiểm chứng hình thức (`VERIFIED`, bộ xác minh CROWN 64-bit + làm tròn hướng ra ngoài $\tau_{\text{fp}}$).
+> - **Cổng G4–G5:** Đã nghiệm thu và đánh giá đầu-cuối trên 5.053 cửa sổ luồng (`VERIFIED`, xác nhận tính bảo toàn quyết định $100\%$, bác bỏ trung thực việc tái sử dụng trên lưới trượt thô $S=64$ do hiện tượng dịch pha biên độ lớn; mở rộng kiểm tra $S=1$ ghi nhận tỷ lệ đồng thuận liền kề đạt $97{,}97\%$ trên $322.856$ cặp nhưng hộp IBP vẫn cho $0/49.677$ ước lượng biên dương).
+> - **Cổng G6:** Đã xuất bản báo cáo nghiên cứu tổng hợp cuối kỳ (1 cột, tài liệu tham khảo chuẩn **IEEEtran**) tại [`ECDR_Final_Report_EN.pdf`](../ECDR_Final_Report_EN.pdf) và vượt qua toàn bộ bộ kiểm thử đơn vị hồi quy.
 
 ---
 
-## 1. Trình Tự Đọc Tuyến Tính (Step-by-Step Reading Path)
+## 1. Hệ Thống Báo Cáo Nghiên Cứu Tổng Hợp
 
-1. [`01_ECDR_Weeks_1_2_3_Theory_Full.pdf`](01_ECDR_Weeks_1_2_3_Theory_Full.pdf) ([Mã nguồn TeX](01_ECDR_Weeks_1_2_3_Theory_Full.tex)):  
-   - **Nói cái gì**: Toàn văn báo cáo lý thuyết 31 trang tích hợp đầy đủ: Tuần 1 (Project Brief) $\rightarrow$ Tuần 2 (Data Foundations) $\rightarrow$ Tuần 3 (Mathematical Foundations).  
-   - **Đọc xong hiểu được**: Bức tranh khoa học hoàn chỉnh và mối quan hệ hữu cơ giữa dữ liệu, mô hình và chứng nhận.
-2. Dossier scientific report source (`02_Dossier_Scientific_Report.tex`); PDF delivery is parent-owned and may be absent until rebuild:  
-   - **Nói cái gì**: Tập hồ sơ khoa học định dạng chuẩn LaTeX phục vụ xuất bản và lưu trữ.  
-   - **Đọc xong hiểu được**: Định dạng trình bày bài báo học thuật chuẩn mực.
-3. [`03_report.md`](03_report.md):  
-   - **Nói cái gì**: Báo cáo khoa học mới nhất của đề tài, tích hợp bảng hypothesis ledger (phân loại rõ ràng proved / conditional / false / open).  
-   - **Đọc xong hiểu được**: Hiện trạng khoa học thực chứng, tránh các khẳng định quá lời (over-claiming).
-4. [`04_GATES_EVIDENCE.md`](04_GATES_EVIDENCE.md):  
-   - **Nói cái gì**: Khung nghiệm thu 7 cổng kiểm soát bằng chứng (G0: RQ/Gap PASS, G1: Data Audit REVISED, G2: Backbone PASS, G3: Verifier PENDING, G4: Ablation PENDING, G5: End-to-End PENDING, G6: Paper PENDING).  
-   - **Đọc xong hiểu được**: Điều kiện cần và đủ về bằng chứng số liệu để vượt qua từng chặng nghiên cứu.
-5. [`05_TMB_BOARD.md`](05_TMB_BOARD.md):  
-   - **Nói cái gì**: Bảng quản lý tiến độ thực thi chuẩn **TrustMeBro** (`TMB.md`).  
-   - **Đọc xong hiểu được**: Các nhiệm vụ hành động tiếp theo theo thứ tự tuyến tính.
-6. [`06_ROADMAP_SUGGESTION.md`](06_ROADMAP_SUGGESTION.md):  
-   - **Nói cái gì**: Lộ trình kỹ thuật đề xuất ban đầu và phân tích đánh đổi.
-7. [`07_refs.bib`](07_refs.bib):  
-   - **Nói cái gì**: Danh mục tài liệu tham khảo BibTeX đầy đủ.
-8. Papers directory (historical source shelf; no current local directory link):  
-   - **Nói cái gì**: Thư mục chứa các bài báo khoa học quốc tế tham chiếu quan trọng:
-     - `LipCache_Xiang2026_arXiv2608.13144.pdf`: Bài báo nền tảng LipCache về caching dùng cận Lipschitz toàn cục.
-     - `STBP_Varghese2026_arXiv2606.09746.pdf`: Bài báo tham chiếu STBP về xử lý chuỗi thời gian.
-     - `2605.21724v1.pdf` & `got.pdf`: Các tài liệu nghiên cứu liên quan.
-9. Removed web presentation source: retained only in cleanup history; no current source path.  
-   - **Nói cái gì**: Ứng dụng slide trình chiếu tương tác hiện đại (Vite/React/Tailwind) dành cho báo cáo nghiệm thu và thuyết trình hội nghị.
+1. [`week5/reports/ECDR_Final_Report_EN.tex`](week5/reports/ECDR_Final_Report_EN.tex) $\rightarrow$ [Bản PDF Báo Cáo Tổng Hợp (51 trang)](../ECDR_Final_Report_EN.pdf):
+   - **Nội dung:** Báo cáo tổng hợp cuối kỳ 1 cột (tiếng Anh, trích dẫn chuẩn IEEE), trình bày đầy đủ Tuần 1–4, nền tảng toán học, hợp đồng số học `binary32` theo Higham, đối chứng 17 phương pháp (M00–M16), 24 giả thuyết (H01–H24), đóng cổng G2 toàn diện và kiểm chứng độ nhạy bước trượt / quy mô mô hình Post-Week 4.
+2. [`week4/reports/Week_4_Implementation_and_Evaluation.tex`](week4/reports/Week_4_Implementation_and_Evaluation.tex) $\rightarrow$ [Bản PDF Tuần 4 (5 trang)](week4/reports/Week_4_Implementation_and_Evaluation.pdf):
+   - **Nội dung:** Báo cáo kỹ thuật Tuần 4 trình bày triển khai, đánh giá 17 phương pháp trên 5.053 cửa sổ kiểm thử và phân tích cổng G0–G6.
+3. [`week4/reports/Week_4_Explained.tex`](week4/reports/Week_4_Explained.tex) $\rightarrow$ [Bản PDF Giải Thích Tuần 4 (6 trang)](week4/reports/Week_4_Explained.pdf):
+   - **Nội dung:** Tài liệu giải thích trực quan, ví dụ tính tay với mô hình $K=12$ và hướng dẫn cơ chế ECDR.
+4. [`week5/README.md`](week5/README.md):
+   - **Nội dung:** Hướng dẫn tái lập bằng chứng Tuần 5 (`stride_audit.py`, `reconcile_replay.py`, `paired_latency.py`) và biên dịch báo cáo tổng hợp.
 
 ---
 
-## 2. Tiêu Chí Nghiệm Thu Tầng 4 (Exit Criteria)
-- [x] Làm chủ 100% tài liệu và bằng chứng nghiên cứu của toàn bộ đề tài ECDR.
-- [x] Phân biệt rõ ràng giữa kết quả đã kiểm chứng (G0, G1, G2) và các mục tiêu còn mở (G3–G6).
-- [x] Sẵn sàng thực thi Gate G3 và viết bài báo khoa học hoàn chỉnh.
+## 2. Bằng Chứng Thực Nghiệm & Tài Liệu Nghiệm Thu Tuần 4
+
+- [Báo cáo nghiệm thu Week 4 Closeout](week4/CLOSEOUT.md)
+- [Hướng dẫn tái lập REPRODUCE.md](week4/reports/REPRODUCE.md)
+- [Bảng so sánh 17 phương pháp](../output/week4/week4_initial_20261103/tables/comparison_matrix.csv)
+- [Kết luận kiểm định 24 giả thuyết](../output/week4/week4_initial_20261103/tables/hypotheses.csv)
+- [Báo cáo nghiệm thu độc lập Tuần 4](../output/week4/week4_initial_20261103/independent_audit.json)
+- [Kết quả nghiên cứu mở rộng khả thi Post-Week 4](../output/post_week4/feasibility_results.json)
+- [Hồ sơ đóng cổng G2 Full Closure ($K=12$)](../output/post_week4/g2_full_closure.json)
+
+---
+
+## 3. Tài Liệu Lịch Sử Đã Lưu Trữ
+
+Các bản nháp cũ từ giai đoạn khởi động (tháng 10/2026) ghi nhận trạng thái sơ khai chưa qua thực nghiệm đã được chuyển vào lưu trữ an toàn tại:
+- [`../archive/synthesis_stale_oct22/`](../archive/synthesis_stale_oct22/): Lưu trữ các tệp Markdown cũ (`03_report*.md`, `04_GATES_EVIDENCE*.md`, `05_TMB_BOARD.md`, `06_ROADMAP_SUGGESTION.md`).
+- [`../archive/README.md`](../archive/README.md): Bản đồ chỉ mục lưu trữ toàn bộ dự án.

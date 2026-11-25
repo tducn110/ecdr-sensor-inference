@@ -1,22 +1,21 @@
 # The Illusion of Low-Hanging Fruit in Edge AI: Why Caching Invariant Decisions on Wearables is Harder Than It Looks
 
-*An End-to-End Investigation into Event-Conditioned Certified Decision Reuse (ECDR), From Biomechanical Phase Shifts to Systems Scaling.*
+*An End-to-End Investigation into Event-Conditioned Certified Decision Reuse (ECDR), From Biomechanical Displacement Gaps to Systems Scaling Limits.*
 
 **Author:** Nguyễn Tâm Đức  
-**Academic Advisor:** Trần Thế Vũ  
-**Coursework:** Introduction to Artificial Intelligence  
-**Date:** November 2026  
-**Artifacts & Code:** [GitHub Repository](https://github.com/tducn110/ecdr-sensor-inference) $\cdot$ [IEEE Technical Monograph](04_SYNTHESIS/week5/reports/ECDR_Week5_Comprehensive_Research_Paper_EN.tex) $\cdot$ [Compiled PDF Report](ECDR_Week5_FINAL_EN.pdf)
+**Academic Supervisor:** Trần Thế Vũ  
+**Research Track:** Introduction to Artificial Intelligence  
+**Artifacts & Code:** [GitHub Repository](https://github.com/tducn110/ecdr-sensor-inference) $\cdot$ [Final Research Report (LaTeX)](04_SYNTHESIS/week5/reports/ECDR_Final_Report_EN.tex) $\cdot$ [Compiled PDF](ECDR_Final_Report_EN.pdf)
 
 ---
 
 ## The $50\%$ Redundancy Paradox
 
-Imagine your smartwatch tracking your daily activities. Every 1.28 seconds, an onboard Inertial Measurement Unit (IMU) collects a window of acceleration and angular velocity readings spanning the last 2.56 seconds (128 samples at 50 Hz). 
+Imagine your smartwatch tracking your daily activities. Every 1.28 seconds, an onboard Inertial Measurement Unit (IMU) collects a window of tri-axial acceleration and angular velocity readings spanning the last 2.56 seconds (128 samples at 50 Hz).
 
-To ensure continuous, responsive tracking, standard wearable protocols slide this window forward by 64 samples (1.28 seconds). This means that **exactly $50\%$ of the raw data points in the newly arriving window are mathematically identical to the previous window**.
+To provide responsive tracking, standard wearable protocols slide this window forward by 64 samples (1.28 seconds). This means that **exactly $50\%$ of the raw data points in the newly arriving window are identical to the previous window**.
 
-Under standard deployment runtimes, what does the onboard microprocessor do? **It evaluates a complete deep neural network forward pass from scratch, for every single incoming window.**
+Yet under standard inference runtimes, what does the microprocessor do? **It executes a complete deep neural network forward pass from scratch on every single window.**
 
 ```
 Window t-1: [========== Past 64 Samples ==========][========== Shared 64 Samples ==========]
@@ -26,225 +25,105 @@ Window t-1: [========== Past 64 Samples ==========][========== Shared 64 Samples
 Window t:                                           [========== Shared 64 Samples ==========][========== New 64 Samples ==========]
 ```
 
-On battery-constrained edge microcontrollers, computing millions of multiply-accumulate (MAC) operations on inputs that are half-redundant is an egregious waste of thermal and battery budgets.
+At first glance, the optimization looks trivial: **why not reuse the previous prediction whenever consecutive windows overlap heavily?**
 
-When I began this research project for my *Introduction to Artificial Intelligence* course, the solution seemed tantalizingly obvious: **Why not just cache the decision?** If the incoming window is largely the same, can't we simply reuse the previous classification and put the CPU to sleep?
-
-It turns out that this seemingly straightforward optimization unravels into a fascinating labyrinth of deep learning theory, formal verification, non-linear biomechanics, and CPU cache micro-architectures. Here is the full story of what we built, where our assumptions were shattered, and where certified reuse actually works.
+When we pushed past intuition into formal verification, IEEE-754 floating-point numerics, raw IMU stream reconstruction, and CPU latency profiling across 17 inference methods, that seemingly obvious optimization revealed three non-trivial barriers separating theoretical promise from wall-clock edge acceleration.
 
 ---
 
-## 1. The Heuristic Trap: Why "Close Enough" Can Be Fatal
+## 1. The Overlap Fallacy: Why Similarity Heuristics Fail
 
-In real-world machine learning systems, engineers frequently rely on heuristic semantic caching: if an incoming input $x_t$ is "close" to a cached anchor $x_0$ according to an uncalibrated distance metric (like cosine similarity or Euclidean distance), the system reuses the cached prediction.
+Two sliding windows sharing half their samples do not guarantee:
+1. Small coordinate-space distance ($L_2$ or $L_\infty$),
+2. Identical ground-truth labels, or
+3. Identical neural network predictions.
 
-In an introductory AI course, this sounds like a clever hack. In safety-critical wearable applications—such as elderly fall detection, post-stroke tremor analysis, or cardiac arrest alerts—**heuristic caching is an accident waiting to happen**.
+Consider a simple linear ramp $u(t) = a t$: shifted consecutive windows share 64 exact samples, yet comparing coordinate index $t$ against $t$ produces a uniform offset $a \cdot S$ across the entire tensor. Worse, in our reconstructed Human Activity and Postural Transitions (HAPT) test stream, consecutive windows `682` and `683` share the exact same ground-truth activity (*Stand-to-Lie*, class 11), yet the frozen neural classifier flips its prediction from index `10` to index `8`.
 
-Deep neural networks with piecewise-linear activations (like ReLU and MaxPool) partition high-dimensional space into an astronomical number of linear polyhedra. The decision boundary between *Walking* and *Falling*, or between *Sitting* and *Collapsing*, can run arbitrarily close to normal data points. 
-
-An unverified heuristic distance threshold offers **zero guarantees**: an imperceptible perturbation can easily push the input across a decision boundary, causing the model to flip its decision silently while the cache blindly outputs the stale label.
-
----
-
-## 2. Enter ECDR: Mathematics as a Shield
-
-To eliminate heuristic guesswork, we formulated **Event-Conditioned Certified Decision Reuse (ECDR)**. Instead of asking whether $x_t$ is *similar* to $x_0$, ECDR asks a strict formal verification question:
-
-> **Can we evaluate a mathematical certificate over a declared perturbation region $\mathcal{S}$ around an evaluated anchor $x_0$ such that, for any query $x_t \in \mathcal{S}$, the top-1 classification of the neural network is provably guaranteed to remain identical to $x_0$?**
-
-### The 11-Margin Contrast Formulation
-In a 12-class problem, a classifier chooses class $c$ if its logit $z_c(x)$ is strictly greater than all other 11 logits $z_j(x)$. We formulate verification directly over the vector of **pairwise contrast margins**:
-
-$$m_{c,j}(x) \triangleq z_c(x) - z_j(x), \quad \forall j \neq c$$
-
-If a formal verifier computes guaranteed lower bounds $\underline{m}_{c,j}(\mathcal{S})$ satisfying:
-
-$$\min_{j \neq c} \underline{m}_{c,j}(\mathcal{S}) > 0$$
-
-then for **any** query $x_t \in \mathcal{S}$, the top-1 decision is mathematically guaranteed to be invariant ($c^*(x_t) = c^*(x_0)$).
-
-### The Four-Barrier Fail-Closed Gate
-To prevent floating-point rounding errors from creating false positive certificates in $\mathbb{F}_{32}$ arithmetic, we enforce an outward safety margin $\tau_{\text{fp}} = 10^{-5}$ and route every query through a four-barrier arbitration pipeline:
-
-```
-Incoming Query (x_t)
-       │
-       ▼
-┌──────────────┐   Fail
-│  Barrier 1   │ ────────> [ Fail-Closed Fallback ]
-│Identity Match│                │
-└──────────────┘                │ Full Forward Pass
-       │ Pass                   │ Establish New Anchor
-       ▼                        ▼
-┌──────────────┐   Fail         │
-│  Barrier 2   │ ───────────────┤
-│ Domain Check │                │
-└──────────────┘                │
-       │ Pass                   │
-       ▼                        │
-┌──────────────┐   Fail         │
-│  Barrier 3   │ ───────────────┤
-│Soundness Pass│                │
-└──────────────┘                │
-       │ Pass                   │
-       ▼                        │
-┌──────────────┐   Fail         │
-│  Barrier 4   │ ───────────────┘
-│Margin > tau  │
-└──────────────┘
-       │ Pass
-       ▼
-[ CERTIFIED REUSE ] ──> Skip Backbone Forward Pass!
-```
-
-If any barrier fails, the runtime safely falls back to evaluating the full neural backbone. Across our entire test stream of **5,053 queries**, this fail-closed architecture achieved an exact **$100\%$ decision agreement rate ($D_{\text{all}} = 0$)**, completely eliminating false reuses.
+Unverified heuristic caching (like thresholding $\ell_2$ distance in `M04` without margin proofs) provides **zero invariance guarantees**: a tiny nudge near a ReLU polytope boundary can silently flip a critical medical or activity alert while the cache returns a stale label.
 
 ---
 
-## 3. The Engineering Confession: Why SmallCNN1D?
+## 2. ECDR: Five Layers Between Real Math and Safe Runtime
 
-Selecting the reference neural network was one of the most educational chapters of this project.
+To avoid heuristic guesswork, **Event-Conditioned Certified Decision Reuse (ECDR)** asks a strict question around a frozen reference classifier $f_\theta$ (`SmallCNN1D`, $K=12$ classes):
 
-### The Inductive Bias of 1D Convolutions
-We chose 1D Temporal Convolutions (Conv1D) over fully-connected networks because human physical movement exhibits two fundamental physical properties:
-1. **Local Temporal Coherence:** Muscle activations and physical impacts last between $0.10\text{ s}$ and $0.40\text{ s}$. Local convolution kernels ($k=3, 5$) capture these temporal dynamics across multi-axial channels.
-2. **Translational Equivariance:** A characteristic motion signature (such as a heel strike) can happen at sample index 10 or sample index 70. Weight sharing detects this primitive anywhere without redundant parameter learning.
+> **Given an already-evaluated anchor window $a$ with class $c = \arg\max_k f_k(a)$ and a declared input region $\mathcal{S}$, can a sound verifier prove that all 11 competing pairwise logit margins $g_{c,j}(x) = f_c(x) - f_j(x)$ remain strictly positive for every $x \in \mathcal{S}$?**
 
-### The Global Average Pooling (GAP) Disaster
-Early in the project, our mathematical formulations relied on an idealized network (`ECDRConv1DNet`) ending in Global Average Pooling (GAP):
+Implementing this soundly required separating five distinct assurance layers in [`ecdr/week4/`](ecdr/week4/):
 
-$$g_c = \frac{1}{T} \sum_{t=1}^T F_{c,t}$$
-
-On paper, GAP is mathematically gorgeous: under periodic boundary conditions, shifting a sequence in time leaves the global average unchanged, giving closed-form algebraic bounds on logit drift.
-
-**In reality, GAP failed catastrophically on the 12-class HAPT dataset.**
-
-Why? Because averaging over time is strictly **permutation-invariant**: it treats a sequence played forward identically to a sequence played in reverse! 
-
-In the HAPT dataset, half of the 12 classes are directional postural transitions:
-- *Stand-to-Sit* vs. *Sit-to-Stand*
-- *Sit-to-Lie* vs. *Lie-to-Sit*
-- *Stand-to-Lie* vs. *Lie-to-Stand*
-
-These opposite transitions have nearly identical mean energies and frequency spectra. They differ solely in the **temporal directionality** of the movement. A GAP-based model is completely blind to this distinction.
-
-To recognize postural transitions, we had to adopt a position-sensitive architecture: `SmallCNN1D`, which preserves temporal ordering by flattening the final feature maps into a dense classification head (`Flatten(2048) -> Linear(128) -> Linear(12)`).
-
-### Why Not RNNs or Transformers?
-We deliberately avoided recurrent networks (LSTM/GRU) and Transformers for the primary baseline:
-1. **Formal Verification Tractability:** Feedforward piecewise-linear networks (Conv1D + ReLU + MaxPool) map directly into linear relaxation frameworks (`auto_LiRPA`). In contrast, unrolling an LSTM across 128 time steps with non-linear $\tanh$ and sigmoid activations causes severe interval wrapping explosion, making verified bounds uselessly loose. Similarly, self-attention in Transformers involves non-linear Softmax operations that are computationally prohibitive to bound in real-time on edge devices.
-2. **A Formidable Edge Baseline:** `SmallCNN1D` has only 283,692 parameters ($1.135\text{ MB}$), requires $1.17\text{ MMACs}$, and executes in just **$0.1404\text{ ms}$** on a single CPU core. It fits entirely inside the CPU's L2/L3 cache. A reuse mechanism that only outperforms bloated models is an academic toy; beating a $0.14\text{ ms}$ baseline is a real engineering test.
+1. **Real-Arithmetic Theorem:** Strict positivity of all 11 contrast margin lower bounds implies unique class dominance across $\mathcal{S}$. Direct-margin subtraction ($W_c - W_j$ fused into the output head) avoids independent logit extrema cancellation loss—boosting validation margin estimates by $+0.5623$ logit units at $\epsilon = 10^{-5}$.
+2. **Verifier Graph Soundness:** Implementing actual-graph Interval Bound Propagation (IBP), 50-step power-iteration $\ell_2$ spectral Lipschitz bounds ($L_{\text{backbone}} = 423.72$), and an `auto_LiRPA` 2D-surrogate `CROWN` adapter (`SingletonHeightCNN`, built because native 1D `MaxPool1d` failed conversion in `auto_LiRPA 0.8.0`).
+3. **The IEEE-754 Binary32 Numerical Bridge ([`numerics.py`](ecdr/week4/numerics.py)):** Real proofs fail silently on single-precision CPUs—for example, $(2^{24}+1)-2^{24} = 1 > 0.5$ over $\mathbb{R}$, but evaluates to $0 < 0.5$ in `binary32` round-to-nearest ties-to-even! We enclosed all inner-product reductions ($n \in \{30, 96, 128, 192, 2048\}$) using Higham's backward error factor $\gamma_n = \frac{nu}{1-nu}$ and outward directed rounding (`nextafter`), validated against exact rational arithmetic (`fractions.Fraction`).
+4. **Conservative Membership ([`domains.py`](ecdr/week4/domains.py)):** Checking axis-aligned diagonal boxes ($768$-D), fixed-overlap wave domains ($384$ fixed prefix + $384$ free tail), and $K=8$ PCA affine tail zones ($\text{tail} = c + B \diag(a) u + \diag(e) v$, fit on $9,944$ training pairs), requiring $\Theta(m)$ exact coordinate accesses.
+5. **Cryptographic Lifecycle & Fail-Closed Gate ([`certificates.py`](ecdr/week4/certificates.py), [`runtime.py`](ecdr/week4/runtime.py)):** Every certificate binds checkpoint SHA-256, preprocessing hash, recording ID, `anchor_state_hash`, and step horizon without re-centering on hits. If *any* invariant fails, the runtime defaults immediately to the frozen backbone—guaranteeing **$100\%$ decision agreement ($0/5,053$ errors)**.
 
 ---
 
-## 4. When Theory Hits Physical Reality: The Two Brutal Bottlenecks
+## 3. Why `SmallCNN1D`? Architecture Design Trade-offs
 
-Equipped with formal proofs, the four-barrier gate, and our frozen `SmallCNN1D` baseline, we executed a complete sequential stream replay across all 19 HAPT test recordings ($5,053$ sequential queries, $5,034$ adjacent pairs).
+Selecting the reference model (`SmallCNN1D`, $283,692$ parameters, $1,172,992$ Conv/Linear MACs, Seed 43 checkpoint SHA-256 `8ffc5dd8...`) reflected clear verification and task requirements:
+- **1D Convolutions & Verification Tractability:** Conv1D + BatchNorm + ReLU + MaxPool forms a shallow piecewise-linear feedforward graph suitable for IBP and linear relaxations—unlike 128-step unrolled RNNs (whose $\tanh$/sigmoid gates trigger severe interval wrapping explosion) or Transformers (whose $QK^\top$ Softmax attention lacks real-time CPU bounding at batch size 1).
+- **Position-Sensitive `Flatten(2048)` Head vs.\ GAP:** Half of the 12 HAPT classes are **directional postural transitions** (*Stand-to-Sit* vs.\ *Sit-to-Stand*, *Sit-to-Lie* vs.\ *Lie-to-Sit*, *Stand-to-Lie* vs.\ *Lie-to-Stand*). Because a terminal Global Average Pooling (GAP) layer averages uniformly across time, it discards feature ordering at the final aggregation step. Retaining `Flatten(2048) -> Linear(128) -> Linear(12)` preserves position sensitivity (note: while motivated directly by transition directionality, we did not run a matched 12-class GAP ablation on the same split/seeds, keeping it framed as an architectural design rationale).
+- **A Fast Baseline:** Fitting entirely in CPU L2/L3 cache (`1,136,072` bytes), `SmallCNN1D` runs at **$0.3420\text{ ms}$** mean query latency ($2,923.7\text{ QPS}$) end-to-end—an uncompromising baseline.
 
-We evaluated 17 distinct configurations (M00 to M16) across 24 formal hypotheses. The results delivered two profound engineering wake-up calls.
+---
 
-### Bottleneck 1: The Biomechanical Phase-Shift Orthogonality ($R_{\text{cert}} = 0\%$)
-Every single input-space regional verifier (Global Lipschitz, Interval Bound Propagation, CROWN linear relaxations, Wave-domain bounds, PCA subspace boxes) recorded **exactly zero reuse hits ($R_{\text{cert}} = 0\%$)** on the test stream.
+## 4. Two Empirical Reality Checks Across 5,053 Test Queries
 
-Why did mathematical certification completely fail to admit even a single consecutive window?
+When we evaluated 15 executable configurations out of 17 registered methods (`M00`--`M16`) on $5,053$ chronological test windows across 19 recordings ($15,159$ paired timing observations per method), **zero methods achieved useful streaming acceleration (`H24 = NOT_ESTABLISHED`)**:
 
-We audited the physical displacement between $1,000$ consecutive streaming pairs:
+### Reality Check 1: Displacement Outstrips Certifiable Radii by $>1,500\times$
+All regional verifiers (`M05`--`M13`) recorded **$0$ certified hits ($0\%$ reuse)**, raising latency to $0.4479\text{--}7.1278\text{ ms}$. Pre-test validation across 20 proposals found 0 positive members, closing the formal gate (`formal_reuse_enabled = false`).
 
-| Metric | Measured Value |
+Why? Auditing $1,000$ consecutive stride-64 window pairs showed:
+
+| Metric | Median Measured Value |
 |---|---|
-| Median Streaming Sensor Displacement ($\|\Delta z\|_2$) | **$25.492$** |
-| Model Margin $\min_{j \neq c} m_{c,j}(x_0)$ | $6.098$ |
-| Maximum Certifiable Radius $r_{\max}^{(2)}$ (LiRPA / IBP) | **$0.0149$** |
-| **Displacement Gap Ratio ($\|\Delta z\|_2 / r_{\max}$)** | **$1,562.7\times$** |
+| Normalized Sensor Displacement ($\|\Delta z\|_2$) | **$25.492$** ($p10=1.148,\; p90=45.675$) |
+| Normalized Max Coordinate Shift ($\|\Delta z\|_\infty$) | **$3.845$** (mean $3.966$) |
+| Model Separation Margin $\min_{j \neq c} g_{c,j}(a)$ | $6.098$ |
+| Max Certified $\ell_2$ Radius $r_{\max}^{(2)}$ (Lipschitz $L=423.72$) | **$0.0149$** (max $0.0401$) |
+| **Displacement Gap Ratio ($\|\Delta z\|_2 / r_{\max}^{(2)}$)** | **$1,562.7\times$** |
 
-The root cause was not mathematical looseness—it was **human biomechanics**.
+Sliding by $1.28\text{ s}$ shifts oscillatory human motion signals across an entire gait cycle. In normalized feature space, that phase translation moves inputs over $1,500\times$ farther than the network's Lipschitz margin ball can prove invariant.
 
-At $50\text{ Hz}$, advancing the window by $S = 64$ samples represents a time jump of $\Delta t = 1.28\text{ seconds}$. This duration is almost exactly equal to a human walking cadence ($1.0\text{ to }1.3\text{ seconds}$ per gait cycle).
+### Reality Check 2: The Incremental CPU Slicing Paradox (`M03`)
+What about exact intermediate computation reuse (`M03`), inspired by shift-invariant streaming CNNs?
 
-Advancing the window shifts an oscillatory sensor wave by an entire period. In 768-dimensional input space, sliding a periodic waveform is **not small additive noise**: it is a **macroscopic phase shift** that rotates the input vector onto an orthogonal trajectory!
+Because padded convolutions satisfy an interior receptive-field shift identity ($j=2\dots 13$ across `Conv3`), `ActualK12IncrementalEngine` reuses 12 `Conv3` columns while enforcing slice width $L_{\text{out}} \ge 2$ (avoiding an $8.94 \times 10^{-8}$ BLAS `sgemv` reduction mismatch). Across all $5,034$ adjacent pairs ($3,866,112$ scalars), `M03` achieved **$0.0$ logit error ($100\%$ decision equivalence)** and reduced total MACs by **$32.15\%$** ($795,904$ vs.\ $1,172,992$; Conv MACs $-41.47\%$).
 
-The physical displacement ($25.49$) was **$1,562\times$ larger** than the largest radius the neural network's margin could certify ($0.0149$). The inputs were simply nowhere near the certifiable neighborhood.
+**Yet `M03` was $5.64\times$ SLOWER than the full baseline:**
+- `M00` Full Core: **$0.3420\text{ ms}$** ($2,923.7\text{ QPS}$)
+- `M03` Incremental Reuse (all queries): **$1.9273\text{ ms}$** ($+463.47\%$; reuse subset $+463.86\%$)
 
-### Bottleneck 2: The CPU Memory Slicing Paradox ($0.1775\times$ Speedup)
-If input certification failed, what about incremental feature computation (M03)?
-
-At $S=64$, the right 64 samples of window $t-1$ match the left 64 samples of window $t$. The first three convolutions maintain shift-aligned receptive fields that produce exactly 12 mathematically identical feature columns.
-
-We implemented M03 to cache these 12 columns, compute convolutions only on the newly arriving 64 samples, concatenate the feature maps, and evaluate the classification head.
-
-The result? **M03 achieved $100\%$ bit-exact feature preservation across all $5,034$ adjacent test pairs.**
-
-**Yet it was $5.63\times$ SLOWER than running the full baseline forward pass!**
-- Monolithic Baseline (M00): **$0.3420\text{ ms}$** (2,923 queries/sec)
-- Incremental Caching (M03): **$1.9273\text{ ms}$** (518 queries/sec)
-- Net Speedup: **$-463.47\%$** (a $0.1775\times$ speed ratio)
-
-How could doing fewer floating-point operations make code $5.6\times$ slower?
-1. **CPU Cache Locality:** `SmallCNN1D` is tiny ($1.135\text{ MB}$). A monolithic forward pass executes in a tight C++ loop with SIMD vectorization, reading weights that reside permanently in the CPU's L2/L3 cache.
-2. **Framework Memory Allocation Overhead:** At batch size 1, dynamically allocating buffers, indexing non-contiguous memory, and calling `torch.cat` in Python incurs microseconds of runtime dispatch overhead that dwarf the few microseconds saved in arithmetic.
-3. **The Dense Head Parameter Concentration:** The classification head `Linear(2048, 128)` contains **$92.45\%$ of all network parameters** ($262,272$ weights). Because it is fully connected, its outputs depend on all 2,048 feature entries. Reusing convolutional features only bypassed $7.55\%$ of the model's parameters while incurring huge tensor stitching penalties!
+Why? First, the dense `Linear(2048, 128)` head holds **$92.45\%$ of model parameters** and remains position-sensitive, so it must be evaluated on every query. Second, Python tensor slicing, indexing, and allocation at batch size 1 cost nearly $2\text{ ms}$ compared to a single cache-resident C++ MKL-DNN kernel. Even an in-place pre-allocated `Conv1` ring buffer only shaved Python overhead by $4.06\%$ ($0.03421 \to 0.03282\text{ ms}$), remaining $2.66\times$ slower than direct PyTorch C++ `conv1d` ($0.01233\text{ ms}$).
 
 ---
 
-## 5. The Breakthroughs: Where Certified Reuse Actually Wins
+## 5. Stride Sensitivity & Model Scaling: Honest Boundaries
 
-Is certified decision reuse dead? Far from it. Once we understood the physical and architectural root causes, we tested two targeted scenarios that revealed where ECDR thrives.
+We ran two diagnostic studies to map whether finer strides or heavier models change the picture ([`stride_audit.py`](04_SYNTHESIS/week5/evidence/stride_audit.py), [`post_w4_feasibility_study.py`](scripts/post_w4_feasibility_study.py)):
 
-### Breakthrough 1: High-Density Sensor Streams ($S=1$ Stride)
-The phase-shift bottleneck was a direct consequence of the coarse $1.28\text{ s}$ stride ($S=64$). In high-density applications—such as continuous robotic reflexes, real-time tremor mitigation, or high-frequency telemetry running at 50 Hz—windows advance with a stride of $S=1$ ($20\text{ ms}$).
+1. **Shorter Strides ($S=1$) Boost Empirical Agreement, Not IBP Certifiability:**
+   Testing strides $S \in \{1, 4, 16, 32, 64\}$ across all 19 test recordings (`322,856` adjacent pairs at $S=1$), neighboring top-1 agreement climbed from $79.10\%$ ($S=64$) to **$97.97\%$ ($S=1$)** and median $\ell_2$ distance dropped to $6.342$. However, **zero** pairs fell inside $\ell_\infty$ boxes of radius $10^{-6}$, $10^{-4}$, or $10^{-2}$ at any stride! At radius $0.1$, $49,677$ stride-1 pairs entered the box ($15.39\%$), **$7$ pairs already disagreed** on top-1 class, and direct `float64` IBP yielded **`0 / 49,677` positive 11-margin estimates** (largest minimum margin: $-1544.86$). High temporal label agreement does not imply IBP box certifiability.
 
-At $S=1$, adjacent windows differ by only a single new sample. The sensor displacement collapses:
-
-$$\|\Delta z\|_{S=1} \ll r_{\max} \approx 0.0149$$
-
-Under this high-density operating regime:
-- Certified decision reuse surged from $0\%$ to **$87.31\%$ of all queries**!
-- Decision agreement remained strictly **$100\%$ ($D_{\text{all}} = 0$)**.
-- In high-frequency edge streaming, ECDR mathematically eliminates **$87.31\%$ of all forward inference passes** without risking safety.
-
-### Breakthrough 2: The Model Capacity Scaling Crossover
-Why did verification checks fail to save time on `SmallCNN1D`? Because the model was *too fast* ($0.14\text{ ms}$). Running a verification check ($T_v \approx 1.33\text{ ms}$) before a $0.14\text{ ms}$ forward pass is economically irrational.
-
-However, verification overhead ($T_v$) and incremental dispatch overhead ($T_{\text{inc}}$) are relatively fixed costs at batch size 1. As neural networks grow in depth and capacity, forward pass latency ($T_{\text{fwd}}$) scales dramatically:
-
-| Architecture | Parameters | MACs | Mean Forward Latency | Break-Even Feasibility |
-|---|---|---|---|---|
-| `SmallCNN1D` (Baseline) | $283\text{K}$ | $1.17\text{M}$ | $0.1404\text{ ms}$ | Unprofitable ($0.105\times$) |
-| `MediumCNN1D` | $2.23\text{M}$ | $8.50\text{M}$ | $0.3769\text{ ms}$ | Unprofitable ($0.282\times$) |
-| `TemporalResNet1D` | $2.70\text{M}$ | $38.20\text{M}$ | $1.8677\text{ ms}$ | Marginal ($r_{\min} = 71.5\%$) |
-| `TemporalTransformer1D` | $4.99\text{M}$ | $115.00\text{M}$ | $3.3823\text{ ms}$ | **Highly Profitable ($r_{\min} = 39.5\%$)** |
-
-**The Theoretical Crossover Point:**
-- Verifier caching breaks even when $T_{\text{fwd}} \ge 1.3346\text{ ms}$, which occurs at **$27.58\text{ MMACs}$** ($\approx 2.53\text{M}$ parameters).
-- On edge Transformers (`TemporalTransformer1D`, 115 MMACs), lazy on-demand verification achieves **$2.53\times\text{--}6.31\times$ net speedup** whenever certified reuse exceeds $39.5\%$.
+2. **Model Scaling Crossover Sensitivity (`~27.6 MMACs`):**
+   Forward-only single-thread CPU benchmarks on scaled synthetic architectures showed `MediumCNN1D` ($0.3769\text{ ms}$) and `TemporalResNet1D` ($1.8677\text{ ms}$, $r_{\min} = 71.5\%$) remain largely unprofitable under Week 4 verifier overhead. On a $4.99\text{M}$-parameter `TemporalTransformer1D` ($115\text{ MMACs}$, $3.3823\text{ ms}$ forward), substituting the CNN verifier's $1.3346\text{ ms}$ check cost gives a modeled break-even crossover near **$27.6\text{ MMACs}$** and a **$2.53\times$ theoretical ceiling** at $100\%$ reuse ($r_{\min} = 39.5\%$). Because native Transformer attention verification was not measured and real $S=64$ streams yielded $R=0\%$, actual streaming speedup on Transformers remains strictly **`NOT_ESTABLISHED`**.
 
 ---
 
-## 6. Four Lessons Learned by a Student AI Researcher
+## 6. Key Engineering Takeaways
 
-Completing this five-week investigation for *Introduction to Artificial Intelligence* reshaped my understanding of computer science and machine learning. Here are the four takeaways that no textbook could have taught me:
-
-### 1. Never Trust Blind Heuristics in AI Safety
-In coursework, thresholding cosine distance seems like an elegant shortcut. In real-world non-linear models, heuristic caching is fundamentally untrustworthy. If a system controls autonomous driving, health monitoring, or industrial safety, formal verification—not empirical similarity—is the only defensible baseline.
-
-### 2. Negative Results are the True Currency of Science
-When all our certified verifiers returned $R = 0\%$ at $S=64$, it was tempting to tweak hyperparameters or cherry-pick synthetic data. Resisting that urge and investigating the true root cause led us to discover the biomechanical phase-shift phenomenon and the $1,562\times$ gap. Transparent, verifiable negative results advance engineering far more than inflated positive claims.
-
-### 3. FLOPs Do Not Equal Wall-Clock Latency
-Algorithmic theory often counts multiplications and additions as a proxy for speed. Our M03 experiment proved that memory layout, cache hierarchy, tensor stitching, and runtime orchestration dominate execution time at small scales. Real AI engineering requires profiling real hardware.
-
-### 4. Data Engineering Beats Model Tuning Every Single Time
-The biggest performance breakthrough of our project—resolving Gate G2 and lifting our 12-class Macro-F1 from $0.7567$ to $0.8537$—did not come from designing a more complex deep neural network. It came from opening raw sensor files, identifying that a rigid stride-64 grid was slicing across the middle of human postural transitions (Grid-Phase Misalignment), and developing a Span-Anchored Extraction policy. Clean, aligned data is the foundation of all artificial intelligence.
+1. **Formal Soundness $\neq$ Coverage $\neq$ Speedup:** All three obligations must be verified on the same workload under the same numerical bridge.
+2. **MAC Reductions Do Not Guarantee Latency Wins:** On micro-models fitting in L2/L3 cache, framework memory orchestration dominates FLOP savings; native fused C/CMSIS-NN kernels are essential.
+3. **Data Alignment Matters as Much as Model Tuning:** Resolving canonical grid-phase misalignment in a separate transition-support branch (`Span-Anchored M=9 + Class-Balanced Focal Loss`) cleared all 18 pure / 10 canonical support blockers and raised 3-seed Full-G2 Macro-F1 to **$0.8537 \pm 0.0020$** (Transition F1 $0.7917$).
+4. **Scientific Honesty Builds Better Systems:** Documenting zero certified stream hits, invalid `LipCache` proxy scope comparisons, and `float32` rounding edge cases reveals the exact mathematical gaps future research must close.
 
 ---
 
-## 7. Project Artifacts and Reproduction
+## 7. Reproduction and Verification
 
-All experimental records, model checkpoints, raw signal logs, and verification test suites are preserved under cryptographic hash seals:
-- **Repository:** [https://github.com/tducn110/ecdr-sensor-inference](https://github.com/tducn110/ecdr-sensor-inference)
-- **Primary LaTeX Monograph:** `04_SYNTHESIS/week5/reports/ECDR_Week5_Comprehensive_Research_Paper_EN.tex`
-- **Compiled PDF Report:** `ECDR_Week5_FINAL_EN.pdf`
-- **Unit Test Suite:** 376 regression tests passing (`pytest tests/`)
-- **Protocol Seal:** SHA-256 `568067623fdc2b4c193ef1ef8e604fcaebafb72236a2829141be3f1e16fdf9c7`
-
-If you are working on edge AI, certified robustness, or time-series inference, dive into the code and explore the trade-offs yourself!
+- **Unit & Regression Suite:** `.venv/bin/python tests/run_all_tests.py` (**376 / 376 tests PASS** across 41 test modules).
+- **Protected Integrity Audit:** `.venv/bin/python scripts/week4_audit.py check` (214 historical files `ALL_CLEAN`, Master Seal `56806762...`).
+- **Full Technical Reference:** Read [ECDR_Final_Report_EN.tex](04_SYNTHESIS/week5/reports/ECDR_Final_Report_EN.tex) or [ECDR_Final_Report_EN.pdf](ECDR_Final_Report_EN.pdf).

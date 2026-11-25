@@ -1,0 +1,1297 @@
+% !TEX program = xelatex
+\documentclass[11pt,oneside,a4paper]{report}
+
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\setsansfont{Liberation Sans}
+\setmonofont{Liberation Mono}[Scale=0.84]
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{booktabs,tabularx,array,multirow,float}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\usepackage{textcomp,xcolor,xurl,enumitem,listings,fancyhdr,setspace,titlesec}
+\usepackage[noadjust]{cite}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
+
+\definecolor{ink}{HTML}{183449}
+\definecolor{teal}{HTML}{187C80}
+\definecolor{pale}{HTML}{E8F2F2}
+\definecolor{warnred}{HTML}{B91C1C}
+\definecolor{okgreen}{HTML}{0F766E}
+\definecolor{rulegray}{HTML}{CBD5E1}
+
+\hypersetup{
+  pdftitle={Event-Conditioned Certified Decision Reuse for Streaming Sensor Inference: Theory, Implementation, and Empirical Limits on HAPT},
+  pdfauthor={Nguyen Tam Duc}
+}
+\urlstyle{same}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,frame=single,columns=fullflexible,showstringspaces=false}
+
+\addto\captionsenglish{\renewcommand{\bibname}{References}}
+\onehalfspacing
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{1.8em}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{ink}}
+  {\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{18pt}
+\titleformat{\section}{\normalfont\Large\bfseries\color{ink}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{ink}}{\thesubsection}{0.7em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{ink}\nouppercase{\leftmark}}
+\fancyfoot[L]{\small\color{ink}ECDR Final Technical Report}
+\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[R]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\code}[1]{{\small\upshape\ttfamily #1}}
+\newcommand{\pathcode}[1]{{\small\upshape\ttfamily\nolinkurl{#1}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\Sset}{\mathcal{S}}
+
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\begin{document}
+
+% =============================================================================
+% COVER PAGE
+% =============================================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{1.2cm}
+{\large\scshape\color{teal} Final Research Report\par}
+\vspace{0.6cm}
+{\color{rulegray}\rule{\textwidth}{1.5pt}\par}
+\vspace{1.0cm}
+{\LARGE\bfseries\color{ink}
+Event-Conditioned Certified Decision Reuse for Streaming Sensor Inference:\\[0.35em]
+Theory, Implementation, and Empirical Limits on HAPT\par}
+\vspace{1.0cm}
+{\color{rulegray}\rule{\textwidth}{1.5pt}\par}
+\vspace{1.8cm}
+
+\begin{tabular}{@{}P{4.5cm}P{9.5cm}@{}}
+\textbf{Course:} & Introduction to Artificial Intelligence \\
+\textbf{Author:} & Nguyễn~Tâm~Đức \\
+\textbf{Academic Advisor:} & Trần~Thế~Vũ \\
+\textbf{Repository:} & \url{https://github.com/tducn110/ecdr-sensor-inference} \\
+\textbf{Reference Artifact:} & \code{ECDR\_Final\_Report\_EN.pdf} (Week 1--5 Consolidation) \\
+\textbf{Date:} & November 25, 2026 \\
+\end{tabular}
+
+\vfill
+{\small\color{ink}
+Compiled with XeLaTeX and BibTeX under strict repository seal reconciliation.\\
+All empirical claims correspond directly to audited Week~1--5 artifacts and JSON receipts.
+\par}
+\end{titlepage}
+
+% =============================================================================
+% FRONT MATTER
+% =============================================================================
+\pagenumbering{roman}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Real-time human activity recognition (HAR) on wearable inertial measurement units (IMUs) routinely evaluates a neural classifier on every sliding temporal window, even though consecutive windows share half of their raw sensor samples ($W=128$, stride $S=64$ at $50\text{ Hz}$). This report documents a complete five-week theoretical, numerical, software-engineering, and empirical investigation of \textbf{Event-Conditioned Certified Decision Reuse (ECDR)}. Given a frozen 12-class reference classifier \code{SmallCNN1D} ($283,692$ parameters; $1,172,992$ Conv/Linear MACs) and a trusted anchor prediction $c^* = \arg\max_k f_k(a)$, ECDR asks whether mathematical verification over a declared input region $\Sset$ can skip redundant backbone forward passes while preserving $100\%$ top-1 decision agreement and reducing end-to-end batch-1 CPU latency.
+
+We formalize an 11-margin sufficient decision-invariance condition, isolate a five-layer epistemic assurance stack separating exact real-arithmetic proofs from an IEEE-754 \code{binary32} Higham error enclosure and $\Theta(m)$ conservative box membership, and build a fail-closed streaming runtime with cryptographic anchor binding. Evaluating 15 executable configurations out of 17 registered methods across $5,053$ chronological HAPT test windows ($15,159$ paired timing observations), all certified paths preserve $100\%$ decision agreement via fallback, yet regional verifiers (\code{M05}--\code{M13}) achieve \textbf{zero certified streaming hits} ($0.4479\text{--}7.1278\text{ ms}$ per query vs.\ $0.3420\text{ ms}$ baseline). Exact stagewise incremental execution (\code{M03}) reuses interior convolutional features across all $5,034$ adjacent pairs with $0.0$ logit error and reduces total MACs by $32.15\%$, but Python tensor slicing and mandatory dense-head recomputation raise latency to $1.9273\text{ ms}$ ($+463.47\%$). Follow-up root-cause diagnostics establish a $1,562.7\times$ median gap between inter-window $\ell_2$ displacement ($25.492$) and certified Lipschitz radius ($0.0149$), zero positive 11-margin \code{float64} IBP certificates across $49,677$ stride-1 candidate boxes, and a modeled capacity crossover near $27.6\text{ MMACs}$, leaving actual streaming acceleration unestablished.
+
+\vspace{1em}
+\textbf{Keywords:} Human activity recognition, streaming sensor inference, certified decision reuse, interval bound propagation, linear relaxation, incremental convolutional execution, IEEE-754 \code{binary32} rounding, end-to-end latency.
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{tabularx}{\textwidth}{@{}P{3.0cm}Y@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Expansion / Definition} \\
+\midrule
+AST & Abstract Syntax Tree \\
+BN & Batch Normalization (\code{BatchNorm1d} / \code{BatchNorm2d}) \\
+CNN & Convolutional Neural Network \\
+CROWN & Convex Relaxation-based Perturbation Analysis \\
+ECDR & Event-Conditioned Certified Decision Reuse \\
+GAP & Global Average Pooling \\
+HAPT & Human Activities and Postural Transitions (UCI Dataset) \\
+HAR & Human Activity Recognition \\
+HMAC & Hash-based Message Authentication Code \\
+IBP & Interval Bound Propagation \\
+IEEE-754 & IEEE Standard for Floating-Point Arithmetic \\
+IMU & Inertial Measurement Unit \\
+LiRPA & Linear Relaxation-based Perturbation Analysis \\
+MAC & Multiply--Accumulate Operation \\
+MAE & Mean Absolute Error \\
+MCU & Microcontroller Unit \\
+MLP & Multilayer Perceptron \\
+PCA & Principal Component Analysis \\
+QPS & Queries Per Second \\
+ReLU & Rectified Linear Unit \\
+RF & Receptive Field \\
+RSS & Resident Set Size \\
+SHA-256 & Secure Hash Algorithm 256-bit \\
+SVD & Singular Value Decomposition \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+
+% =============================================================================
+% CHAPTER 1
+% =============================================================================
+\chapter{Introduction}
+
+\section{Streaming Wearable Sensor Inference Context}
+Wearable human activity recognition (HAR) systems continuously sample multichannel inertial measurement units (IMUs) and evaluate deep neural classifiers over fixed-length sliding windows~\cite{reyesortiz2015hapt,reyes2016transition}. At a canonical sampling frequency of $50\text{ Hz}$, a $2.56\text{ s}$ window ($W=128$ samples across $C=6$ triaxial accelerometer and gyroscope channels) advanced by stride $S=64$ ($1.28\text{ s}$) shares exactly $64$ raw sensor readings ($384$ scalar coordinates) with its predecessor. Conventional deployment pipelines treat each window as an isolated tensor and execute a complete forward pass every $S$ samples, ignoring structural temporal overlap.
+
+Because battery-operated wearables and edge gateways execute under tight CPU and energy budgets, reducing redundant computation on continuous sensor streams is an attractive systems objective. However, any optimization applied to a validated classifier must specify whether it preserves the classifier's exact discrete decision or trades prediction consistency for speed.
+
+\section{Why Temporal Overlap Does Not Imply Decision Invariance}
+A foundational pitfall in streaming inference caching is equating sample-index overlap with proximity in feature space or invariance of classifier outputs. Consider a univariate linear ramp $u(t) = a t$ sampled over windows $X_i(t) = u(is + t)$. Although consecutive windows overlap exactly on $W-s$ shifted readings ($X_{i+1}(t) = X_i(s+t)$ for $0 \le t < W-s$), equal-index coordinate subtraction yields $\abs{X_{i+1}(t) - X_i(t)} = \abs{a}s$ at every coordinate, producing $\ell_\infty$ distance $\abs{a}s$ and $\ell_2$ distance $\abs{a}s\sqrt{W}$ that grow without bound as slope $\abs{a}$ increases.
+
+Empirical evidence from the UCI HAPT stream confirms that semantic label continuity does not guarantee prediction invariance either: in the reconstructed chronological test stream, consecutive rows $682$ and $683$ share the exact same ground-truth activity annotation (Class~11, \textit{Stand-to-Lie}), yet the frozen reference classifier flips its top-1 prediction from zero-based index $10$ to index $8$. Uncertified similarity heuristics or label-triggered caches therefore risk silent decision divergence.
+
+\section{Problem Statement: Event-Conditioned Certified Decision Reuse}
+We formulate \textbf{Event-Conditioned Certified Decision Reuse (ECDR)} as a strict decision-preservation wrapper around a frozen, externally audited classifier $f_\theta$. Given a previously evaluated trusted anchor window $a$ with deterministic top-1 prediction $c^* = \arg\max_k f_{\theta,k}(N(a))$ and a declared perturbation region $\Sset$ in normalized sensor space, a formal verifier certifies that every pairwise contrast margin $f_{\theta,c^*}(z) - f_{\theta,j}(z)$ ($j \neq c^*$) remains strictly positive across all $z \in \Sset$, including floating-point rounding enclosures.
+
+When an incoming window $x$ arrives within the same continuous recording, satisfies horizon and identity bindings, and passes conservative $\Theta(m)$ domain membership $N(x) \in \Sset$, ECDR returns $c^*$ immediately without executing the neural backbone. Whenever any boundary, cryptographic, numerical, or membership predicate fails, a fail-closed gate falls back immediately to reference execution.
+
+\section{Research Questions and Evaluation Obligations}
+This study investigates three concrete obligations under matched end-to-end CPU accounting:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{RQ1 (Mathematical and Numerical Sufficiency):} Which domain contracts, pairwise margin formulations, and IEEE-754 \code{binary32} rounding enclosures are necessary and sufficient to guarantee sound decision preservation on a concrete Conv1D/BatchNorm/MaxPool/Flatten-MLP graph?
+  \item \textbf{RQ2 (Streaming Admissibility):} Across diagonal boxes, fixed-overlap wave domains, PCA-correlated affine subspaces, and finite-horizon sets, how frequently do real sequential IMU queries fall inside certifiable regions?
+  \item \textbf{RQ3 (End-to-End Runtime Economics):} When all candidate selection, bound construction, membership checking, state maintenance, and fallback inference costs are included on CPU at batch size 1, do either regional certification or exact stagewise incremental feature reuse outperform direct reference execution?
+\end{enumerate}
+
+\section{Contributions and Core Empirical Finding}
+Rather than curating only positive ablations, this report documents the complete five-week engineering lifecycle, software verification stack, 17-method stream replay, 24-hypothesis ledger, and three root-cause follow-up diagnostics archived in the project repository~\cite{repo}. Our central finding is a sharp empirical separation of three obligations—\emph{decision preservation}, \emph{useful streaming coverage}, and \emph{net wall-clock speedup}:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Soundness holds via fail-closed design:} Every executed path preserves $100\%$ top-1 decision agreement across $5,053$ test queries.
+  \item \textbf{Regional coverage vanishes on realistic streams:} Inter-window normalized $\ell_2$ shifts (median $25.492$) exceed certifiable Lipschitz radii ($0.0149$) by $1,562.7\times$, yielding $0$ certified hits across all regional verifiers (\code{M05}--\code{M13}).
+  \item \textbf{Exact incremental reuse incurs a net CPU slowdown:} Stagewise feature caching (\code{M03}) achieves $100\%$ within-recording reuse ($5,034/5,034$ pairs, $-32.15\%$ total MACs) with $0.0$ logit error, yet Python slicing overhead and mandatory dense-head recomputation increase mean query latency from $0.3420\text{ ms}$ to $1.9273\text{ ms}$ ($+463.47\%$).
+\end{itemize}
+
+\section{Report Organization}
+Chapters~2 and~3 establish theoretical foundations, related work boundaries, and the shared experimental methodology. Chapters~4 through~7 present the chronological engineering milestones, frozen artifacts, and empirical measurements from Week~1 through Week~4 without cross-chapter duplication. Chapter~8 synthesizes cross-week answers to RQ1--RQ3 alongside post-Week~4 root-cause and classification-support diagnostics. Chapter~9 summarizes verified research gates, threats to validity, and sequenced future directions, followed by IEEE references and comprehensive Appendices~A--G.
+
+% =============================================================================
+% CHAPTER 2
+% =============================================================================
+\chapter{Theoretical Background and Related Work}
+
+\section{Human Activity Recognition and Sliding-Window Stream Processing}
+The UCI HAPT dataset~\cite{reyesortiz2015hapt,reyes2016transition} captures 12 activities—six static/dynamic basic postures (\textit{Walking}, \textit{Walking Upstairs}, \textit{Walking Downstairs}, \textit{Sitting}, \textit{Standing}, \textit{Laying}) and six directional postural transitions (\textit{Stand-to-Sit}, \textit{Sit-to-Stand}, \textit{Sit-to-Lie}, \textit{Lie-to-Sit}, \textit{Stand-to-Lie}, \textit{Lie-to-Stand})—recorded at $50\text{ Hz}$ from waist-mounted smartphone triaxial accelerometers and gyroscopes. Distinguishing opposite postural transitions requires preserving temporal order across the $128$-sample window, which motivates position-sensitive architectures while introducing boundary-cutting sensitivity under fixed stride-$64$ grids.
+
+\section{Workload Filtering and Incremental Convolutional Execution}
+Prior streaming acceleration methods reduce redundant evaluation via two distinct paradigms:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Approximate Cascade Filtering:} NoScope~\cite{kang2017noscope} accelerates video query streams using cheap frame-difference detectors and specialized proxy networks calibrated to statistical accuracy budgets. DeltaCNN~\cite{parger2022deltacnn} skips sparse pixel-difference updates inside custom GPU CNN kernels. Both rely on empirical error tolerances rather than deterministic input-region certificates relative to a frozen reference.
+  \item \textbf{Exact Shift-Aligned Incremental CNNs:} StreamiNNC~\cite{streaminnc} exploits shift invariance across strided 1D CNN windows by caching interior convolutional activations (identifying zero-padding boundary leakage), while TinyD\'ej\`aVu~\cite{tinydejavu} minimizes microcontroller SRAM and latency using differential circular activation buffers. These methods perform algebraically equivalent arithmetic reuse; they do not establish invariant $\arg\max$ certificates across an unvisited continuous region and still recompute position-sensitive dense heads. Within our evaluation matrix, StreamiNNC's streaming CNN schedule is instantiated faithfully on \code{SmallCNN1D} as \code{M03}, whereas TinyD\'ej\`aVu's bare-metal MCU runtime is audited for applicability only (\code{M15}).
+\end{itemize}
+
+\section{Neural Network Verification: IBP, CROWN, and \code{auto\_LiRPA}}
+Formal neural network verification bounds output extrema over an input perturbation set $\Sset$:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Interval Bound Propagation (IBP)}~\cite{gowal2018ibp} propagates coordinatewise lower and upper envelopes layer by layer in $O(P)$ time. Although fast, independent hyperrectangular wrapping discards inter-neuron correlations across layers (dependency loss).
+  \item \textbf{Backward Linear Relaxation (CROWN / \code{auto\_LiRPA})}~\cite{zhang2018crown,xu2020automatic,autolirpa2020} bounds nonlinear activations between linear upper and lower planes and propagates linear coefficients backward to tighten output bounds, at higher per-query build cost.
+  \item \textbf{Temporal and Online Verification:} STBP~\cite{varghese2026stbp} models spatio-temporal correlations for 3D CNN robustness on volumetric video, while Franco et al.~\cite{franco2024conformalized} combine randomized smoothing with conformal calibration for probabilistic time-series robustness. Wei and Liu~\cite{wei2021online} reuse verification states across domain or weight updates to accelerate \emph{re-verification itself}, which is orthogonal to skipping backbone inference on live sensor queries.
+\end{itemize}
+
+\section{Certified Inference Caching and Guarantee Boundaries}
+LipCache~\cite{xiang2026lipcache} is the closest conceptual precedent, placing a Lipschitz-regularized \code{GuardNet} proxy at the edge ahead of a server \code{MainNet} to certify local reuse radii on i.i.d.\ image benchmarks. Inspection of LipCache's formal scope reveals two hard boundaries: (i) Remark~5.2 explicitly restricts its theoretical invariance certificate to \code{GuardNet} rather than \code{MainNet}, and (ii) Section~7.1 defers consecutive-frame temporal streaming redundancy to future work. Because ECDR requires zero retraining and strict decision preservation with a frozen \code{SmallCNN1D} reference on continuous HAPT streams, LipCache cannot run as an assumption-matched comparator without violating the frozen-model contract, and is therefore logged as \code{M14} (\code{NOT\_APPLICABLE\_IN\_FROZEN\_SCOPE}).
+
+\section{IEEE-754 \code{binary32} Rounding and Higham Error Enclosure}
+Standard verification frameworks prove bounds in exact real arithmetic $\R$, overlooking floating-point rounding on deployed CPUs. Under IEEE-754 \code{binary32} round-to-nearest ties-to-even ($u = 2^{-24}$)~\cite{ieee754}, catastrophic cancellation can invert slim real-arithmetic margins. Following Higham's backward error analysis~\cite{higham2002}, any floating-point inner product of length $n$ satisfies $\abs{\widehat{s}_n - x^\top y} \le \gamma_n \abs{x}^\top \abs{y}$ with $\gamma_n = n u / (1 - n u)$ (requiring $n u < 1$), plus explicit subnormal compensation. Closing the numerical bridge from $\R$ to deployed CPU kernels requires outward rounding of both normalization and linear/convolutional accumulations.
+
+\section{Comparative Positioning Summary}
+Table~\ref{tab:related_work} summarizes how ECDR's guarantee boundaries compare against inspected primary prior work.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Positioning ECDR Against Primary Prior Art}
+\label{tab:related_work}
+\begin{tabularx}{\textwidth}{@{}P{3.6cm}YY@{}}
+\toprule
+\textbf{Work} & \textbf{Core Mechanism / Domain} & \textbf{ECDR Scope Difference} \\
+\midrule
+NoScope~\cite{kang2017noscope} & Video difference filter and model cascade under statistical error budget & Statistical target; no per-query frozen $\arg\max$ certificate \\
+DeltaCNN~\cite{parger2022deltacnn} & Sparse GPU frame-difference CNN kernel updates & Empirical video acceleration; no certified continuous region \\
+StreamiNNC~\cite{streaminnc}, TinyD\'ej\`aVu~\cite{tinydejavu} & Shift-aligned conv caching / MCU circular buffers & Exact arithmetic equivalence (instantiated as \code{M03}); must recompute position-sensitive heads \\
+IBP / CROWN / LiRPA~\cite{gowal2018ibp,zhang2018crown,xu2020automatic} & Interval and backward linear perturbation bounds & Verification solvers; require $\F_{32}$ enclosure bridge and 1D operator checks \\
+STBP~\cite{varghese2026stbp}, Franco et al.~\cite{franco2024conformalized} & Spatio-temporal 3D CNN bounds; conformal smoothing & Offline robustness or probabilistic sets; not deterministic reuse caching \\
+Wei--Liu~\cite{wei2021online} & Incremental re-verification across shifts/edits & Accelerates verifier re-runs rather than skipping backbone forward passes \\
+LipCache~\cite{xiang2026lipcache} & Edge \code{GuardNet} Lipschitz proxy cache on images & Requires training proxy; certificate holds on \code{GuardNet}, not frozen \code{MainNet} (Remark~5.2) \\
+Higham~\cite{higham2002}, IEEE-754~\cite{ieee754} & Floating-point rounding error analysis & Provides the $\gamma_n$ numerical bridge from $\R$ proofs to executable \code{binary32} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =============================================================================
+% CHAPTER 3
+% =============================================================================
+\chapter{Data, Model, and Research Methodology}
+
+\section{Five-Layer Epistemic Assurance Framework}
+To prevent conflating mathematical validity over $\R$ with runtime soundness or wall-clock acceleration, our methodology enforces five decoupled assurance layers:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Layer 1 (Real-Arithmetic Sufficiency):} Theorem~\ref{thm:margin} establishes that strictly positive lower bounds across all $K-1=11$ pairwise contrast margins imply unique $\arg\max$ preservation over $\Sset$ in $\R$.
+  \item \textbf{Layer 2 (Graph Verifier Soundness):} Transfer operators must accurately enclose the exact 15-module Conv1D/BatchNorm1d/ReLU/MaxPool1d/Flatten/Linear graph without unsupported operator rewrites.
+  \item \textbf{Layer 3 (Executable \code{binary32} Numerical Bridge):} All channelwise standardization casts, BatchNorm affine scale-shifts, and inner-product reductions are enclosed under Higham's $\gamma_n$ bound~\cite{higham2002} and outward \code{nextafter} rounding for the locked profile \pathcode{linux-x86_64-py311-numpy246-torch2141cpu-avx512} (\nolinkurl{ecdr/week4/numerics.py}).
+  \item \textbf{Layer 4 (Conservative Membership):} Domain acceptance requires checking all $m=768$ coordinates against immutable \code{float64} endpoints matching the verified coordinate space (\nolinkurl{ecdr/week4/domains.py}), respecting the $\Theta(m)$ lower bound.
+  \item \textbf{Layer 5 (Operational Utility and Net Speedup):} Even when Layers~1--4 hold, streaming deployment is useful only if real sensor queries enter $\Sset$ frequently enough to offset verification and membership overhead.
+\end{enumerate}
+
+\section{UCI HAPT Stream Reconstruction and Label Stratification Policy}
+Raw accelerometer ($x,y,z$) and gyroscope ($x,y,z$) logs from all $61$ UCI HAPT recordings ($30$ subjects, $50\text{ Hz}$) are segmented chronologically without crossing recording boundaries using window length $W=128$ and stride $S=64$ (\nolinkurl{scripts/01_fetch_hapt.py}--\nolinkurl{scripts/06b_corr_semantics.py}). Each window falls into one of four disjoint label strata:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Pure:} All $128$ samples share one activity ID ($10,361$ windows).
+  \item \textbf{Accepted Majority:} Dominant activity accounts for $\ge 77/128$ samples ($1,917$ windows).
+  \item \textbf{Ambiguous:} Labeled samples exist, but no class reaches $77/128$ ($1,588$ windows).
+  \item \textbf{Unlabeled:} Zero-annotated segments retained in stream chronology ($3,587$ windows).
+\end{itemize}
+Supervised accuracy and F1 metrics evaluate only Pure and Accepted Majority windows ($12,278$ total), whereas Ambiguous and Unlabeled windows remain in chronological replay streams ($17,453$ windows total) to reflect continuous execution.
+
+\section{Frozen Reference Architecture and Architectural Rationale}
+The frozen reference network \code{SmallCNN1D} (\nolinkurl{scripts/backbone.py}, $K=12$) comprises three same-padded 1D convolutional blocks ($6 \to 32 \to 64 \to 64$, kernels $5,3,3$), each with \code{BatchNorm1d} and \code{ReLU}, width-2 \code{MaxPool1d} after blocks 1 and 2, followed by \code{Flatten(2048)} $\to$ \code{Linear(128)} $\to$ \code{ReLU} $\to$ \code{Linear(12)}.
+
+Two architectural principles govern this choice:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Piecewise-Linear Feedforward Graph:} Avoiding recurrent gates (LSTM/GRU) and self-attention eliminates transcendental wrapping and quadratic $QK^\top$/Softmax nonlinearities inside bound propagation.
+  \item \textbf{Flatten vs.\ GAP Boundary:} Retaining temporal position via \code{Flatten(2048)} preserves directional order needed to distinguish reverse postural transitions (\textit{Stand-to-Sit} vs.\ \textit{Sit-to-Stand}). Because an earlier valid-convolution Global Average Pooling prototype (\code{ECDRConv1DNet}, \nolinkurl{ecdr/model.py}, $20,332$ params, $2,343,936$ MACs) used a different graph and $K=6$ split, no matched 12-class GAP-vs-Flatten ablation was executed; \code{Flatten} is therefore documented as an architectural design rationale rather than an empirical ablation claim.
+\end{enumerate}
+
+\section{Unified Causal Streaming Evaluation Contract}
+All 17 registered methods operate behind a strictly causal \code{QueryView} interface (\nolinkurl{ecdr/week4/methods.py}) with zero lookahead, mandatory state resets on recording transitions or step gaps, and immutable anchor receipts. Whenever reuse verification fails or is disabled, \code{StreamingRuntimeExecutor} executes the frozen reference model via \code{ReferenceOwner}.
+
+\section{Registered 17-Method Taxonomy and 24-Hypothesis Ledger}
+All candidate approaches are indexed uniformly as \code{M00}--\code{M16} (baselines \code{M00}/\code{M01}/\code{M16}, singleton/heuristic \code{M02}/\code{M04}, incremental \code{M03}, regional verifiers and policy controls \code{M05}--\code{M13}, and audited external comparators \code{M14}--\code{M15}) alongside 24 pre-registered hypotheses (\code{H01}--\code{H24}) covering temporal geometry, margin theory, numerical soundness, runtime economics, and the joint trilemma (\code{H24}). Full definitions and verified dispositions appear in Appendix~\ref{app:registry}.
+
+\section{Paired End-to-End CPU Timing and Memory Accounting Protocol}
+All operational benchmarks execute on a single-threaded Linux x86\_64 CPU using PyTorch~\code{2.14.1+cpu} and NumPy~\code{2.4.6} (\code{torch.set\_num\_threads(1)}, batch size 1). Paired latency captures the complete in-memory query path from \code{QueryView} dispatch to output decision across $3$ repetitions of all $5,053$ chronological test windows ($15,159$ paired rows per method), excluding cold loading and trace serialization (\nolinkurl{04_SYNTHESIS/week5/evidence/paired_latency.py}). Memory profiling separates static weight footprints from attributable per-method adapter, state, and certificate buffers (\nolinkurl{ecdr/week4/}).
+
+\section{Integrity Sealing and Reproducibility Governance}
+Protected model checkpoints, preprocessing constants, and Week~1--3 artifacts are guarded under Master Protocol Seal \code{5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b} (\nolinkurl{output/week4/week4_initial_20261103/protocol_seal.json}), verified dynamically across $247$ protected files by \nolinkurl{scripts/week4_audit.py} ($214$ historical files indexed in \code{protected\_manifest.json}) and regression-checked via \nolinkurl{tests/run_all_tests.py}.
+
+% =============================================================================
+% CHAPTER 4
+% =============================================================================
+\chapter{Week 1 --- Problem Formulation and Baseline Establishment}
+
+\section{Architecture Decision: \code{Flatten(2048)} over Global Average Pooling}
+The reference architecture \code{SmallCNN1D} terminates with \code{Flatten(2048)} (flattening $32 \times 64$ channels into a $2048$-dimensional vector) followed by \code{Linear(2048,128)}, rather than a Global Average Pooling (GAP) head. This choice was not arbitrary. HAPT contains 12 classes including 6 postural transition classes (e.g., \textit{Stand-to-Sit}, \textit{Sit-to-Stand}), which are temporally asymmetric: a 2-second stand-to-sit segment looks like a mirrored sit-to-stand segment in feature magnitude but has a distinct direction in time. \code{Flatten} preserves the full spatial/temporal ordering of the final Conv3 feature map (32 output positions, each tied to a specific $[4j{-}8,\,4j{+}11]$ raw-input window), enabling the linear head to learn position-sensitive templates. A GAP head computes the mean across all 32 positions, discarding this temporal ordering and collapsing the direction of motion into a single average magnitude per channel. The historical K=6 baseline (\code{ECDRConv1DNet}, GAP head, Seed 44, accuracy $0.9349$ on the K=6 pure-only denominator $N = 2{,}874$) is explicitly isolated: its metrics are not transferable to the current K=12 setting because (i) the number of output classes doubled, (ii) the denominator changed from $2{,}874$ K=6 pure-only windows to $3{,}572$ K=12 supervised windows, (iii) the architecture uses a different head, and (iv) normalization constants differ. Any comparison between K=6 GAP and K=12 Flatten results would conflate four independent design axes simultaneously.
+
+\section{Experimental Setup, Training, and Three-Seed Selection}
+Week~1 (\nolinkurl{00_OVERVIEW/week1/CLOSEOUT.md}, run \code{week1\_ref\_1793620216\_9d6c1d85}, pipeline \code{1ef93101...}, timestamp \code{2026-11-02T11:50:16Z}) established the canonical $K=12$ supervised training pipeline and froze the reference model identity. \code{SmallCNN1D} was trained across random seeds $42, 43, 44$ using Adam ($\text{lr}=10^{-3}$, weight decay $10^{-4}$), cosine annealing, batch size $128$, maximum $30$ epochs, and early-stopping patience $10$, selecting checkpoints by validation Macro-F1:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Seed 42 (Candidate):} Best Epoch $14$, Validation Macro-F1 $= 0.836829$.
+  \item \textbf{Seed 43 (Selected):} Best Epoch $8$, Validation Macro-F1 $= 0.846785$.
+  \item \textbf{Seed 44 (Candidate):} Best Epoch $9$, Validation Macro-F1 $= 0.836958$.
+\end{itemize}
+Seed~43 Epoch~8 was locked permanently as the frozen reference checkpoint (\pathcode{selected_best.pt}, SHA-256 \code{8ffc5dd8eb0e9cdf832160d074f3ae81\allowbreak 6ae6cba02adf7214a63a8b623303adb1}), paired with training-only \code{float64} standardization constants (\pathcode{preprocessing_id} \code{aa8e1cc20829307187e0a78200f9957f\allowbreak 7dd068b1dc26063c2720ad832bb2fd6e}).
+
+\section{Canonical Supervised Performance and Transition Support Gap}
+Evaluated on the canonical supervised test denominator ($N=3,572$ Pure and Accepted Majority windows; \nolinkurl{output/week1_closeout_20261102/reference/evaluation_results.json}), the selected Seed~43 checkpoint achieved \textbf{89.05\% accuracy} ($0.890538$, $3,181/3,572$ correct) and \textbf{0.7763 Macro-F1} ($0.776265$). Across all three seeds ($ddof=0$), mean test accuracy was $0.888951 \pm 0.001685$ and mean Macro-F1 was $0.768978 \pm 0.005333$. While basic activity F1 scores ranged from $0.8196$ (\textit{Sitting}) to $0.9890$ (\textit{Laying}), postural transitions lagged substantially ($0.5496$ for \textit{Stand-to-Lie} to $0.7356$ for \textit{Stand-to-Sit}), reflecting low validation/test transition counts ($13$--$26$ validation windows per transition class).
+
+\section{Adjacent-Pair Agreement Stratification and Initial Latency}
+Stratifying all $5{,}034$ within-recording adjacent test pairs ($18$ cross-recording boundaries excluded) revealed sharp behavioral divergence across temporal regimes:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Pure Stable Pairs ($2{,}617$ pairs):} $2{,}560$ matching predictions ($97.82\%$ top-1 agreement).
+  \item \textbf{Pure Transition Pairs ($44$ pairs):} $23$ matching predictions ($52.27\%$ top-1 agreement).
+  \item \textbf{Mixed/Other Pairs ($2{,}373$ pairs):} $1{,}399$ matching predictions ($58.95\%$ top-1 agreement).
+\end{itemize}
+Single-thread CPU microbenchmarks on Intel Xeon W-11855M ($100$ warmup, $1{,}000$ varied inputs) measured forward-only mean latency at $0.1734\text{ ms}$ (p50 $0.1650\text{ ms}$, p95 $0.2153\text{ ms}$) and normalization-plus-forward latency at $0.2011\text{ ms}$ (p50 $0.1839\text{ ms}$, p95 $0.2874\text{ ms}$), establishing a sub-millisecond baseline that any reuse overhead must beat.
+
+The $97.82\%$ stable-pair agreement provided the intuition that ECDR could \emph{in principle} skip many re-evaluations on stable activity periods. However, this descriptive measurement was explicitly flagged as \code{H1 MEASURED DESCRIPTIVE}, not evidence of certified reuse potential. The gap between high empirical agreement and provably certifiable reuse is precisely what Weeks~3--4 were designed to quantify.
+
+\section{Week 1 Verification Receipts and \code{G2} Hold Decision}
+Week~1 closed with $17/17$ internal checks, $65/65$ independent verification checks (\pathcode{independent_verification.json}), and $60/60$ legacy regression tests passing. Because transition class support remained below threshold on the canonical stride-64 grid, Gate~\code{G2} was explicitly placed on \code{HOLD}, while formal certification and net runtime evaluation were scheduled for Weeks~3--4.
+
+The \code{HOLD} decision on \code{G2} reflects a core design principle of ECDR: the goal is \emph{zero-disagreement} against a fixed frozen reference, not accuracy maximization. Switching the checkpoint between weeks would conflate two entirely separate experimental axes --- (a) the quality of the reference classifier and (b) whether ECDR can certifiably skip its re-evaluation. Locking Seed~43 Epoch~8 at this stage ensures that all subsequent Weeks~2--4 results report agreement against an \emph{identical} decision function, making the Week~4 replay scientifically valid. The transition support gap ($13$--$26$ validation windows per transition class vs.\ the $\geq 50$ threshold) is recorded as a known limitation, not a reason to restart training.
+
+\section{Week 1 Hypothesis Ledger (\code{H1}--\code{H4})}
+Week~1 formulated four hypotheses that drove the week-to-week research agenda (\pathcode{00_OVERVIEW/week1/HYPOTHESES.md}):
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{H1 (MEASURED DESCRIPTIVE):} Stable windows have more stable adjacent reference predictions than transition windows. Supported by $2{,}560/2{,}617$ ($97.82\%$) stable pair agreement vs.\ $23/44$ ($52.27\%$) transition pair agreement. This measurement establishes \emph{where} reuse is plausibly most valuable (stable activity periods), and motivates stratified evaluation in Weeks~2--4.
+  \item \textbf{H2 (PROPOSED $\to$ Week 4):} Event-conditioned certified coverage can improve under a fixed matched cost. Requires measuring actual certificate-failure rates, fallback rates, and total latency per window type (pure-basic / pure-transition / mixed). Deferred to Week~4 full-stream replay.
+  \item \textbf{H3 (DERIVED $\to$ Week 3):} Positive lower bounds for all 11 competing margins over a declared region imply constant reference decision on that region. Proof formalized in Week~3 Theorem~\ref{thm:margin}; executability conditioned on binary32 numerical closure.
+  \item \textbf{H4 (PROPOSED $\to$ Week 4):} ECDR yields net savings in at least one declared workload regime. Requires complete-path timing including preprocessing, event detection, membership check, bound build, fallback, and I/O. Evaluated in Week~4; \code{NOT\_ESTABLISHED} across all 17 methods.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 1 Decision Ledger and Gate Handoff}\label{tab:w1_ledger}
+\begin{tabularx}{\textwidth}{@{}P{3.6cm}YP{3.8cm}@{}}
+\toprule
+\textbf{Decision Frozen} & \textbf{Evidence / Counterexample Basis} & \textbf{Open Limits Handed to Week 2} \\
+\midrule
+Seed 43 Epoch 8 locked as reference checkpoint (\code{SHA-256: 8ffc5dd8...}) & Highest validation Macro-F1 ($0.846785$) across 3 seeds; $0/5{,}053$ stored-vs-fresh prediction discrepancies (verified Week~2) & Whether frozen checkpoint represents a \emph{correct} split; subject partition locally reconstructed, not UCI-identical \\
+\addlinespace
+\code{Flatten(2048)} head; K=6/GAP metrics excluded & K=6 pure-only denominator, different head, different normalization --- metrics non-transferable to K=12 setting & Full receptive field derivation and incremental reuse feasibility deferred to Week~3 \\
+\addlinespace
+Gate \code{G2} placed on \code{HOLD} & $13$--$26$ val windows per transition class below $\geq 50$ threshold; $52.27\%$ transition pair agreement far below $97.82\%$ stable pair & Support gap to be revisited post-Week~4 via Span-Anchored extraction (\code{G2-Full}) \\
+\addlinespace
+H2, H4 classified PROPOSED & No fallback-rate, certificate-failure-rate, or cost-accounting evidence available at Week~1 & Full-stream cost traces required; H3 proof requires Week~3 bound construction \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =============================================================================
+% CHAPTER 5
+% =============================================================================
+\chapter{Week 2 --- Data and Model Foundations}
+
+\section{Chronological Stream Reconstruction Audit}
+Week~2 (\nolinkurl{output/week2_foundations_20261103/README.md}, timestamp \code{2026-11-03T00:52:14Z}, commit base \code{633dc05}) audited dataset lineage and tensor exactness (\code{data\_audit.json}). Reconstructing all $61$ recordings across $30$ subjects using a strict subject-disjoint $17/4/9$ split produced $17,453$ \code{float32} windows of shape $(6, 128)$:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Train ($17$ subjects):} $9,978$ stream windows ($6,955$ supervised).
+  \item \textbf{Validation ($4$ subjects):} $2,422$ stream windows ($1,751$ supervised).
+  \item \textbf{Test ($9$ subjects, $19$ recordings):} $5,053$ stream windows ($3,572$ supervised; $5,034$ adjacent within-recording pairs consisting of $2,874$ pure basic, $119$ pure transition, $579$ majority mixed, $479$ ambiguous, and $1,002$ unlabeled pairs).
+\end{itemize}
+
+\section{Overlap Geometry vs.\ Coordinate Displacement}
+Direct audit of all $17{,}392$ shift-aligned within-recording window pairs confirmed exact $0.0$ raw and normalized elementwise differences on the $64$-sample overlap region ($X_{i+1}[:, :64] - X_i[:, 64:] \equiv 0$). Conversely, comparing windows at identical relative indices ($X_{i+1}[:, t] - X_i[:, t]$) yielded normalized coordinatewise MAE between $0.2549$ and $0.9640$, with lag-$64$ mean autocorrelation of $0.4378$ and lag-$128$ autocorrelation of $0.3635$. Thus, temporal overlap preserves shifted history while leaving coordinate-space displacement large during dynamic motion.
+
+The per-channel breakdown reveals the physical root cause: accelerometer channels (\code{acc\_x/y/z}) exhibited lag-64 autocorrelations of $0.721$, $0.824$, and $0.777$ respectively --- substantial enough that a 50\% overlap region \emph{does} contain predictive information about the next window. Gyroscope channels (\code{gyro\_x/y/z}), however, showed lag-64 autocorrelations of only $0.148$, $0.061$, and $0.096$ --- nearly uncorrelated across stride-64. This asymmetry is the physical reason why coordinate displacement remains large even with 50\% temporal overlap: the fast-varying gyroscope channels (which capture angular velocity, sensitive to instantaneous posture transitions) decorrelate within one stride, ensuring that even a certified diagonal box around the anchor window's normalized coordinates cannot contain the next window's input under realistic motion.
+
+\section{Preprocessing Contract Conflict and Lock Decision}
+Week~2 uncovered a conflict between two preprocessing implementations:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Week~1 pipeline contract} (\pathcode{output/week1_closeout_20261102/}): \code{float32} normalization, \code{sigma\_min=1e-6}, window-weighted SHA-256 preprocessing identity \pathcode{aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e}.
+  \item \textbf{\code{ecdr/preprocessing.py} implementation}: \code{float64} normalization, \code{sigma\_min=1e-5}, 16-character truncated ID format.
+\end{enumerate}
+These differ on three axes simultaneously: (a) floating-point precision, (b) minimum standard-deviation clamp (affecting near-constant channels), and (c) identity encoding format. The decision was to lock the Week~1 pipeline contract exclusively and disqualify \code{ecdr/preprocessing.py} as the reference for bound computations. Rationale: the frozen checkpoint \code{selected\_best.pt} was trained with the Week~1 contract; using a different normalization for bound evaluation would certify correctness of the \emph{wrong} function. Any bound computed under the wrong contract would be unsound even if numerically positive.
+
+\section{Why $5{,}053$ Stream Windows vs.\ $3{,}572$ Supervised}
+Across the full $17{,}453$-window HAPT dataset, $12{,}278$ windows carry supervised Pure or Accepted Majority labels while the remaining $5{,}175$ windows comprise $1{,}588$ Ambiguous windows (uncertain boundary or multi-label segments) and $3{,}587$ unlabeled windows. On the held-out Test partition specifically, the chronological stream denominator of $5{,}053$ windows exceeds the $3{,}572$ supervised test windows by $1{,}481$ windows, consisting of $479$ Ambiguous and $1{,}002$ Unlabeled windows (see Table~\ref{tab:app_strata} and \nolinkurl{output/week2_foundations_20261103/data_findings.md}). These non-supervised windows are \emph{retained} in the stream for a critical runtime reason: ECDR must operate as a \emph{streaming system}, where each query arrives chronologically and the runtime has no lookahead into future labels. Removing ambiguous and unlabeled windows would create artificial temporal gaps that break the within-recording adjacency contract (the $64$-sample shift-overlap between consecutive windows). The $5{,}034$ within-recording adjacent pairs used for all latency and agreement measurements correspond exactly to the full $5{,}053$ stream minus $18$ cross-recording boundaries and $1$ final-recording boundary split across $19$ test recordings --- preserving chronological continuity.
+
+\section{Receptive Field Derivation and Incremental Reuse Foundation}
+The incremental feature reuse schedule (realized in Week~4 as \code{M03}) depends on the exact structural dependency intervals of \code{SmallCNN1D}. Week~2 derived and recorded these intervals as the foundation for Weeks~3--4 (confirmed and corrected in the Week~3 independent review):
+
+\begin{table}[htbp]
+\centering\small
+\caption{Conv/Pool Receptive Field Derivation for \code{SmallCNN1D} (kernel=3, padding=1; MaxPool stride=2)}\label{tab:rf}
+\begin{tabularx}{\textwidth}{@{}lllll@{}}
+\toprule
+\textbf{Output Stage} & \textbf{Raw-Input Interval} & \textbf{Width} & \textbf{Jump} & \textbf{Note} \\
+\midrule
+Conv1 output $i$ & $[i-2,\; i+2]$ & 5 & 1 & Padding=1, kernel=5 \\
+Pool1 output $i$ & $[2i-2,\; 2i+3]$ & 6 & 2 & MaxPool stride=2 \\
+Conv2 output $i$ & $[2i-4,\; 2i+5]$ & 10 & 2 & Padding=1, kernel=3 \\
+Pool2 output $i$ & $[4i-4,\; 4i+7]$ & 12 & 4 & MaxPool stride=2 \\
+Conv3 / final at $j$ & $[4j-8,\; 4j+11]$ & 20 & 4 & Padding=1, kernel=3 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A stride of $S=64$ input samples corresponds to exactly $64/4 = 16$ Conv3 output positions. Interior Conv3 columns $j \in \{2,\ldots,13\}$ (12 columns) have their raw-input support entirely within the $[0,63]$ prefix of the new window, which equals the $[64,127]$ suffix of the previous window --- precisely the shared overlap region. This implies $H_j(X_{\text{next}}) = H_{j+16}(X_{\text{prev}})$ for $j \in \{2,\ldots,13\}$ in real arithmetic, the foundation of \code{M03}. Left-boundary columns $j \in \{0,1\}$ have support beginning at $[4j{-}8,\ldots] = [-8,\ldots]$ and $[-4,\ldots]$, extending into the zero-padded region of the new window, which does not equal the actual sensor data at those positions in the old window --- hence they always require recomputation.
+
+\section{Data Provenance Caveats}
+Week~2 recorded three permanent provenance boundaries:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Local Subject Partition:} The $17/4/9$ subject split is locally reconstructed and not assumed identical to UCI's original $70/30$ release.
+  \item \textbf{One-Sample Annotation-Origin Shift:} Shifting annotation sample indexing by $1$ sample alters $98$ boundary window policy or label assignments.
+  \item \textbf{Denominators and Exploratory Exposure:} Historical broad counts ($13,866$ windows) include the $1,588$ Ambiguous windows excluded from the $12,278$ supervised denominator; moreover, observing the test stream during Week~1--3 diagnostics places all test metrics under \code{KNOWN\_TEST\_EXPLORATORY} status.
+\end{enumerate}
+
+\section{Frozen \code{SmallCNN1D} Layer, Parameter, MAC, and Margin Audit}
+The Week~2 model audit (\code{model\_audit.json}, $18/18$ checks PASS) confirmed $0/5,053$ stored-versus-fresh prediction discrepancies across the test stream. The $15$ leaf modules contain $283,692$ trainable parameters ($1,136,072\text{ B}$ \code{float32} weights/buffers) and $1,172,992$ Conv/Linear MACs ($122,880 + 393,216 + 393,216 + 262,144 + 1,536$), with \code{head.1} (\code{Linear(2048,128)}) accounting for $92.45\%$ of parameters ($262,272$). Final convolutional feature maps have nominal receptive field $20$ samples ($0.4\text{ s}$ at $50\text{ Hz}$) and stride $4$, with \code{BatchNorm1d} deterministic in \code{eval} mode.
+
+Across all $5,053$ test stream windows, top-two logit gaps ranged from a minimum of $0.0001135$ (5th percentile $0.4120$, median $5.9782$, 95th percentile $11.8876$) up to $21.4685$ logit units. Resident normalized single-window forward-only microbenchmarking ($100$ warmup, $1,000$ repeats) averaged $0.1892\text{ ms}$ (p50 $0.1557\text{ ms}$, p95 $0.3111\text{ ms}$).
+
+\section{Week 2 Verification Status}
+Units \code{W2-01}--\code{W2-08} closed as \code{VERIFIED\_WITH\_DECLARED\_RESEARCH\_LIMITATIONS}, preserving $65/65$ Week~1 artifacts and completing an audit of $64$ legacy theoretical concepts (\code{concept\_audit\_64.csv}) prior to Week~3 verifier construction.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 2 Decision Ledger and Gate Handoff}\label{tab:w2_ledger}
+\begin{tabularx}{\textwidth}{@{}P{3.5cm}YP{4.1cm}@{}}
+\toprule
+\textbf{Decision Frozen} & \textbf{Evidence / Counterexample Basis} & \textbf{Open Limits Handed to Week 3} \\
+\midrule
+Week~1 preprocessing contract locked exclusively; \pathcode{ecdr/preprocessing.py} disqualified for bound evaluation & Three-axis conflict (\code{float64}/\code{float32}, \code{sigma\_min}, ID format) makes contracts incompatible; wrong contract $\to$ unsound bounds & Formal Higham $\gamma_n$ enclosure of \code{float32} BN + dot-product rounding deferred to Week~3 \\
+\addlinespace
+$5{,}053$ Test stream denominator retained ($479$ Ambiguous + $1{,}002$ Unlabeled) & Chronological continuity required for ECDR runtime; removing non-supervised windows breaks stride-64 adjacency contract & Stream labels (\code{KNOWN\_}\allowbreak\code{TEST\_}\allowbreak\code{EXPLORATORY}) cannot be un-exposed; all test metrics carry this caveat \\
+\addlinespace
+RF endpoints confirmed: Conv3 column $j \to [4j{-}8,4j{+}11]$; reusable interior: $j \in \{2,\ldots,13\}$ & Structural derivation via every pool phase; zero-padding issue at $j \in \{0,1\}$ & Actual-graph \code{float32} equivalence must be verified bitwise, not just in real arithmetic \\
+\addlinespace
+Gyroscope lag-64 autocorrelation $\approx 0.06$--$0.15$ recorded & Physical root cause of coordinate displacement despite 50\% temporal overlap & Certifiable radii require comparing this displacement against Lipschitz-margin product (Weeks~3--4) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =============================================================================
+% CHAPTER 6
+% =============================================================================
+\chapter{Week 3 --- Mathematical Foundations and Certification}
+
+\section{Receptive Field Endpoint Correction and Independent Verification}
+An initial draft (circulated within the Week~3 review cycle) provisionally suggested Conv3 raw-input dependency intervals of $[4j{-}9,\, 4j{+}10]$ with valid reuse range $j=3..13$ (11 columns). The Week~3 independent reviewer re-derived the interval from scratch by tracing every pool phase and running the actual graph (\pathcode{/tmp/week3_h13_independent.py}):
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Conv1 output $i$ maps to raw input $[i{-}2, i{+}2]$ (kernel=5, padding=2).
+  \item Pool1 output $i$ maps to raw input $[2i{-}2, 2i{+}3]$ (MaxPool stride=2 from Conv1 input).
+  \item Conv2 output $i$ maps to raw input $[2i{-}4, 2i{+}5]$ (kernel=3, padding=1 on Pool1 output).
+  \item Pool2 output $i$ maps to raw input $[4i{-}4, 4i{+}7]$ (MaxPool stride=2 from Conv2 input).
+  \item Conv3 output $j$ maps to raw input $[4j{-}8, 4j{+}11]$ (kernel=3, padding=1 on Pool2 output).
+\end{enumerate}
+
+The correct endpoints are $[4j{-}8, 4j{+}11]$ with reuse range $j=2..13$ (12 columns, one more than the initial draft). Bitwise verification by executing the actual frozen graph confirmed: for $j \in \{2,\ldots,13\}$, max absolute error was $0.0$ (exact equality in \code{float32}). For boundary positions $j \in \{0,1,14,15\}$, errors reached $14.92$, $7.02$, $7.84$, and $18.57$ respectively, confirming that left-boundary columns ($j \in \{0,1\}$) touch zero-padded regions in the new window and must always be recomputed. This correction is recorded in the independent review (\pathcode{output/week3_certification_20261103/independent_review.md}) and supersedes the provisional message. The corrected derivation directly determines the \code{M03} column recomputation schedule (Section~\ref{sec:m03}).
+
+\section{11-Margin Sufficient Condition and Direct-Margin Subtraction}
+Let $z = N(X) \in \R^{6 \times 128}$ denote frozen channelwise standardization and $f_\theta(z) \in \R^{12}$ exact real-arithmetic logits. At anchor $a$ with $c^* = \arg\max_k f_{\theta,k}(N(a))$ (ties broken by lowest index), define the $11$ pairwise contrast margins:
+\begin{equation}
+g_{c^*,j}(z) \triangleq f_{\theta,c^*}(z) - f_{\theta,j}(z), \qquad j \in \{0,\dots,11\}\setminus\{c^*\}.
+\end{equation}
+
+\begin{theorem}[Sufficient Condition for Decision Invariance]\label{thm:margin}
+Let $\Sset \subset \R^{6\times 128}$ be a declared perturbation set containing $z_a = N(a)$, and suppose a verifier produces finite lower bounds $\ell_{c^*,j}(\Sset) \le \inf_{z \in \Sset} g_{c^*,j}(z)$ for all $j \neq c^*$. If
+\begin{equation}
+\min_{j \neq c^*} \ell_{c^*,j}(\Sset) > 0,
+\end{equation}
+then $f_{\theta,c^*}(z) > f_{\theta,j}(z)$ holds strictly for every $j \neq c^*$ and every $z \in \Sset$, proving $\arg\max_k f_{\theta,k}(z) = c^*$ uniformly over $\Sset$ without tie ambiguity.
+\end{theorem}
+
+\begin{proof}
+For any $z \in \Sset$ and any $j \neq c^*$, $f_{\theta,c^*}(z) - f_{\theta,j}(z) = g_{c^*,j}(z) \ge \inf_{u \in \Sset} g_{c^*,j}(u) \ge \ell_{c^*,j}(\Sset) \ge \min_{k \neq c^*} \ell_{c^*,k}(\Sset) > 0$. Thus $c^*$ uniquely maximizes $f_\theta(z)$ across $\Sset$.
+\end{proof}
+
+Instead of bounding logits $f_{\theta,c^*}$ and $f_{\theta,j}$ independently ($\underline{f}_{c^*} - \overline{f}_j$), \textbf{direct-margin subtraction} fuses the 11 contrast rows directly into the output linear layer: $W_{\text{contrast}}^{(c^*)} = e_{c^*}^\top W_{\text{out}} - W_{\text{out}}[-c^*,:]$ and $b_{\text{contrast}}^{(c^*)} = b_{\text{out},c^*} - b_{\text{out}}[-c^*]$, preserving final-layer affine cancellations over shared penultimate boxes.
+
+\section{\code{binary32} Rounding Counterexamples and Higham $\gamma_n$ Bridge}
+Real-arithmetic proofs do not automatically transfer to IEEE-754 \code{binary32} kernels (\code{H22}). Evaluating $g_1 = (2^{24}+1) - 2^{24}$ against $g_2 = 1/2$ yields $g_1 = 1 > g_2$ in $\R$, whereas in \code{binary32} round-to-nearest ties-to-even, $2^{24}+1$ lies halfway between $2^{24}$ and $2^{24}+2$ and rounds to $2^{24}$, producing $g_1 = 0 < g_2$ and flipping the decision.
+
+\subsection{Counterexample Falsifying H09: CROWN Not Universally Tighter than IBP}
+Hypothesis H09 asserted that CROWN provides universally tighter (or cheaper) bounds than IBP. The Week~3 independent review falsified this as an unconditional claim with a minimal counterexample: consider $f(x) = \relu(x)$ with $x \in [-1, 1]$.
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{IBP lower bound:} propagate $[-1, 1]$ through $\relu \to [0, 1]$; IBP lower bound $= 0$.
+  \item \textbf{CROWN linear lower relaxation:} the standard CROWN choice is $y \geq x$ (a lower bound on $\relu(x)$ over $[-1,1]$); evaluating at $x = -1$ gives $y \geq -1$, so the CROWN lower bound $= -1$.
+\end{itemize}
+Here IBP gives a tighter lower bound ($0 > -1$). The claim ``CROWN is universally tighter'' is therefore \textbf{FALSIFIED}. CROWN's linear relaxation can be looser than IBP when the activation's lower relaxation slope is negative at the left boundary of the input interval. This falsification was important because earlier Weeks~1--2 notes had cited a universal CROWN$\geq$IBP assertion; the correction avoids building Week~4 solver selection on a false premise.
+
+\subsection{Counterexample Falsifying H14: GAP Identity Does Not Transfer to Flatten--MLP}
+Hypothesis H14 claimed that a \emph{new-minus-dropped} identity for feature sums, valid for a GAP head, extends to the \code{Flatten--MLP} architecture of \code{SmallCNN1D}. The independent review falsified this:
+\begin{itemize}[leftmargin=1.5em]
+  \item For a GAP head: each output logit is $w_k^\top \cdot (\text{mean of spatial features})$. Adding one new column and removing one old column changes the mean by $\frac{1}{L}(\text{new} - \text{dropped})$, giving a closed-form update.
+  \item For \code{Flatten}: each output logit is $W_k^\top \cdot \text{vec}(\text{all spatial features})$. The weight matrix $W_k \in \R^{2048}$ assigns a \emph{different} weight to every spatial position; adding column $j_{\text{new}}$ and removing column $j_{\text{dropped}}$ produces an \emph{arbitrary} difference $W_k[j_{\text{new}}] \cdot h_{\text{new}} - W_k[j_{\text{dropped}}] \cdot h_{\text{dropped}}$, which cannot be computed without knowing both the new and old intermediate features.
+\end{itemize}
+Consequence: no \emph{closed-form head-only} update exists for \code{Flatten--MLP}. \code{M03} must cache all 5 intermediate layers (\code{h1, p1, h2, p2, h3}) and re-execute the full \code{Linear(2048,128)} forward pass on every query --- there is no shortcut through the head alone.
+
+To bridge $\R$ to deployed CPU execution, every linear and convolutional dot product of length $n$ ($u = 2^{-24}$) applies Higham's forward-error bound~\cite{higham2002}:
+\begin{equation}
+\gamma_n = \frac{n u}{1 - n u}, \qquad n u < 1,
+\end{equation}
+explicitly audited across every reduction length in \code{SmallCNN1D}: $n \in \{30, 96, 128, 192, 2048\}$ (plus $\gamma_4$ for BatchNorm affine scaling) and outward-rounded using \code{nextafter} against exact \code{fractions.Fraction} rational oracles (\code{ExactRationalOracle}).
+
+\section{Offline Domain Diagnostics at $r=10^{-6}$}
+Before live stream gating, Week~3 evaluated offline \code{float64} conditional IBP bounds across all $5,053$ test anchors at validation-selected normalized radius $r = 10^{-6}$ (\nolinkurl{output/week3_certification_20261103/domain_results.json}):
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Diagonal Box:} $5,034/5,053$ positive conditional margin estimates (mean build $6.774\text{ ms}$, bound $4.516\text{ ms}$), yet $0$ next windows fell inside the box ($0$ formal certificates).
+  \item \textbf{Fixed-Overlap Wave ($384$ prefix + $384$ tail):} $4,211/5,053$ positive conditional estimates (mean build $6.830\text{ ms}$, bound $4.546\text{ ms}$), again with $0$ next-window members ($0$ formal certificates).
+\end{itemize}
+
+\section{Week 3 Operational Replay and Fallback Attribution}
+Running two timed repeats of the Week~3 fail-closed prototype over all $5,053$ test windows (\pathcode{runtime_results.json}) yielded $0$ accepted reuse hits and $5,053$ fallbacks ($0$ disagreements). Mean query latency reached $3.174 / 3.107\text{ ms}$ (diagonal box, $49$ domain builds) and $3.198 / 3.169\text{ ms}$ (fixed-overlap wave, $69$ builds), versus $0.224 / 0.215\text{ ms}$ core reference and $1.675 / 1.589\text{ ms}$ wrapper overhead. Fallback reasons for diagonal box (wave) were: \pathcode{outside_domain} $5,004$ ($4,984$), \pathcode{stale_or_expired_anchor} $29$, \pathcode{recording_reset} $18$, and \pathcode{no_certificate} $2$ ($22$).
+
+\section{\code{auto\_LiRPA 0.8.0} Graph Conversion Probe}
+Probing \pathcode{auto_LiRPA 0.8.0} directly on native 1D \code{SmallCNN1D} (\pathcode{lirpa_probe.json}) failed during graph conversion with \code{IndexError: list index out of range} inside \pathcode{auto_LiRPA/operators/pooling.py:29} on \code{MaxPool1d} padding. Lifting tensors via a singleton height dimension $(N,C,L) \to (N,C,1,L)$ with equivalent $(1,k)$ 2D convolutions and $(1,2)$ \code{MaxPool2d} (\code{SingletonHeightCNN}) passed conversion with $0.0$ sampled logit discrepancy. Across $12$ probe records (validation anchors $0, 345$ at radii $\{0, 10^{-3}, 10^{-2}\}$), $6$ bounds were positive, with CROWN at $r=10^{-3}$ requiring $388.2\text{--}427.2\text{ ms}$ versus $2.8\text{--}8.6\text{ ms}$ for IBP; because CROWN executes over PyTorch \code{binary32} BLAS without Higham outward rounding, \pathcode{formal_runtime_reuse} remained \code{DISABLED}.
+
+\subsection{Why \code{formal\_runtime\_reuse = DISABLED} in Week~3}
+Week~3 offline \code{float64} IBP reported $0$ fallback disagreements across $5{,}053$ test queries only because \emph{every} query fell back to the reference classifier ($0/5{,}053$ next windows entered the $r=10^{-6}$ candidate domain, yielding $0$ accepted reuse hits). That zero-disagreement count must not be mistaken for numerical soundness of \code{float64} bounds. Keeping \pathcode{formal_runtime_reuse = DISABLED} during Week~3 rested on three gaps documented in \pathcode{output/week3_certification_20261103/independent_review.md}:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Precision mismatch:} Week~3 offline bounds ran in \code{float64} ($u_{64} = 2^{-53}$), whereas the deployed reference classifier executes in IEEE-754 \code{binary32} ($u_{32} = 2^{-24}$).
+  \item \textbf{Unbounded executable rounding:} Ordinary \code{float64} interval propagation did not enclose \code{float32} rounding accumulated across channelwise normalization, frozen BatchNorm affine scaling, and Conv/Linear reductions in PyTorch MKL-DNN BLAS.
+  \item \textbf{Missing Higham bridge in Week~3:} End-to-end directed \code{binary32} outward rounding was deferred to Week~4 (\pathcode{ecdr/week4/numerics.py}, Gate~\code{W4-009/010}). Per the Week~3 reviewer ruling (\textit{``If unavailable, runtime formal reuse must remain disabled''}), runtime reuse stayed locked off until the Week~4 bridge cleared qualification.
+\end{enumerate}
+
+\section{Persistent Memory Snapshot and Week 3 Verification}
+Week~3 persistent memory profiling (\code{memory\_components.json}) recorded $1{,}136{,}072\text{ B}$ for the \code{float32} reference ($1{,}134{,}768\text{ B}$ parameters + $1{,}304\text{ B}$ buffers), $2{,}272{,}120\text{ B}$ for the \code{float64} bound snapshot, $54{,}839\text{ B}$ per conditional certificate (including $49{,}898\text{ B}$ domain payload), and $679{,}380\text{ KiB}$ global peak RSS. All $93/93$ Week~3 tests ($60$ historical + $27$ actual-graph + $6$ math counterexamples) and $170/170$ Week~1/2 hashes passed.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 3 Decision Ledger and Gate Handoff}\label{tab:w3_ledger}
+\begin{tabularx}{\textwidth}{@{}P{3.6cm}YP{3.8cm}@{}}
+\toprule
+\textbf{Decision Frozen} & \textbf{Evidence / Counterexample Basis} & \textbf{Open Limits Handed to Week 4} \\
+\midrule
+RF endpoints corrected to $[4j{-}8,4j{+}11]$, reuse range $j=2..13$ & Re-derivation via pool phases; boundary errors $14.92$/$7.02$/$7.84$/$18.57$ at $j \in \{0,1,14,15\}$; bitwise \code{float32} equality at $j=2..13$ & \code{M03} must recompute $j \in \{0,1\}$ always (zero-padding mismatch); left-boundary behavior measured in Week~4 \\
+\addlinespace
+\code{H09} reclassified \code{NOT ESTABLISHED} & Counterexample: $\relu(x)$ on $[-1,1]$ --- IBP lower bound $0$, CROWN lower bound $-1$ & Actual per-solver timing on HAPT queries deferred to Week~4 ablations \\
+\addlinespace
+\code{H14} DERIVED only for GAP head, not Flatten--MLP & Position-sensitive weight matrix: no closed-form head-only update; \code{M03} must cache all 5 intermediate layers and re-execute Linear & Full overhead of intermediate caching measured in Week~4 \\
+\addlinespace
+\code{formal\_runtime\_reuse = DISABLED} in Week~3 & \code{float64} conditional bounds ($u_{64}=2^{-53}$) do not enclose \code{float32} accumulated rounding ($u_{32}=2^{-24}$); 0 reuse hits relied on fallback & Week~4 must close the \code{binary32} Higham bridge (\code{W4-009/010}) before enabling formal reuse \\
+\addlinespace
+Offline domain coverage: $0/5{,}053$ next-window members & Both diagonal box and fixed-overlap wave: next window always falls outside certified region at $r=10^{-6}$ & Week~4 must explore larger $\epsilon$, correlated domains, and PCA subspaces; root cause (Lipschitz $\times$ displacement gap) confirmed post-Week~4 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+% =============================================================================
+% CHAPTER 7
+% =============================================================================
+\chapter{Week 4 --- System Implementation and Evaluation}\label{ch:week4}
+
+\section{Gate W4-031: Pre-Test Integration Review and Protocol Seal}
+Before any test window was touched, Week~4 required passing Gate~\code{W4-031} (\pathcode{04_SYNTHESIS/week4/design/PRETEST_REVIEW.md} and \pathcode{output/week4/week4_initial_20261103/pretest_review.json}): an independent integration review conducted after completing all $30/40$ tasks in Milestones M0--M4. The gate audit confirmed:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Cryptographic identity lock:} Execution modules bind strictly to the frozen Week~1 checkpoint \pathcode{output/week1_closeout_20261102/reference/selected_best.pt} (SHA-256 \pathcode{8ffc5dd8eb0e9cdf832160d074f3ae816ae6cba02adf7214a63a8b623303adb1}) and frozen normalization identity \pathcode{aa8e1cc20829307187e0a78200f9957f7dd068b1dc26063c2720ad832bb2fd6e} (verified in \pathcode{ecdr/week4/reference.py} and \pathcode{numerical_review.json}), with all $214$ historical protected files verified intact. (The manual prose note \pathcode{PRETEST_REVIEW.md} retains two stale placeholder hashes/paths in Section~2.2 that do not match the frozen checkpoint on disk.)
+  \item \textbf{Zero-leakage guarantee:} \code{QueryView} carries no \code{label} or \code{ground\_truth} field. Candidate domain construction uses only the normalized sensor vector $z_0$; ground-truth labels are accessed only by the outer evaluator after the method has committed to a decision.
+  \item \textbf{Selected policy:} $20$ candidate anchors across $9$ candidate domain policies had already been evaluated on the validation split (\code{W4-030}, \pathcode{selection_validation.json}); $0$ produced joint member hits. \pathcode{selected_policy.json} was sealed with \code{formal\_reuse\_enabled=false} before test execution began, preventing test-set leakage into policy selection.
+  \item \textbf{Master Seal:} Protocol Seal \pathcode{5680676232ddb0103b69368a3200353ef1a3ac31ef80fc24876c0e14628b811b} (\pathcode{output/week4/week4_initial_20261103/protocol_seal.json}) verified all protected files via \pathcode{scripts/week4_audit.py}. Any mutation to sealed configuration or source aborts test-stream replay.
+  \item \textbf{Test suite state at gate:} $345/345$ unit tests PASS at Milestone~M4 closure (later expanded to $376/376$ across Milestones~M5--M7 and Week~5 verification tests).
+\end{enumerate}
+The \code{W4-031} gate guarantees that method selection remained strictly blind to the held-out replay execution.
+
+\section{Numerical Hazard: \code{separate\_logits} \textup{vs.} \code{direct\_head\_difference}}
+A subtle numerical hazard was identified during the Week~4 mathematical review (\pathcode{04_SYNTHESIS/week4/design/FLOAT32_BRIDGE.md}). Consider computing the pairwise margin $m_{c^*,j} = f_{c^*}(h) - f_j(h)$ over the final output layer \code{head.3} (\code{Linear(128, 12)}), where $h \in \R^{128}$ is the post-\code{ReLU} penultimate hidden state:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{\code{separate\_logits} (correct default):} PyTorch executes $\hat{f}_{c^*} = \mathrm{fl}(W_{c^*} h + b_{c^*})$ and $\hat{f}_j = \mathrm{fl}(W_j h + b_j)$ as two separate length-$128$ dot products, each accumulating rounding errors independently. The verified margin lower bound is $\text{\code{round\_down\_f32}}(\underline{z}_{c^*} - \overline{z}_j)$.
+  \item \textbf{\code{direct\_head\_difference} (requires additive correction):} Fusing weights as $(W_{c^*} - W_j)h + (b_{c^*} - b_j)$ performs a single dot product over a difference vector, omitting the independent rounding accumulated across the two $n=128$ PyTorch reductions ($\gamma_{129}$). The validated implementation in \pathcode{ecdr/week4/numerics.py} must explicitly subtract $\Delta_{c^*} + \Delta_j$ (where $\Delta_k = \gamma_{129}\sum_i |W_{k,i}||h_i| + |b_k|$ plus subnormal terms). Without this correction, fused evaluation can certify a \emph{false positive} near tie when $\mathrm{fl}(z_{c^*}) \le \mathrm{fl}(z_j)$.
+\end{itemize}
+
+The executed numerical bridge test (\pathcode{bridge_checks.json}, \pathcode{numerical_bridge.json}, \code{W4-009}) demonstrates how conservative end-to-end Higham enclosure behaves on real HAPT inputs:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Confident witness (\code{global\_row\_id=15031}, Val index~0):} Achieved strictly positive end-to-end \code{binary32} lower margins of $+2.1199$ at $\epsilon=0$ and $+2.0218$ at $\epsilon=10^{-6}$ (\code{VALIDATED\_POSITIVE}), confirming that the Week~4 Higham bridge is tight enough to certify genuinely well-separated inputs.
+  \item \textbf{Near-tie witness (\code{global\_row\_id=13358}, Rec~48, \code{step\_idx=236}):} Exhibits razor-thin executable margin $m_1 = 6.2438531 - 6.2437396 = 1.135 \times 10^{-4}$ logit units. While a preliminary head-only illustration in \pathcode{FLOAT32_BRIDGE.md} yielded $+7.05 \times 10^{-5}$ at $\epsilon=0$, the full multi-layer Higham enclosure executed across all Conv, BatchNorm, and Linear layers in \pathcode{bridge_checks.json} accumulated ${\approx}0.03$ uncertainty, returning \code{min\_lower\_margin = -0.03019} (\code{VALIDATED\_INCONCLUSIVE}, \code{near\_tie\_control\_rejected = true}) even at $\epsilon=0$, and widening to $-0.09039$ at $\epsilon=10^{-6}$. For perturbations $\epsilon \ge 10^{-5}$, interval wrapping across 3 Conv and 2 Linear layers amplifies bounds by $>10^4\times$, explaining why validated regional IBP (\code{M06}, \code{M07}) produces $0$ certificates on stride-64 streams.
+\end{itemize}
+
+\section{Cryptographic Ownership, Certificate Store, and Fail-Closed Gate}
+Week~4 engineered the production-structured modular verification runtime inside \pathcode{ecdr/week4/} (\code{reference.py}, \code{numerics.py}, \code{bounds.py}, \code{domains.py}, \code{incremental.py}, \code{certificates.py}, \code{runtime.py}, \code{methods.py}). \code{ReferenceOwner} encapsulates the frozen model under three explicit integrity policies:
+\begin{itemize}[leftmargin=1.5em]
+  \item \code{CORE\_INFERENCE} (\code{M00}): Zero per-query re-hash overhead; baseline reference execution.
+  \item \code{OWNED\_GENERATION} (\code{M16}): Load-time SHA-256 verification plus shallow $<0.01\text{ ms}$ pointer and \code{eval}-mode checks per query.
+  \item \code{STRONG\_PER\_QUERY} (\code{M01}): Full per-query SHA-256 parameter and AST verification.
+\end{itemize}
+
+\code{CertificateIssuer} and \code{ImmutableCertificateStore} bind each issued \code{Certificate} payload via an HMAC/SHA-256 \code{TrustedAnchorReceipt}, \pathcode{anchor_state_hash}, \pathcode{integrity_hash}, and finite \code{horizon}. Certificates obey strict non-recentering (\code{H15}): a reuse hit never updates the anchor or extends its lifetime. As shown in Fig.~\ref{fig:gate}, \code{StreamingRuntimeExecutor} enforces fail-closed fallback on recording boundaries, step gaps, expired horizons, mismatched cryptographic identities, closed numerical gates, non-finite inputs, or violated domain membership.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=ink, rounded corners=3pt, fill=pale, text=ink, align=center, font=\footnotesize, text width=2.8cm, minimum height=1.0cm},
+  decision/.style={draw=teal, diamond, aspect=1.75, fill=white, text=ink, align=center, font=\scriptsize, inner sep=1pt, text width=2.05cm},
+  arrow/.style={-{Latex[length=2mm]}, thick, color=ink},
+  failarrow/.style={-{Latex[length=2mm]}, thick, color=warnred, dashed},
+  failseg/.style={thick, color=warnred, dashed}
+]
+  \node[box] (query) at (0,0) {\textbf{Query} \code{QueryView}\\$(X_t, \text{rec}, \text{step})$};
+  \node[decision] (b1) at (3.7,0) {\textbf{1.\,Boundary/ID}\\Rec/step/hash OK?};
+  \node[decision] (b2) at (7.5,0) {\textbf{2. Gate \& Life}\\Cap eligible,\\age $\le H$?};
+  \node[decision] (b3) at (11.3,0) {\textbf{3. Member}\\$\Theta(m)$ exact\\box / prefix?};
+  \node[decision] (b4) at (11.3,-4.1) {\textbf{4. Margin}\\All 11 $\ell_{c,j} > 0$\\\& finite?};
+
+  \node[box, fill=teal!15, draw=teal] (reuse) at (7.5,-4.1) {\textbf{CERTIFIED REUSE}\\Return $c^*(a)$\\Skip \code{SmallCNN1D}};
+  \node[box, fill=warnred!12, draw=warnred, text width=3.6cm] (fallback) at (3.7,-2.75) {\textbf{FAIL-CLOSED FALLBACK}\\Run $\widehat{F}(X_t)$ via \code{ReferenceOwner}\\Issue \code{TrustedAnchorReceipt}};
+
+  \draw[arrow] (query) -- (b1);
+  \draw[arrow] (b1) -- node[above, font=\scriptsize] {Pass} (b2);
+  \draw[arrow] (b2) -- node[above, font=\scriptsize] {Pass} (b3);
+  \draw[arrow] (b3) -- node[right, font=\scriptsize] {Pass} (b4);
+  \draw[arrow] (b4) -- node[above, font=\scriptsize] {Pass} (reuse);
+
+  \draw[failarrow] (b1.south) -- node[right, font=\scriptsize] {Fail} (fallback.north);
+  \draw[failarrow] (b2.south) |- node[pos=0.22, right, font=\scriptsize] {Fail} ([yshift=0.32cm]fallback.east);
+  \draw[failarrow] (b3.east) -- node[above, font=\scriptsize] {Fail} (13.4,0) |- (3.7,-5.75) -- (fallback.south);
+  \draw[failseg] (b4.south) -- node[right, font=\scriptsize] {Fail} (11.3,-5.75);
+\end{tikzpicture}
+\caption{ECDR fail-closed streaming arbitration (\nolinkurl{ecdr/week4/runtime.py}). Any failure along identity, numerical eligibility, horizon, membership, or strict 11-margin positivity defaults cleanly to reference execution.}
+\label{fig:gate}
+\end{figure}
+
+\section{Solvers and Candidate Domain Geometries}
+Week~4 implemented three bounding engines and four input-region geometries:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Validated Direct-Margin IBP (\code{M06}, \code{M07}):} Propagates intervals over $[W m + b - |W|r,\; W m + b + |W|r]$ with split positive/negative weights and Higham outward rounding in \code{binary32}.
+  \item \textbf{Global $\ell_2$ Operator Lipschitz (\code{M05}, \code{W4-012}):} Computes exact Conv1d spectral norms via 50-step adjoint power iteration (\code{F.conv1d} / \code{F.conv\_transpose1d}), multiplied by frozen BatchNorm scales $\max_c |\gamma_c|/\sqrt{\sigma_c^2+\epsilon}$ and linear-layer spectral norms to bound pairwise margin slopes $L_{c^*,j}$, yielding $\ell_{c^*,j} = g_{c^*,j}(z_a) - L_{c^*,j} r_2$ for $r_2 = \frac{1}{2}\norm{\overline{z}-\underline{z}}_2$.
+  \item \textbf{Backward Linear Relaxation (\code{M10}, \code{M11}, \code{W4-013/014}):} Executes CROWN over \code{SingletonHeightCNN}. Because PyTorch \code{binary32} BLAS kernels lack our Higham outward wrapper, all CROWN outputs carry the strict tag \code{SURROGATE\_BACKWARD\_RELAXATION}.
+  \item \textbf{PCA Affine Tail Domain (\code{M08}, \code{M09}, \code{W4-016/017}):} Fit exclusively on $9{,}944$ consecutive training pairs (\code{fit\_sha256: d11da420...}), tail displacements $\Delta z_{\text{tail}} \in \R^{384}$ are parameterized as
+  \begin{equation}
+  \text{tail} = c + B \diag(a) u + \diag(e) v, \qquad \|u\|_\infty, \|v\|_\infty \le 1,
+  \end{equation}
+  where $B \in \R^{384 \times 8}$ holds $K=8$ orthonormal SVD basis vectors, $a \in \R^8$ bounds principal projections, and $e \in \R^{384}_{\ge 0}$ bounds orthogonal residuals (\code{mean = 9.6767}, \code{max = 26.4287}). \code{CorrelatedBoundEngine} evaluates CROWN backward slopes $lA_{\text{tail},m}$ directly on generators $B_k$ ($\sum_k |(lA_{\text{tail},m})^\top B_k| a_k$) versus the outer coordinate hull ($\sum_k \sum_j |lA_{\text{tail},m,j}||B_{j,k}| a_k$).
+\end{enumerate}
+
+\section{Stagewise Incremental Feature Schedule (\code{M03})}\label{sec:m03}
+Under stride $S=64$, nominal raw support for \code{Conv3} output column $j$ spans $[4j-8, 4j+11]$. Shifting by $S=64$ aligns interior columns $j=2,\dots,13$ ($12$ columns $\times$ $64$ channels) with previous step columns $j+16$, provided BatchNorm operates in \code{eval} mode (training mode caused $2.26$ max abs error in \code{W4-021}) and pooling phases coincide.
+
+\subsection{Why All 5 Intermediate Layers Are Cached}
+\code{M03} caches \code{h1} (Conv1 output), \code{p1} (Pool1 output), \code{h2} (Conv2 output), \code{p2} (Pool2 output), and \code{h3} (Conv3 output) --- all 5 intermediate layers. This is not conservative overengineering; it is required by the dependency structure:
+\begin{itemize}[leftmargin=1.5em]
+  \item Without caching \code{p2}: recomputing the $20$ uncached Conv3 columns ($2$ left-boundary + $18$ tail columns) would require backward-tracing through Pool2 to Conv2 and through Pool1 to Conv1, covering $92/128$ Conv1 columns instead of $68/128$.
+  \item Caching \code{p2} reduces Conv1 recomputation from $92/128$ to $68/128$ columns, a reduction of $24$ columns that matters because Conv1 is the widest layer ($128$ output positions, each covering $5$ raw inputs).
+  \item Caching \code{h3} (Conv3 output) is what enables \emph{column-level} identity: the $12$ interior columns are directly borrowed; without caching, their values would need to be recomputed from the Conv1 level.
+\end{itemize}
+
+\subsection{Why Left-Boundary Conv3 Columns Always Require Recomputation}
+Conv3 columns $j \in \{0, 1\}$ depend on raw input positions $[-8, 11]$ and $[-4, 15]$ respectively. In the new window (of length 128), positions with indices $t < 0$ do not exist and are replaced by zero-padding (the standard PyTorch Conv1d behavior with \code{padding=1}). In the previous window, those same relative positions correspond to actual sensor data at positions $t \in [56, 63]$ and $t \in [60, 63]$. Since zero $\neq$ actual sensor data in general, the cached Conv3 values at positions $j+16 \in \{16, 17\}$ of the previous step are not equal to the current Conv3 values at $j \in \{0, 1\}$. These two columns therefore must always be recomputed from scratch, regardless of temporal stability.
+
+Crucially, invoking PyTorch BLAS \code{sgemv} at $L_{\text{out}}=1$ versus \code{sgemm} at $L_{\text{out}} \ge 2$ induced an $8.94 \times 10^{-8}$ max abs reduction-order discrepancy. \code{ActualK12IncrementalEngine} (\nolinkurl{ecdr/week4/incremental.py}) therefore enforces minimum slice width $L_{\text{out}} \ge 2$: \code{Conv1} recomputes columns $\{0,1\} \cup [62,127]$ ($68/128$ cols, reusing $60$ cols), \code{Conv2} recomputes $36/64$ cols (reusing $28$), and \code{Conv3} recomputes $\{0,1\} \cup [14,31]$ ($20/32$ cols, reusing $12$), followed by full \code{Flatten(2048)}--\code{Linear(128)}--\code{Linear(12)} execution. Arithmetic falls from $909{,}312$ to $532{,}224$ Conv MACs ($-41.47\%$) and from $1{,}172{,}992$ to $795{,}904$ total Conv+Linear MACs ($-32.15\%$). Checks across $2{,}414$ validation steps and $5{,}034$ adjacent test steps ($3{,}866{,}112$ scalar comparisons) confirmed $0.0$ max absolute logit error and $0$ decision disagreements.
+
+\section{Conditional Solver Ablations}
+Validation ablations (\code{W4-011/014/017/034}) established three quantitative solver trade-offs:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Direct Margin Fusion vs.\ Separate Logits (\code{H08}):} On five validation samples at $\epsilon = 10^{-5}$, direct-margin fusion increased positive certification from $0.60$ (mean margin $0.8676$) to $0.80$ (mean $1.4298$, mean gain $+0.5623$ logit units), though dependency loss still overwhelmed margins at $\epsilon \ge 10^{-4}$ (\code{H07}).
+  \item \textbf{CROWN Surrogate vs.\ IBP Build Cost:} On validation anchors, 2D-surrogate \code{CROWN} certified perturbations at $\epsilon = 10^{-4}$ ($95.9\text{ ms}$, $+2.215$) and $\epsilon = 10^{-3}$ ($623.8\text{ ms}$, $+1.329$) where both \code{auto\_LiRPA IBP} ($2.59\text{ ms}$, $-4.036$) and actual IBP ($5.17\text{ ms}$, $-4.107$) failed. In \code{W4-034} sweeps ($\epsilon \in [10^{-4}, 10^{-1}]$), build costs scaled at $0.65\text{--}0.73\text{ ms}$ (IBP), $3.82\text{--}4.25\text{ ms}$ (correlated), and $12.45\text{--}14.50\text{ ms}$ (CROWN), while $K=1\dots 32$ SVD projection cost $583.1\text{--}1{,}353.4\text{ ns}$.
+  \item \textbf{Correlated Native vs.\ Coordinate Hull:} On anti-correlated toy $y = x_1 + x_2$ ($x_1=u, x_2=-u$), native generator evaluation returned exact $[0,0]$ bounds while outer hull bounding suffered $100\%$ hull loss ($[-2,2]$); yet on HAPT streams, large empirical tail residuals (\code{mean = 9.68}) prevented certification in both \code{M08} and \code{M09}.
+\end{enumerate}
+
+\section{Full-Stream Paired Replay}
+During pre-test calibration (\code{selected\_policy.json}, \code{W4-030}), $20$ candidate domain proposals produced $0$ positive bounds, $0$ members, and $0$ hits, closing the formal reuse gate (\code{formal\_reuse\_enabled=false}). Across all $5{,}053$ test windows ($3$ repetitions $= 15{,}159$ paired timing rows per executed method; \nolinkurl{04_SYNTHESIS/week5/evidence/reconcile_replay.json} and \nolinkurl{paired_latency.json}), independent recount confirmed $0$ top-1 disagreements against Week~1 baseline predictions (\code{full\_stream\_agreement = 1.0}). Table~\ref{tab:paired_main} summarizes end-to-end CPU latency outcomes.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Full-Stream Paired Query Latency vs.\ \code{M00} Baseline ($N = 5,053 \times 3 = 15,159$ Observations)}
+\label{tab:paired_main}
+\begin{tabularx}{\textwidth}{@{}lYrrrrrr@{}}
+\toprule
+\textbf{ID} & \textbf{Method} & \textbf{Hits} & \textbf{Mean (ms)} & \textbf{p50 / p95 (ms)} & \textbf{QPS} & \textbf{Speed Ratio} & \textbf{Reduction} \\
+\midrule
+\code{M00} & Frozen full core & $0$ & $0.3420$ & $0.330 / 0.407$ & $2,923.71$ & $1.0000\times$ & $0.00\%$ \\
+\code{M16} & Owned reference baseline & $0$ & $0.4674$ & $0.451 / 0.565$ & $2,139.37$ & $0.7317\times$ & $-36.66\%$ \\
+\code{M01} & Strong per-query wrapper & $0$ & $1.6766$ & $1.603 / 2.115$ & $596.44$ & $0.2040\times$ & $-390.19\%$ \\
+\code{M02} & Exact normalized input hash & $0$ & $0.4788$ & $0.451 / 0.637$ & $2,088.63$ & $0.7144\times$ & $-39.98\%$ \\
+\code{M03} & Incremental Conv (all pairs) & $5,034$ & $1.9273$ & $1.755 / 2.877$ & $518.87$ & $0.1775\times$ & $-463.47\%$ \\
+\code{M04} & Heuristic ($\ell_2 \le 0.05$) & $0$ & $0.4974$ & $0.466 / 0.677$ & $2,010.61$ & $0.6877\times$ & $-45.41\%$ \\
+\code{M05} & Global Lipschitz ball & $0$ & $0.5094$ & $0.481 / 0.678$ & $1,963.01$ & $0.6714\times$ & $-48.94\%$ \\
+\code{M06} & Validated IBP diagonal box & $0$ & $7.1278$ & $6.548 / 10.564$ & $140.30$ & $0.0480\times$ & $-1983.96\%$ \\
+\code{M07} & Validated IBP fixed-overlap wave & $0$ & $6.5641$ & $6.142 / 9.722$ & $152.34$ & $0.0521\times$ & $-1819.16\%$ \\
+\code{M08} & Correlated candidate via hull & $0$ & $0.4626$ & $0.449 / 0.527$ & $2,161.59$ & $0.7393\times$ & $-35.26\%$ \\
+\code{M09} & Native correlated affine bounds & $0$ & $0.4481$ & $0.445 / 0.467$ & $2,231.51$ & $0.7632\times$ & $-31.02\%$ \\
+\code{M10} & CROWN diagonal surrogate & $0$ & $0.4500$ & $0.449 / 0.471$ & $2,222.03$ & $0.7600\times$ & $-31.58\%$ \\
+\code{M11} & CROWN wave/correlated surrogate & $0$ & $0.4479$ & $0.445 / 0.468$ & $2,232.56$ & $0.7636\times$ & $-30.96\%$ \\
+\code{M12} & Fixed-anchor policy control & $0$ & $0.4966$ & $0.470 / 0.502$ & $2,013.70$ & $0.6887\times$ & $-45.19\%$ \\
+\code{M13} & Finite-horizon ($H\in\{1,2\}$) control & $0$ & $6.1458$ & $6.000 / 8.120$ & $162.71$ & $0.0557\times$ & $-1696.85\%$ \\
+\code{M14} & LipCache (unsupported scope) & -- & -- & -- & -- & -- & -- \\
+\code{M15} & TinyD\'ej\`aVu (MCU applicability audit) & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Two core findings stand out:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Incremental Coverage Without Speedup (\code{H14}, \code{H20}):} \code{M03} reused interior features on $5{,}034/5{,}053$ queries ($99.62\%$ stream rate; $100\%$ of within-recording pairs), yet slowed execution $5.64\times$. On the $15{,}102$ matched reuse rows, mean latency rose from $0.3419\text{ ms}$ to $1.9280\text{ ms}$ ($+1.5861\text{ ms}$, $+463.86\%$); even on the $57$ non-reuse reset rows, \code{M03} took $1.7192\text{ ms}$ vs.\ $0.3676\text{ ms}$ due to Python tensor allocation, concatenation, and mandatory \code{Linear(2048,128)} execution outlasting C++ MKL-DNN forward evaluation.
+  \item \textbf{Vanishing Regional Coverage (\code{H19}):} Because \code{M05}--\code{M13} logged $0$ certified hits, hit-path latency $H$ remains unobserved. Even under an idealized zero-cost hit ($H=0$) with fallback cost $F = 0.4479\text{ ms}$ (\code{M11}), break-even $r H + (1-r) F < B$ ($B=0.3420\text{ ms}$) requires $r > (F-B)/(F-H) = 23.64\%$ hits.
+\end{itemize}
+
+\section{Attributable Memory Footprint and Week 4 Closeout Integrity}
+Relative to the $1{,}136{,}072\text{ B}$ baseline model ($2{,}272{,}120\text{ B}$ \code{float64} snapshot), attributable state footprints remained compact: $1{,}113\text{ B}$ (\code{M00}), $16{,}049\text{ B}$ (\code{M03}), $15{,}053\text{--}18{,}084\text{ B}$ (\code{M05}--\code{M07}, \code{M12}--\code{M13}), and $1{,}466{,}120\text{--}1{,}466{,}555\text{ B}$ (\code{M08}--\code{M11} due to PCA/CROWN adapter payloads). All $40$ Week~4 closeout tasks (\code{W4-001}--\code{W4-040}) passed delivery checks, Master Seal \code{56806762...} verified $247$ protected files via \nolinkurl{scripts/week4_audit.py} ($214$ historical manifest files), and the full regression suite (\nolinkurl{tests/run_all_tests.py}) passes $376/376$ automated tests ($0$ failures, $0$ errors).
+
+\section{External Comparator Scope Limitations: \code{M14} and \code{M15}}
+Two prior-work methods were audited but not executed (\code{AUDITED\_UNSUPPORTED}):
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{\code{M14} LipCache~\cite{xiang2026lipcache}:} LipCache requires training a separate \code{GuardNet} proxy network (Remark~5.2 of the paper) that approximates the Lipschitz constant of the original backbone. Training a GuardNet preserves neither the frozen \code{SmallCNN1D} weights nor the fixed decision function; it would introduce a modified model, violating the ECDR contract of zero modification to the reference classifier. Scope: \code{AUDITED\_UNSUPPORTED}.
+  \item \textbf{\code{M15} TinyD\'ejaVu~\cite{tinydejavu}:} TinyD\'ejaVu is designed as a bare-metal SRAM ring buffer for MCU-class ARM Cortex-M devices, where the entire model, buffer, and runtime fit in tens of kilobytes of SRAM. The CPU Python runtime (\code{PyTorch 2.14.1+cpu}, $1{,}136{,}072\text{ B}$ model, \code{float32} operations via MKL-DNN) is architecturally incompatible with the SRAM-first MCU design. Applying the MCU ring-buffer concept to the CPU test harness would require a full re-implementation that is no longer the same system. Scope: \code{AUDITED\_UNSUPPORTED}.
+\end{itemize}
+Both methods are reported as separate rows in Table~\ref{tab:paired_main} with \code{--} values to maintain honest accounting of scope coverage.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 4 Decision Ledger and Gate Handoff}\label{tab:w4_ledger}
+\begin{tabularx}{\textwidth}{@{}P{3.5cm}YP{4.1cm}@{}}
+\toprule
+\textbf{Decision Frozen} & \textbf{Evidence / Counterexample Basis} & \textbf{Open Limits Handed to Week 5} \\
+\midrule
+Gate \code{W4-031} passed before any test window seen & $345/345$ tests PASS at M4; zero-leakage \code{QueryView} (no label field); \pathcode{selected_policy.json} sealed with $0$ validation hits; Master Seal \code{56806762...} verified & Test-set metrics are exploratory (\code{KNOWN\_}\allowbreak\code{TEST\_}\allowbreak\code{EXPLORATORY}); cannot be treated as untouched holdout \\
+\addlinespace
+\code{separate\_logits} used as default margin computation & \code{direct\_head\_difference} requires additive $\Delta_{c^*} + \Delta_j$ correction ($n=128$, $\gamma_{129}$); near-tie witness \code{row=13358} ($m_1 = 1.135 \times 10^{-4}$) yields \code{min\_lower\_margin = -0.0302} end-to-end even at $\epsilon = 0$ (\code{VALIDATED\_INCONCLUSIVE}) & Confident samples (\code{row=15031}) pass at $\epsilon \le 10^{-6}$, yet regional IBP wrapping collapses by $\epsilon \ge 10^{-5}$ \\
+\addlinespace
+\code{M03} caches all 5 intermediate layers & Without \code{p2} cache, Conv1 recomputation rises from $68/128$ to $92/128$ cols; without \code{h3} cache, column-level identity unusable & Python tensor allocation overhead ($+1.5861\text{ ms}$) dominates saved MAC count; speedup possible only with fused kernels / lower alloc cost \\
+\addlinespace
+\code{M14} and \code{M15} classified \code{AUDITED\_UNSUPPORTED} & \code{M14} requires GuardNet retraining (breaks frozen reference); \code{M15} is SRAM ring buffer for bare-metal MCU, incompatible with CPU Python runtime & Re-evaluation possible only if reference model and runtime constraints change \\
+\addlinespace
+\code{H24} trilemma \code{NOT\_ESTABLISHED} across $0/17$ methods & $0$ certified stream hits; break-even requires $>23.64\%$ hit rate; actual Lipschitz $\times$ displacement gap: $1{,}562.7\times$ median & Feasibility path: smaller stride or verification-aware training; CPU Python at stride-64 is an unfavorable operating point \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =============================================================================
+% CHAPTER 8
+% =============================================================================
+\chapter{Synthesis and Discussion}
+
+\section{Cross-Week Synthesis: Answering RQ1--RQ3 and the Joint Trilemma}
+Integrating Weeks~1--4 resolves all three research questions cleanly:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Answer to RQ1 (Sufficiency):} Real-arithmetic 11-margin positivity (Theorem~\ref{thm:margin}) is necessary but insufficient alone; deployed CPU soundness strictly requires direct-margin fusion, a 2D surrogate adapter (\code{SingletonHeightCNN}) if using \code{auto\_LiRPA}, Higham $\gamma_n$ \code{binary32} enclosure, conservative $\Theta(m)$ coordinate checks, and immutable cryptographic anchor binding.
+  \item \textbf{Answer to RQ2 (Admissibility):} Across diagonal boxes, fixed-overlap waves, $K=8$ PCA affine subspaces, and finite horizons, $0/5,053$ chronological HAPT stride-64 queries fall inside certifiable regions.
+  \item \textbf{Answer to RQ3 (Runtime Economics):} On CPU at batch size 1, neither regional certification ($0.4479\text{--}7.1278\text{ ms}$) nor exact incremental feature reuse ($1.9273\text{ ms}$) beats the $0.3420\text{ ms}$ \code{M00} baseline.
+\end{itemize}
+Consequently, Hypothesis~\code{H24} (simultaneously achieving formal soundness, useful streaming coverage, and net wall-clock speedup) remains \code{NOT\_ESTABLISHED} across $0/17$ registered methods.
+
+\section{Root-Cause Diagnostic I: Streaming Displacement vs.\ Certified Radii}
+To quantify why norm balls and boxes missed every stride-64 transition, post-Week~4 feasibility diagnostics (\nolinkurl{scripts/post_w4_feasibility_study.py}, \code{lipschitz\_capability.json}) analyzed $1,000$ consecutive same-recording test pairs. Multiplicative layer spectral norms reach $L_{\text{backbone}} = 423.72$ (driven by BatchNorm scales $3.05\text{--}3.17$ and Conv spectral norms $1.53\text{--}1.90$), yielding pairwise margin Lipschitz constants $337.62\text{--}503.76$. Combined with median model margin $6.098$, the median maximum certifiable $\ell_2$ radius is just $r_{\max}^{(2)} = 0.0149$ (max $0.0401$). In contrast, consecutive stride-64 test windows shift by a median normalized $\ell_2$ distance of $25.492$ (mean $24.259$, p10 $1.148$, p90 $45.675$) and median $\ell_\infty$ distance of $3.845$, exposing a \textbf{1,562.7$\times$ median gap} (mean $50,990.3\times$) between physical stream motion and certifiable local balls.
+
+\section{Post-Week 4 Follow-Up Studies: G2-Full Closure and Stride-1 IBP Audit}
+Two targeted post-Week~4 studies resolved open questions regarding transition support and temporal stride density:
+
+\textbf{1) Separate Transition-Support Closure (\code{G2-Full}, \nolinkurl{scripts/post_w4_g2_full_closure.py}):} Auditing support thresholds ($\ge 50$ windows and $\ge 3$ subjects per split) showed that canonical stride-64 boundaries bisected $1.5\text{--}6.0\text{ s}$ transitions (occurring once per recording, $58\text{--}62$ spans total), leaving $10$ supervised ($18$ pure-only) support blockers. Extracting $9$ uniformly spaced \textbf{Span-Anchored} windows per transition span eliminated all $18$ blockers ($0/18$ remaining; $8,809$ Train / $2,147$ Val / $4,544$ Test). Fine-tuning from \code{8ffc5dd8...} across seeds $42, 43, 44$ with Class-Balanced Focal Loss ($\gamma=1.5$, $\beta=0.35$, AdamW $3\times 10^{-4}$, $15$ epochs) raised 3-seed Expanded Test Macro-F1 to $0.8537 \pm 0.0020$ (Transition-6 F1 $0.7917 \pm 0.0024$) and Canonical Test Macro-F1 to $0.8018 \pm 0.0045$ (Acc $89.85\% \pm 0.22\%$), producing checkpoint \code{c4f892ba...}. Because both label sampling and loss objective changed, this branch is reported strictly separately from the frozen replay baseline.
+
+\textbf{2) Multi-Stride Sensitivity ($S \in \{1,4,16,32,64\}$) and Float64 IBP Audit (\nolinkurl{04_SYNTHESIS/week5/evidence/stride_audit.py}):} Reconstructing raw recordings across all $19$ test streams confirmed element-for-element equivalence at $S=64$ and evaluated pairwise distances, top-1 agreement, radius membership ($r \in \{10^{-6}, 10^{-4}, 10^{-2}, 0.1\}$), and 11-margin \code{float64} IBP over every radius-$0.1$ member (Table~\ref{tab:stride_synth}).
+
+\begin{table}[htbp]
+\centering\small
+\caption{Exploratory Multi-Stride Audit Across 19 Test Recordings (\nolinkurl{stride_audit.json})}
+\label{tab:stride_synth}
+\begin{tabularx}{\textwidth}{@{}rrrrrrr@{}}
+\toprule
+\textbf{Stride ($S$)} & \textbf{Pairs} & \textbf{Med.\ $\ell_2$} & \textbf{Med.\ $\ell_\infty$} & \textbf{Top-1 Agree (\%)} & \textbf{Box $r{=}0.1$ Hits} & \textbf{Box Disagreements} \\
+\midrule
+$1$ & $322,856$ & $6.342$ & $1.420$ & $97.97\%$ & $49,677$ & $7$ \\
+$4$ & $80,708$ & $15.251$ & $2.776$ & $96.56\%$ & $5,122$ & $1$ \\
+$16$ & $20,171$ & $23.852$ & $3.493$ & $90.87\%$ & $804$ & $0$ \\
+$32$ & $10,081$ & $25.970$ & $3.870$ & $85.88\%$ & $327$ & $0$ \\
+$64$ & $5,034$ & $25.546$ & $3.934$ & $79.10\%$ & $137$ & $0$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+At \emph{every} tested stride, \textbf{zero} consecutive pairs fell within $\ell_\infty$ radius $10^{-6}$, $10^{-4}$, or $10^{-2}$. At $S=1$ ($20\text{ ms}$ step), empirical agreement rises to $97.97\%$ and $49,677$ pairs ($15.39\%$) lie inside $r=0.1$, yet \textbf{seven} of those members already flip their prediction relative to the anchor—confirming $r=0.1$ is unsafe without certification—and evaluating 11-margin \code{float64} IBP across all $49,677$ boxes yielded \textbf{0 positive certificates} (maximum minimum lower margin estimate: $-1544.86$).
+
+\section{Scaling Crossover Modeling and Circular-Buffer Ceiling}
+Forward-only batch-1 CPU profiling across synthetic larger backbones (\pathcode{feasibility_study.json}) explains the systems bottleneck: \code{SmallCNN1D}'s $0.1404\text{ ms}$ raw forward pass is dwarfed by Week~4 fixed verifier checks ($T_v \approx 1.3346\text{ ms}$) and Python incremental overhead ($T_{\text{inc}} \approx 1.9273\text{ ms}$). Both \code{MediumCNN1D} ($2.23\text{M}$ params, $8.5\text{M}$ MACs, $0.3769\text{ ms}$) and \code{TemporalResNet1D} ($2.70\text{M}$ params, $38.2\text{M}$ MACs, $1.8677\text{ ms}$) remain slower than direct execution unless hit rate $R > 71.5\%$.
+
+Only when modeling a $4.99\text{M}$-parameter \code{TemporalTransformer1D} ($115\text{M}$ MACs, $3.3823\text{ ms}$ forward) under the optimistic proxy assumption that a CNN-scale verifier overhead $T_v = 1.3346\text{ ms}$ could apply without self-attention bounding blowup does a modeled crossover appear near $27.6\text{ MMACs}$ (theoretical $2.53\times$ ceiling, minimum required hit rate $r_{\min} = 39.5\%$). Because native Transformer attention bounds were never profiled and $R=0\%$ causes a $39.5\%$ slowdown ($4.72\text{ ms}$ vs.\ $3.38\text{ ms}$), actual speedup on larger architectures remains \pathcode{NOT_ESTABLISHED}. Likewise, in Study~3 microbenchmarks, replacing dynamic slicing with an in-place \code{Conv1} circular tensor buffer trimmed latency by just $4.06\%$ ($0.03421 \to 0.03282\text{ ms}$), still $2.66\times$ slower than a direct PyTorch C++ \code{conv1d} call ($0.01233\text{ ms}$).
+
+% =============================================================================
+% CHAPTER 9
+% =============================================================================
+\chapter{Conclusion}
+
+\section{Summary of Verified Findings and Research Gate Outcomes}
+This five-week investigation built a mathematically sound, numerically enclosed, and cryptographically bound streaming certification pipeline for 12-class human activity recognition, and subjected it to strict end-to-end empirical auditing. Table~\ref{tab:gates} summarizes final research gate outcomes across \code{G0}--\code{G6}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Final Project Research Gate Dispositions (\code{G0}--\code{G6})}
+\label{tab:gates}
+\begin{tabularx}{\textwidth}{@{}P{1.8cm}P{4.2cm}Y@{}}
+\toprule
+\textbf{Gate} & \textbf{Disposition} & \textbf{Primary Verified Evidence} \\
+\midrule
+\code{G0}--\code{G1} & \code{PASS} & Locked Seed~43 \code{SmallCNN1D} (\code{8ffc5dd8...}), $89.05\%$ Acc / $0.7763$ Macro-F1 ($N=3,572$), $65/65$ Week~1 checks. \\
+\code{G2} & \code{PASS (Separate Branch)} & Canonical grid held on support blockers; post-Week~4 Span-Anchored Focal closure (\code{c4f892ba...}) cleared $0/18$ blockers ($0.8537$ Expanded Macro-F1). \\
+\code{G3}--\code{G4} & \code{VERIFIED (0\% Coverage)} & Sound 11-margin theory, Higham \code{binary32} bridge, $\Theta(m)$ membership, and $0.0$-error \code{M03} schedule; $0$ regional stream hits. \\
+\code{G5} & \code{NOT\_ESTABLISHED} & Joint trilemma (\code{H24}) unsatisfied by $0/17$ methods (\code{M00} fastest at $0.3420\text{ ms}$; \code{M03} $1.9273\text{ ms}$). \\
+\code{G6} & \code{VERIFIED} & Master Seal \code{56806762...} clean ($247$ protected files), $376/376$ automated tests PASS, reconciled artifacts. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Methodological Threats to Validity and Scope Limitations}
+Four explicit boundaries govern interpretation of these conclusions:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Known-Test Exposure (\code{KNOWN\_TEST\_EXPLORATORY}):} The $5,053$-window test stream was inspected during Week~1--3 development prior to sealing the Week~4 replay, making empirical results exploratory rather than an untouched holdout evaluation.
+  \item \textbf{Unobserved Regional Hit Latency and Surrogate Numerical Status:} Zero regional hits precluded measuring real regional hit latency; \code{CROWN} surrogate bounds lack executable \code{binary32} Higham enclosure, and stride-1 IBP checks used \code{float64} numerical diagnostics.
+  \item \textbf{Host CPU Measurement Scope:} Latency reflects batch-1 single-thread Linux x86\_64 memory-to-decision timings without physical microcontroller (ARM Cortex-M) deployment, RAPL energy metering, or sensor I/O acquisition latency.
+  \item \textbf{Provenance and Checkout Pinning:} A 1-sample annotation-origin shift affects $98$ boundary window labels; prior to external archival release, repository state across directories should be pinned to a single clean Git commit SHA.
+\end{enumerate}
+
+\section{Sequenced Recommendations for Future Work}
+Advancing certified streaming inference beyond these empirical limits requires addressing the three bottlenecks sequentially:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Close the $>10^3\times$ Coverage Gap First:} Investigate shift-invariant or spectral input parameterizations alongside verification-aware training (IBP or Lipschitz regularization) to expand certifiable radii before optimizing runtime dispatch.
+  \item \textbf{Eliminate Python Slicing and Dense Flatten Bottlenecks:} Replace Python tensor concatenation in incremental CNNs with fused C++ or CMSIS-NN circular ring buffers and compact position-preserving heads when targeting larger backbones.
+  \item \textbf{Benchmark True Verifier Scaling on Held-Out Streams:} Profile actual self-attention/residual verification costs on untouched subject splits before claiming operational speedup above the modeled $27.6\text{ MMAC}$ crossover.
+\end{enumerate}
+
+% =============================================================================
+% REFERENCES (IEEE STYLE)
+% =============================================================================
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{References}
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+% =============================================================================
+% APPENDICES A-G
+% =============================================================================
+\appendix
+
+\chapter{Detailed Dataset, Label Strata, and Split Records}
+\label{app:dataset}
+
+UCI HAPT recordings are ordered strictly as accelerometer $(x,y,z)$ followed by gyroscope $(x,y,z)$ ($C=6$, $W=128$, $S=64$, $50\text{ Hz}$). Table~\ref{tab:app_strata} summarizes the window counts across subject-disjoint splits, and Table~\ref{tab:app_norm} records the frozen \code{float64}-fit channel standardization parameters (\code{preprocessing\_id} \code{aa8e1cc2...}) derived strictly from the $6,955$ supervised Train windows.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Subject-Disjoint Window Strata Across UCI HAPT Splits ($N = 17,453$ Total Windows)}
+\label{tab:app_strata}
+\begin{tabularx}{\textwidth}{@{}Yrrrrr@{}}
+\toprule
+\textbf{Split (Subj./Rec.)} & \textbf{Pure} & \textbf{Majority ($\ge 77/128$)} & \textbf{Supervised Total} & \textbf{Ambiguous} & \textbf{Unlabeled} \\
+\midrule
+Train ($17$ subjects) & -- & -- & $6,955$ & \multicolumn{2}{c}{(Stream total: $9,978$)} \\
+Validation ($4$ subjects) & -- & -- & $1,751$ & \multicolumn{2}{c}{(Stream total: $2,422$)} \\
+Test ($9$ subjects, $19$ rec.) & -- & -- & $3,572$ & \multicolumn{2}{c}{(Stream total: $5,053$)} \\
+\midrule
+\textbf{Dataset Total ($30$ subjects, $61$ rec.)} & $\mathbf{10,361}$ & $\mathbf{1,917}$ & $\mathbf{12,278}$ & $\mathbf{1,588}$ & $\mathbf{3,587}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Across the $5,034$ within-recording adjacent Test pairs, strata break down as $2,874$ pure basic, $119$ pure transition, $579$ majority mixed, $479$ ambiguous, and $1,002$ unlabeled pairs ($18$ cross-recording boundaries excluded from adjacent pairing).
+
+\begin{table}[htbp]
+\centering\small
+\caption{Channel Standardization Parameters Fit on $6,955$ Supervised Train Windows}
+\label{tab:app_norm}
+\begin{tabularx}{\textwidth}{@{}Yrr@{}}
+\toprule
+\textbf{Channel} & \textbf{Mean ($\mu_c$)} & \textbf{Std.\ Dev.\ ($\sigma_c$)} \\
+\midrule
+Accelerometer X & $0.8043609$ & $0.4057797$ \\
+Accelerometer Y & $0.0411366$ & $0.4071547$ \\
+Accelerometer Z & $0.0817700$ & $0.3549119$ \\
+Gyroscope X & $0.0091356$ & $0.4476351$ \\
+Gyroscope Y & $-0.0043976$ & $0.4212706$ \\
+Gyroscope Z & $-0.0071832$ & $0.2964415$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Architecture Breakdown, Checkpoint History, and Preprocessing Contract}
+\label{app:arch}
+
+Table~\ref{tab:app_arch_detail} lists all 15 leaf modules of frozen \code{SmallCNN1D} (\nolinkurl{scripts/backbone.py}, $K=12$) at batch size 1, totaling $283,692$ trainable parameters ($1,136,072\text{ B}$ \code{float32} weights/buffers) and $1,172,992$ Conv/Linear MACs. Table~\ref{tab:app_seeds} logs the Week~1 three-seed validation selection and frozen artifact identifiers.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Complete 15-Module Breakdown of Frozen \code{SmallCNN1D} ($K=12$)}
+\label{tab:app_arch_detail}
+\begin{tabularx}{\textwidth}{@{}lYllrr@{}}
+\toprule
+\textbf{Module} & \textbf{Operator} & \textbf{Input Shape} & \textbf{Output Shape} & \textbf{Params} & \textbf{MACs} \\
+\midrule
+\code{conv.0} & Conv1d ($k=5, p=2$) & $[1, 6, 128]$ & $[1, 32, 128]$ & $992$ & $122,880$ \\
+\code{conv.1} & BatchNorm1d & $[1, 32, 128]$ & $[1, 32, 128]$ & $64$ & $0$ \\
+\code{conv.2} & ReLU & $[1, 32, 128]$ & $[1, 32, 128]$ & $0$ & $0$ \\
+\code{conv.3} & MaxPool1d ($k=2, s=2$) & $[1, 32, 128]$ & $[1, 32, 64]$ & $0$ & $0$ \\
+\code{conv.4} & Conv1d ($k=3, p=1$) & $[1, 32, 64]$ & $[1, 64, 64]$ & $6,208$ & $393,216$ \\
+\code{conv.5} & BatchNorm1d & $[1, 64, 64]$ & $[1, 64, 64]$ & $128$ & $0$ \\
+\code{conv.6} & ReLU & $[1, 64, 64]$ & $[1, 64, 64]$ & $0$ & $0$ \\
+\code{conv.7} & MaxPool1d ($k=2, s=2$) & $[1, 64, 64]$ & $[1, 64, 32]$ & $0$ & $0$ \\
+\code{conv.8} & Conv1d ($k=3, p=1$) & $[1, 64, 32]$ & $[1, 64, 32]$ & $12,352$ & $393,216$ \\
+\code{conv.9} & BatchNorm1d & $[1, 64, 32]$ & $[1, 64, 32]$ & $128$ & $0$ \\
+\code{conv.10} & ReLU & $[1, 64, 32]$ & $[1, 64, 32]$ & $0$ & $0$ \\
+\code{head.0} & Flatten & $[1, 64, 32]$ & $[1, 2048]$ & $0$ & $0$ \\
+\code{head.1} & Linear & $[1, 2048]$ & $[1, 128]$ & $262,272$ & $262,144$ \\
+\code{head.2} & ReLU & $[1, 128]$ & $[1, 128]$ & $0$ & $0$ \\
+\code{head.3} & Linear (Logits) & $[1, 128]$ & $[1, 12]$ & $1,548$ & $1,536$ \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{Total (\code{float32} payload: $1,136,072\text{ B} = 1,134,768\text{ B params} + 1,304\text{ B buffers}$)}} & $\mathbf{283,692}$ & $\mathbf{1,172,992}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 1 Three-Seed Checkpoint Selection and Frozen Contract Hashes}
+\label{tab:app_seeds}
+\begin{tabularx}{\textwidth}{@{}lrrrY@{}}
+\toprule
+\textbf{Role} & \textbf{Seed} & \textbf{Best Epoch} & \textbf{Val Macro-F1} & \textbf{Contract Status / Hash} \\
+\midrule
+Candidate & $42$ & $14$ & $0.836829$ & Retained in Week~1 run \pathcode{week1_ref_1793620216_9d6c1d85} \\
+\textbf{Selected} & $\mathbf{43}$ & $\mathbf{8}$ & $\mathbf{0.846785}$ & Locked SHA-256 \code{8ffc5dd8eb0e9cdf832160d074f3ae81\allowbreak 6ae6cba02adf7214a63a8b623303adb1} \\
+Candidate & $44$ & $9$ & $0.836958$ & Retained in Week~1 run \pathcode{week1_ref_1793620216_9d6c1d85} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Theorems and Formal Proofs of Decision-Preservation Conditions}
+\label{app:proofs}
+
+This appendix records the formal proofs and counterexamples underlying the theoretical hypotheses (\code{H04}--\code{H08}, \code{H12}, \code{H15}, \code{H16}, \code{H18}, \code{H22}) archived in \nolinkurl{04_SYNTHESIS/week5/reports/week5_hypothesis_arguments.tex}.
+
+\begin{proposition}[\code{H04}: Local Invariant Neighborhood Existence]
+If $f_\theta$ is continuous at $z_a$ and $g_{c^*,j}(z_a) > 0$ for all $j \neq c^*$, there exists $\delta > 0$ such that $\arg\max_k f_{\theta,k}(z) = c^*$ for all $\|z - z_a\| < \delta$.
+\end{proposition}
+\begin{proof}
+By continuity of each margin $g_{c^*,j}$ at $z_a$, for each $j \neq c^*$ choose $\delta_j > 0$ such that $\|z - z_a\| < \delta_j \implies \abs{g_{c^*,j}(z) - g_{c^*,j}(z_a)} < g_{c^*,j}(z_a)/2$, hence $g_{c^*,j}(z) > g_{c^*,j}(z_a)/2 > 0$. Setting $\delta = \min_{j \neq c^*} \delta_j > 0$ guarantees positivity of all 11 margins over the open ball $B(z_a, \delta)$. Existence yields no guarantee of stream coverage.
+\end{proof}
+
+\begin{proposition}[\code{H05} \& \code{H22}: Real-Arithmetic Sufficiency vs.\ \code{binary32} Enclosure]
+If $\ell_{c^*,j}(\Sset) > 0$ for all $j \neq c^*$ in $\R$, Theorem~\ref{thm:margin} guarantees exact invariance in $\R$. If deployed \code{binary32} margins $\widehat{g}_{c^*,j}(z)$ satisfy $\abs{\widehat{g}_{c^*,j}(z) - g_{c^*,j}(z)} \le \eta_{c^*,j}$ over $z \in \Sset$, then $\ell_{c^*,j}(\Sset) > \eta_{c^*,j}$ (equivalently outward-rounded lower bounds $\underline{\widehat{g}}_{c^*,j} > 0$) preserves the executable top-1 decision. Conversely, omitting $\eta_{c^*,j}$ fails: for $g_1 = (2^{24}+1) - 2^{24}$ and $g_2 = 1/2$, $g_1 = 1 > g_2$ in $\R$, whereas in \code{binary32} round-to-nearest ties-to-even, $2^{24}+1$ rounds to $2^{24}$, giving $\widehat{g}_1 = 0 < \widehat{g}_2$.
+\end{proposition}
+
+\begin{proposition}[\code{H06}: Conditional Lipschitz Decision Ball]
+If each margin $g_{c^*,j}$ is $L_{c^*,j}$-Lipschitz on $B(z_a, r)$ in norm $\norm{\cdot}$, then choosing $r < \min_{j : L_{c^*,j} > 0} g_{c^*,j}(z_a) / L_{c^*,j}$ guarantees $g_{c^*,j}(z) \ge g_{c^*,j}(z_a) - L_{c^*,j}\norm{z - z_a} > 0$ over $B(z_a, r)$.
+\end{proposition}
+
+\begin{proposition}[\code{H07} \& \code{H08}: IBP Incompleteness and Direct-Margin Dominance]
+(1) Let $h_1 = h_2 = \relu(t+1)$ on $t \in [-1,1]$. The true margin $1 + h_1 - h_2 \equiv 1 > 0$, yet coordinatewise IBP encloses $(h_1, h_2) \in [0,2]^2$, yielding lower bound $1 + 0 - 2 = -1 < 0$.
+(2) For any penultimate box $B$ and logits $A(h), D(h)$, $\inf_{h \in B}(A(h) - D(h)) \ge \inf_{h \in B} A(h) - \sup_{h \in B} D(h)$, proving direct-margin subtraction is never looser than subtracting independent logit extrema.
+\end{proposition}
+
+\begin{proposition}[\code{H12}: Fixed-Overlap Coordinate Reduction]
+For consecutive windows within a single recording under $W=128, S=64$, $X_{i+1}(:,t) = X_i(:, 64+t)$ fixes $6 \times 64 = 384$ prefix coordinates identically when prefix invariance is verified, leaving $Cs = 384$ free tail coordinates versus $CW = 768$.
+\end{proposition}
+
+\begin{proposition}[\code{H15} \& \code{H16}: Non-Recentering Counterexample and Fixed-Anchor Soundness]
+Let $F_1(x) = 1 - x$, $F_2(x) = 0$. Around anchor $a = 0$, Class~1 wins on $[-0.6, 0.6]$, admitting query $x = 0.6$. Recentering radius $0.6$ around $0.6$ without re-certification admits $x' = 1.2$, where $F_1(1.2) = -0.2 < 0 = F_2(1.2)$, breaking safety. Keeping anchor, domain, certificate bounds, and identity immutable ensures \code{H05} applies independently to every admitted query.
+\end{proposition}
+
+\begin{proposition}[\code{H18}: $\Theta(m)$ Coordinate-Read Lower Bound for Box Membership]
+Deciding $z \in [\underline{z}, \overline{z}] \subset \R^m$ requires $\Theta(m)$ coordinate accesses in the worst case. If any algorithm accepts an interior point $z \in (\underline{z}, \overline{z})$ while leaving coordinate $i$ unread, modifying only $z_i$ to $\overline{z}_i + 1$ produces an identical read transcript and falsely accepts an exterior point.
+\end{proposition}
+
+\chapter{Pseudocode, Certificate Schema, and Membership Verification}
+\label{app:algorithms}
+
+This appendix specifies the core algorithms implemented in \nolinkurl{ecdr/week4/}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Algorithm 1: Validated Higham \code{binary32} Dot-Product Enclosure (\nolinkurl{ecdr/week4/numerics.py})}
+\label{tab:alg_higham}
+\begin{tabularx}{\textwidth}{@{}Y@{}}
+\toprule
+\textbf{Procedure} \code{IntervalVector.dot\_with\_constant}$([\underline{x}, \overline{x}], w, b, u = 2^{-24})$ \\
+\midrule
+1. Verify reduction length $n$ satisfies $n u < 1$ and compute $\gamma_{n+1} = \frac{(n+1)u}{1 - (n+1)u}$. \\
+2. Compute exact \code{float64} product interval bounds for each coordinate $i \in \{1,\dots,n\}$:
+   $p_i^- = \min(w_i \underline{x}_i, w_i \overline{x}_i)$, $p_i^+ = \max(w_i \underline{x}_i, w_i \overline{x}_i)$, and $m_i = \max(\abs{p_i^-}, \abs{p_i^+})$. \\
+3. Accumulate real bounds $S^- = b + \sum_{i=1}^n p_i^-$, $S^+ = b + \sum_{i=1}^n p_i^+$, and magnitude bound $M = \abs{b} + \sum_{i=1}^n m_i$. \\
+4. Compute Higham forward rounding + subnormal margin:
+   $\delta = \gamma_{n+1} M + (n+1)\cdot \text{\code{SUB\_NORMAL\_F32\_MAX}}$. \\
+5. Return outward-rounded \code{float32} enclosure $[\text{\code{round\_down\_f32}}(S^- - \delta),\; \text{\code{round\_up\_f32}}(S^+ + \delta)]$ via \code{np.nextafter} (verified against \code{ExactRationalOracle}). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Algorithm 2: Stagewise Incremental Conv1D Schedule (\code{ActualK12IncrementalEngine}, \nolinkurl{incremental.py})}
+\label{tab:alg_inc}
+\begin{tabularx}{\textwidth}{@{}Y@{}}
+\toprule
+\textbf{Procedure} \code{\_forward\_stages\_partial}$(z_t \in \R^{1\times 6\times 128}, \text{prev})$ \\
+\midrule
+1. \textbf{Conv1 / Pool1:} If \code{prev} is invalid or recording changed, run full \code{SmallCNN1D} and cache stage activations. Otherwise, recompute \code{Conv1+BN1+ReLU1} on tail $[62,127]$ ($L_{\text{out}}=66 \ge 2$) and prefix $\{0,1\}$ ($L_{\text{out}}=2 \ge 2$, avoiding MKL \code{sgemv}); splice $60$ interior columns from \code{prev.h1[:, 66:126]} ($68/128$ cols computed). Apply \code{MaxPool1d(2)} reusing $30$ columns. \\
+2. \textbf{Conv2 / Pool2:} Recompute $36/64$ columns with $L_{\text{out}} \ge 2$; splice $28$ interior columns; pool reusing $14$ columns. \\
+3. \textbf{Conv3:} Recompute $j \in \{0,1\}$ and $j \in [14,31]$ ($20/32$ cols, $L_{\text{out}} \ge 2$); splice $12$ interior columns from \code{prev.h3[:, 18:30]}. \\
+4. \textbf{Head:} Flatten $(1, 64, 32) \to (1, 2048)$ and evaluate full \code{Linear(2048,128)} $\to$ \code{ReLU} $\to$ \code{Linear(12)}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Frozen 18-Field \code{Certificate} Schema and Fail-Closed Gate (\nolinkurl{types.py}, \nolinkurl{certificates.py}, \nolinkurl{runtime.py})}
+\label{tab:alg_cert}
+\begin{tabularx}{\textwidth}{@{}P{4.55cm}Y@{}}
+\toprule
+\textbf{Component} & \textbf{Specification} \\
+\midrule
+\code{Certificate} (18 frozen fields) & \pathcode{reference_identity_id}, \pathcode{checkpoint_sha256}, \pathcode{preprocessing_id}, \pathcode{graph_id}, \pathcode{anchor_raw_hash}, \pathcode{anchor_normalized_hash}, \pathcode{anchor_step}, \pathcode{recording_id}, \pathcode{target_class}, \pathcode{competitor_classes}, \code{domain}, \pathcode{lower_margins}, \pathcode{max_age}, \pathcode{method_id}, \pathcode{numerical_status}, \code{lifecycle}, \pathcode{formal_reuse_enabled}, \pathcode{schema_version}. \\
+\code{CoordinateBox.contains()} & Scans all $768$ coordinates (\pathcode{_compare} + \pathcode{prefix_mismatches}), returning \pathcode{INSIDE_VALIDATED}, \code{OUTSIDE}, \code{AMBIGUOUS}, or \code{INVALID}; only \pathcode{INSIDE_VALIDATED} satisfies \pathcode{strict_gate_accepts}. \\
+\code{ImmutableCertificateStore} & Enforces finite input $\to$ active cert $\to$ matching \pathcode{recording_id} $\to$ \pathcode{anchor_step} $\le \text{step} \le$ \pathcode{anchor_step} + \pathcode{max_age} $\to$ checkpoint/preprocessing/identity match $\to$ \pathcode{formal_reuse_enabled} $\to$ \code{domain.contains(norm\_query)} (non-recentering). Any failure triggers \code{ReferenceOwner.infer}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Complete Replay, Latency, Memory, and Stride Tables}
+\label{app:tables}
+
+This appendix consolidates the complete quantitative benchmarks from Week~1--5 artifacts. Table~\ref{tab:app_mem} reports attributable per-method memory footprints and membership coordinate counts (\pathcode{memory_results.json}); Tables~\ref{tab:app_w3_offline} and~\ref{tab:app_w3_replay} record Week~3 domain diagnostics and operational replay fallback distributions; and Table~\ref{tab:app_g2} summarizes the separate post-Week~4 \code{G2-Full} transition-support closure study (\pathcode{g2_full_closure.json}).
+
+\begin{table}[htbp]
+\centering\small
+\caption{Attributable Adapter, State, and Certificate Memory Footprints (Bytes) and Membership Coordinate Counts}
+\label{tab:app_mem}
+\begin{tabularx}{\textwidth}{@{}Yrrrrr@{}}
+\toprule
+\textbf{Method} & \textbf{Adapter (B)} & \textbf{State (B)} & \textbf{Certificate (B)} & \textbf{Total Attributed (B)} & \textbf{Checked Coords} \\
+\midrule
+\code{M00} & $1,113$ & $0$ & $0$ & $1,113$ & $768$ \\
+\code{M01} & $1,307$ & $0$ & $0$ & $1,307$ & $768$ \\
+\code{M02} & $1,533$ & $3,080$ & $0$ & $4,613$ & $768$ \\
+\code{M03} & $12,465$ & $3,584$ & $0$ & $16,049$ & $384$ \\
+\code{M04} & $1,586$ & $6,664$ & $0$ & $8,250$ & $384$ \\
+\code{M05} & $8,909$ & $0$ & $6,144$ & $15,053$ & $768$ \\
+\code{M06} & $11,940$ & $0$ & $6,144$ & $18,084$ & $768$ \\
+\code{M07} & $11,705$ & $0$ & $6,144$ & $17,849$ & $768$ \\
+\code{M08} & $1,460,123$ & $0$ & $6,144$ & $1,466,267$ & $768$ \\
+\code{M09} & $1,460,411$ & $0$ & $6,144$ & $1,466,555$ & $768$ \\
+\code{M10} & $1,459,976$ & $0$ & $6,144$ & $1,466,120$ & $768$ \\
+\code{M11} & $1,460,238$ & $0$ & $6,144$ & $1,466,382$ & $768$ \\
+\code{M12} & $11,769$ & $0$ & $6,144$ & $17,913$ & $768$ \\
+\code{M13} & $11,815$ & $0$ & $6,144$ & $17,959$ & $768$ \\
+\code{M14}, \code{M15} & -- & -- & -- & -- & -- \\
+\code{M16} & $1,514$ & $0$ & $0$ & $1,514$ & $768$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 3 Offline Domain Diagnostic at Normalized Radius $r = 10^{-6}$ ($5,053$ Windows)}
+\label{tab:app_w3_offline}
+\begin{tabularx}{\textwidth}{@{}Yrrrrrr@{}}
+\toprule
+\textbf{Domain} & \textbf{Builds} & \textbf{Cond.\ Pos.} & \textbf{Next Members} & \textbf{Formal Certs} & \textbf{Build (ms)} & \textbf{Bound (ms)} \\
+\midrule
+Diagonal box & $5,053$ & $5,034$ & $0$ & $0$ & $6.774$ & $4.516$ \\
+Fixed-overlap wave & $5,053$ & $4,211$ & $0$ & $0$ & $6.830$ & $4.546$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 3 Operational Replay and Fallback Attribution ($5,053$ Windows, $0$ Accepted Reuse)}
+\label{tab:app_w3_replay}
+\begin{tabularx}{\textwidth}{@{}lrrrrY@{}}
+\toprule
+\textbf{Domain (Repeat)} & \textbf{Builds} & \textbf{Core (ms)} & \textbf{ECDR (ms)} & \textbf{Reduction} & \textbf{Fallback Reason Counts} \\
+\midrule
+Diagonal box (R1) & $49$ & $0.224$ & $3.174$ & $-1316.92\%$ & \code{outside\_domain}: $5,004$; \code{stale\_anchor}: $29$; \code{reset}: $18$; \code{no\_cert}: $2$ \\
+Fixed wave (R1) & $69$ & $0.224$ & $3.198$ & $-1327.35\%$ & \code{outside\_domain}: $4,984$; \code{stale\_anchor}: $29$; \code{reset}: $18$; \code{no\_cert}: $22$ \\
+Diagonal box (R2) & $49$ & $0.215$ & $3.107$ & $-1346.81\%$ & \code{outside\_domain}: $5,004$; \code{stale\_anchor}: $29$; \code{reset}: $18$; \code{no\_cert}: $2$ \\
+Fixed wave (R2) & $69$ & $0.215$ & $3.169$ & $-1375.60\%$ & \code{outside\_domain}: $4,984$; \code{stale\_anchor}: $29$; \code{reset}: $18$; \code{no\_cert}: $22$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Separate Post-Week 4 \code{G2-Full} Span-Anchored Focal Fine-Tuning Results (\nolinkurl{g2_full_closure.json})}
+\label{tab:app_g2}
+\begin{tabularx}{\textwidth}{@{}Yrrrrrr@{}}
+\toprule
+\textbf{Seed (Best Epoch)} & \textbf{Canon.\ Acc} & \textbf{Canon.\ F1} & \textbf{Canon.\ Trans.\ F1} & \textbf{Exp.\ Acc} & \textbf{Exp.\ F1} & \textbf{Exp.\ Trans.\ F1} \\
+\midrule
+Seed 42 (Ep 9) & $0.8989$ & $0.8065$ & $0.6929$ & $0.8779$ & $0.8519$ & $0.7893$ \\
+Seed 43 (Ep 6) & $0.8956$ & $0.7956$ & $0.6707$ & $0.8779$ & $0.8528$ & $0.7908$ \\
+Seed 44 (Ep 14) & $0.9009$ & $0.8032$ & $0.6832$ & $0.8818$ & $0.8565$ & $0.7951$ \\
+\midrule
+\textbf{3-Seed Mean} & $\mathbf{0.8985}$ & $\mathbf{0.8018}$ & $\mathbf{0.6822}$ & $\mathbf{0.8792}$ & $\mathbf{0.8537}$ & $\mathbf{0.7917}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Frozen Reference \code{SmallCNN1D} Per-Class Classification Metrics ($N = 3,572$)}
+\label{tab:app_per_class}
+\begin{tabularx}{\textwidth}{@{}rYrrrrrr@{}}
+\toprule
+\textbf{ID} & \textbf{Activity Class} & \textbf{Train} & \textbf{Val} & \textbf{Test} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\midrule
+1 & Walking & $1,077$ & $246$ & $531$ & $0.9603$ & $0.9567$ & $0.9585$ \\
+2 & Walking Upstairs & $973$ & $247$ & $537$ & $0.9331$ & $0.9088$ & $0.9208$ \\
+3 & Walking Downstairs & $894$ & $231$ & $492$ & $0.9237$ & $0.9837$ & $0.9528$ \\
+4 & Sitting & $1,103$ & $289$ & $546$ & $0.7997$ & $0.8407$ & $0.8196$ \\
+5 & Standing & $1,206$ & $312$ & $597$ & $0.8798$ & $0.8090$ & $0.8429$ \\
+6 & Laying & $1,188$ & $316$ & $586$ & $0.9831$ & $0.9949$ & $0.9890$ \\
+7 & Stand to Sit & $79$ & $19$ & $45$ & $0.7619$ & $0.7111$ & $0.7356$ \\
+8 & Sit to Stand & $53$ & $13$ & $32$ & $0.7778$ & $0.6562$ & $0.7119$ \\
+9 & Sit to Lie & $90$ & $26$ & $51$ & $0.5893$ & $0.6471$ & $0.6168$ \\
+10 & Lie to Sit & $89$ & $15$ & $46$ & $0.7714$ & $0.5870$ & $0.6667$ \\
+11 & Stand to Lie & $119$ & $18$ & $68$ & $0.5714$ & $0.5294$ & $0.5496$ \\
+12 & Lie to Stand & $84$ & $19$ & $41$ & $0.4737$ & $0.6585$ & $0.5510$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Supervised Test Confusion Matrix ($N = 3,572$; Rows: Ground Truth, Columns: Frozen Reference Predictions)}
+\label{tab:app_confusion}
+\begin{tabularx}{\textwidth}{@{}Yrrrrrrrrrrrr@{}}
+\toprule
+\textbf{True / Pred} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{10} & \textbf{11} & \textbf{12} \\
+\midrule
+1 (Walking) & $508$ & $0$ & $22$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $1$ \\
+2 (Upstairs) & $16$ & $488$ & $15$ & $0$ & $0$ & $0$ & $2$ & $0$ & $0$ & $3$ & $2$ & $11$ \\
+3 (Downstairs) & $4$ & $2$ & $484$ & $0$ & $0$ & $0$ & $2$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+4 (Sitting) & $0$ & $21$ & $0$ & $459$ & $57$ & $0$ & $1$ & $2$ & $1$ & $0$ & $5$ & $0$ \\
+5 (Standing) & $0$ & $3$ & $0$ & $106$ & $483$ & $0$ & $1$ & $0$ & $1$ & $0$ & $2$ & $1$ \\
+6 (Laying) & $0$ & $0$ & $0$ & $0$ & $0$ & $583$ & $0$ & $0$ & $0$ & $0$ & $3$ & $0$ \\
+7 (Stand-Sit) & $1$ & $2$ & $0$ & $4$ & $1$ & $0$ & $32$ & $3$ & $1$ & $0$ & $1$ & $0$ \\
+8 (Sit-Stand) & $0$ & $2$ & $0$ & $1$ & $7$ & $0$ & $1$ & $21$ & $0$ & $0$ & $0$ & $0$ \\
+9 (Sit-Lie) & $0$ & $0$ & $0$ & $0$ & $1$ & $6$ & $0$ & $0$ & $33$ & $0$ & $11$ & $0$ \\
+10 (Lie-Sit) & $0$ & $1$ & $0$ & $2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $27$ & $1$ & $15$ \\
+11 (Stand-Lie) & $0$ & $1$ & $1$ & $2$ & $0$ & $4$ & $2$ & $0$ & $20$ & $0$ & $36$ & $2$ \\
+12 (Lie-Stand) & $0$ & $3$ & $2$ & $0$ & $0$ & $0$ & $1$ & $1$ & $0$ & $5$ & $2$ & $27$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter[Complete Method Registry (M00--M16) and Hypothesis Ledger (H01--H24)]{Complete Method Registry (M00--M16)\\and Hypothesis Ledger (H01--H24)}
+\label{app:registry}
+
+Table~\ref{tab:app_methods} registers all 17 evaluated and audited configurations (\code{M00}--\code{M16}) behind the unified \code{QueryView} contract. Tables~\ref{tab:app_h1} and~\ref{tab:app_h2} reconcile all 24 pre-registered hypotheses against \nolinkurl{output/week4/week4_initial_20261103/tables/hypotheses.csv}. Table~\ref{tab:app_w4tasks} summarizes the 40 verified closeout engineering tasks (\code{W4-001}--\code{W4-040}).
+
+\begin{table}[htbp]
+\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Complete 17-Method Evaluation Registry (\code{M00}--\code{M16})}
+\label{tab:app_methods}
+\begin{tabularx}{\textwidth}{@{}P{1.0cm}P{2.5cm}P{3.8cm}YY@{}}
+\toprule
+\textbf{ID} & \textbf{Category} & \textbf{Mechanism / Domain} & \textbf{Numerical / Gate Status} & \textbf{Replay Outcome} \\
+\midrule
+\code{M00} & Baseline & Frozen core inference & \pathcode{CORE_INFERENCE} (no re-hash) & $0.3420\text{ ms}$ (fastest) \\
+\code{M01} & Baseline & Per-query SHA-256 + AST & \pathcode{STRONG_PER_QUERY} & $1.6766\text{ ms}$, $0$ hits \\
+\code{M02} & Singleton & Exact input hash cache & Bitwise equality & $0.4788\text{ ms}$, $0$ hits \\
+\code{M03} & Incremental & Stagewise Conv1D ($L_{\text{out}}\ge 2$) & Bitwise-aligned features & $1.9273\text{ ms}$, $5,034$ hits \\
+\code{M04} & Heuristic & Uncertified $\ell_2 \le 0.05$ & Empirical heuristic only & $0.4974\text{ ms}$, $0$ hits \\
+\code{M05} & Regional & Global Lipschitz $\ell_2$ ball & Validated \code{binary32} & $0.5094\text{ ms}$, $0$ hits \\
+\code{M06} & Regional & IBP diagonal box ($768$-D) & Validated \code{binary32} & $7.1278\text{ ms}$, $0$ hits \\
+\code{M07} & Regional & IBP fixed-overlap wave & Validated \code{binary32} & $6.5641\text{ ms}$, $0$ hits \\
+\code{M08} & Regional & PCA affine outer hull & Gate closed (\code{OWNED} fallback) & $0.4626\text{ ms}$, $0$ hits \\
+\code{M09} & Regional & Native PCA correlated & Gate closed (\code{OWNED} fallback) & $0.4481\text{ ms}$, $0$ hits \\
+\code{M10} & Regional & CROWN 2D diagonal & \code{SURROGATE} / gate closed & $0.4500\text{ ms}$, $0$ hits \\
+\code{M11} & Regional & CROWN 2D wave/correlated & \code{SURROGATE} / gate closed & $0.4479\text{ ms}$, $0$ hits \\
+\code{M12} & Control & Fixed-anchor policy & Non-recentering control & $0.4966\text{ ms}$, $0$ hits \\
+\code{M13} & Control & Finite horizon ($H\in\{1,2\}$) & Multi-step budget control & $6.1458\text{ ms}$, $0$ hits \\
+\code{M14} & External & LipCache (\code{GuardNet}) & \pathcode{AUDITED_UNSUPPORTED} & Not executed (frozen scope) \\
+\code{M15} & External & TinyD\'ej\`aVu (MCU ring) & \pathcode{AUDITED_UNSUPPORTED} & Not executed (bare-metal MCU) \\
+\code{M16} & Baseline & Owned generation wrapper & \pathcode{OWNED_GENERATION} & $0.4674\text{ ms}$, $0$ hits \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 4 Hypothesis Disposition Ledger, Part I (\code{H01}--\code{H12})}
+\label{tab:app_h1}
+\begin{tabularx}{\textwidth}{@{}P{1.1cm}P{2.5cm}YY@{}}
+\toprule
+\textbf{ID} & \textbf{Category} & \textbf{Statement} & \textbf{Verified Disposition \& Primary Witness} \\
+\midrule
+\code{H01} & Temporal Geom. & Shift-aligned overlap is exact across adjacent windows & \textbf{VERIFIED FINITE} ($5,034$ test pairs; $12$ Conv3 cols equal) \\
+\code{H02} & Temporal Geom. & 50\% overlap implies small ordinary coordinate distance & \textbf{FALSIFIED UNCOND.} (Ramp/phase shifts yield large $\ell_2$/$\ell_\infty$) \\
+\code{H03} & Label Semantics & Same activity label implies identical CNN prediction & \textbf{FALSIFIED UNCOND.} (Rows $682\to 683$, label 11: pred $10\to 8$) \\
+\code{H04} & Math Found. & Strict winner margin \& continuity imply local invariant set & \textbf{DERIVED} (Open ball exists; radius too tiny for stream) \\
+\code{H05} & Math Found. & Positive valid whole-domain margins suffice for reuse & \textbf{DERIVED ($\R$)} (Conditional on $\F_{32}$ enclosure bridge) \\
+\code{H06} & Regional Cert. & Sound Lipschitz bound defines certified decision ball & \textbf{CONDITIONAL THEOREM} ($L_{\text{net}}=423.72 \implies r$ tiny; $0$ hits) \\
+\code{H07} & Interval Bounds & IBP certifies every true invariant domain & \textbf{FALSIFIED COMPLETENESS} (Dependency loss; $h_1=h_2$ counterex.) \\
+\code{H08} & Formulations & Direct 11-margin head eliminates output dependency loss & \textbf{DERIVED} ($+0.5623$ gain at $\epsilon=10^{-5}$; $\epsilon\ge 10^{-4}$ fails) \\
+\code{H09} & Relaxations & CROWN is always cheaper and tighter than alternatives & \textbf{NOT ESTABLISHED} (Tighter margins at $12.45\text{--}14.5\text{ ms}$ cost) \\
+\code{H10} & Domain Geom. & Temporal/PCA directions align with margin normals & \textbf{NOT ESTABLISHED} ($\diag(4,1)$ counterex.; unaligned globally) \\
+\code{H11} & Domain Geom. & Structured domains beat diagonal boxes in coverage & \textbf{NOT ESTABLISHED} ($0$ useful stream hits for both at $S=64$) \\
+\code{H12} & Wave Embed. & Fixed overlap shrinks free coords from $768$ to $384$ & \textbf{DERIVED} ($6\times 64 = 384$ prefix fixed within same recording) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 4 Hypothesis Disposition Ledger, Part II (\code{H13}--\code{H24})}
+\label{tab:app_h2}
+\begin{tabularx}{\textwidth}{@{}P{1.1cm}P{2.5cm}YY@{}}
+\toprule
+\textbf{ID} & \textbf{Category} & \textbf{Statement} & \textbf{Verified Disposition \& Primary Witness} \\
+\midrule
+\code{H13} & Incremental & Exact intermediate reuse preserves bitwise classifier output & \textbf{VERIFIED FINITE} ($5,034$ pairs, $0.0$ logit err, $A_{\text{reuse}}=1.0$) \\
+\code{H14} & Incremental & Incremental execution yields net CPU speedup on \code{SmallCNN1D} & \textbf{FALSIFIED UNCOND.} ($1.9273\text{ ms}$ vs.\ $0.3420\text{ ms}$, $-463.47\%$) \\
+\code{H15} & Lifecycle & Re-centering after reuse hit requires no new proof & \textbf{FALSIFIED UNCOND.} ($F_1(x)=1-x$ counterex.; drift breaks safety) \\
+\code{H16} & Lifecycle & Fixed-anchor membership preserves repeated soundness & \textbf{CONDITIONAL THEOREM} (Sound if identity \& domain immutable) \\
+\code{H17} & Lifecycle & Multi-step finite horizon preserves certified invariance & \textbf{NOT ESTABLISHED} (Horizon bounds expand; $0$ hits in \code{M13}) \\
+\code{H18} & Complexity & Exact box membership costs $\Theta(m)$ coordinate reads & \textbf{DERIVED} (Adversary flips any unread interior coordinate) \\
+\code{H19} & Scaling & Mathematical soundness implies useful streaming coverage & \textbf{FALSIFIED UNCOND.} (\code{M05}--\code{M13} valid yet $R=0$ on HAPT) \\
+\code{H20} & Scaling & Useful coverage implies net end-to-end speedup & \textbf{FALSIFIED UNCOND.} (\code{M03} $100\%$ pair reuse at $0.1775\times$ speed) \\
+\code{H21} & Comparison & ECDR beats CNN baseline or LipCache on HAPT stream & \textbf{NOT ESTABLISHED} (\code{M00} fastest; LipCache \code{M14} unsupported) \\
+\code{H22} & Numerics & Real arithmetic proofs transfer automatically to \code{binary32} & \textbf{FALSIFIED UNCOND.} ($(2^{24}+1)-2^{24}=0$ counterexample) \\
+\code{H23} & Semantics & Temporal event name alone suffices for sound reuse & \textbf{FALSIFIED UNCOND.} (Same-event windows flip predictions; \code{H03}) \\
+\code{H24} & Trilemma & Sound $\land$ Useful Coverage $\land$ Net Speedup simultaneously & \textbf{NOT ESTABLISHED} ($0/17$ registered methods satisfy conjunction) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Week 4 Engineering Closeout Task Milestones (\code{W4-001}--\code{W4-040}, All \code{VERIFIED})}
+\label{tab:app_w4tasks}
+\begin{tabularx}{\textwidth}{@{}P{1.6cm}P{2.6cm}Y@{}}
+\toprule
+\textbf{Milestone} & \textbf{Task Range} & \textbf{Audited Engineering Scope} \\
+\midrule
+M0 & \code{W4-001}--\code{004} & Governance, integrity snapshot, method taxonomy, environment profile \\
+M1 & \code{W4-005}--\code{010} & Higham \code{binary32} contract, 11-margin fusion, IBP, Lipschitz, CROWN, proof review \\
+M2 & \code{W4-011}--\code{018} & Ball/box/wave/PCA domains, incremental engine, event triggers, domain integration \\
+M3 & \code{W4-019}--\code{026} & Runtime adapter, fail-closed arbitration, cache eviction, telemetry, shadow/fault checks \\
+M4 & \code{W4-027}--\code{031} & Workload isolation, baseline wrappers, calibration, synthetic sweeps, Master Protocol Seal \\
+M5 & \code{W4-032}--\code{034} & Full $5,053$-window stream replay, paired CPU timing, attributable memory \& scaling \\
+M6 & \code{W4-035}--\code{036} & Cross-method synthesis and independent receipt recount \\
+M7 & \code{W4-037}--\code{040} & Scientific/explanatory reports, layout QA, final delivery verification \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Repository Source Map, Verification Receipts, and Reproduction Guide}
+\label{app:sourcemap}
+
+Table~\ref{tab:app_sourcemap} maps all source modules, evidence receipts, and automated test suites across the repository.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Complete Repository Source Code, Receipt, and Test Suite Map}
+\label{tab:app_sourcemap}
+\begin{tabularx}{\textwidth}{@{}P{5.8cm}Y@{}}
+\toprule
+\textbf{Repository Path} & \textbf{Implemented Responsibility and Audited Receipt} \\
+\midrule
+\nolinkurl{scripts/01_fetch_hapt.py}--\nolinkurl{06b_corr_semantics.py}, \nolinkurl{week2_data_audit.py} & Raw UCI HAPT download, sliding-window chronology ($17,453$ windows), subject-disjoint $17/4/9$ splitting, and provenance audit (\nolinkurl{output/week2_foundations_20261103/data_audit.json}). \\
+\nolinkurl{scripts/backbone.py}, \nolinkurl{week2_model_audit.py} & Frozen \code{SmallCNN1D} ($K=12$, $283,692$ params, $1,172,992$ MACs, SHA-256 \code{8ffc5dd8...}) and deterministic CPU audit (\nolinkurl{model_audit.json}). \\
+\nolinkurl{ecdr/model.py}, \nolinkurl{intervals.py}, \nolinkurl{bounds.py}, \nolinkurl{certificate.py}, \nolinkurl{week3_verifier.py} & Historical GAP prototype (\code{ECDRConv1DNet}), rational-oracle intervals, and Week~3 prototype verifier (\nolinkurl{output/week3_certification_20261103/}). \\
+\nolinkurl{ecdr/week4/reference.py}, \nolinkurl{numerics.py} & \code{ReferenceOwner} (3 integrity modes), Higham $\gamma_n$ dot-product enclosures, outward \code{nextafter} rounding, and \code{binary32} operator audit. \\
+\nolinkurl{ecdr/week4/bounds.py}, \nolinkurl{lirpa_adapter.py}, \nolinkurl{domains.py} & Direct-margin IBP, 50-iter adjoint power Lipschitz, \code{SingletonHeightCNN} \code{auto\_LiRPA} CROWN, Wave \& $K=8$ PCA Affine domains. \\
+\nolinkurl{ecdr/week4/incremental.py}, \nolinkurl{certificates.py}, \nolinkurl{runtime.py}, \nolinkurl{methods.py} & \code{ActualK12IncrementalEngine} ($L_{\text{out}}\ge 2$, $-32.15\%$ MACs), cryptographic certificate store, fail-closed gate, and \code{M00}--\code{M16} adapters. \\
+\nolinkurl{scripts/week4_run.py}, \nolinkurl{week4_audit.py}, \nolinkurl{post_w4_g2_full_closure.py}, \nolinkurl{post_w4_feasibility_study.py} & Sealed Week~4 replay ($5,053$ queries), $247$-file seal verification, G2 Span-Anchored Focal closure (\code{c4f892ba...}), and scaling/Lipschitz gap studies. \\
+\nolinkurl{04_SYNTHESIS/week5/evidence/} & Stride-1..64 IBP audit (\nolinkurl{stride_audit.json}), replay recount (\nolinkurl{reconcile_replay.json}), and paired latency (\nolinkurl{paired_latency.json}). \\
+\nolinkurl{tests/run_all_tests.py} (41 test files) & Complete automated regression suite: \textbf{$376/376$ tests PASS} ($0$ failures, $0$ errors). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Reproducibility Commands}
+To re-verify the full regression suite, protocol seal, post-Week~4 evidence scripts, and this PDF report from the repository root:
+\begin{lstlisting}[language=bash]
+.venv/bin/python tests/run_all_tests.py
+.venv/bin/python scripts/week4_audit.py check
+.venv/bin/python 04_SYNTHESIS/week5/evidence/stride_audit.py
+python3 04_SYNTHESIS/week5/evidence/reconcile_replay.py
+python3 04_SYNTHESIS/week5/evidence/paired_latency.py
+cd 04_SYNTHESIS/week5/reports
+xelatex -interaction=nonstopmode -halt-on-error ECDR_Final_Report_EN.tex
+bibtex ECDR_Final_Report_EN
+xelatex -interaction=nonstopmode -halt-on-error ECDR_Final_Report_EN.tex
+xelatex -interaction=nonstopmode -halt-on-error ECDR_Final_Report_EN.tex
+cp ECDR_Final_Report_EN.pdf ../../../
+\end{lstlisting}
+
+\end{document}

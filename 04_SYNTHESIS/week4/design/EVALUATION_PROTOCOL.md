@@ -110,7 +110,7 @@ $$\max_{\theta \in \Theta} R_{val\_cert}(\theta) \quad \text{s.t.} \quad D_{val\
 
 ## 6. Danh mục 17 Phương pháp M00–M16 (C06)
 
-Hệ thống Week 4 quản lý chặt chẽ 17 cấu hình phương pháp theo bảng đăng ký [`configs/week4/methods.json`](../configs/week4/methods.json):
+Hệ thống Week 4 quản lý chặt chẽ 17 cấu hình phương pháp theo bảng đăng ký [`configs/week4/methods.json`](../../../configs/week4/methods.json):
 - **Baselines**: `M00` (Core CNN), `M01` (Full wrapper), `M16` (Owned identity baseline).
 - **Exact Alternatives**: `M02` (Exact input replay), `M03` (Exact incremental engine).
 - **Heuristic Baseline**: `M04` (Heuristic thresholding).

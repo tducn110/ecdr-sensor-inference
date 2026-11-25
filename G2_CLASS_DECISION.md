@@ -126,10 +126,8 @@ data/
 
 ## 8. Traceability
 
-- Gate wording for the paper: `G0 PASS; G1 COMPLETE_WITH_REVISIONS; G2 PASS (G2-A + G2-B); G3 pending`.
-- Next work is staged by [07_G3_DOMAIN_CONTRACT.md](07_G3_DOMAIN_CONTRACT.md):
-  domain contract → minimal diagonal verifier → reuse gate/anchor lifecycle →
-  component instrumentation. These outputs remain pending; net saving is G5.
+- Gate wording for the paper: `G0 PASS; G1 COMPLETE_WITH_REVISIONS; G2 PASS (G2-A + G2-B); G3 VERIFIED; G4–G6 EVALUATED`.
+- Mathematical foundations and verifier contract are established in [03_MATH/README.md](03_MATH/README.md) and [ECDR_Final_Report_EN.pdf](ECDR_Final_Report_EN.pdf).
 - Baseline commit `cefd171` preserves pre-fix G1 artifacts; the `05` index fix
   and recomputed audits are committed separately.
 
@@ -163,9 +161,7 @@ data/
   `data/g2_metrics.json`, `data/g2_model_summary.json`, `data/g2_cpu_latency.json`,
   `plots/g2_confusion_matrix.png`, `plots/g2_margin_distribution.png`.
 
-Current synthesis: [PROJECT_BRIEF.md](PROJECT_BRIEF.md), [report.md](report.md)
-and [LaTeX source](latex/dossier.tex). Changes and remaining evidence boundaries
-are recorded in the historical `DOCS_SYNC_2026-10-22.md` record, unavailable in this checkout.
+Current synthesis: [00_OVERVIEW/02_Week_1_Project_Brief.tex](00_OVERVIEW/02_Week_1_Project_Brief.tex), [04_SYNTHESIS/week4/reports/Week_4_Implementation_and_Evaluation.pdf](04_SYNTHESIS/week4/reports/Week_4_Implementation_and_Evaluation.pdf), and [ECDR_Final_Report_EN.pdf](ECDR_Final_Report_EN.pdf).
 
 ## 10. Post-Week 4 G2 Full Closure — K=12 Revisit & Multi-Seed Verification (2026-11-11)
 
